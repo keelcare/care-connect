@@ -1,0 +1,130 @@
+:root {
+    /* -------------------------
+     Color System
+     ------------------------- */
+
+    /* Primary Palette - Trust Blue */
+    --color-primary-50: #E3F2FD;
+    --color-primary-100: #BBDEFB;
+    --color-primary-200: #90CAF9;
+    --color-primary-300: #64B5F6;
+    --color-primary-400: #42A5F5;
+    --color-primary-500: #2196F3;
+    --color-primary-600: #1E88E5;
+    --color-primary-700: #1976D2;
+    --color-primary-800: #1565C0;
+    --color-primary-900: #0D47A1;
+
+    /* Secondary Palette - Warmth Coral */
+    --color-secondary-50: #FFF3E0;
+    --color-secondary-100: #FFE0B2;
+    --color-secondary-200: #FFCC80;
+    --color-secondary-300: #FFB74D;
+    --color-secondary-400: #FFA726;
+    --color-secondary-500: #FF9800;
+    --color-secondary-600: #FB8C00;
+    --color-secondary-700: #F57C00;
+    --color-secondary-800: #EF6C00;
+    --color-secondary-900: #E65100;
+
+    /* Semantic Colors */
+    --color-success-50: #E8F5E9;
+    --color-success-500: #4CAF50;
+    --color-success-700: #388E3C;
+
+    --color-warning-50: #FFF8E1;
+    --color-warning-500: #FFC107;
+    --color-warning-700: #F57F17;
+
+    --color-error-50: #FFEBEE;
+    --color-error-500: #F44336;
+    --color-error-700: #C62828;
+
+    --color-info-50: #E0F7FA;
+    --color-info-500: #00BCD4;
+    --color-info-700: #0097A7;
+
+    /* Neutral Palette */
+    --color-gray-50: #FAFAFA;
+    --color-gray-100: #F5F5F5;
+    --color-gray-200: #EEEEEE;
+    --color-gray-300: #E0E0E0;
+    --color-gray-400: #BDBDBD;
+    --color-gray-500: #9E9E9E;
+    --color-gray-600: #757575;
+    --color-gray-700: #616161;
+    --color-gray-800: #424242;
+    --color-gray-900: #212121;
+
+    /* Gradients */
+    --gradient-trust: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    --gradient-warmth: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    --gradient-success: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    --gradient-premium: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+
+    /* -------------------------
+     Spacing System (8pt Grid)
+     ------------------------- */
+    --space-0: 0px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+    --space-32: 128px;
+
+    /* -------------------------
+     Typography Scale
+     ------------------------- */
+    /* Fonts will be set via Next.js font loader and CSS variables */
+    /* --font-primary: 'Inter', sans-serif; */
+    /* --font-display: 'Manrope', sans-serif; */
+    /* --font-mono: 'JetBrains Mono', monospace; */
+
+    /* Font Weights */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* -------------------------
+     Layout & Grid
+     ------------------------- */
+    --container-xs: 480px;
+    --container-sm: 640px;
+    --container-md: 768px;
+    --container-lg: 1024px;
+    --container-xl: 1280px;
+    --container-2xl: 1536px;
+
+    /* -------------------------
+     Effects
+     ------------------------- */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.2);
+
+    --shadow-primary: 0 4px 12px rgba(33, 150, 243, 0.3);
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+}

@@ -1,0 +1,56 @@
+.card {
+    max-width: 500px;
+    border-radius: var(--radius-lg);
+    background: var(--color-gray-50);
+    padding: var(--space-8);
+    border-left: 4px solid var(--color-primary-500);
+    display: flex;
+    flex-direction: column;
+}
+
+.quoteIcon {
+    color: var(--color-primary-300);
+    margin-bottom: var(--space-4);
+}
+
+.quote {
+    font-family: var(--font-primary);
+    font-size: 18px;
+    line-height: 1.75;
+    color: var(--color-gray-800);
+    margin-bottom: var(--space-6);
+    font-style: italic;
+}
+
+.author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--color-gray-200);
+}
+
+.authorInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: var(--font-weight-semibold);
+    font-size: 16px;
+    color: var(--color-gray-900);
+}
+
+.role {
+    font-size: 12px;
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: var(--font-weight-medium);
+}

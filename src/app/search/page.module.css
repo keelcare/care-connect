@@ -1,0 +1,129 @@
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--space-6);
+    min-height: calc(100vh - 72px);
+}
+
+.header {
+    margin-bottom: var(--space-6);
+}
+
+.searchBar {
+    max-width: 600px;
+    margin-bottom: var(--space-4);
+}
+
+.stats {
+    font-size: 14px;
+    color: var(--color-gray-600);
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: start;
+}
+
+.sidebar {
+    display: none;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.resultsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+}
+
+.pageBtn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.pageBtn:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+}
+
+.pageBtn.active {
+    background-color: var(--color-primary-500);
+    color: white;
+    border-color: var(--color-primary-500);
+}
+
+.mobileFilterBtn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .resultsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.noResults {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    gap: 1rem;
+    color: var(--color-neutral-600);
+}
+
+@media (min-width: 1024px) {
+    .content {
+        grid-template-columns: 280px 1fr;
+    }
+
+    .sidebar {
+        display: block;
+        position: sticky;
+        top: 90px;
+    }
+
+    .mobileFilterBtn {
+        display: none;
+    }
+
+    .resultsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .resultsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
