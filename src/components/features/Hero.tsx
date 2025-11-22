@@ -1,11 +1,32 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 export const Hero: React.FC = () => {
+    const router = useRouter();
+    const [zipCode, setZipCode] = useState('');
+    const [serviceType, setServiceType] = useState('Child Care');
+
+    const handleSearch = () => {
+        // Always redirect to browse page, regardless of zipcode validity
+        // If zipcode is provided, it could be used for filtering in the future
+        if (zipCode.trim()) {
+            router.push(`/browse?zipcode=${encodeURIComponent(zipCode)}&service=${encodeURIComponent(serviceType)}`);
+        } else {
+            router.push('/browse');
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     return (
         <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-neutral-50 to-white px-6 pt-32 pb-20">
             {/* Animated Background Elements */}
@@ -32,7 +53,11 @@ export const Hero: React.FC = () => {
                     <div className="inline-flex flex-col md:flex-row items-center bg-white rounded-[2rem] shadow-soft p-2 md:pl-8 border border-neutral-100 max-w-3xl mx-auto w-full">
                         <div className="flex items-center gap-3 w-full md:w-auto py-3 md:py-0 px-4 md:px-0">
                             <span className="text-neutral-500 font-medium whitespace-nowrap">I am looking for</span>
-                            <select className="bg-transparent font-semibold text-neutral-900 outline-none cursor-pointer appearance-none min-w-[120px]">
+                            <select
+                                value={serviceType}
+                                onChange={(e) => setServiceType(e.target.value)}
+                                className="bg-transparent font-semibold text-neutral-900 outline-none cursor-pointer appearance-none min-w-[120px]"
+                            >
                                 <option>Child Care</option>
                                 <option>Senior Care</option>
                                 <option>Pet Care</option>
@@ -48,11 +73,17 @@ export const Hero: React.FC = () => {
                             <input
                                 type="text"
                                 placeholder="Zip Code"
+                                value={zipCode}
+                                onChange={(e) => setZipCode(e.target.value)}
+                                onKeyPress={handleKeyPress}
                                 className="bg-transparent font-semibold text-neutral-900 outline-none w-full md:w-32 placeholder-neutral-300"
                             />
                         </div>
 
-                        <Button className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 text-white shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0">
+                        <Button
+                            onClick={handleSearch}
+                            className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 text-white shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
+                        >
                             <i className="lni lni-search-alt text-xl"></i>
                         </Button>
                     </div>
