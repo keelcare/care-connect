@@ -1,10 +1,13 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter, Manrope, JetBrains_Mono } from "next/font/google";
+import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AuthProvider } from "@/context/AuthContext";
-import "@/styles/variables.css";
+import { SocketProvider } from "@/context/SocketProvider";
+import "lineicons/dist/lineicons.css";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,10 +28,29 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "CareConnect - Find Trusted Caregivers",
-  description: "Connect with trusted caregivers for child care, senior care, pet care, and more.",
-};
+function RootLayoutContent({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  // Don't show Header/Footer on auth pages (they have their own layout)
+  // Don't show Header/Footer on dashboard pages (they have their own layout)
+  const hideHeaderFooter = pathname?.startsWith('/auth') || pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin');
+
+  return (
+    <body className={`${inter.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+      <ToastProvider>
+        <AuthProvider>
+          <SocketProvider>
+            {!hideHeaderFooter && <Header />}
+            <main style={{ minHeight: hideHeaderFooter ? '100vh' : 'calc(100vh - 72px - 400px)' }}>
+              {children}
+            </main>
+            {!hideHeaderFooter && <Footer />}
+          </SocketProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </body>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -37,17 +59,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
-        <ToastProvider>
-          <AuthProvider>
-            <Header />
-            <main style={{ minHeight: 'calc(100vh - 72px - 400px)' }}>
-              {children}
-            </main>
-            <Footer />
-          </AuthProvider>
-        </ToastProvider>
-      </body>
+      <head>
+        <title>CareConnect - Find Trusted Caregivers</title>
+        <meta name="description" content="Connect with trusted caregivers for child care, senior care, pet care, and more." />
+      </head>
+      <RootLayoutContent>{children}</RootLayoutContent>
     </html>
   );
 }
