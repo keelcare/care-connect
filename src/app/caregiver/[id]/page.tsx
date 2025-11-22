@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { MapPin, Star, Clock, ShieldCheck, Calendar, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
+import { useAuth } from '@/context/AuthContext';
 
 // Mock data for demo
 const MOCK_USERS = {
@@ -71,6 +73,8 @@ const MOCK_USERS = {
 
 export default function CaregiverProfilePage() {
     const params = useParams();
+    const router = useRouter();
+    const { user } = useAuth();
     const [caregiver, setCaregiver] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -270,19 +274,57 @@ export default function CaregiverProfilePage() {
                         </div>
 
                         <div className="space-y-3">
-                            <Button size="lg" className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium">
-                                Request Booking
-                            </Button>
-                            <Button variant="outline" size="lg" className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12">
-                                Message
-                            </Button>
+                            {user ? (
+                                <>
+                                    <Button
+                                        size="lg"
+                                        className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                        onClick={() => console.log('Request booking')}
+                                    >
+                                        Request Booking
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="lg"
+                                        className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12"
+                                        onClick={() => console.log('Send message')}
+                                    >
+                                        Message
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/auth/signup" className="w-full">
+                                        <Button
+                                            size="lg"
+                                            className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                        >
+                                            Sign up to Book
+                                        </Button>
+                                    </Link>
+                                    <Link href="/auth/signup" className="w-full">
+                                        <Button
+                                            variant="outline"
+                                            size="lg"
+                                            className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12"
+                                        >
+                                            Sign up to Message
+                                        </Button>
+                                    </Link>
+                                    <p className="text-xs text-center text-neutral-500 pt-2">
+                                        Already have an account? <Link href="/auth/login" className="text-primary hover:underline font-medium">Log in</Link>
+                                    </p>
+                                </>
+                            )}
                         </div>
 
-                        <div className="text-center">
-                            <p className="text-xs text-neutral-400">
-                                You won&apos;t be charged until the booking is confirmed.
-                            </p>
-                        </div>
+                        {user && (
+                            <div className="text-center">
+                                <p className="text-xs text-neutral-400">
+                                    You won&apos;t be charged until the booking is confirmed.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
