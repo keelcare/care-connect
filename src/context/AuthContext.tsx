@@ -27,17 +27,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
+            console.log('AuthContext: No token found');
             setLoading(false);
-            return;
+            return null;
         }
 
         try {
+            console.log('AuthContext: Verifying token...');
             const userData = await api.users.me();
+            console.log('AuthContext: User verified', userData.email);
             setUser(userData);
-        } catch (error) {
-            console.error('Auth check failed:', error);
-            localStorage.removeItem('token');
-            setUser(null);
+            return userData;
+        } catch (error: any) {
+            console.error('AuthContext: Auth check failed:', error);
+            // Only remove token if it's an auth error (401/403)
+            if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('Unauthorized')) {
+                console.log('AuthContext: Invalid token, removing');
+                localStorage.removeItem('token');
+                setUser(null);
+            }
+            // For other errors (network, server), keep the token but maybe set user to null? 
+            // Or keep the previous user?
+            // For now, let's set user to null but keep token so we can retry?
+            // Actually, if we set user to null, the app thinks we are logged out.
+            // But we shouldn't log out on network error.
+
+            // If it's NOT a 401, we might want to keep the user logged in if we had one?
+            // But this is checkAuth, so we don't have a user yet.
+
+            if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('Unauthorized')) {
+                setUser(null);
+            }
+            return null;
         } finally {
             setLoading(false);
         }
@@ -45,8 +66,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (token: string) => {
         localStorage.setItem('token', token);
-        await checkAuth();
-        router.push('/dashboard');
+        const userData = await checkAuth();
+
+        console.log('Logged in user:', userData); // Debugging
+
+        if (userData?.role === 'nanny') {
+            router.push('/dashboard');
+        } else {
+            // Default to browse for parents and others
+            router.push('/browse');
+        }
     };
 
     const logout = () => {
