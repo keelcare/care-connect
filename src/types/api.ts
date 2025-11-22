@@ -159,3 +159,133 @@ export interface NearbySearchResponse<T> {
     radius: string;
     data: T[];
 }
+
+export type RequestStatus = 'PENDING' | 'ASSIGNED' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+export interface ServiceRequest {
+    id: string;
+    parentId: string;
+    nannyId?: string;
+    status: RequestStatus;
+    date: string;
+    startTime: string;
+    endTime?: string;
+    durationHours: number;
+    numChildren: number;
+    childrenAges: number[];
+    specialRequirements?: string;
+    location: {
+        address: string;
+        lat: number;
+        lng: number;
+    };
+    totalAmount?: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateServiceRequestDto {
+    date: string;
+    start_time: string;
+    duration_hours: number;
+    num_children: number;
+    children_ages: number[];
+    special_requirements?: string;
+    address?: string; // Optional if using profile address
+}
+
+// Booking Types
+export type BookingStatus = 'REQUESTED' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+export interface Booking {
+    id: string;
+    job_id: string;
+    parent_id: string;
+    nanny_id: string;
+    status: BookingStatus;
+    start_time: string;
+    end_time?: string;
+    cancellation_reason?: string;
+    created_at: string;
+    updated_at: string;
+    job?: Job;
+    parent?: User;
+    nanny?: User;
+}
+
+export interface CreateBookingDto {
+    jobId: string;
+    nannyId: string;
+}
+
+export interface CancelBookingDto {
+    reason: string;
+}
+
+// Chat/Message Types
+export interface Chat {
+    id: string;
+    booking_id: string;
+    created_at: string;
+    updated_at: string;
+    booking?: Booking;
+}
+
+export interface Message {
+    id: string;
+    chat_id: string;
+    sender_id: string;
+    content: string;
+    attachment_url?: string;
+    is_read: boolean;
+    created_at: string;
+    sender?: User;
+}
+
+export interface SendMessageDto {
+    content: string;
+    attachmentUrl?: string;
+}
+
+export interface CreateChatDto {
+    bookingId: string;
+}
+
+// Review Types
+export interface Review {
+    id: string;
+    booking_id: string;
+    reviewer_id: string;
+    reviewee_id: string;
+    rating: number;
+    comment?: string;
+    created_at: string;
+    updated_at: string;
+    reviewer?: User;
+    reviewee?: User;
+    booking?: Booking;
+}
+
+export interface CreateReviewDto {
+    bookingId: string;
+    rating: number;
+    comment?: string;
+}
+
+// Notification Types
+export type NotificationType = 'email' | 'push' | 'sms';
+
+export interface SendNotificationDto {
+    type: NotificationType;
+    to: string;
+    subject?: string;
+    content: string;
+}
+
+// Admin Types
+export interface AdminStats {
+    totalUsers: number;
+    totalBookings: number;
+    activeBookings: number;
+}
+

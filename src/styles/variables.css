@@ -3,29 +3,29 @@
      Color System
      ------------------------- */
 
-    /* Primary Palette - Trust Blue */
-    --color-primary-50: #E3F2FD;
-    --color-primary-100: #BBDEFB;
-    --color-primary-200: #90CAF9;
-    --color-primary-300: #64B5F6;
-    --color-primary-400: #42A5F5;
-    --color-primary-500: #2196F3;
-    --color-primary-600: #1E88E5;
-    --color-primary-700: #1976D2;
-    --color-primary-800: #1565C0;
-    --color-primary-900: #0D47A1;
+    /* Primary Palette - Vibrant Orange (Warm & Welcoming) */
+    --color-primary-50: #FFF4E6;
+    --color-primary-100: #FFE8CC;
+    --color-primary-200: #FFD199;
+    --color-primary-300: #FFBA66;
+    --color-primary-400: #FFA333;
+    --color-primary-500: #FF8C00;
+    --color-primary-600: #E67E00;
+    --color-primary-700: #CC7000;
+    --color-primary-800: #B36200;
+    --color-primary-900: #995400;
 
-    /* Secondary Palette - Warmth Coral */
-    --color-secondary-50: #FFF3E0;
-    --color-secondary-100: #FFE0B2;
-    --color-secondary-200: #FFCC80;
-    --color-secondary-300: #FFB74D;
-    --color-secondary-400: #FFA726;
-    --color-secondary-500: #FF9800;
-    --color-secondary-600: #FB8C00;
-    --color-secondary-700: #F57C00;
-    --color-secondary-800: #EF6C00;
-    --color-secondary-900: #E65100;
+    /* Secondary Palette - Playful Purple */
+    --color-secondary-50: #F3E5F5;
+    --color-secondary-100: #E1BEE7;
+    --color-secondary-200: #CE93D8;
+    --color-secondary-300: #BA68C8;
+    --color-secondary-400: #AB47BC;
+    --color-secondary-500: #9C27B0;
+    --color-secondary-600: #8E24AA;
+    --color-secondary-700: #7B1FA2;
+    --color-secondary-800: #6A1B9A;
+    --color-secondary-900: #4A148C;
 
     /* Semantic Colors */
     --color-success-50: #E8F5E9;
@@ -56,11 +56,49 @@
     --color-gray-800: #424242;
     --color-gray-900: #212121;
 
+    /* Accent Colors */
+    --color-accent-50: #FFE8F0;
+    --color-accent-100: #FFCCE0;
+    --color-accent-200: #FF99C2;
+    --color-accent-300: #FF66A3;
+    --color-accent-400: #FF3385;
+    --color-accent-500: #FF0066;
+    --color-accent-600: #E60059;
+    --color-accent-700: #CC004D;
+    --color-accent-800: #B30040;
+    --color-accent-900: #990033;
+
+    /* Teal Colors */
+    --color-teal-50: #E0F7FA;
+    --color-teal-100: #B2EBF2;
+    --color-teal-200: #80DEEA;
+    --color-teal-300: #4DD0E1;
+    --color-teal-400: #26C6DA;
+    --color-teal-500: #00BCD4;
+    --color-teal-600: #00ACC1;
+    --color-teal-700: #0097A7;
+    --color-teal-800: #00838F;
+    --color-teal-900: #006064;
+
+    /* Sunny Yellow */
+    --color-sunny-50: #FFFDE7;
+    --color-sunny-100: #FFF9C4;
+    --color-sunny-200: #FFF59D;
+    --color-sunny-300: #FFF176;
+    --color-sunny-400: #FFEE58;
+    --color-sunny-500: #FFEB3B;
+    --color-sunny-600: #FDD835;
+    --color-sunny-700: #FBC02D;
+    --color-sunny-800: #F9A825;
+    --color-sunny-900: #F57F17;
+
     /* Gradients */
-    --gradient-trust: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-    --gradient-warmth: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    --gradient-primary: linear-gradient(135deg, #FF8C00 0%, #FF6B00 100%);
+    --gradient-secondary: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+    --gradient-accent: linear-gradient(135deg, #FF0066 0%, #CC004D 100%);
+    --gradient-rainbow: linear-gradient(135deg, #FF8C00 0%, #9C27B0 50%, #00BCD4 100%);
+    --gradient-warm: linear-gradient(135deg, #FFEB3B 0%, #FF8C00 50%, #FF0066 100%);
     --gradient-success: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-    --gradient-premium: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
 
     /* -------------------------
      Spacing System (8pt Grid)

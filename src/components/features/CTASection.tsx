@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import styles from './CTASection.module.css';
 
 export const CTASection: React.FC = () => {

@@ -3,11 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { MapPin, Star, Clock, ShieldCheck } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { MapPin, Star, Clock, ShieldCheck, Calendar, Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
-import styles from './page.module.css';
 
 // Mock data for demo
 const MOCK_USERS = {
@@ -75,6 +74,7 @@ export default function CaregiverProfilePage() {
     const [caregiver, setCaregiver] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'about' | 'reviews' | 'availability'>('about');
 
     useEffect(() => {
         const fetchCaregiver = async () => {
@@ -108,107 +108,182 @@ export default function CaregiverProfilePage() {
         fetchCaregiver();
     }, [params.id]);
 
-
-
-    if (loading) return <div className={styles.loading}>Loading profile...</div>;
-    if (error) return <div className={styles.error}>{error}</div>;
-    if (!caregiver) return <div className={styles.error}>Caregiver not found</div>;
+    if (loading) return <div className="flex items-center justify-center min-h-[50vh] text-neutral-500">Loading profile...</div>;
+    if (error) return <div className="flex items-center justify-center min-h-[50vh] text-red-500">{error}</div>;
+    if (!caregiver) return <div className="flex items-center justify-center min-h-[50vh] text-neutral-500">Caregiver not found</div>;
 
     const { profiles, nanny_details } = caregiver;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.profileHeader}>
-                <div className={styles.imageContainer}>
-                    <Image
-                        src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80"}
-                        alt={`${profiles?.first_name} ${profiles?.last_name}`}
-                        fill
-                        className={styles.profileImage}
-                    />
+        <div className="max-w-6xl mx-auto space-y-8 pb-20">
+            {/* Header Section */}
+            <div className="relative mb-20">
+                <div className="h-48 w-full bg-gradient-to-r from-teal-100 to-pink-100 rounded-b-[40px] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
                 </div>
-
-                <div className={styles.headerContent}>
-                    <div className={styles.nameRow}>
-                        <div>
-                            <h1 className={styles.name}>{profiles?.first_name} {profiles?.last_name}</h1>
-                            <div className={styles.badges}>
-                                <span className={`${styles.badge} ${styles.roleBadge}`}>Caregiver</span>
-                                {caregiver.is_verified && (
-                                    <span className={`${styles.badge} ${styles.verifiedBadge}`}>
-                                        <ShieldCheck size={12} style={{ display: 'inline', marginRight: 4 }} />
-                                        Verified
-                                    </span>
-                                )}
+                <div className="absolute -bottom-16 left-8 md:left-12 flex items-end gap-6">
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-[32px] border-4 border-white shadow-strong overflow-hidden bg-white">
+                        <Image
+                            src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80"}
+                            alt={`${profiles?.first_name} ${profiles?.last_name}`}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 font-display mb-2">
+                            {profiles?.first_name} {profiles?.last_name}
+                        </h1>
+                        <div className="flex flex-wrap items-center gap-3">
+                            {caregiver.is_verified && (
+                                <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium flex items-center gap-1 border border-teal-100">
+                                    <ShieldCheck size={14} />
+                                    Verified
+                                </span>
+                            )}
+                            <div className="flex items-center gap-1 text-neutral-600 text-sm bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm">
+                                <MapPin size={16} />
+                                {profiles?.address || 'Location hidden'}
                             </div>
                         </div>
-                        <div className={styles.rate}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
-                                ₹{nanny_details?.hourly_rate || 20}
-                            </span>
-                            <span style={{ color: 'var(--color-neutral-500)' }}>/hr</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.statsRow}>
-                        <div className={styles.statItem}>
-                            <MapPin size={18} />
-                            <span>{profiles?.address || 'Location hidden'}</span>
-                        </div>
-                        <div className={styles.statItem}>
-                            <Star size={18} fill="currentColor" color="var(--color-semantic-warning)" />
-                            <span>4.9 (12 reviews)</span>
-                        </div>
-                        <div className={styles.statItem}>
-                            <Clock size={18} />
-                            <span>{nanny_details?.experience_years || 0} Years Exp.</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.actions}>
-                        <Button variant="primary" size="lg" style={{ flex: 1 }}>
-                            Request Booking
-                        </Button>
-                        <Button variant="secondary" size="lg" style={{ flex: 1 }}>
-                            Message
-                        </Button>
                     </div>
                 </div>
             </div>
 
-            <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>About Me</h2>
-                <p className={styles.bio}>
-                    {nanny_details?.bio || "No bio provided."}
-                </p>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 md:px-8">
+                {/* Left Column - Main Content */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-500 mb-2">
+                                <Star size={20} fill="currentColor" />
+                            </div>
+                            <div className="font-bold text-neutral-900">4.9</div>
+                            <div className="text-xs text-neutral-500">Rating</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-2">
+                                <Clock size={20} />
+                            </div>
+                            <div className="font-bold text-neutral-900">{nanny_details?.experience_years || 0}y</div>
+                            <div className="text-xs text-neutral-500">Experience</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 mb-2">
+                                <Award size={20} />
+                            </div>
+                            <div className="font-bold text-neutral-900">{nanny_details?.skills?.length || 0}</div>
+                            <div className="text-xs text-neutral-500">Skills</div>
+                        </div>
+                    </div>
 
-            <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Skills & Certifications</h2>
-                <div className={styles.skillsList}>
-                    {nanny_details?.skills?.map((skill, index) => (
-                        <span key={index} className={styles.skillTag}>
-                            {skill}
-                        </span>
-                    )) || <span style={{ color: 'var(--color-neutral-500)' }}>No skills listed</span>}
-                </div>
-            </div>
+                    {/* Tabs Navigation */}
+                    <div className="flex border-b border-neutral-200">
+                        <button
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'about' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            onClick={() => setActiveTab('about')}
+                        >
+                            About
+                            {activeTab === 'about' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                        <button
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'reviews' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            onClick={() => setActiveTab('reviews')}
+                        >
+                            Reviews
+                            {activeTab === 'reviews' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                        <button
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'availability' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            onClick={() => setActiveTab('availability')}
+                        >
+                            Availability
+                            {activeTab === 'availability' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                    </div>
 
-            <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Availability</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
-                    {nanny_details?.availability_schedule ? (
-                        Object.entries(nanny_details.availability_schedule).map(([day, slots]) => (
-                            <div key={day} style={{ padding: '0.5rem', border: '1px solid var(--color-neutral-200)', borderRadius: 'var(--radius-md)' }}>
-                                <div style={{ fontWeight: 600, textTransform: 'capitalize', marginBottom: '0.25rem' }}>{day}</div>
-                                <div style={{ fontSize: '0.875rem', color: 'var(--color-neutral-600)' }}>
-                                    {Array.isArray(slots) && slots.length > 0 ? slots.join(', ') : 'Unavailable'}
+                    {/* Tab Content */}
+                    <div className="min-h-[300px]">
+                        {activeTab === 'about' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                <section>
+                                    <h3 className="text-lg font-bold text-neutral-900 mb-3">About Me</h3>
+                                    <p className="text-neutral-600 leading-relaxed">
+                                        {nanny_details?.bio || "No bio provided."}
+                                    </p>
+                                </section>
+
+                                <section>
+                                    <h3 className="text-lg font-bold text-neutral-900 mb-3">Skills & Certifications</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {nanny_details?.skills?.map((skill, index) => (
+                                            <span key={index} className="px-4 py-2 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-700 font-medium text-sm">
+                                                {skill}
+                                            </span>
+                                        )) || <span className="text-neutral-500">No skills listed</span>}
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'reviews' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                <div className="text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
+                                    <p className="text-neutral-500">Reviews coming soon</p>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <p style={{ color: 'var(--color-neutral-500)' }}>Contact for availability</p>
-                    )}
+                        )}
+
+                        {activeTab === 'availability' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                <div className="space-y-3">
+                                    {nanny_details?.availability_schedule ? (
+                                        Object.entries(nanny_details.availability_schedule).map(([day, slots]) => (
+                                            <div key={day} className="p-4 border border-neutral-100 rounded-xl bg-white flex items-center justify-between">
+                                                <div className="font-semibold text-neutral-900 capitalize">{day}</div>
+                                                <div className="text-sm font-medium text-primary bg-primary-50 px-3 py-1 rounded-lg">
+                                                    {Array.isArray(slots) && slots.length > 0 ? slots.join(', ') : 'Unavailable'}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-neutral-500">Contact for availability</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right Column - Sticky Booking Card */}
+                <div className="lg:col-span-1">
+                    <div className="sticky top-24 bg-white rounded-[32px] shadow-strong border border-neutral-100 p-6 space-y-6">
+                        <div className="flex items-end justify-between border-b border-neutral-100 pb-6">
+                            <div>
+                                <p className="text-neutral-500 text-sm mb-1">Hourly Rate</p>
+                                <div className="text-3xl font-bold text-neutral-900">
+                                    ₹{nanny_details?.hourly_rate || 20}
+                                </div>
+                            </div>
+                            <div className="text-neutral-500 text-sm mb-1">per hour</div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <Button size="lg" className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium">
+                                Request Booking
+                            </Button>
+                            <Button variant="outline" size="lg" className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12">
+                                Message
+                            </Button>
+                        </div>
+
+                        <div className="text-center">
+                            <p className="text-xs text-neutral-400">
+                                You won&apos;t be charged until the booking is confirmed.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

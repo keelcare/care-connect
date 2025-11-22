@@ -4,97 +4,133 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, ShieldCheck, Edit } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
 export default function ProfilePage() {
     const { user, loading } = useAuth();
 
-    if (loading) return <div style={{ padding: '2rem' }}>Loading profile...</div>;
-    if (!user) return <div style={{ padding: '2rem' }}>Please log in to view your profile.</div>;
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-900 font-display">My Profile</h1>
+                </div>
+                <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-900 font-display">My Profile</h1>
+                </div>
+                <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
+                    <p className="text-red-600 mb-4">Please log in to view your profile.</p>
+                    <Link href="/auth/login">
+                        <Button>Log In</Button>
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const { profiles, nanny_details } = user;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>My Profile</h1>
+        <div className="max-w-4xl mx-auto space-y-8">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold text-neutral-900 font-display">My Profile</h1>
                 <Link href="/dashboard/settings">
-                    <Button variant="secondary" size="sm">
-                        <Edit size={16} style={{ marginRight: 8 }} /> Edit Profile
+                    <Button variant="outline" size="sm" className="rounded-xl border-neutral-200">
+                        <Edit size={16} className="mr-2" /> Edit Profile
                     </Button>
                 </Link>
             </div>
 
-            <div className={styles.profileCard}>
-                <div className={styles.imageSection}>
-                    <div className={styles.imageContainer}>
-                        <Image
-                            src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                            alt="Profile"
-                            fill
-                            className={styles.profileImage}
-                        />
-                    </div>
-                    <div className={styles.roleTag}>
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </div>
-                </div>
-
-                <div className={styles.infoSection}>
-                    <h2 className={styles.name}>{profiles?.first_name} {profiles?.last_name}</h2>
-
-                    <div className={styles.metaRow}>
-                        <div className={styles.metaItem}>
-                            <MapPin size={16} />
-                            <span>{profiles?.address || 'No address set'}</span>
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft overflow-hidden">
+                <div className="h-32 bg-gradient-to-r from-primary-100 to-secondary-100"></div>
+                <div className="px-8 pb-8 md:px-10 md:pb-10">
+                    <div className="relative flex flex-col md:flex-row gap-6 md:gap-8 -mt-12 mb-6">
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-white">
+                                <Image
+                                    src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="absolute bottom-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
+                                {user.role}
+                            </div>
                         </div>
-                        <div className={styles.metaItem}>
-                            <ShieldCheck size={16} color={user.is_verified ? "var(--color-semantic-success)" : "var(--color-neutral-400)"} />
-                            <span>{user.is_verified ? 'Verified Account' : 'Unverified'}</span>
+
+                        <div className="pt-2 md:pt-14 flex-1">
+                            <h2 className="text-2xl font-bold text-neutral-900 mb-2">
+                                {profiles?.first_name} {profiles?.last_name}
+                            </h2>
+                            <div className="flex flex-wrap gap-4 text-sm text-neutral-600">
+                                <div className="flex items-center gap-1.5">
+                                    <MapPin size={16} className="text-neutral-400" />
+                                    <span>{profiles?.address || 'No address set'}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <ShieldCheck size={16} className={user.is_verified ? "text-green-500" : "text-neutral-400"} />
+                                    <span>{user.is_verified ? 'Verified Account' : 'Unverified'}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {user.role === 'nanny' && (
-                        <>
-                            <div className={styles.statsRow}>
-                                <div className={styles.stat}>
-                                    <span className={styles.statValue}>₹{nanny_details?.hourly_rate || 0}</span>
-                                    <span className={styles.statLabel}>/hr</span>
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-3 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-primary mb-1">₹{nanny_details?.hourly_rate || 0}</div>
+                                    <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">Hourly Rate</div>
                                 </div>
-                                <div className={styles.stat}>
-                                    <span className={styles.statValue}>{nanny_details?.experience_years || 0}</span>
-                                    <span className={styles.statLabel}>Years Exp.</span>
+                                <div className="text-center border-l border-neutral-200">
+                                    <div className="text-2xl font-bold text-primary mb-1">{nanny_details?.experience_years || 0}</div>
+                                    <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">Years Exp.</div>
                                 </div>
-                                <div className={styles.stat}>
-                                    <span className={styles.statValue}>4.9</span>
-                                    <span className={styles.statLabel}>Rating</span>
+                                <div className="text-center border-l border-neutral-200">
+                                    <div className="text-2xl font-bold text-primary mb-1">4.9</div>
+                                    <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">Rating</div>
                                 </div>
                             </div>
 
-                            <div className={styles.bioSection}>
-                                <h3>About</h3>
-                                <p>{nanny_details?.bio || 'No bio provided yet.'}</p>
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-neutral-900">About</h3>
+                                <p className="text-neutral-600 leading-relaxed">
+                                    {nanny_details?.bio || 'No bio provided yet.'}
+                                </p>
                             </div>
 
-                            <div className={styles.skillsSection}>
-                                <h3>Skills</h3>
-                                <div className={styles.skillsList}>
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-neutral-900">Skills</h3>
+                                <div className="flex flex-wrap gap-2">
                                     {nanny_details?.skills?.map((skill, i) => (
-                                        <span key={i} className={styles.skillTag}>{skill}</span>
-                                    )) || <span style={{ color: 'var(--color-neutral-500)' }}>No skills listed</span>}
+                                        <span key={i} className="px-3 py-1.5 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
+                                            {skill}
+                                        </span>
+                                    )) || <span className="text-neutral-500 italic">No skills listed</span>}
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: '2rem' }}>
+                            <div className="pt-4 border-t border-neutral-100">
                                 <Link href={`/caregiver/${user.id}`}>
-                                    <Button variant="primary" style={{ width: '100%' }}>
+                                    <Button className="w-full rounded-xl shadow-lg hover:shadow-xl transition-all">
                                         View Public Profile
                                     </Button>
                                 </Link>
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

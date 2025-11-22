@@ -3,6 +3,7 @@
     margin: 0 auto;
     padding: var(--space-6);
     min-height: calc(100vh - 72px);
+    background: linear-gradient(180deg, #FFF4E6 0%, #FFFFFF 100%);
 }
 
 .header {
@@ -55,8 +56,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-md);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-full);
     background: white;
     color: var(--color-gray-600);
     cursor: pointer;
@@ -66,12 +67,14 @@
 .pageBtn:hover {
     border-color: var(--color-primary-500);
     color: var(--color-primary-500);
+    transform: scale(1.1);
 }
 
 .pageBtn.active {
-    background-color: var(--color-primary-500);
+    background: var(--gradient-primary);
     color: white;
-    border-color: var(--color-primary-500);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
 }
 
 .mobileFilterBtn {

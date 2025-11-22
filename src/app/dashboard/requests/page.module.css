@@ -1,0 +1,136 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-neutral-900);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--color-neutral-600);
+}
+
+.loading,
+.error {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-neutral-600);
+}
+
+.error {
+    color: var(--color-semantic-error);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: var(--color-neutral-50);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--color-neutral-300);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: white;
+    border: 1px solid var(--color-neutral-200);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-200);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.statusBadge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.date {
+    font-size: 0.875rem;
+    color: var(--color-neutral-500);
+}
+
+.cardContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-neutral-700);
+    font-size: 0.9375rem;
+}
+
+.infoRow svg {
+    color: var(--color-neutral-400);
+    flex-shrink: 0;
+}
+
+.address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-neutral-100);
+    font-size: 0.875rem;
+    color: var(--color-neutral-600);
+}
+
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+}

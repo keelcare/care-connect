@@ -33,15 +33,16 @@
     font-size: 16px;
     color: var(--color-gray-900);
     background: white;
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
     outline: none;
 }
 
 .input:focus {
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 4px var(--color-primary-50);
+    box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
+    transform: translateY(-1px);
 }
 
 .input::placeholder {

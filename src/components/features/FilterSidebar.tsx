@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Toggle } from '@/components/ui/Toggle';
 import { PriceRangeSlider } from '@/components/ui/PriceRangeSlider';
-import styles from './FilterSidebar.module.css';
 
 export const FilterSidebar: React.FC = () => {
     const [services, setServices] = useState({
@@ -24,12 +23,12 @@ export const FilterSidebar: React.FC = () => {
     };
 
     return (
-        <aside className={styles.sidebar}>
-            <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                    <h3 className={styles.title}>Service Type</h3>
+        <aside className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-8">
+            <div>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-neutral-900">Service Type</h3>
                     <button
-                        className={styles.clearBtn}
+                        className="text-xs font-medium text-primary hover:text-primary-600 transition-colors"
                         onClick={() => setServices({
                             childCare: false,
                             seniorCare: false,
@@ -42,7 +41,7 @@ export const FilterSidebar: React.FC = () => {
                         Clear
                     </button>
                 </div>
-                <div className={styles.group}>
+                <div className="space-y-3">
                     <Checkbox
                         label="Child Care"
                         checked={services.childCare}
@@ -76,10 +75,10 @@ export const FilterSidebar: React.FC = () => {
                 </div>
             </div>
 
-            <hr className={styles.divider} />
+            <div className="h-px bg-neutral-100"></div>
 
-            <div className={styles.section}>
-                <h3 className={styles.title}>Hourly Rate</h3>
+            <div>
+                <h3 className="font-bold text-neutral-900 mb-4">Hourly Rate</h3>
                 <PriceRangeSlider
                     min={10}
                     max={100}
@@ -89,10 +88,10 @@ export const FilterSidebar: React.FC = () => {
                 />
             </div>
 
-            <hr className={styles.divider} />
+            <div className="h-px bg-neutral-100"></div>
 
-            <div className={styles.section}>
-                <h3 className={styles.title}>Verification</h3>
+            <div>
+                <h3 className="font-bold text-neutral-900 mb-4">Verification</h3>
                 <Toggle
                     label="Background Checked Only"
                     checked={verifiedOnly}

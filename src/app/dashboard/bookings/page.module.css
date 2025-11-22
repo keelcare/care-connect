@@ -1,5 +1,6 @@
 .container {
-    padding: var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .header {
@@ -7,120 +8,49 @@
 }
 
 .title {
-    font-family: var(--font-family-heading);
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--color-neutral-900);
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: hsl(var(--neutral-900));
     margin-bottom: var(--space-2);
 }
 
 .subtitle {
-    color: var(--color-neutral-600);
+    font-size: 1rem;
+    color: hsl(var(--neutral-600));
 }
 
-.bookingsList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+.bookingsGrid {
+    display: grid;
+    gap: var(--space-6);
 }
 
-.bookingCard {
-    background: white;
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid var(--color-neutral-200);
-}
-
-.bookingInfo {
-    display: flex;
-    gap: var(--space-4);
-    align-items: center;
-}
-
-.dateBox {
+.loadingState,
+.errorState,
+.emptyState {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-primary-50);
-    color: var(--color-primary-700);
-    padding: var(--space-3);
-    border-radius: var(--radius-md);
-    min-width: 80px;
-}
-
-.day {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    line-height: 1;
-}
-
-.month {
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    font-weight: 600;
-}
-
-.details {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.serviceTitle {
-    font-weight: 600;
-    color: var(--color-neutral-900);
-    font-size: var(--text-lg);
-}
-
-.provider {
-    color: var(--color-neutral-600);
-}
-
-.statusBadge {
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    text-transform: capitalize;
-}
-
-.status_confirmed {
-    background-color: var(--color-semantic-success-light);
-    color: var(--color-semantic-success);
-}
-
-.status_pending {
-    background-color: var(--color-semantic-warning-light);
-    color: var(--color-semantic-warning);
-}
-
-.status_cancelled {
-    background-color: var(--color-semantic-error-light);
-    color: var(--color-semantic-error);
-}
-
-.emptyState {
+    padding: var(--space-12) var(--space-6);
     text-align: center;
-    padding: var(--space-12);
     background: white;
-    border-radius: var(--radius-lg);
-    border: 1px dashed var(--color-neutral-300);
-    color: var(--color-neutral-600);
+    border-radius: var(--radius-xl);
+    border: 1px solid hsl(var(--neutral-200));
+}
+
+.errorState p {
+    color: hsl(var(--error-600));
+    margin-bottom: var(--space-4);
+    font-size: 0.9375rem;
+}
+
+.emptyState p {
+    color: hsl(var(--neutral-500));
+    font-size: 0.9375rem;
 }
 
 @media (max-width: 640px) {
-    .bookingCard {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-4);
-    }
-
-    .statusBadge {
-        align-self: flex-start;
+    .title {
+        font-size: 1.5rem;
     }
 }

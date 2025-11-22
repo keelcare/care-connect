@@ -6,35 +6,53 @@
 }
 
 .roleCard {
-    border: 2px solid var(--color-gray-200);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
+    border: 3px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: var(--space-2);
+    background: white;
+    position: relative;
 }
 
 .roleCard:hover {
-    border-color: var(--color-primary-200);
-    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-400);
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.05), rgba(255, 140, 0, 0.1));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.2);
 }
 
 .roleCard.selected {
-    border-color: var(--color-primary-500);
-    background-color: var(--color-primary-50);
+    border-color: transparent;
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+    transform: scale(1.05);
 }
 
 .roleIcon {
     color: var(--color-gray-400);
-    transition: color var(--transition-fast);
+    transition: all var(--transition-fast);
+}
+
+.roleCard:hover .roleIcon {
+    color: var(--color-primary-500);
+    transform: scale(1.1);
 }
 
 .roleCard.selected .roleIcon {
-    color: var(--color-primary-500);
+    color: white;
+    transform: scale(1.15);
+}
+
+.roleCard.selected .roleTitle,
+.roleCard.selected .roleDescription {
+    color: white;
 }
 
 .roleTitle {
@@ -80,4 +98,56 @@
     margin-top: var(--space-6);
     font-size: 14px;
     color: var(--color-gray-600);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--color-gray-500);
+    font-size: 14px;
+    margin: var(--space-6) 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.divider::before {
+    margin-right: var(--space-4);
+}
+
+.divider::after {
+    margin-left: var(--space-4);
+}
+
+.socialButtons {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.socialBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    background: white;
+    color: var(--color-gray-700);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.socialBtn:hover {
+    background: linear-gradient(135deg, #F5F5F5, #FAFAFA);
+    border-color: var(--color-primary-400);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

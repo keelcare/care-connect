@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { FilterSidebar } from '@/components/features/FilterSidebar';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { Modal } from '@/components/ui/Modal';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
-import styles from './page.module.css';
 
 export default function SearchPage() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -165,51 +164,56 @@ export default function SearchPage() {
 
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <form className={styles.searchBar} onSubmit={handleSearch}>
+        <div className="space-y-8 min-h-screen bg-neutral-50 p-4 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[24px] shadow-soft border border-neutral-100 sticky top-24 z-10">
+                <form className="flex-1 w-full" onSubmit={handleSearch}>
                     <SearchInput
                         placeholder="Search by name, location, or skills..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onClear={() => setSearchQuery('')}
+                        className="w-full"
                     />
                 </form>
-                <div className={styles.stats}>
+                <div className="text-sm text-neutral-500 whitespace-nowrap">
                     {loading ? 'Loading...' : `Showing ${filteredNannies.length} of ${nannies.length} caregivers`}
                 </div>
             </div>
 
-            <div className={styles.mobileFilterBtn}>
-                <Button variant="secondary" onClick={() => setIsFilterOpen(true)} style={{ width: '100%' }}>
-                    <SlidersHorizontal size={16} style={{ marginRight: 8 }} /> Filters
+            <div className="lg:hidden">
+                <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="w-full rounded-full bg-white shadow-sm flex items-center justify-center gap-2 py-6">
+                    <SlidersHorizontal size={16} /> Filters
                 </Button>
             </div>
 
-            <div className={styles.content}>
-                <div className={styles.sidebar}>
+            <div className="flex gap-8 items-start">
+                <div className="hidden lg:block w-80 flex-shrink-0 sticky top-48">
                     <FilterSidebar />
                 </div>
 
-                <div className={styles.results}>
-                    {error && <div style={{ color: 'red', padding: '20px' }}>{error}</div>}
+                <div className="flex-1">
+                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>}
 
                     {loading ? (
-                        <div style={{ padding: '40px', textAlign: 'center' }}>Loading...</div>
+                        <div className="text-center py-12 text-neutral-500">Loading...</div>
                     ) : (
                         <>
                             {filteredNannies.length === 0 && !error && (
-                                <div className={styles.noResults}>
-                                    <p>No caregivers found{searchQuery ? ' matching your search' : ''}.</p>
-                                    <Button variant="primary" onClick={() => {
+                                <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft flex flex-col items-center justify-center">
+                                    <div className="w-32 h-32 bg-neutral-50 rounded-full flex items-center justify-center mb-6">
+                                        <SlidersHorizontal size={48} className="text-neutral-300" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No matches found</h3>
+                                    <p className="text-neutral-500 mb-6 max-w-md">We couldn&apos;t find any caregivers matching your search. Try adjusting your filters or search terms.</p>
+                                    <Button variant="default" onClick={() => {
                                         setNannies(MOCK_NANNIES);
                                         setFilteredNannies(MOCK_NANNIES);
-                                    }}>
+                                    }} className="rounded-full px-8 bg-primary hover:bg-primary-600">
                                         Load Demo Data
                                     </Button>
                                 </div>
                             )}
-                            <div className={styles.resultsGrid}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {filteredNannies.map((nanny) => (
                                     <ProfileCard
                                         key={nanny.id}
@@ -231,10 +235,10 @@ export default function SearchPage() {
                     )}
 
                     {filteredNannies.length > 0 && (
-                        <div className={styles.pagination}>
-                            <button className={styles.pageBtn} disabled><ChevronLeft size={20} /></button>
-                            <button className={`${styles.pageBtn} ${styles.active}`}>1</button>
-                            <button className={styles.pageBtn}><ChevronRight size={20} /></button>
+                        <div className="flex justify-center gap-2 mt-12">
+                            <button className="p-2 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 disabled:opacity-50" disabled><ChevronLeft size={20} /></button>
+                            <button className="w-10 h-10 rounded-lg bg-primary text-white font-medium shadow-md">1</button>
+                            <button className="p-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"><ChevronRight size={20} /></button>
                         </div>
                     )}
                 </div>
@@ -246,9 +250,9 @@ export default function SearchPage() {
                 onClose={() => setIsFilterOpen(false)}
                 title="Filters"
                 footer={
-                    <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
-                        <Button variant="secondary" onClick={() => setIsFilterOpen(false)} style={{ flex: 1 }}>Cancel</Button>
-                        <Button variant="primary" onClick={() => setIsFilterOpen(false)} style={{ flex: 1 }}>Apply</Button>
+                    <div className="flex gap-2 w-full">
+                        <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
+                        <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-primary hover:bg-primary-600 text-white">Apply</Button>
                     </div>
                 }
             >

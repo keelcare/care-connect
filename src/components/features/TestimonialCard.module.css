@@ -1,16 +1,28 @@
 .card {
     max-width: 500px;
-    border-radius: var(--radius-lg);
-    background: var(--color-gray-50);
+    border-radius: var(--radius-2xl);
+    background: white;
     padding: var(--space-8);
-    border-left: 4px solid var(--color-primary-500);
+    border: 3px solid transparent;
+    background-image: linear-gradient(white, white), var(--gradient-rainbow);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 8px 30px rgba(156, 39, 176, 0.15);
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(156, 39, 176, 0.25);
 }
 
 .quoteIcon {
-    color: var(--color-primary-300);
+    color: var(--color-secondary-400);
     margin-bottom: var(--space-4);
+    opacity: 0.6;
 }
 
 .quote {

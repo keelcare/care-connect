@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -77,120 +77,136 @@ export default function SettingsPage() {
         }
     };
 
-    if (loading) return <div className={styles.loading}>Loading settings...</div>;
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-900 font-display">Account Settings</h1>
+                </div>
+                <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Account Settings</h1>
-                <p className={styles.subtitle}>Manage your profile and account preferences</p>
+        <div className="max-w-3xl mx-auto space-y-8">
+            <div>
+                <h1 className="text-3xl font-bold text-neutral-900 font-display">Account Settings</h1>
+                <p className="text-neutral-500 mt-2 text-lg">Manage your profile and account preferences</p>
             </div>
 
             {message && (
-                <div className={message.type === 'success' ? styles.successMessage : styles.errorMessage}>
+                <div className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
+                        ? 'bg-green-50 border-green-100 text-green-700'
+                        : 'bg-red-50 border-red-100 text-red-700'
+                    }`}>
                     {message.text}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit}>
-                <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Personal Information</h2>
-                    <div className={styles.formGrid}>
-                        <Input
-                            label="First Name"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                        />
-                        <Input
-                            label="Last Name"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                        />
-                        <Input
-                            label="Phone Number"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                        />
-                        <div className={styles.fullWidth}>
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8 md:p-10 space-y-8">
+                    <div>
+                        <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">Personal Information</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Input
-                                label="Address"
-                                name="address"
-                                value={formData.address}
+                                label="First Name"
+                                name="firstName"
+                                value={formData.firstName}
                                 onChange={handleChange}
-                                helperText="This will be used to calculate distances for search results."
-                            />
-                        </div>
-                        <div className={styles.fullWidth}>
-                            <Input
-                                label="Profile Image URL"
-                                name="profileImageUrl"
-                                value={formData.profileImageUrl || ''}
-                                onChange={handleChange}
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {user?.role === 'nanny' && (
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Caregiver Profile</h2>
-                        <div className={styles.formGrid}>
-                            <Input
-                                label="Hourly Rate (₹)"
-                                name="hourlyRate"
-                                type="number"
-                                value={formData.hourlyRate?.toString()}
-                                onChange={handleChange}
+                                className="rounded-xl"
                             />
                             <Input
-                                label="Years of Experience"
-                                name="experienceYears"
-                                type="number"
-                                value={formData.experienceYears?.toString()}
+                                label="Last Name"
+                                name="lastName"
+                                value={formData.lastName}
                                 onChange={handleChange}
+                                className="rounded-xl"
                             />
-                            <div className={styles.fullWidth}>
+                            <Input
+                                label="Phone Number"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className="rounded-xl"
+                            />
+                            <div className="md:col-span-2">
                                 <Input
-                                    label="Skills (comma separated)"
-                                    name="skills"
-                                    value={formData.skills?.join(', ') || ''}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
-                                    placeholder="CPR, First Aid, Cooking"
+                                    label="Address"
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    helperText="This will be used to calculate distances for search results."
+                                    className="rounded-xl"
                                 />
                             </div>
-                            <div className={styles.fullWidth}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>Bio</label>
-                                <textarea
-                                    name="bio"
-                                    className="input" // Reusing global input class if available, or inline styles
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        borderRadius: 'var(--radius-md)',
-                                        border: '1px solid var(--color-neutral-300)',
-                                        minHeight: '120px',
-                                        fontFamily: 'inherit'
-                                    }}
-                                    value={formData.bio}
+                            <div className="md:col-span-2">
+                                <Input
+                                    label="Profile Image URL"
+                                    name="profileImageUrl"
+                                    value={formData.profileImageUrl || ''}
                                     onChange={handleChange}
-                                    placeholder="Tell parents about yourself..."
+                                    placeholder="https://example.com/image.jpg"
+                                    className="rounded-xl"
                                 />
                             </div>
                         </div>
                     </div>
-                )}
 
-                <div className={styles.actions}>
-                    <Button type="button" variant="secondary">
-                        Cancel
-                    </Button>
-                    <Button type="submit" variant="primary" isLoading={saving}>
-                        Save Changes
-                    </Button>
+                    {user?.role === 'nanny' && (
+                        <div>
+                            <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">Caregiver Profile</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Input
+                                    label="Hourly Rate (₹)"
+                                    name="hourlyRate"
+                                    type="number"
+                                    value={formData.hourlyRate?.toString()}
+                                    onChange={handleChange}
+                                    className="rounded-xl"
+                                />
+                                <Input
+                                    label="Years of Experience"
+                                    name="experienceYears"
+                                    type="number"
+                                    value={formData.experienceYears?.toString()}
+                                    onChange={handleChange}
+                                    className="rounded-xl"
+                                />
+                                <div className="md:col-span-2">
+                                    <Input
+                                        label="Skills (comma separated)"
+                                        name="skills"
+                                        value={formData.skills?.join(', ') || ''}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
+                                        placeholder="CPR, First Aid, Cooking"
+                                        className="rounded-xl"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-neutral-700 mb-2">Bio</label>
+                                    <textarea
+                                        name="bio"
+                                        className="w-full rounded-xl border-neutral-200 focus:border-primary focus:ring-primary min-h-[120px] p-3"
+                                        value={formData.bio}
+                                        onChange={handleChange}
+                                        placeholder="Tell parents about yourself..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-100">
+                        <Button type="button" variant="ghost" className="rounded-xl">
+                            Cancel
+                        </Button>
+                        <Button type="submit" className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all" disabled={saving}>
+                            {saving ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </div>
                 </div>
             </form>
         </div>

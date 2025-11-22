@@ -1,32 +1,38 @@
 .container {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: var(--space-6);
-    height: calc(100vh - 140px);
-    /* Adjust based on header/padding */
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    height: calc(100vh - 72px - 4rem);
     background: white;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
+    border: 1px solid hsl(var(--neutral-200));
     overflow: hidden;
 }
 
 .conversationList {
-    border-right: 1px solid var(--color-gray-200);
+    border-right: 1px solid hsl(var(--neutral-200));
     display: flex;
     flex-direction: column;
+    background: hsl(var(--neutral-50));
 }
 
 .listHeader {
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--color-gray-200);
+    padding: var(--space-6);
+    border-bottom: 1px solid hsl(var(--neutral-200));
+    background: white;
 }
 
-.search {
-    width: 100%;
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
+.listHeader h2 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: hsl(var(--neutral-900));
+    margin-bottom: var(--space-1);
+}
+
+.connectionStatus {
+    font-size: 0.75rem;
+    color: hsl(var(--warning-600));
+    font-weight: var(--font-weight-medium);
 }
 
 .conversations {
@@ -36,27 +42,43 @@
 
 .conversationItem {
     padding: var(--space-4);
-    border-bottom: 1px solid var(--color-gray-100);
+    border-bottom: 1px solid hsl(var(--neutral-200));
     cursor: pointer;
     transition: background-color var(--transition-fast);
     display: flex;
     gap: var(--space-3);
+    background: white;
 }
 
 .conversationItem:hover {
-    background-color: var(--color-gray-50);
+    background-color: hsl(var(--neutral-50));
 }
 
 .conversationItem.active {
-    background-color: var(--color-primary-50);
+    background-color: hsl(var(--primary-50));
+    border-left: 3px solid hsl(var(--primary));
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--color-gray-200);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background-color: hsl(var(--neutral-200));
     object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatarPlaceholder {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: hsl(var(--primary-100));
+    color: hsl(var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-semibold);
+    font-size: 1.125rem;
 }
 
 .conversationInfo {
@@ -71,19 +93,17 @@
 }
 
 .name {
-    font-size: 14px;
+    font-size: 0.9375rem;
     font-weight: var(--font-weight-semibold);
-    color: var(--color-gray-900);
-}
-
-.time {
-    font-size: 12px;
-    color: var(--color-gray-500);
+    color: hsl(var(--neutral-900));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .preview {
-    font-size: 13px;
-    color: var(--color-gray-600);
+    font-size: 0.8125rem;
+    color: hsl(var(--neutral-500));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -92,72 +112,127 @@
 .chatWindow {
     display: flex;
     flex-direction: column;
+    background: white;
 }
 
 .chatHeader {
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--color-gray-200);
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid hsl(var(--neutral-200));
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    background: white;
 }
 
 .chatName {
     font-weight: var(--font-weight-semibold);
-    color: var(--color-gray-900);
+    color: hsl(var(--neutral-900));
+    font-size: 1rem;
+}
+
+.chatSubtitle {
+    font-size: 0.8125rem;
+    color: hsl(var(--neutral-500));
+    margin-top: 0.125rem;
 }
 
 .messages {
     flex: 1;
-    padding: var(--space-4);
+    padding: var(--space-6);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    background-color: var(--color-gray-50);
+    background-color: hsl(var(--neutral-50));
 }
 
 .message {
     max-width: 70%;
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-lg);
-    font-size: 14px;
+    font-size: 0.9375rem;
     line-height: 1.5;
 }
 
 .messageSent {
     align-self: flex-end;
-    background-color: var(--color-primary-500);
+    background-color: hsl(var(--primary));
     color: white;
-    border-bottom-right-radius: 2px;
+    border-bottom-right-radius: var(--radius-sm);
 }
 
 .messageReceived {
     align-self: flex-start;
     background-color: white;
-    color: var(--color-gray-900);
-    border: 1px solid var(--color-gray-200);
-    border-bottom-left-radius: 2px;
+    color: hsl(var(--neutral-900));
+    border: 1px solid hsl(var(--neutral-200));
+    border-bottom-left-radius: var(--radius-sm);
 }
 
 .inputArea {
-    padding: var(--space-4);
-    border-top: 1px solid var(--color-gray-200);
+    padding: var(--space-5) var(--space-6);
+    border-top: 1px solid hsl(var(--neutral-200));
     display: flex;
     gap: var(--space-3);
+    background: white;
 }
 
 .messageInput {
     flex: 1;
-    padding: var(--space-3);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    font-size: 14px;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid hsl(var(--neutral-300));
+    border-radius: var(--radius-lg);
+    font-size: 0.9375rem;
     resize: none;
     height: 44px;
+    font-family: inherit;
+    transition: border-color var(--transition-fast);
 }
 
 .messageInput:focus {
     outline: none;
-    border-color: var(--color-primary-500);
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary-50));
+}
+
+.messageInput:disabled {
+    background: hsl(var(--neutral-50));
+    cursor: not-allowed;
+}
+
+.emptyState,
+.emptyChat,
+.emptyMessages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12) var(--space-6);
+    text-align: center;
+    color: hsl(var(--neutral-500));
+}
+
+.typingIndicator {
+    align-self: flex-start;
+    padding: var(--space-2) var(--space-4);
+    background: white;
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    color: hsl(var(--neutral-500));
+    font-style: italic;
+    border: 1px solid hsl(var(--neutral-200));
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .conversationList {
+        display: none;
+    }
+
+    .conversationList.active {
+        display: flex;
+    }
 }
