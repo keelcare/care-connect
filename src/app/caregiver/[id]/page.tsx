@@ -71,6 +71,8 @@ const MOCK_USERS = {
     }
 };
 
+import { BookingModal } from '@/components/features/BookingModal';
+
 export default function CaregiverProfilePage() {
     const params = useParams();
     const router = useRouter();
@@ -79,6 +81,8 @@ export default function CaregiverProfilePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'about' | 'reviews' | 'availability'>('about');
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [messageLoading, setMessageLoading] = useState(false);
 
     useEffect(() => {
         const fetchCaregiver = async () => {
@@ -111,6 +115,27 @@ export default function CaregiverProfilePage() {
 
         fetchCaregiver();
     }, [params.id]);
+
+    const handleMessage = async () => {
+        if (!user || !caregiver) return;
+
+        try {
+            setMessageLoading(true);
+            // Create or get existing chat
+            const chat = await api.chat.create({
+                participantId: caregiver.id
+            });
+
+            // Redirect to messages with this chat active
+            router.push(`/dashboard/messages?chatId=${chat.id}`);
+        } catch (err) {
+            console.error('Failed to start chat:', err);
+            // Fallback to messages page if creation fails
+            router.push('/dashboard/messages');
+        } finally {
+            setMessageLoading(false);
+        }
+    };
 
     if (loading) return <div className="flex items-center justify-center min-h-[50vh] text-neutral-500">Loading profile...</div>;
     if (error) return <div className="flex items-center justify-center min-h-[50vh] text-red-500">{error}</div>;
@@ -279,7 +304,7 @@ export default function CaregiverProfilePage() {
                                     <Button
                                         size="lg"
                                         className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
-                                        onClick={() => console.log('Request booking')}
+                                        onClick={() => setIsBookingModalOpen(true)}
                                     >
                                         Request Booking
                                     </Button>
@@ -287,9 +312,10 @@ export default function CaregiverProfilePage() {
                                         variant="outline"
                                         size="lg"
                                         className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12"
-                                        onClick={() => console.log('Send message')}
+                                        onClick={handleMessage}
+                                        disabled={messageLoading}
                                     >
-                                        Message
+                                        {messageLoading ? 'Starting Chat...' : 'Message'}
                                     </Button>
                                 </>
                             ) : (
@@ -328,6 +354,20 @@ export default function CaregiverProfilePage() {
                     </div>
                 </div>
             </div>
+
+            {/* Booking Modal */}
+            {caregiver && (
+                <BookingModal
+                    isOpen={isBookingModalOpen}
+                    onClose={() => setIsBookingModalOpen(false)}
+                    caregiverId={caregiver.id}
+                    caregiverName={`${caregiver.profiles?.first_name} ${caregiver.profiles?.last_name}`}
+                    hourlyRate={parseFloat(caregiver.nanny_details?.hourly_rate || '0')}
+                    onSuccess={() => {
+                        router.push('/dashboard/bookings');
+                    }}
+                />
+            )}
         </div>
     );
 }

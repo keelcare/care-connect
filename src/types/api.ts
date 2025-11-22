@@ -214,8 +214,12 @@ export interface Booking {
 }
 
 export interface CreateBookingDto {
-    jobId: string;
     nannyId: string;
+    date: string; // YYYY-MM-DD
+    startTime: string; // HH:mm
+    endTime: string; // HH:mm
+    notes?: string;
+    jobId?: string; // Optional for backwards compatibility if needed
 }
 
 export interface CancelBookingDto {
@@ -225,7 +229,8 @@ export interface CancelBookingDto {
 // Chat/Message Types
 export interface Chat {
     id: string;
-    booking_id: string;
+    booking_id?: string;
+    participant_ids?: string[];
     created_at: string;
     updated_at: string;
     booking?: Booking;
@@ -248,7 +253,8 @@ export interface SendMessageDto {
 }
 
 export interface CreateChatDto {
-    bookingId: string;
+    participantId?: string;
+    bookingId?: string;
 }
 
 // Review Types
