@@ -90,6 +90,46 @@ export const Header: React.FC = () => {
                                         onClick={() => setIsDropdownOpen(false)}
                                     />
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-strong border border-neutral-100 py-2 z-20">
+                                        {user.role === 'nanny' && (
+                                            <>
+                                                <Link
+                                                    href="/dashboard"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
+                                                >
+                                                    <User size={18} />
+                                                    <span className="font-medium">Dashboard</span>
+                                                </Link>
+                                                <Link
+                                                    href="/dashboard/messages"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
+                                                >
+                                                    <User size={18} />
+                                                    <span className="font-medium">Messages</span>
+                                                </Link>
+                                            </>
+                                        )}
+                                        {user.role === 'parent' && (
+                                            <>
+                                                <Link
+                                                    href="/bookings"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
+                                                >
+                                                    <User size={18} />
+                                                    <span className="font-medium">My Bookings</span>
+                                                </Link>
+                                                <Link
+                                                    href="/messages"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
+                                                >
+                                                    <User size={18} />
+                                                    <span className="font-medium">Messages</span>
+                                                </Link>
+                                            </>
+                                        )}
                                         <Link
                                             href="/dashboard/profile"
                                             onClick={() => setIsDropdownOpen(false)}

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -23,7 +23,18 @@ export default function DashboardLayout({
         { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
     ];
 
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    React.useEffect(() => {
+        if (!loading && user && user.role === 'parent') {
+            router.push('/bookings');
+        }
+    }, [user, loading, router]);
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+    }
 
     return (
         <div className="min-h-screen bg-neutral-50 flex">

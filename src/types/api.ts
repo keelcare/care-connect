@@ -205,6 +205,7 @@ export interface Booking {
     status: BookingStatus;
     start_time: string;
     end_time?: string;
+    notes?: string;
     cancellation_reason?: string;
     created_at: string;
     updated_at: string;

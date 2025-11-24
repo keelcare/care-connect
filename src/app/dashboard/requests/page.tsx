@@ -127,7 +127,7 @@ export default function RequestsPage() {
                                 </div>
 
                                 <h3 className="text-lg font-bold text-neutral-900 mb-4 group-hover:text-primary transition-colors">
-                                    {request.title || 'Service Request'}
+                                    Care for {request.numChildren} Child{request.numChildren !== 1 ? 'ren' : ''}
                                 </h3>
 
                                 <div className="space-y-3 text-sm text-neutral-600">

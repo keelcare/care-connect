@@ -32,6 +32,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         if (!user) {
             // Disconnect if user logs out
             if (socket) {
+                console.log('User logged out, disconnecting socket');
                 socket.disconnect();
                 setSocket(null);
                 setConnected(false);
@@ -40,8 +41,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         }
 
         const token = localStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+            console.log('No token found, skipping socket connection');
+            return;
+        }
 
+        console.log('Initializing socket connection with token');
         // Initialize socket connection
         const newSocket = io(API_URL, {
             auth: {
@@ -57,8 +62,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             setConnected(true);
         });
 
-        newSocket.on('disconnect', () => {
-            console.log('Socket disconnected');
+        newSocket.on('disconnect', (reason) => {
+            console.log('Socket disconnected:', reason);
             setConnected(false);
         });
 
@@ -67,34 +72,45 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             setConnected(false);
         });
 
+        // Debug all incoming events
+        newSocket.onAny((event, ...args) => {
+            console.log('Socket received event:', event, args);
+        });
+
         setSocket(newSocket);
 
         return () => {
+            console.log('Cleaning up socket connection');
             newSocket.disconnect();
         };
     }, [user]);
 
     const joinRoom = useCallback((chatId: string) => {
         if (socket && connected) {
+            console.log('Emitting joinRoom:', chatId);
             socket.emit('joinRoom', chatId);
-            console.log('Joined room:', chatId);
+        } else {
+            console.warn('Cannot join room: Socket not connected');
         }
     }, [socket, connected]);
 
     const leaveRoom = useCallback((chatId: string) => {
         if (socket && connected) {
+            console.log('Emitting leaveRoom:', chatId);
             socket.emit('leaveRoom', chatId);
-            console.log('Left room:', chatId);
         }
     }, [socket, connected]);
 
     const sendMessage = useCallback((chatId: string, content: string, attachmentUrl?: string) => {
         if (socket && connected) {
+            console.log('Emitting sendMessage:', { chatId, content });
             socket.emit('sendMessage', {
                 chatId,
                 content,
                 attachmentUrl
             });
+        } else {
+            console.error('Cannot send message: Socket not connected');
         }
     }, [socket, connected]);
 

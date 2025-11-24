@@ -41,7 +41,7 @@ function MessagesContent() {
     const [loading, setLoading] = useState(true);
     const [messagesLoading, setMessagesLoading] = useState(false);
     const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (user) {
@@ -71,9 +71,40 @@ function MessagesContent() {
 
     useEffect(() => {
         const handleNewMessage = (message: Message) => {
+            console.log('Handling new message:', message);
             if (activeChat && message.chat_id === activeChat.id) {
-                setMessages(prev => [...prev, message]);
+                setMessages(prev => {
+                    console.log('Current messages count:', prev.length);
+                    // Check if message already exists (by ID or temp ID)
+                    const exists = prev.some(m => m.id === message.id);
+                    if (exists) {
+                        console.log('Message already exists, skipping');
+                        return prev;
+                    }
+
+                    // Check for optimistic message match (same content, sender)
+                    // Relaxed timestamp check to 60 seconds to account for clock skew
+                    const optimisticMatchIndex = prev.findIndex(m =>
+                        m.id.startsWith('temp-') &&
+                        m.content === message.content &&
+                        m.sender_id === message.sender_id &&
+                        Math.abs(new Date(message.created_at).getTime() - new Date(m.created_at).getTime()) < 60000
+                    );
+
+                    if (optimisticMatchIndex !== -1) {
+                        console.log('Replacing optimistic message at index:', optimisticMatchIndex);
+                        // Replace optimistic message with real one
+                        const newMessages = [...prev];
+                        newMessages[optimisticMatchIndex] = message;
+                        return newMessages;
+                    }
+
+                    console.log('Appending new message');
+                    return [...prev, message];
+                });
                 scrollToBottom();
+            } else {
+                console.log('Message not for active chat:', message.chat_id, activeChat?.id);
             }
         };
 
@@ -105,29 +136,84 @@ function MessagesContent() {
     }, [messages]);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesContainerRef.current) {
+            const { scrollHeight, clientHeight } = messagesContainerRef.current;
+            messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
+        }
     };
 
     const fetchChats = async () => {
         try {
             setLoading(true);
-            // Get all bookings first
+            console.log('Fetching chats for user:', user?.id, 'Role:', user?.role);
+
+            // Get all bookings for nanny
             const bookings = user?.role === 'nanny'
                 ? await api.bookings.getNannyBookings()
                 : await api.bookings.getParentBookings();
 
+            console.log('Bookings fetched:', bookings.length, bookings);
+
+            if (bookings.length === 0) {
+                console.log('No bookings found, so no chats to fetch.');
+                setChats([]);
+                setLoading(false);
+                return;
+            }
+
             // Get or create chats for each booking
             const chatPromises = bookings.map(async (booking) => {
                 try {
+                    console.log(`Fetching chat for booking ${booking.id}`);
                     const chat = await api.chat.getByBooking(booking.id);
-                    return { ...chat, booking };
+                    console.log(`Found existing chat for booking ${booking.id}:`, chat.id);
+
+                    // Enrich booking with details if missing
+                    let enrichedBooking = booking;
+                    const targetId = user?.role === 'nanny' ? booking.parent_id : booking.nanny_id;
+                    const targetProfile = user?.role === 'nanny' ? booking.parent?.profiles : booking.nanny?.profiles;
+
+                    if (!targetProfile && targetId) {
+                        try {
+                            console.log(`Fetching missing user details for ${targetId}`);
+                            const userDetails = await api.users.get(targetId);
+                            enrichedBooking = {
+                                ...booking,
+                                [user?.role === 'nanny' ? 'parent' : 'nanny']: userDetails
+                            };
+                        } catch (e) {
+                            console.error(`Failed to fetch user details for ${targetId}`, e);
+                        }
+                    }
+
+                    return { ...chat, booking: enrichedBooking };
                 } catch (err) {
+                    console.log(`Chat not found for booking ${booking.id}, creating new one...`);
                     // Chat doesn't exist yet, create it
                     try {
                         const newChat = await api.chat.create({ bookingId: booking.id });
-                        return { ...newChat, booking };
+                        console.log(`Created new chat for booking ${booking.id}:`, newChat.id);
+
+                        // Enrich booking here too
+                        let enrichedBooking = booking;
+                        const targetId = user?.role === 'nanny' ? booking.parent_id : booking.nanny_id;
+                        const targetProfile = user?.role === 'nanny' ? booking.parent?.profiles : booking.nanny?.profiles;
+
+                        if (!targetProfile && targetId) {
+                            try {
+                                const userDetails = await api.users.get(targetId);
+                                enrichedBooking = {
+                                    ...booking,
+                                    [user?.role === 'nanny' ? 'parent' : 'nanny']: userDetails
+                                };
+                            } catch (e) {
+                                console.error(`Failed to fetch user details for ${targetId}`, e);
+                            }
+                        }
+
+                        return { ...newChat, booking: enrichedBooking };
                     } catch (createErr) {
-                        console.error('Failed to create chat:', createErr);
+                        console.error(`Failed to create chat for booking ${booking.id}:`, createErr);
                         return null;
                     }
                 }
@@ -135,22 +221,33 @@ function MessagesContent() {
 
             const chatResults = await Promise.all(chatPromises);
             const validChats = chatResults.filter((c): c is Chat & { booking: Booking } => c !== null);
+            console.log(`Valid chats found: ${validChats.length}`);
 
             // Enhance chats with display info
             const enhancedChats: ChatWithDetails[] = validChats.map(chat => {
                 const otherParty = user?.role === 'nanny' ? chat.booking.parent : chat.booking.nanny;
-                const otherPartyName = otherParty?.profiles?.first_name && otherParty?.profiles?.last_name
-                    ? `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`
-                    : otherParty?.email || 'Unknown';
+
+                // Try multiple ways to get the name
+                let otherPartyName = 'Unknown';
+                if (otherParty?.profiles?.first_name && otherParty?.profiles?.last_name) {
+                    otherPartyName = `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`;
+                } else if (otherParty?.profiles?.first_name) {
+                    otherPartyName = otherParty.profiles.first_name;
+                } else if (otherParty?.email) {
+                    otherPartyName = otherParty.email.split('@')[0];
+                }
+
                 const otherPartyImage = otherParty?.profiles?.profile_image_url || '';
 
                 return {
                     ...chat,
+                    booking: chat.booking,
                     otherPartyName,
                     otherPartyImage,
                 };
             });
 
+            console.log('Final enhanced chats:', enhancedChats);
             setChats(enhancedChats);
 
             // Set first chat as active if none selected
@@ -178,9 +275,38 @@ function MessagesContent() {
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!messageInput.trim() || !activeChat || !connected) return;
+        if (!messageInput.trim() || !activeChat || !connected || !user) {
+            console.log('Cannot send message:', {
+                hasInput: !!messageInput.trim(),
+                hasActiveChat: !!activeChat,
+                connected,
+                hasUser: !!user
+            });
+            return;
+        }
 
-        sendSocketMessage(activeChat.id, messageInput.trim());
+        const content = messageInput.trim();
+        console.log('Sending message:', {
+            chatId: activeChat.id,
+            content,
+            connected
+        });
+
+        // Optimistically add message to UI
+        const optimisticMessage: Message = {
+            id: `temp-${Date.now()}`,
+            chat_id: activeChat.id,
+            sender_id: user.id,
+            content: content,
+            is_read: false,
+            created_at: new Date().toISOString(),
+            sender: user
+        };
+
+        setMessages(prev => [...prev, optimisticMessage]);
+        scrollToBottom();
+
+        sendSocketMessage(activeChat.id, content);
         setMessageInput('');
     };
 
@@ -288,7 +414,10 @@ function MessagesContent() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        <div
+                            ref={messagesContainerRef}
+                            className="flex-1 overflow-y-auto p-6 space-y-4"
+                        >
                             {messagesLoading ? (
                                 <div className="flex justify-center py-8">
                                     <Spinner />
@@ -308,8 +437,8 @@ function MessagesContent() {
                                             >
                                                 <div
                                                     className={`max-w-[70%] px-5 py-3 rounded-2xl ${isMe
-                                                            ? 'bg-primary text-white rounded-tr-none'
-                                                            : 'bg-white border border-neutral-100 text-neutral-800 rounded-tl-none shadow-sm'
+                                                        ? 'bg-white border border-neutral-100 text-neutral-800 rounded-tr-none shadow-sm'
+                                                        : 'bg-white border border-neutral-100 text-neutral-800 rounded-tl-none shadow-sm'
                                                         }`}
                                                 >
                                                     <p className="text-sm">{msg.content}</p>
@@ -324,7 +453,6 @@ function MessagesContent() {
                                             </div>
                                         </div>
                                     )}
-                                    <div ref={messagesEndRef} />
                                 </>
                             )}
                         </div>
