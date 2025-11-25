@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, ShieldCheck, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import styles from './page.module.css';
@@ -111,14 +112,14 @@ export default function ProfilePage() {
                 <div className="px-8 pb-8 md:px-10 md:pb-10">
                     <div className="relative flex flex-col md:flex-row gap-6 md:gap-8 -mt-12 mb-6">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-white">
-                                <Image
-                                    src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                                    alt="Profile"
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
+                            <Avatar
+                                src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                alt="Profile"
+                                fallback={profiles?.first_name?.[0] || 'U'}
+                                size="xl"
+                                className="w-32 h-32"
+                                ringColor="bg-white"
+                            />
                             <div className="absolute bottom-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
                                 {user.role}
                             </div>

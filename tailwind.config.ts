@@ -34,6 +34,10 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          yellow: "#F6E05E",
+          lavender: "#B794F4",
+          sky: "#63B3ED",
+          mint: "#68D391",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -55,7 +59,14 @@ const config: Config = {
         'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)', // Diffuse, ambient shadows
         'strong': '0 25px 50px -12px rgba(0, 0, 0, 0.25)', // Strong shadow for cards
       },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
       keyframes: {
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-15px)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -85,6 +96,7 @@ const config: Config = {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "scroll-left": "scroll-left 30s linear infinite",
         "blob": "blob 7s infinite",
+        "float": "float 6s ease-in-out infinite",
       },
     },
   },

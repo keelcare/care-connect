@@ -4,6 +4,7 @@ import React from 'react';
 import { Star } from 'lucide-react';
 import { Review } from '@/types/api';
 import styles from './ReviewCard.module.css';
+import { Avatar } from '@/components/ui/avatar';
 
 interface ReviewCardProps {
     review: Review;
@@ -31,14 +32,13 @@ export function ReviewCard({ review }: ReviewCardProps) {
             <div className={styles.header}>
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
-                        {review.reviewer?.profiles?.profile_image_url ? (
-                            <img
-                                src={review.reviewer.profiles.profile_image_url}
-                                alt={getReviewerName()}
-                            />
-                        ) : (
-                            <span>{getReviewerName().charAt(0).toUpperCase()}</span>
-                        )}
+                        <Avatar
+                            src={review.reviewer?.profiles?.profile_image_url || undefined}
+                            alt={getReviewerName()}
+                            fallback={getReviewerName().charAt(0).toUpperCase()}
+                            size="md"
+                            ringColor="bg-secondary/20"
+                        />
                     </div>
                     <div>
                         <p className={styles.name}>{getReviewerName()}</p>

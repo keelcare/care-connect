@@ -8,6 +8,7 @@ import { Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { MessageCircle, Calendar, Clock, MapPin, User } from 'lucide-react';
+import { Avatar } from '@/components/ui/avatar';
 import styles from './page.module.css';
 
 export default function BookingDetailsPage() {
@@ -275,19 +276,13 @@ export default function BookingDetailsPage() {
 
                         {otherParty && (
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-16 h-16 rounded-full overflow-hidden bg-neutral-100 flex-shrink-0 border-2 border-white shadow-md">
-                                    {otherParty.profiles?.profile_image_url ? (
-                                        <img
-                                            src={otherParty.profiles.profile_image_url}
-                                            alt={getOtherPartyName()}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                                            <User size={32} />
-                                        </div>
-                                    )}
-                                </div>
+                                <Avatar
+                                    src={otherParty.profiles?.profile_image_url || undefined}
+                                    alt={getOtherPartyName()}
+                                    fallback={getOtherPartyName().charAt(0).toUpperCase()}
+                                    size="lg"
+                                    ringColor="bg-neutral-100"
+                                />
                                 <div>
                                     <p className="font-bold text-neutral-900">{getOtherPartyName()}</p>
                                     <p className="text-sm text-neutral-500">{otherParty.email}</p>
