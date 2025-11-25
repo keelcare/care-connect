@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
 
+// Token expires after 15 days
+const TOKEN_EXPIRY_DAYS = 15;
+
 interface AuthContextType {
     user: User | null;
     token: string | null;
@@ -26,11 +29,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         checkAuth();
     }, []);
 
+    const isTokenExpired = (): boolean => {
+        const loginTimestamp = localStorage.getItem('login_timestamp');
+        if (!loginTimestamp) {
+            return true; // No timestamp means expired
+        }
+
+        const loginDate = new Date(parseInt(loginTimestamp));
+        const now = new Date();
+        const daysSinceLogin = (now.getTime() - loginDate.getTime()) / (1000 * 60 * 60 * 24);
+
+        return daysSinceLogin >= TOKEN_EXPIRY_DAYS;
+    };
+
     const checkAuth = async () => {
         const storedToken = localStorage.getItem('token');
         if (!storedToken) {
             console.log('AuthContext: No token found');
             setToken(null);
+            setLoading(false);
+            return null;
+        }
+
+        // Check if token has expired (15 days)
+        if (isTokenExpired()) {
+            console.log('AuthContext: Token expired (15 days), logging out');
+            localStorage.removeItem('token');
+            localStorage.removeItem('login_timestamp');
+            localStorage.removeItem('user_preferences');
+            setToken(null);
+            setUser(null);
             setLoading(false);
             return null;
         }
@@ -71,6 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (token: string) => {
         localStorage.setItem('token', token);
+        // Store login timestamp for 15-day expiration
+        localStorage.setItem('login_timestamp', Date.now().toString());
         const userData = await checkAuth();
 
         console.log('Logged in user:', userData); // Debugging
@@ -85,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('login_timestamp');
         localStorage.removeItem('user_preferences'); // Clear preferences on logout
         setUser(null);
         setToken(null);
