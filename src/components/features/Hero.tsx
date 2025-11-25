@@ -33,43 +33,43 @@ export const Hero: React.FC = () => {
             {/* Floating Icon Cloud */}
             <div className="absolute inset-0 pointer-events-none">
                 {/* Sun - Top Left */}
-                <div className="absolute top-[15%] left-[10%] animate-float" style={{ animationDelay: '0s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg">
+                <div className="absolute top-[15%] left-[10%] animate-bounce-slow" style={{ animationDelay: '0s' }}>
+                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '0.5s' }}>
                         <Sun className="w-8 h-8 text-yellow-400 fill-yellow-400" />
                     </div>
                 </div>
 
                 {/* Heart - Top Right */}
-                <div className="absolute top-[20%] right-[15%] animate-float" style={{ animationDelay: '2s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg">
+                <div className="absolute top-[20%] right-[15%] animate-bounce-slow" style={{ animationDelay: '1s' }}>
+                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '1.5s' }}>
                         <Heart className="w-8 h-8 text-secondary fill-secondary" />
                     </div>
                 </div>
 
                 {/* Shield - Bottom Left */}
-                <div className="absolute bottom-[20%] left-[15%] animate-float" style={{ animationDelay: '4s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg">
+                <div className="absolute bottom-[20%] left-[15%] animate-bounce-slow" style={{ animationDelay: '2s' }}>
+                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '2.5s' }}>
                         <Shield className="w-8 h-8 text-primary fill-primary/20" />
                     </div>
                 </div>
 
                 {/* Star - Bottom Right */}
-                <div className="absolute bottom-[25%] right-[10%] animate-float" style={{ animationDelay: '1s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg">
+                <div className="absolute bottom-[25%] right-[10%] animate-bounce-slow" style={{ animationDelay: '0.5s' }}>
+                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '1s' }}>
                         <Star className="w-8 h-8 text-orange-400 fill-orange-400" />
                     </div>
                 </div>
 
                 {/* Book - Middle Left */}
-                <div className="absolute top-[50%] left-[5%] animate-float" style={{ animationDelay: '3s' }}>
-                    <div className="bg-white p-3 rounded-full shadow-lg">
+                <div className="absolute top-[50%] left-[5%] animate-bounce-slow" style={{ animationDelay: '1.5s' }}>
+                    <div className="bg-white p-3 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '2s' }}>
                         <Book className="w-6 h-6 text-blue-400 fill-blue-400/20" />
                     </div>
                 </div>
 
                 {/* User - Middle Right */}
-                <div className="absolute top-[45%] right-[5%] animate-float" style={{ animationDelay: '5s' }}>
-                    <div className="bg-white p-3 rounded-full shadow-lg">
+                <div className="absolute top-[45%] right-[5%] animate-bounce-slow" style={{ animationDelay: '2.5s' }}>
+                    <div className="bg-white p-3 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '3s' }}>
                         <User className="w-6 h-6 text-purple-400 fill-purple-400/20" />
                     </div>
                 </div>
