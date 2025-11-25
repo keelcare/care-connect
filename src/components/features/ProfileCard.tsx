@@ -18,6 +18,7 @@ export interface ProfileCardProps {
     distance?: number; // Distance in kilometers
     onViewProfile?: () => void;
     onBook?: () => void;
+    compact?: boolean; // Compact mode for smaller cards
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -33,10 +34,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     distance,
     onViewProfile,
     onBook,
+    compact = false,
 }) => {
     return (
         <div className="group bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full">
-            <div className="relative h-48 w-full bg-neutral-100">
+            <div className={`relative ${compact ? 'h-40' : 'h-48'} w-full bg-neutral-100`}>
                 <Image
                     src={image}
                     alt={name}
@@ -51,7 +53,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
-                    <h3 className="text-white font-bold text-lg truncate">{name}</h3>
+                    <h3 className={`text-white font-bold ${compact ? 'text-base' : 'text-lg'} truncate`}>{name}</h3>
                     <div className="flex items-center gap-1 text-white/90 text-sm">
                         <MapPin size={14} />
                         {location}
@@ -64,7 +66,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 </div>
             </div>
 
-            <div className="p-5 flex flex-col flex-1">
+            <div className={`${compact ? 'p-4' : 'p-5'} flex flex-col flex-1`}>
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
                         <Star size={16} className="text-yellow-500" fill="currentColor" />

@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ParentSidebar } from '@/components/layout/ParentSidebar';
@@ -10,6 +12,7 @@ export default function ParentLayout({
 }) {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
 
     // Redirect nannies to dashboard
     React.useEffect(() => {
@@ -34,10 +37,13 @@ export default function ParentLayout({
 
     return (
         <div className="min-h-screen bg-neutral-50 flex">
-            <ParentSidebar />
+            <ParentSidebar
+                isCollapsed={isSidebarCollapsed}
+                onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            />
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-72 min-h-screen transition-all duration-300">
+            <main className={`flex-1 min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
                 {children}
             </main>
         </div>

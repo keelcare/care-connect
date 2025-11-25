@@ -155,12 +155,6 @@ export default function BrowsePage() {
                                     </button>
                                 </div>
                             )}
-                            <Link href="/search">
-                                <Button variant="default" className="rounded-full px-6 bg-primary hover:bg-primary-600 text-white shadow-md hover:shadow-lg flex items-center gap-2">
-                                    <Search size={18} />
-                                    Search
-                                </Button>
-                            </Link>
                         </div>
                     </div>
                 </div>

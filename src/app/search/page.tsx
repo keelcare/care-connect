@@ -30,6 +30,7 @@ export default function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     const [isNearby, setIsNearby] = useState(false);
     const [updatingLocation, setUpdatingLocation] = useState(false);
+    const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(false); // Desktop filter sidebar
     const { preferences, updatePreferences } = usePreferences();
 
     const handleUpdateLocation = () => {
@@ -268,20 +269,20 @@ export default function SearchPage() {
 
     return (
         <ParentLayout>
-            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50 pt-8">
+            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50 pt-4">
                 {/* Search Bar Section - Fixed */}
-                <div className="flex-none z-30 bg-neutral-50 p-4 md:p-8 pb-4 shadow-sm relative">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[24px] shadow-soft border border-neutral-100">
+                <div className="flex-none z-30 bg-neutral-50 px-4 md:px-8 py-3 shadow-sm relative">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-[20px] shadow-soft border border-neutral-100">
                         <form className="flex-1 w-full" onSubmit={handleSearch}>
                             <SearchInput
                                 placeholder="Search by name, location, or skills..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onClear={() => setSearchQuery('')}
-                                className="w-full"
+                                className="w-full h-10"
                             />
                         </form>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             {user && (
                                 <div className="hidden md:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
                                     <MapPin size={16} className="text-primary" />
@@ -305,6 +306,14 @@ export default function SearchPage() {
                                 <MapPin size={18} />
                                 Nearby
                             </Button>
+                            <Button
+                                variant={isDesktopFilterOpen ? "default" : "outline"}
+                                onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
+                                className={`hidden lg:flex rounded-xl items-center gap-2 ${isDesktopFilterOpen ? 'bg-primary' : 'bg-white'}`}
+                            >
+                                <SlidersHorizontal size={18} />
+                                Filters
+                            </Button>
                             <div className="text-sm text-neutral-500 whitespace-nowrap hidden md:block">
                                 {loading ? 'Loading...' : `Showing ${filteredNannies.length} of ${nannies.length} caregivers`}
                             </div>
@@ -320,14 +329,14 @@ export default function SearchPage() {
                 </div>
 
                 {/* Main Content - Scrollable */}
-                <div className="flex-1 flex gap-8 overflow-hidden px-4 md:px-8 pb-4">
+                <div className="flex-1 flex gap-6 overflow-hidden px-4 md:px-8 pb-4">
                     {/* Sidebar - Fixed/Scrollable independently */}
-                    <div className="hidden lg:block w-80 flex-shrink-0 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain">
-                        <FilterSidebar />
+                    <div className={`hidden lg:block flex-shrink-0 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain transition-all duration-300 ${isDesktopFilterOpen ? 'w-80 opacity-100' : 'w-0 opacity-0'}`}>
+                        {isDesktopFilterOpen && <FilterSidebar />}
                     </div>
 
                     {/* Profiles List - Scrollable independently */}
-                    <div className="flex-1 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain">
+                    <div className="flex-1 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain mt-4">
                         {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>}
 
                         {loading ? (
@@ -347,10 +356,11 @@ export default function SearchPage() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                                 {filteredNannies.map((nanny) => (
                                     <ProfileCard
                                         key={nanny.id}
+                                        compact={true}
                                         name={nanny.profiles?.first_name ? `${nanny.profiles.first_name} ${nanny.profiles.last_name}` : 'Caregiver'}
                                         image={nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80'}
                                         rating={4.8}

@@ -4,10 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Calendar, MessageSquare, Sparkles, User, Settings } from 'lucide-react';
+import { Home, Search, Calendar, MessageSquare, Sparkles, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-export const ParentSidebar: React.FC = () => {
+interface ParentSidebarProps {
+    isCollapsed?: boolean;
+    onToggle?: () => void;
+}
+
+export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = false, onToggle }) => {
     const pathname = usePathname();
     const { user } = useAuth();
 
@@ -21,7 +26,16 @@ export const ParentSidebar: React.FC = () => {
     ];
 
     return (
-        <aside className="w-72 bg-white border-r border-neutral-100 fixed h-full z-30 hidden md:flex flex-col shadow-soft pt-20">
+        <aside className={`bg-white border-r border-neutral-100 fixed h-full z-30 hidden md:flex flex-col shadow-soft pt-20 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`}>
+            {/* Toggle Button */}
+            <button
+                onClick={onToggle}
+                className="absolute -right-3 top-24 w-6 h-6 bg-white border border-neutral-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:bg-neutral-50 z-50"
+                aria-label="Toggle sidebar"
+            >
+                {isCollapsed ? <ChevronRight size={14} className="text-neutral-600" /> : <ChevronLeft size={14} className="text-neutral-600" />}
+            </button>
+
             <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
                 {navItems.map((item) => {
                     const Icon = item.icon;
@@ -34,34 +48,37 @@ export const ParentSidebar: React.FC = () => {
                                 ? 'bg-primary/10 text-neutral-900'
                                 : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
                                 }`}
+                            title={isCollapsed ? item.label : undefined}
                         >
                             <Icon size={20} className={isActive ? 'text-primary' : 'text-neutral-400'} />
-                            {item.label}
+                            {!isCollapsed && item.label}
                         </Link>
                     );
                 })}
             </nav>
 
-            <div className="p-6 border-t border-neutral-100">
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50 border border-neutral-100">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
-                        <Image
-                            src={user?.profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                            alt="User"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-neutral-900 truncate">
-                            {user?.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'Loading...'}
-                        </p>
-                        <p className="text-xs text-neutral-500 truncate capitalize">
-                            Parent
-                        </p>
+            {!isCollapsed && (
+                <div className="p-6 border-t border-neutral-100">
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50 border border-neutral-100">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
+                            <Image
+                                src={user?.profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                alt="User"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-neutral-900 truncate">
+                                {user?.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'Loading...'}
+                            </p>
+                            <p className="text-xs text-neutral-500 truncate capitalize">
+                                Parent
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </aside>
     );
 };
