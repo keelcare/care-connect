@@ -14,7 +14,15 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
   // Don't show Header/Footer on auth pages (they have their own layout)
   // Don't show Header/Footer on dashboard pages (they have their own layout)
-  const hideHeaderFooter = pathname?.startsWith('/auth') || pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin');
+  // Don't show Header/Footer on parent pages (ParentLayout includes its own Footer)
+  const hideHeaderFooter = pathname?.startsWith('/auth') ||
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/browse') ||
+    pathname?.startsWith('/search') ||
+    pathname?.startsWith('/book-service') ||
+    pathname?.startsWith('/bookings') ||
+    pathname?.startsWith('/messages');
 
   return (
     <body>

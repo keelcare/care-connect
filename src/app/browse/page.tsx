@@ -131,30 +131,32 @@ export default function BrowsePage() {
 
     return (
         <ParentLayout>
-            <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8 pt-8">
-                {/* Header Section */}
-                <div className="bg-white border-neutral-200 pt-8 pb-6 px-4 md:px-8 sticky top-20 z-10 bg-white/80 backdrop-blur-xl">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Discover Caregivers</h1>
-                            <p className="text-neutral-600">Find trusted caregivers near you</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {user && (
-                                <div className="flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
-                                    <Search size={16} className="text-primary" />
-                                    <span className="max-w-[150px] truncate">
-                                        {user.profiles?.address || "Set Location"}
-                                    </span>
-                                    <button
-                                        onClick={handleUpdateLocation}
-                                        disabled={updatingLocation}
-                                        className="text-primary hover:text-primary-600 font-medium ml-1 disabled:opacity-50"
-                                    >
-                                        {updatingLocation ? '...' : 'Update'}
-                                    </button>
-                                </div>
-                            )}
+            <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
+                {/* Header Section - Sticky */}
+                <div className="sticky top-[72px] z-20 bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-sm">
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-3xl font-bold text-neutral-900 mb-2">Discover Caregivers</h1>
+                                <p className="text-neutral-600">Find trusted caregivers near you</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                {user && (
+                                    <div className="flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
+                                        <Search size={16} className="text-primary" />
+                                        <span className="max-w-[150px] truncate">
+                                            {user.profiles?.address || "Set Location"}
+                                        </span>
+                                        <button
+                                            onClick={handleUpdateLocation}
+                                            disabled={updatingLocation}
+                                            className="text-primary hover:text-primary-600 font-medium ml-1 disabled:opacity-50"
+                                        >
+                                            {updatingLocation ? '...' : 'Update'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

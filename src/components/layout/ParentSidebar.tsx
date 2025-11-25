@@ -26,11 +26,11 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
     ];
 
     return (
-        <aside className={`bg-white border-r border-neutral-100 fixed h-full z-30 hidden md:flex flex-col shadow-soft pt-20 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`}>
+        <aside className={`bg-white border-r border-neutral-100 fixed top-[72px] h-[calc(100vh-72px)] z-30 hidden md:flex flex-col shadow-soft transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`}>
             {/* Toggle Button */}
             <button
                 onClick={onToggle}
-                className="absolute -right-3 top-24 w-6 h-6 bg-white border border-neutral-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:bg-neutral-50 z-50"
+                className="absolute -right-3 top-12 w-6 h-6 bg-white border border-neutral-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:bg-neutral-50 z-50"
                 aria-label="Toggle sidebar"
             >
                 {isCollapsed ? <ChevronRight size={14} className="text-neutral-600" /> : <ChevronLeft size={14} className="text-neutral-600" />}

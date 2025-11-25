@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { Header } from '@/components/layout/Header';
 import { ParentSidebar } from '@/components/layout/ParentSidebar';
+import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/context/AuthContext';
 
 export default function ParentLayout({
@@ -36,16 +38,22 @@ export default function ParentLayout({
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50 flex">
-            <ParentSidebar
-                isCollapsed={isSidebarCollapsed}
-                onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            />
+        <>
+            <Header />
+            <div className="min-h-screen bg-neutral-50 flex">
+                <ParentSidebar
+                    isCollapsed={isSidebarCollapsed}
+                    onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                />
 
-            {/* Main Content */}
-            <main className={`flex-1 min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
-                {children}
-            </main>
-        </div>
+                {/* Main Content Area with Footer */}
+                <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
+                    <main className="flex-1 pb-8">
+                        {children}
+                    </main>
+                    <Footer />
+                </div>
+            </div>
+        </>
     );
 }
