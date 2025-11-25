@@ -31,10 +31,19 @@ export default function DashboardPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (user && user.role === 'nanny') {
-            fetchDashboardData();
+        if (authLoading) return;
+
+        if (user) {
+            if (user.role === 'nanny') {
+                fetchDashboardData();
+            } else {
+                // Redirect non-nanny users (e.g. parents) to browse page
+                // or just stop loading to prevent infinite spinner
+                router.push('/browse');
+                setLoading(false);
+            }
         }
-    }, [user]);
+    }, [user, authLoading]);
 
     const fetchDashboardData = async () => {
         try {
