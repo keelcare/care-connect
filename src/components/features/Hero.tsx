@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sun, Heart, Shield, Star, Book, User } from 'lucide-react';
+import { Sun, Heart, Shield, Star, Book, User, Search } from 'lucide-react';
 
 export const Hero: React.FC = () => {
     const router = useRouter();
@@ -123,7 +123,7 @@ export const Hero: React.FC = () => {
                             onClick={handleSearch}
                             className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
                         >
-                            <i className="lni lni-search-alt text-xl"></i>
+                            <Search className="w-5 h-5 text-neutral-900" />
                         </Button>
                     </div>
                 </div>
