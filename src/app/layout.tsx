@@ -1,6 +1,5 @@
 "use client";
 
-import { Inter, Manrope, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -10,24 +9,6 @@ import { SocketProvider } from "@/context/SocketProvider";
 import "lineicons/dist/lineicons.css";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
-
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -36,7 +17,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const hideHeaderFooter = pathname?.startsWith('/auth') || pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin');
 
   return (
-    <body className={`${inter.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+    <body>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
@@ -62,6 +43,9 @@ export default function RootLayout({
       <head>
         <title>CareConnect - Find Trusted Caregivers</title>
         <meta name="description" content="Connect with trusted caregivers for child care, senior care, pet care, and more." />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Manrope:wght@200..800&family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>
     </html>

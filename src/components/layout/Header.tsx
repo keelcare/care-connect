@@ -7,6 +7,7 @@ import { Menu, X, Bell, User, LogOut, ChevronDown, Settings, LayoutDashboard } f
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/ToastProvider';
+import { Avatar } from '@/components/ui/avatar';
 
 export const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -85,11 +86,15 @@ export const Header: React.FC = () => {
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={toggleDropdown}
-                                    className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-neutral-200 hover:border-primary/30 hover:bg-neutral-50 transition-all"
+                                    className="flex items-center gap-2 pl-1 pr-1 py-1 rounded-full border border-neutral-200 hover:border-primary/30 hover:bg-neutral-50 transition-all"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                                        {user.profiles?.first_name?.[0] || user.email?.[0]?.toUpperCase() || 'U'}
-                                    </div>
+                                    <Avatar
+                                        src={user.profiles?.profile_image_url || undefined}
+                                        alt={user.profiles?.first_name || 'User'}
+                                        fallback={user.profiles?.first_name?.[0] || user.email?.[0]?.toUpperCase() || 'U'}
+                                        size="sm"
+                                        ringColor="bg-primary/10"
+                                    />
                                     <ChevronDown size={16} className={`text-neutral-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
@@ -230,9 +235,13 @@ export const Header: React.FC = () => {
                             {user ? (
                                 <>
                                     <div className="px-4 mb-4 flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                            {user.profiles?.first_name?.[0] || user.email?.[0]?.toUpperCase()}
-                                        </div>
+                                        <Avatar
+                                            src={user.profiles?.profile_image_url || undefined}
+                                            alt={user.profiles?.first_name || 'User'}
+                                            fallback={user.profiles?.first_name?.[0] || user.email?.[0]?.toUpperCase() || 'U'}
+                                            size="md"
+                                            ringColor="bg-primary/10"
+                                        />
                                         <div>
                                             <p className="font-bold text-neutral-900">
                                                 {user.profiles?.first_name || 'User'}
