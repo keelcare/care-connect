@@ -1,8 +1,37 @@
+"use client";
+
 import { Hero } from "@/components/features/Hero";
 import { FeaturedServices } from "@/components/features/FeaturedServices";
 import { TrustedBy } from "@/components/features/TrustedBy";
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect logged-in nannies to dashboard
+  React.useEffect(() => {
+    if (!loading && user?.role === 'nanny') {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Don't render home page for nannies (they'll be redirected)
+  if (user?.role === 'nanny') {
+    return null;
+  }
+
   return (
     <>
       <Hero />

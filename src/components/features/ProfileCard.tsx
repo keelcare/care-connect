@@ -15,8 +15,9 @@ export interface ProfileCardProps {
     hourlyRate: number;
     experience: string;
     isVerified?: boolean;
+    distance?: number; // Distance in kilometers
     onViewProfile?: () => void;
-    onMessage?: () => void;
+    onBook?: () => void;
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -29,8 +30,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     hourlyRate,
     experience,
     isVerified,
+    distance,
     onViewProfile,
-    onMessage,
+    onBook,
 }) => {
     return (
         <div className="group bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full">
@@ -53,6 +55,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     <div className="flex items-center gap-1 text-white/90 text-sm">
                         <MapPin size={14} />
                         {location}
+                        {distance !== undefined && (
+                            <span className="ml-1 text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                                {distance.toFixed(1)} km
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>
@@ -75,9 +82,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     {description}
                 </p>
 
-                <div className="flex items-center gap-2 mb-4 text-xs font-medium text-neutral-500 bg-neutral-50 p-2 rounded-lg">
-                    <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-neutral-100 text-neutral-700">
-                        {experience} exp
+                <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium">
+                        {experience} experience
                     </span>
                 </div>
 
@@ -85,8 +92,8 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     <Button variant="outline" size="sm" onClick={onViewProfile} className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900">
                         View Profile
                     </Button>
-                    <Button variant="default" size="sm" onClick={onMessage} className="w-full rounded-xl bg-primary hover:bg-primary-600 text-white shadow-md hover:shadow-lg">
-                        Message
+                    <Button variant="default" size="sm" onClick={onBook} className="w-full rounded-xl bg-primary hover:bg-primary-600 text-neutral-900 shadow-md hover:shadow-lg">
+                        Book Now
                     </Button>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import { User } from '@/types/api';
 
 interface AuthContextType {
     user: User | null;
+    token: string | null;
     loading: boolean;
     login: (token: string) => Promise<void>;
     logout: () => void;
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -25,12 +27,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const checkAuth = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        const storedToken = localStorage.getItem('token');
+        if (!storedToken) {
             console.log('AuthContext: No token found');
+            setToken(null);
             setLoading(false);
             return null;
         }
+
+        setToken(storedToken);
 
         try {
             console.log('AuthContext: Verifying token...');
@@ -80,7 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user_preferences'); // Clear preferences on logout
         setUser(null);
+        setToken(null);
         router.push('/auth/login');
     };
 
@@ -89,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Star, Clock, ShieldCheck, Calendar, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -71,11 +71,12 @@ const MOCK_USERS = {
     }
 };
 
-import { BookingModal } from '@/components/features/BookingModal';
+import { DirectBookingModal } from '@/components/features/DirectBookingModal';
 
 export default function CaregiverProfilePage() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { user } = useAuth();
     const [caregiver, setCaregiver] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -115,6 +116,12 @@ export default function CaregiverProfilePage() {
 
         fetchCaregiver();
     }, [params.id]);
+
+    useEffect(() => {
+        if (searchParams.get('book') === 'true') {
+            setIsBookingModalOpen(true);
+        }
+    }, [searchParams]);
 
     const handleMessage = async () => {
         if (!user || !caregiver) return;
@@ -185,21 +192,21 @@ export default function CaregiverProfilePage() {
                     {/* Stats Row */}
                     <div className="grid grid-cols-3 gap-4">
                         <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-500 mb-2">
+                            <div className="w-10 h-10 rounded-full bg-warning-50 flex items-center justify-center text-warning-600 mb-2">
                                 <Star size={20} fill="currentColor" />
                             </div>
                             <div className="font-bold text-neutral-900">4.9</div>
                             <div className="text-xs text-neutral-500">Rating</div>
                         </div>
                         <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-2">
+                            <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary mb-2">
                                 <Clock size={20} />
                             </div>
                             <div className="font-bold text-neutral-900">{nanny_details?.experience_years || 0}y</div>
                             <div className="text-xs text-neutral-500">Experience</div>
                         </div>
                         <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 mb-2">
+                            <div className="w-10 h-10 rounded-full bg-secondary-50 flex items-center justify-center text-secondary mb-2">
                                 <Award size={20} />
                             </div>
                             <div className="font-bold text-neutral-900">{nanny_details?.skills?.length || 0}</div>
@@ -303,7 +310,7 @@ export default function CaregiverProfilePage() {
                                 <>
                                     <Button
                                         size="lg"
-                                        className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                        className="w-full rounded-xl bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                                         onClick={() => setIsBookingModalOpen(true)}
                                     >
                                         Request Booking
@@ -357,15 +364,12 @@ export default function CaregiverProfilePage() {
 
             {/* Booking Modal */}
             {caregiver && (
-                <BookingModal
+                <DirectBookingModal
                     isOpen={isBookingModalOpen}
                     onClose={() => setIsBookingModalOpen(false)}
-                    caregiverId={caregiver.id}
-                    caregiverName={`${caregiver.profiles?.first_name} ${caregiver.profiles?.last_name}`}
+                    nannyId={caregiver.id}
+                    nannyName={`${caregiver.profiles?.first_name} ${caregiver.profiles?.last_name}`}
                     hourlyRate={parseFloat(caregiver.nanny_details?.hourly_rate || '0')}
-                    onSuccess={() => {
-                        router.push('/dashboard/bookings');
-                    }}
                 />
             )}
         </div>

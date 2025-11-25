@@ -43,6 +43,12 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
     const data = await response.json();
 
     if (!response.ok) {
+        // Handle 401 Unauthorized - token expired or invalid
+        if (response.status === 401 && typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user_preferences');
+            window.location.href = '/auth/login';
+        }
         throw new Error(data.message || 'An error occurred');
     }
 
@@ -75,7 +81,7 @@ export const api = {
     requests: {
         create: (body: CreateServiceRequestDto) => fetchApi<ServiceRequest>('/requests', { method: 'POST', body: JSON.stringify(body) }),
         get: (id: string) => fetchApi<ServiceRequest>(`/requests/${id}`),
-        getParentRequests: (parentId: string) => fetchApi<ServiceRequest[]>(`/requests/parent/${parentId}`),
+        getParentRequests: () => fetchApi<ServiceRequest[]>('/requests/parent/me'),
         cancel: (id: string) => fetchApi<ServiceRequest>(`/requests/${id}/cancel`, { method: 'PUT' }),
         getMatches: (id: string) => fetchApi<User[]>(`/requests/${id}/matches`),
     },
@@ -111,5 +117,10 @@ export const api = {
         getStats: () => fetchApi<AdminStats>('/admin/stats'),
         verifyUser: (id: string) => fetchApi<User>(`/admin/users/${id}/verify`, { method: 'PUT' }),
         banUser: (id: string) => fetchApi<User>(`/admin/users/${id}/ban`, { method: 'PUT' }),
+    },
+    assignments: {
+        getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),
+        accept: (id: string) => fetchApi<any>(`/assignments/${id}/accept`, { method: 'PUT' }),
+        reject: (id: string, reason?: string) => fetchApi<any>(`/assignments/${id}/reject`, { method: 'PUT', body: JSON.stringify({ reason }) }),
     },
 };

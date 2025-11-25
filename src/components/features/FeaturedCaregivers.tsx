@@ -121,7 +121,6 @@ export const FeaturedCaregivers: React.FC = () => {
                                 <ProfileCard
                                     {...caregiver}
                                     onViewProfile={() => router.push(`/caregiver/${caregiver.id}`)}
-                                    onMessage={() => console.log(`Message: ${caregiver.name}`)}
                                 />
                             </div>
                         ))}

@@ -82,7 +82,7 @@ export const Hero: React.FC = () => {
 
                         <Button
                             onClick={handleSearch}
-                            className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 text-white shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
+                            className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
                         >
                             <i className="lni lni-search-alt text-xl"></i>
                         </Button>

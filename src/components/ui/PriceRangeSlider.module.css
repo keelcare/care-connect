@@ -1,23 +1,23 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: 1rem;
 }
 
 .label {
-    font-family: var(--font-primary);
     font-size: 14px;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-700);
+    font-weight: 500;
+    color: hsl(var(--neutral-700));
     display: flex;
     justify-content: space-between;
 }
 
 .sliderContainer {
     position: relative;
-    height: 20px;
+    height: 24px;
     display: flex;
     align-items: center;
+    padding: 0 2px;
 }
 
 .track {
@@ -25,46 +25,48 @@
     left: 0;
     right: 0;
     height: 4px;
-    background-color: var(--color-gray-200);
-    border-radius: var(--radius-full);
+    background-color: hsl(var(--neutral-200));
+    border-radius: 9999px;
 }
 
 .range {
     position: absolute;
     height: 4px;
-    background-color: var(--color-primary-500);
-    border-radius: var(--radius-full);
+    background-color: hsl(var(--primary));
+    border-radius: 9999px;
+    transition: all 100ms ease-out;
 }
 
 .thumb {
     position: absolute;
     top: 50%;
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border: 2px solid var(--color-primary-500);
+    width: 18px;
+    height: 18px;
+    background-color: hsl(var(--neutral-900));
+    border: none;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
 }
 
 .thumb:hover {
-    transform: translate(-50%, -50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .thumb:active {
     cursor: grabbing;
-    transform: translate(-50%, -50%) scale(1.1);
-    box-shadow: 0 0 0 4px var(--color-primary-100);
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 0 4px hsl(var(--neutral-200));
 }
 
 .inputs {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: 1rem;
 }
 
 .inputWrapper {
@@ -74,25 +76,25 @@
 
 .currency {
     position: absolute;
-    left: var(--space-3);
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-gray-500);
+    color: hsl(var(--neutral-500));
     font-size: 14px;
 }
 
 .numberInput {
     width: 100%;
-    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+    border: 1px solid hsl(var(--neutral-300));
+    border-radius: 0.5rem;
     font-size: 14px;
-    color: var(--color-gray-900);
-    transition: border-color var(--transition-fast);
+    color: hsl(var(--neutral-900));
+    transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .numberInput:focus {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-100);
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary-100));
 }

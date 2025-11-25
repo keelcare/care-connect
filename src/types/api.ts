@@ -164,24 +164,25 @@ export type RequestStatus = 'PENDING' | 'ASSIGNED' | 'ACCEPTED' | 'IN_PROGRESS' 
 
 export interface ServiceRequest {
     id: string;
-    parentId: string;
-    nannyId?: string;
+    parent_id: string;
+    nanny_id?: string;
     status: RequestStatus;
     date: string;
-    startTime: string;
-    endTime?: string;
-    durationHours: number;
-    numChildren: number;
-    childrenAges: number[];
-    specialRequirements?: string;
+    start_time: string;
+    end_time?: string;
+    duration_hours: number;
+    num_children: number;
+    children_ages: number[];
+    special_requirements?: string;
     location: {
         address: string;
         lat: number;
         lng: number;
     };
-    totalAmount?: number;
-    createdAt: string;
-    updatedAt: string;
+    total_amount?: number;
+    created_at: string;
+    updated_at: string;
+    parent?: User;
 }
 
 export interface CreateServiceRequestDto {
@@ -191,7 +192,13 @@ export interface CreateServiceRequestDto {
     num_children: number;
     children_ages: number[];
     special_requirements?: string;
-    address?: string; // Optional if using profile address
+    max_hourly_rate?: number;
+    required_skills?: string[];
+    location?: {
+        address: string;
+        lat: number;
+        lng: number;
+    };
 }
 
 // Booking Types
@@ -219,6 +226,7 @@ export interface CreateBookingDto {
     date: string; // YYYY-MM-DD
     startTime: string; // HH:mm
     endTime: string; // HH:mm
+    numChildren: number;
     notes?: string;
     jobId?: string; // Optional for backwards compatibility if needed
 }

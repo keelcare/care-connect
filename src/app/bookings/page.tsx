@@ -1,92 +1,60 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking } from '@/types/api';
+import { Booking, ServiceRequest } from '@/types/api';
+import { Plus, Calendar, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { AuthGuard } from '@/components/auth/AuthGuard';
-import Link from 'next/link';
-import { MessageSquare, ChevronRight } from 'lucide-react';
-import { CancellationModal } from '@/components/features/CancellationModal';
-import { BookingDetailsModal } from '@/components/features/BookingDetailsModal';
+import ParentLayout from '@/components/layout/ParentLayout';
 
 export default function ParentBookingsPage() {
     const { user } = useAuth();
-    const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upcoming' | 'completed' | 'cancelled'>('upcoming');
-
-    // Modal States
-    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'requests' | 'upcoming' | 'completed' | 'cancelled'>('upcoming');
 
     useEffect(() => {
         if (user) {
-            fetchBookings();
+            fetchData();
         }
     }, [user]);
 
-    const fetchBookings = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.bookings.getParentBookings();
 
-            // Enrich bookings with nanny details if missing
-            const enrichedData = await Promise.all(data.map(async (booking) => {
-                if (!booking.nanny?.profiles && booking.nanny_id) {
-                    try {
-                        const nannyUser = await api.users.get(booking.nanny_id);
-                        return { ...booking, nanny: nannyUser };
-                    } catch (e) {
-                        console.error(`Failed to fetch nanny details for ${booking.nanny_id}`, e);
-                        return booking;
-                    }
-                }
-                return booking;
-            }));
-
-            setBookings(enrichedData);
+            // Only fetch parent data
+            if (user?.role === 'parent') {
+                const [bookingsData, requestsData] = await Promise.all([
+                    api.bookings.getParentBookings(),
+                    api.requests.getParentRequests()
+                ]);
+                setBookings(bookingsData);
+                setRequests(requestsData);
+            }
         } catch (err) {
-            console.error('Failed to fetch bookings:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load bookings');
+            console.error('Failed to fetch data:', err);
+            setError(err instanceof Error ? err.message : 'Failed to load data');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleOpenCancelModal = (booking: Booking, e?: React.MouseEvent) => {
-        e?.stopPropagation();
-        setSelectedBooking(booking);
-        setIsCancelModalOpen(true);
-        // If details modal is open, close it
-        setIsDetailsModalOpen(false);
-    };
-
-    const handleConfirmCancel = async (reason: string) => {
-        if (!selectedBooking) return;
+    const handleCancelBooking = async (bookingId: string) => {
+        const reason = prompt('Please provide a reason for cancellation:');
+        if (!reason) return;
 
         try {
-            setActionLoading(selectedBooking.id);
-            const updated = await api.bookings.cancel(selectedBooking.id, { reason });
-
-            // Re-fetch or update local state carefully
-            setBookings(prev => prev.map(b => {
-                if (b.id === selectedBooking.id) {
-                    return { ...b, status: 'CANCELLED', cancellation_reason: reason };
-                }
-                return b;
-            }));
-
-            setIsCancelModalOpen(false);
-            setSelectedBooking(null);
+            setActionLoading(bookingId);
+            const updated = await api.bookings.cancel(bookingId, { reason });
+            setBookings(bookings.map(b => b.id === bookingId ? updated : b));
         } catch (err) {
             console.error('Failed to cancel booking:', err);
             alert(err instanceof Error ? err.message : 'Failed to cancel booking');
@@ -95,30 +63,13 @@ export default function ParentBookingsPage() {
         }
     };
 
-    const handleOpenDetails = (booking: Booking) => {
-        setSelectedBooking(booking);
-        setIsDetailsModalOpen(true);
-    };
-
-    const handleMessage = async (booking: Booking, e?: React.MouseEvent) => {
-        e?.stopPropagation();
-        try {
-            // Create or get chat
-            const chat = await api.chat.create({ bookingId: booking.id });
-            router.push(`/messages?chatId=${chat.id}`);
-        } catch (err) {
-            console.error('Failed to start chat:', err);
-            // Fallback to just messages page
-            router.push('/messages');
-        }
-    };
-
     const getStatusBadgeStyles = (status: string) => {
         switch (status) {
             case 'CONFIRMED': return 'bg-green-100 text-green-700';
-            case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700';
+            case 'IN_PROGRESS': return 'bg-primary-100 text-primary-700';
             case 'COMPLETED': return 'bg-neutral-100 text-neutral-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
+            case 'PENDING': return 'bg-yellow-100 text-yellow-700';
             default: return 'bg-neutral-100 text-neutral-700';
         }
     };
@@ -139,9 +90,31 @@ export default function ParentBookingsPage() {
     const getOtherPartyName = (booking: Booking) => {
         return booking.nanny?.profiles?.first_name && booking.nanny?.profiles?.last_name
             ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name}`
-            : booking.nanny?.profiles?.first_name
-                ? booking.nanny.profiles.first_name
-                : booking.nanny?.email?.split('@')[0] || 'Nanny';
+            : booking.nanny?.email || 'Nanny';
+    };
+
+    const renderActionButtons = (booking: Booking) => {
+        if (actionLoading === booking.id) {
+            return <Spinner />;
+        }
+
+        const buttons = [];
+
+        if (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') {
+            buttons.push(
+                <Button
+                    key="cancel"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCancelBooking(booking.id)}
+                    className="rounded-xl border-neutral-200"
+                >
+                    Cancel
+                </Button>
+            );
+        }
+
+        return buttons.length > 0 ? <div className="flex gap-2">{buttons}</div> : null;
     };
 
     const filteredBookings = bookings.filter(booking => {
@@ -152,78 +125,150 @@ export default function ParentBookingsPage() {
     });
 
     return (
-        <AuthGuard>
-            <div className="min-h-screen bg-neutral-50 pt-28 pb-20 px-4 md:px-8">
-                <div className="max-w-5xl mx-auto space-y-8">
+        <ParentLayout>
+            <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-neutral-900 font-display">My Bookings</h1>
-                        <p className="text-neutral-500 mt-1">Manage your upcoming and past appointments</p>
+                        <p className="text-neutral-500 mt-1">Manage your appointments and requests</p>
                     </div>
+                    <Link href="/dashboard/requests/create">
+                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all">
+                            <Plus size={18} className="mr-2" /> New Request
+                        </Button>
+                    </Link>
+                </div>
 
-                    {/* Tabs */}
-                    <div className="flex border-b border-neutral-200">
-                        <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'upcoming' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
-                            onClick={() => setActiveTab('upcoming')}
-                        >
-                            Upcoming
-                            {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                        </button>
-                        <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'completed' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
-                            onClick={() => setActiveTab('completed')}
-                        >
-                            Completed
-                            {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                        </button>
-                        <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'cancelled' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
-                            onClick={() => setActiveTab('cancelled')}
-                        >
-                            Cancelled
-                            {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                        </button>
+                {/* Tabs */}
+                <div className="flex border-b border-neutral-200 overflow-x-auto">
+                    <button
+                        className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'requests' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                        onClick={() => setActiveTab('requests')}
+                    >
+                        Requests
+                        {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    </button>
+                    <button
+                        className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                        onClick={() => setActiveTab('upcoming')}
+                    >
+                        Upcoming
+                        {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    </button>
+                    <button
+                        className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                        onClick={() => setActiveTab('completed')}
+                    >
+                        Completed
+                        {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    </button>
+                    <button
+                        className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                        onClick={() => setActiveTab('cancelled')}
+                    >
+                        Cancelled
+                        {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    </button>
+                </div>
+
+                {/* Content */}
+                {loading ? (
+                    <div className="flex justify-center py-12">
+                        <Spinner />
                     </div>
+                ) : error ? (
+                    <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <Button onClick={fetchData}>Retry</Button>
+                    </div>
+                ) : activeTab === 'requests' ? (
+                    <div className="space-y-6">
+                        {requests.length === 0 ? (
+                            <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+                                    <Plus size={32} />
+                                </div>
+                                <h3 className="text-xl font-bold text-neutral-900 mb-2">No Requests Yet</h3>
+                                <p className="text-neutral-500 mb-6 max-w-md mx-auto">You haven't created any service requests yet.</p>
+                                <Link href="/dashboard/requests/create">
+                                    <Button className="rounded-xl">
+                                        Create Your First Request
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {requests.map((request) => (
+                                    <Link href={`/dashboard/requests/${request.id}`} key={request.id} className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden">
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}>
+                                                    {request.status.replace('_', ' ')}
+                                                </span>
+                                                <span className="text-xs text-neutral-400 font-medium">
+                                                    {new Date(request.created_at).toLocaleDateString()}
+                                                </span>
+                                            </div>
 
-                    {loading ? (
-                        <div className="flex justify-center py-12">
-                            <Spinner />
-                        </div>
-                    ) : error ? (
-                        <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
-                            <p className="text-red-600 mb-4">{error}</p>
-                            <Button onClick={fetchBookings}>Retry</Button>
-                        </div>
-                    ) : filteredBookings.length === 0 ? (
+                                            <h3 className="text-lg font-bold text-neutral-900 mb-4 group-hover:text-primary transition-colors">
+                                                Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
+                                            </h3>
+
+                                            <div className="space-y-3 text-sm text-neutral-600">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <Calendar size={16} />
+                                                    </div>
+                                                    <span>{new Date(request.date).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <Clock size={16} />
+                                                    </div>
+                                                    <span>{request.start_time} ({request.duration_hours} hrs)</span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <MapPin size={16} />
+                                                    </div>
+                                                    <span className="truncate">{request.location?.address || 'No location specified'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    // Bookings List (Upcoming, Completed, Cancelled)
+                    filteredBookings.length === 0 ? (
                         <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
                             <p className="text-neutral-500 mb-6">No {activeTab} bookings found.</p>
-                            <Link href="/browse">
-                                <Button className="rounded-xl">
-                                    Find Care
-                                </Button>
-                            </Link>
+                            <Button
+                                onClick={() => window.location.href = '/search'}
+                                className="rounded-xl"
+                            >
+                                Find Care
+                            </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {filteredBookings.map((booking) => {
                                 const { day, month } = formatDate(booking.start_time);
                                 return (
-                                    <div
-                                        key={booking.id}
-                                        onClick={() => handleOpenDetails(booking)}
-                                        className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all cursor-pointer group"
-                                    >
+                                    <div key={booking.id} className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
                                         <div className="flex items-center gap-4 flex-1">
-                                            <div className="flex-shrink-0 w-16 h-16 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                            <div className="flex-shrink-0 w-16 h-16 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary">
                                                 <span className="text-xs font-bold uppercase">{month}</span>
                                                 <span className="text-xl font-bold">{day}</span>
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary transition-colors">
-                                                    {booking.job?.title || `Booking with ${getOtherPartyName(booking)}`}
+                                                <h3 className="text-lg font-bold text-neutral-900">
+                                                    {booking.job?.title || 'Booking'}
                                                 </h3>
                                                 <p className="text-neutral-500 text-sm mb-1">
-                                                    with <span className="font-medium text-neutral-700">{getOtherPartyName(booking)}</span>
+                                                    with {getOtherPartyName(booking)}
                                                 </p>
                                                 <p className="text-neutral-400 text-xs">
                                                     {formatTime(booking.start_time)}
@@ -236,54 +281,15 @@ export default function ParentBookingsPage() {
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
                                                 {booking.status.toLowerCase().replace('_', ' ')}
                                             </span>
-
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={(e) => handleMessage(booking, e)}
-                                                    className="rounded-xl text-neutral-500 hover:text-primary hover:bg-primary-50"
-                                                >
-                                                    <MessageSquare size={18} />
-                                                </Button>
-
-                                                {(booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') && (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={(e) => handleOpenCancelModal(booking, e)}
-                                                        className="rounded-xl border-neutral-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                )}
-
-                                                <ChevronRight size={20} className="text-neutral-300 group-hover:text-primary transition-colors" />
-                                            </div>
+                                            {renderActionButtons(booking)}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
-                    )}
-                </div>
+                    )
+                )}
             </div>
-
-            <CancellationModal
-                isOpen={isCancelModalOpen}
-                onClose={() => setIsCancelModalOpen(false)}
-                onConfirm={handleConfirmCancel}
-                loading={!!actionLoading}
-            />
-
-            <BookingDetailsModal
-                isOpen={isDetailsModalOpen}
-                onClose={() => setIsDetailsModalOpen(false)}
-                booking={selectedBooking}
-                onMessage={(booking) => handleMessage(booking)}
-                onCancel={(booking) => handleOpenCancelModal(booking)}
-                loading={!!actionLoading}
-            />
-        </AuthGuard>
+        </ParentLayout>
     );
 }

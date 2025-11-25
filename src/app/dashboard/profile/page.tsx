@@ -6,10 +6,13 @@ import Image from 'next/image';
 import { MapPin, ShieldCheck, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 import styles from './page.module.css';
+import { usePreferences } from '@/hooks/usePreferences';
 
 export default function ProfilePage() {
     const { user, loading } = useAuth();
+    const { updatePreferences } = usePreferences();
 
     if (loading) {
         return (
@@ -41,6 +44,56 @@ export default function ProfilePage() {
     }
 
     const { profiles, nanny_details } = user;
+    const [updatingLocation, setUpdatingLocation] = React.useState(false);
+
+    const handleUpdateLocation = () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser");
+            return;
+        }
+
+        setUpdatingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+
+                try {
+                    // Update user location
+                    await api.users.update(user.id, {
+                        lat: latitude,
+                        lng: longitude
+                    });
+
+                    // Wait for backend reverse geocoding to complete (typically takes 1-2 seconds)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Fetch updated user data to get the address
+                    const updatedUser = await api.users.me();
+
+                    // Update preferences with location
+                    updatePreferences({
+                        location: {
+                            lat: latitude,
+                            lng: longitude,
+                            address: updatedUser.profiles?.address || 'Current Location'
+                        }
+                    });
+
+                    // Reload window to refresh user data with the new address
+                    window.location.reload();
+                } catch (error) {
+                    console.error("Error updating location:", error);
+                    alert("Failed to update location.");
+                    setUpdatingLocation(false);
+                }
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                alert("Unable to retrieve your location. Please allow location access.");
+                setUpdatingLocation(false);
+            }
+        );
+    };
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
@@ -79,6 +132,15 @@ export default function ProfilePage() {
                                 <div className="flex items-center gap-1.5">
                                     <MapPin size={16} className="text-neutral-400" />
                                     <span>{profiles?.address || 'No address set'}</span>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleUpdateLocation}
+                                        disabled={updatingLocation}
+                                        className="h-6 px-2 text-xs text-primary hover:text-primary-700 hover:bg-primary-50 ml-2"
+                                    >
+                                        {updatingLocation ? 'Updating...' : 'Use current location'}
+                                    </Button>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <ShieldCheck size={16} className={user.is_verified ? "text-green-500" : "text-neutral-400"} />

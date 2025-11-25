@@ -108,8 +108,8 @@ export default function BookingDetailsPage() {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case 'CONFIRMED': return 'bg-blue-100 text-blue-700';
-            case 'IN_PROGRESS': return 'bg-purple-100 text-purple-700';
+            case 'CONFIRMED': return 'bg-primary-100 text-primary-700';
+            case 'IN_PROGRESS': return 'bg-secondary-100 text-secondary-700';
             case 'COMPLETED': return 'bg-green-100 text-green-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
             default: return 'bg-neutral-100 text-neutral-700';

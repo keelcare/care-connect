@@ -29,8 +29,8 @@ export default function RequestDetailsPage() {
                 const data = await api.requests.get(id);
                 setRequest(data);
 
-                if (data.nannyId) {
-                    const nanny = await api.users.get(data.nannyId);
+                if (data.nanny_id) {
+                    const nanny = await api.users.get(data.nanny_id);
                     setAssignedNanny(nanny);
                 }
             } catch (err) {
@@ -91,9 +91,9 @@ export default function RequestDetailsPage() {
     const getStatusInfo = (status: string) => {
         switch (status) {
             case 'PENDING': return { color: 'text-yellow-700 bg-yellow-100', icon: <Clock size={20} />, text: 'Pending Assignment' };
-            case 'ASSIGNED': return { color: 'text-blue-700 bg-blue-100', icon: <CheckCircle size={20} />, text: 'Nanny Assigned' };
+            case 'ASSIGNED': return { color: 'text-primary-700 bg-primary-100', icon: <CheckCircle size={20} />, text: 'Nanny Assigned' };
             case 'ACCEPTED': return { color: 'text-green-700 bg-green-100', icon: <CheckCircle size={20} />, text: 'Booking Confirmed' };
-            case 'IN_PROGRESS': return { color: 'text-purple-700 bg-purple-100', icon: <Clock size={20} />, text: 'Service In Progress' };
+            case 'IN_PROGRESS': return { color: 'text-secondary-700 bg-secondary-100', icon: <Clock size={20} />, text: 'Service In Progress' };
             case 'COMPLETED': return { color: 'text-neutral-700 bg-neutral-100', icon: <CheckCircle size={20} />, text: 'Completed' };
             case 'CANCELLED': return { color: 'text-red-700 bg-red-100', icon: <XCircle size={20} />, text: 'Cancelled' };
             default: return { color: 'text-neutral-700 bg-neutral-100', icon: <AlertTriangle size={20} />, text: status };
@@ -139,7 +139,7 @@ export default function RequestDetailsPage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-500 mb-1">Time</label>
-                                    <p className="text-neutral-900 font-medium">{request.startTime} ({request.durationHours} hours)</p>
+                                    <p className="text-neutral-900 font-medium">{request.start_time} ({request.duration_hours} hours)</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -148,7 +148,7 @@ export default function RequestDetailsPage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-500 mb-1">Children</label>
-                                    <p className="text-neutral-900 font-medium">{request.numChildren} (Ages: {request.childrenAges.join(', ')})</p>
+                                    <p className="text-neutral-900 font-medium">{request.num_children} (Ages: {request.children_ages.join(', ')})</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -157,15 +157,15 @@ export default function RequestDetailsPage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-500 mb-1">Location</label>
-                                    <p className="text-neutral-900 font-medium">{request.location.address}</p>
+                                    <p className="text-neutral-900 font-medium">{request.location?.address || 'No location specified'}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {request.specialRequirements && (
+                        {request.special_requirements && (
                             <div className="mt-8 pt-8 border-t border-neutral-100">
                                 <label className="block text-sm font-medium text-neutral-500 mb-2">Special Requirements</label>
-                                <p className="text-neutral-900 bg-neutral-50 p-4 rounded-xl">{request.specialRequirements}</p>
+                                <p className="text-neutral-900 bg-neutral-50 p-4 rounded-xl">{request.special_requirements}</p>
                             </div>
                         )}
                     </div>

@@ -111,9 +111,9 @@ export default function DashboardPage() {
         .slice(0, 3);
 
     const statsDisplay = [
-        { label: 'Total Bookings', value: stats.totalBookings.toString(), icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-50' },
-        { label: 'Unread Messages', value: stats.unreadMessages.toString(), icon: MessageSquare, color: 'text-purple-500', bg: 'bg-purple-50' },
-        { label: 'Hours of Care', value: stats.hoursOfCare.toString(), icon: Clock, color: 'text-orange-500', bg: 'bg-orange-50' },
+        { label: 'Total Bookings', value: stats.totalBookings.toString(), icon: Calendar, color: 'text-primary', bg: 'bg-primary-50' },
+        { label: 'Unread Messages', value: stats.unreadMessages.toString(), icon: MessageSquare, color: 'text-secondary', bg: 'bg-secondary-50' },
+        { label: 'Hours of Care', value: stats.hoursOfCare.toString(), icon: Clock, color: 'text-warning-600', bg: 'bg-warning-50' },
         { label: 'Average Rating', value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A', icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50' },
     ];
 
@@ -252,8 +252,8 @@ export default function DashboardPage() {
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'CONFIRMED'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : 'bg-blue-100 text-blue-700'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-primary-100 text-primary-700'
                                                             }`}>
                                                             {booking.status}
                                                         </span>

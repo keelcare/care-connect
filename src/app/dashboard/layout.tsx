@@ -16,7 +16,6 @@ export default function DashboardLayout({
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-        { icon: ClipboardList, label: 'Requests', href: '/dashboard/requests' },
         { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
         { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
         { icon: User, label: 'Profile', href: '/dashboard/profile' },
@@ -25,12 +24,6 @@ export default function DashboardLayout({
 
     const { user, loading } = useAuth();
     const router = useRouter();
-
-    React.useEffect(() => {
-        if (!loading && user && user.role === 'parent') {
-            router.push('/bookings');
-        }
-    }, [user, loading, router]);
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
@@ -57,11 +50,11 @@ export default function DashboardLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 font-medium ${isActive
-                                    ? 'bg-primary text-white shadow-md'
+                                    ? 'bg-primary/10 text-neutral-900'
                                     : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
                                     }`}
                             >
-                                <Icon size={20} className={isActive ? 'text-white' : 'text-neutral-400'} />
+                                <Icon size={20} className={isActive ? 'text-primary' : 'text-neutral-400'} />
                                 {item.label}
                             </Link>
                         );

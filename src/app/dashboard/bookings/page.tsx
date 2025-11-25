@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking } from '@/types/api';
+import { Booking, ServiceRequest } from '@/types/api';
+import { Plus, Calendar, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import styles from './page.module.css';
@@ -11,33 +13,42 @@ import styles from './page.module.css';
 export default function BookingsPage() {
     const { user } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [requests, setRequests] = useState<ServiceRequest[]>([]);
+    const [assignments, setAssignments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'upcoming' | 'completed' | 'cancelled'>('upcoming');
+    const [activeTab, setActiveTab] = useState<'requests' | 'upcoming' | 'completed' | 'cancelled'>('upcoming');
 
     useEffect(() => {
         if (user) {
-            fetchBookings();
+            fetchData();
         }
     }, [user]);
 
-    const fetchBookings = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            let data: Booking[];
             if (user?.role === 'nanny') {
-                data = await api.bookings.getNannyBookings();
-            } else {
-                data = await api.bookings.getParentBookings();
+                const [bookingsData, assignmentsData] = await Promise.all([
+                    api.bookings.getNannyBookings(),
+                    api.assignments.getNannyAssignments()
+                ]);
+                setBookings(bookingsData);
+                setAssignments(assignmentsData);
+            } else if (user?.role === 'parent') {
+                const [bookingsData, requestsData] = await Promise.all([
+                    api.bookings.getParentBookings(),
+                    api.requests.getParentRequests()
+                ]);
+                setBookings(bookingsData);
+                setRequests(requestsData);
             }
-
-            setBookings(data);
         } catch (err) {
-            console.error('Failed to fetch bookings:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load bookings');
+            console.error('Failed to fetch data:', err);
+            setError(err instanceof Error ? err.message : 'Failed to load data');
         } finally {
             setLoading(false);
         }
@@ -85,12 +96,46 @@ export default function BookingsPage() {
         }
     };
 
+    const handleAcceptAssignment = async (assignmentId: string) => {
+        try {
+            setActionLoading(assignmentId);
+            await api.assignments.accept(assignmentId);
+            await fetchData(); // Refresh all data
+        } catch (err) {
+            console.error(err);
+            alert('Failed to accept assignment');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleRejectAssignment = async (assignmentId: string) => {
+        if (!confirm('Are you sure you want to reject this request?')) return;
+
+        try {
+            setActionLoading(assignmentId);
+            await api.assignments.reject(assignmentId);
+            await fetchData(); // Refresh all data
+        } catch (err) {
+            console.error(err);
+            alert('Failed to reject assignment');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const getStatusBadgeStyles = (status: string) => {
         switch (status) {
             case 'CONFIRMED': return 'bg-green-100 text-green-700';
-            case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700';
+            case 'IN_PROGRESS': return 'bg-primary-100 text-primary-700';
             case 'COMPLETED': return 'bg-neutral-100 text-neutral-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
+            case 'PENDING': return 'bg-yellow-100 text-yellow-700';
+            case 'ASSIGNED': return 'bg-primary-100 text-primary-700';
+            case 'ACCEPTED': return 'bg-green-100 text-green-700';
+            case 'rejected': return 'bg-red-100 text-red-700';
+            case 'pending': return 'bg-yellow-100 text-yellow-700';
+            case 'accepted': return 'bg-green-100 text-green-700';
             default: return 'bg-neutral-100 text-neutral-700';
         }
     };
@@ -198,7 +243,7 @@ export default function BookingsPage() {
                 </div>
                 <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
                     <p className="text-red-600 mb-4">{error}</p>
-                    <Button onClick={fetchBookings}>Retry</Button>
+                    <Button onClick={fetchData}>Retry</Button>
                 </div>
             </div>
         );
@@ -206,29 +251,45 @@ export default function BookingsPage() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-neutral-900 font-display">My Bookings</h1>
-                <p className="text-neutral-500 mt-1">Manage your upcoming and past appointments</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-900 font-display">My Bookings</h1>
+                    <p className="text-neutral-500 mt-1">Manage your appointments and requests</p>
+                </div>
+                {user?.role === 'parent' && (
+                    <Link href="/dashboard/requests/create">
+                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all">
+                            <Plus size={18} className="mr-2" /> New Request
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-neutral-200">
+            <div className="flex border-b border-neutral-200 overflow-x-auto">
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'upcoming' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'requests' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    onClick={() => setActiveTab('requests')}
+                >
+                    Requests
+                    {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                </button>
+                <button
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
                     onClick={() => setActiveTab('upcoming')}
                 >
                     Upcoming
                     {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'completed' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
                     onClick={() => setActiveTab('completed')}
                 >
                     Completed
                     {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'cancelled' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
                     onClick={() => setActiveTab('cancelled')}
                 >
                     Cancelled
@@ -236,51 +297,194 @@ export default function BookingsPage() {
                 </button>
             </div>
 
-            {filteredBookings.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-                    <p className="text-neutral-500 mb-6">No {activeTab} bookings found.</p>
-                    <Button
-                        onClick={() => window.location.href = user?.role === 'nanny' ? '/dashboard' : '/search'}
-                        className="rounded-xl"
-                    >
-                        {user?.role === 'nanny' ? 'View Jobs' : 'Find Care'}
-                    </Button>
+            {/* Content */}
+            {activeTab === 'requests' ? (
+                <div className="space-y-6">
+                    {user?.role === 'nanny' ? (
+                        // Nanny Assignments View
+                        assignments.length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+                                <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-3 text-primary">
+                                    <Calendar size={24} />
+                                </div>
+                                <h3 className="text-lg font-bold text-neutral-900 mb-1">No New Requests</h3>
+                                <p className="text-neutral-500 text-sm">You don't have any pending service requests.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {assignments.map((assignment) => {
+                                    const request = assignment.request;
+                                    if (!request) return null;
+                                    return (
+                                        <div key={assignment.id} className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden">
+                                            <div className="p-6">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(assignment.status)}`}>
+                                                        {assignment.status.toUpperCase()}
+                                                    </span>
+                                                    <span className="text-xs text-neutral-400 font-medium">
+                                                        {new Date(assignment.assigned_at).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+
+                                                <h3 className="text-lg font-bold text-neutral-900 mb-4">
+                                                    Request from {request.parent?.profiles?.first_name || 'Parent'}
+                                                </h3>
+
+                                                <div className="space-y-3 text-sm text-neutral-600">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                            <Calendar size={16} />
+                                                        </div>
+                                                        <span>{new Date(request.date).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                            <Clock size={16} />
+                                                        </div>
+                                                        <span>{request.start_time} ({request.duration_hours} hrs)</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                            <MapPin size={16} />
+                                                        </div>
+                                                        <span className="truncate">{request.parent?.profiles?.address || 'Location hidden'}</span>
+                                                    </div>
+                                                </div>
+
+                                                {assignment.status === 'pending' && (
+                                                    <div className="mt-6 grid grid-cols-2 gap-3">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                            onClick={() => handleRejectAssignment(assignment.id)}
+                                                            disabled={actionLoading === assignment.id}
+                                                        >
+                                                            Reject
+                                                        </Button>
+                                                        <Button
+                                                            className="w-full bg-primary hover:bg-primary-600 text-white"
+                                                            onClick={() => handleAcceptAssignment(assignment.id)}
+                                                            disabled={actionLoading === assignment.id}
+                                                        >
+                                                            {actionLoading === assignment.id ? '...' : 'Accept'}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )
+                    ) : (
+                        // Parent Requests View
+                        requests.length === 0 ? (
+                            <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+                                    <Plus size={32} />
+                                </div>
+                                <h3 className="text-xl font-bold text-neutral-900 mb-2">No Requests Yet</h3>
+                                <p className="text-neutral-500 mb-6 max-w-md mx-auto">You haven't created any service requests yet.</p>
+                                <Link href="/dashboard/requests/create">
+                                    <Button className="rounded-xl">
+                                        Create Your First Request
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {requests.map((request) => (
+                                    <Link href={`/dashboard/requests/${request.id}`} key={request.id} className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden">
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}>
+                                                    {request.status.replace('_', ' ')}
+                                                </span>
+                                                <span className="text-xs text-neutral-400 font-medium">
+                                                    {new Date(request.created_at).toLocaleDateString()}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-lg font-bold text-neutral-900 mb-4 group-hover:text-primary transition-colors">
+                                                Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
+                                            </h3>
+
+                                            <div className="space-y-3 text-sm text-neutral-600">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <Calendar size={16} />
+                                                    </div>
+                                                    <span>{new Date(request.date).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <Clock size={16} />
+                                                    </div>
+                                                    <span>{request.start_time} ({request.duration_hours} hrs)</span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                                                        <MapPin size={16} />
+                                                    </div>
+                                                    <span className="truncate">{request.location?.address || 'No location specified'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )
+                    )}
                 </div>
             ) : (
-                <div className="space-y-4">
-                    {filteredBookings.map((booking) => {
-                        const { day, month } = formatDate(booking.start_time);
-                        return (
-                            <div key={booking.id} className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div className="flex-shrink-0 w-16 h-16 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary">
-                                        <span className="text-xs font-bold uppercase">{month}</span>
-                                        <span className="text-xl font-bold">{day}</span>
+                // Bookings List (Upcoming, Completed, Cancelled)
+                filteredBookings.length === 0 ? (
+                    <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+                        <p className="text-neutral-500 mb-6">No {activeTab} bookings found.</p>
+                        <Button
+                            onClick={() => window.location.href = user?.role === 'nanny' ? '/dashboard' : '/search'}
+                            className="rounded-xl"
+                        >
+                            {user?.role === 'nanny' ? 'View Jobs' : 'Find Care'}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {filteredBookings.map((booking) => {
+                            const { day, month } = formatDate(booking.start_time);
+                            return (
+                                <div key={booking.id} className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <div className="flex-shrink-0 w-16 h-16 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary">
+                                            <span className="text-xs font-bold uppercase">{month}</span>
+                                            <span className="text-xl font-bold">{day}</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-neutral-900">
+                                                {booking.job?.title || 'Booking'}
+                                            </h3>
+                                            <p className="text-neutral-500 text-sm mb-1">
+                                                with {getOtherPartyName(booking)}
+                                            </p>
+                                            <p className="text-neutral-400 text-xs">
+                                                {formatTime(booking.start_time)}
+                                                {booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-neutral-900">
-                                            {booking.job?.title || 'Booking'}
-                                        </h3>
-                                        <p className="text-neutral-500 text-sm mb-1">
-                                            with {getOtherPartyName(booking)}
-                                        </p>
-                                        <p className="text-neutral-400 text-xs">
-                                            {formatTime(booking.start_time)}
-                                            {booking.end_time && ` - ${formatTime(booking.end_time)}`}
-                                        </p>
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-neutral-100 pt-4 md:pt-0">
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
-                                        {booking.status.toLowerCase().replace('_', ' ')}
-                                    </span>
-                                    {renderActionButtons(booking)}
+                                    <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-neutral-100 pt-4 md:pt-0">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
+                                            {booking.status.toLowerCase().replace('_', ' ')}
+                                        </span>
+                                        {renderActionButtons(booking)}
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )
             )}
         </div>
     );

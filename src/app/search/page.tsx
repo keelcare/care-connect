@@ -1,34 +1,137 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui/SearchInput';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/components/ui/ToastProvider';
 import { FilterSidebar } from '@/components/features/FilterSidebar';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { Modal } from '@/components/ui/Modal';
+import { DirectBookingModal } from '@/components/features/DirectBookingModal';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
+import ParentLayout from '@/components/layout/ParentLayout';
+import { usePreferences } from '@/hooks/usePreferences';
 
 export default function SearchPage() {
+    const { user, loading: authLoading } = useAuth();
+    const { addToast } = useToast();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [selectedNannyId, setSelectedNannyId] = useState<string | undefined>(undefined);
+    const [selectedNannyName, setSelectedNannyName] = useState<string>('');
+    const [selectedNannyRate, setSelectedNannyRate] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [nannies, setNannies] = useState<User[]>([]);
     const [filteredNannies, setFilteredNannies] = useState<User[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isNearby, setIsNearby] = useState(false);
+    const [updatingLocation, setUpdatingLocation] = useState(false);
+    const { preferences, updatePreferences } = usePreferences();
+
+    const handleUpdateLocation = () => {
+        if (!navigator.geolocation) {
+            addToast({ message: "Geolocation is not supported by your browser", type: "error" });
+            return;
+        }
+
+        setUpdatingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                try {
+                    const { latitude, longitude } = position.coords;
+                    if (user?.id) {
+                        await api.users.update(user.id, {
+                            lat: latitude,
+                            lng: longitude,
+                        });
+
+                        // Wait for backend reverse geocoding to complete
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // Fetch updated user data to get the address
+                        const updatedUser = await api.users.me();
+
+                        // Update preferences with location
+                        updatePreferences({
+                            location: {
+                                lat: latitude,
+                                lng: longitude,
+                                address: updatedUser.profiles?.address || 'Current Location'
+                            }
+                        });
+
+                        addToast({ message: "Location updated successfully", type: "success" });
+                        // Trigger a page reload to refresh user data
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error("Error updating location:", error);
+                    addToast({ message: "Failed to update location", type: "error" });
+                } finally {
+                    setUpdatingLocation(false);
+                }
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                addToast({ message: "Unable to retrieve your location", type: "error" });
+                setUpdatingLocation(false);
+            }
+        );
+    };
 
     const fetchNannies = async () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await api.users.nannies();
-            setNannies(response);
-            setFilteredNannies(response);
+
+            if (isNearby) {
+                // Get current location
+                if (!navigator.geolocation) {
+                    setError('Geolocation is not supported by your browser');
+                    setLoading(false);
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        try {
+                            const { latitude, longitude } = position.coords;
+                            const response = await api.location.nearbyNannies(latitude, longitude, 10); // 10km radius default
+                            // Map nearby nannies to User type (adding distance info if needed later)
+                            const mappedNannies = response.data.map(n => ({
+                                ...n,
+                                profiles: n.profile,
+                                nanny_details: n.nanny_details
+                            } as unknown as User));
+
+                            setNannies(mappedNannies);
+                            setFilteredNannies(mappedNannies);
+                        } catch (err) {
+                            console.error(err);
+                            setError('Failed to fetch nearby caregivers');
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                    (err) => {
+                        console.error(err);
+                        setError('Unable to retrieve location. Please allow location access.');
+                        setLoading(false);
+                    }
+                );
+            } else {
+                const response = await api.users.nannies();
+                setNannies(response);
+                setFilteredNannies(response);
+                setLoading(false);
+            }
         } catch (err) {
             console.error(err);
             setError('An error occurred while fetching caregivers');
-        } finally {
             setLoading(false);
         }
     };
@@ -39,10 +142,10 @@ export default function SearchPage() {
     };
 
 
-    // Initial fetch
+    // Initial fetch and re-fetch when filter changes
     useEffect(() => {
         fetchNannies();
-    }, []);
+    }, [isNearby]);
 
     // Filter nannies when search query changes
     useEffect(() => {
@@ -164,100 +267,144 @@ export default function SearchPage() {
 
 
     return (
-        <div className="space-y-8 min-h-screen bg-neutral-50 p-4 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[24px] shadow-soft border border-neutral-100 sticky top-24 z-10">
-                <form className="flex-1 w-full" onSubmit={handleSearch}>
-                    <SearchInput
-                        placeholder="Search by name, location, or skills..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onClear={() => setSearchQuery('')}
-                        className="w-full"
-                    />
-                </form>
-                <div className="text-sm text-neutral-500 whitespace-nowrap">
-                    {loading ? 'Loading...' : `Showing ${filteredNannies.length} of ${nannies.length} caregivers`}
-                </div>
-            </div>
-
-            <div className="lg:hidden">
-                <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="w-full rounded-full bg-white shadow-sm flex items-center justify-center gap-2 py-6">
-                    <SlidersHorizontal size={16} /> Filters
-                </Button>
-            </div>
-
-            <div className="flex gap-8 items-start">
-                <div className="hidden lg:block w-80 flex-shrink-0 sticky top-48">
-                    <FilterSidebar />
-                </div>
-
-                <div className="flex-1">
-                    {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>}
-
-                    {loading ? (
-                        <div className="text-center py-12 text-neutral-500">Loading...</div>
-                    ) : (
-                        <>
-                            {filteredNannies.length === 0 && !error && (
-                                <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft flex flex-col items-center justify-center">
-                                    <div className="w-32 h-32 bg-neutral-50 rounded-full flex items-center justify-center mb-6">
-                                        <SlidersHorizontal size={48} className="text-neutral-300" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No matches found</h3>
-                                    <p className="text-neutral-500 mb-6 max-w-md">We couldn&apos;t find any caregivers matching your search. Try adjusting your filters or search terms.</p>
-                                    <Button variant="default" onClick={() => {
-                                        setNannies(MOCK_NANNIES);
-                                        setFilteredNannies(MOCK_NANNIES);
-                                    }} className="rounded-full px-8 bg-primary hover:bg-primary-600">
-                                        Load Demo Data
-                                    </Button>
+        <ParentLayout>
+            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50 pt-8">
+                {/* Search Bar Section - Fixed */}
+                <div className="flex-none z-30 bg-neutral-50 p-4 md:p-8 pb-4 shadow-sm relative">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[24px] shadow-soft border border-neutral-100">
+                        <form className="flex-1 w-full" onSubmit={handleSearch}>
+                            <SearchInput
+                                placeholder="Search by name, location, or skills..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onClear={() => setSearchQuery('')}
+                                className="w-full"
+                            />
+                        </form>
+                        <div className="flex items-center gap-4">
+                            {user && (
+                                <div className="hidden md:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
+                                    <MapPin size={16} className="text-primary" />
+                                    <span className="max-w-[150px] truncate">
+                                        {user.profiles?.address || "Set Location"}
+                                    </span>
+                                    <button
+                                        onClick={handleUpdateLocation}
+                                        disabled={updatingLocation}
+                                        className="text-primary hover:text-primary-600 font-medium ml-1 disabled:opacity-50"
+                                    >
+                                        {updatingLocation ? '...' : 'Update'}
+                                    </button>
                                 </div>
                             )}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Button
+                                variant={isNearby ? "default" : "outline"}
+                                onClick={() => setIsNearby(!isNearby)}
+                                className={`rounded-xl flex items-center gap-2 ${isNearby ? 'bg-primary' : 'bg-white'}`}
+                            >
+                                <MapPin size={18} />
+                                Nearby
+                            </Button>
+                            <div className="text-sm text-neutral-500 whitespace-nowrap hidden md:block">
+                                {loading ? 'Loading...' : `Showing ${filteredNannies.length} of ${nannies.length} caregivers`}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mobile Filter Button */}
+                    <div className="lg:hidden mt-4">
+                        <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="w-full rounded-full bg-white shadow-sm flex items-center justify-center gap-2 py-6">
+                            <SlidersHorizontal size={16} /> Filters
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Main Content - Scrollable */}
+                <div className="flex-1 flex gap-8 overflow-hidden px-4 md:px-8 pb-4">
+                    {/* Sidebar - Fixed/Scrollable independently */}
+                    <div className="hidden lg:block w-80 flex-shrink-0 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain">
+                        <FilterSidebar />
+                    </div>
+
+                    {/* Profiles List - Scrollable independently */}
+                    <div className="flex-1 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain">
+                        {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>}
+
+                        {loading ? (
+                            <div className="text-center py-12 text-neutral-500">Loading...</div>
+                        ) : filteredNannies.length === 0 && !error ? (
+                            <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft flex flex-col items-center justify-center">
+                                <div className="w-32 h-32 bg-neutral-50 rounded-full flex items-center justify-center mb-6">
+                                    <SlidersHorizontal size={48} className="text-neutral-300" />
+                                </div>
+                                <h3 className="text-xl font-bold text-neutral-900 mb-2">No matches found</h3>
+                                <p className="text-neutral-500 mb-6 max-w-md">We couldn&apos;t find any caregivers matching your search. Try adjusting your filters or search terms.</p>
+                                <Button variant="default" onClick={() => {
+                                    setNannies(MOCK_NANNIES);
+                                    setFilteredNannies(MOCK_NANNIES);
+                                }} className="rounded-full px-8 bg-primary hover:bg-primary-600">
+                                    Load Demo Data
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 {filteredNannies.map((nanny) => (
                                     <ProfileCard
                                         key={nanny.id}
-                                        name={`${nanny.profiles?.first_name || 'Caregiver'} ${nanny.profiles?.last_name || ''}`}
+                                        name={nanny.profiles?.first_name ? `${nanny.profiles.first_name} ${nanny.profiles.last_name}` : 'Caregiver'}
                                         image={nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80'}
-                                        rating={4.8} // Mock data
-                                        reviewCount={12} // Mock data
-                                        location={nanny.profiles?.address || 'Location not specified'}
-                                        description={nanny.nanny_details?.bio || 'No description available.'}
-                                        hourlyRate={Number(nanny.nanny_details?.hourly_rate) || 20}
+                                        rating={4.8}
+                                        reviewCount={12}
+                                        location={nanny.profiles?.address || 'Location not set'}
+                                        description={nanny.nanny_details?.bio || 'No bio available'}
+                                        hourlyRate={Number(nanny.nanny_details?.hourly_rate) || 0}
                                         experience={`${nanny.nanny_details?.experience_years || 0} years`}
                                         isVerified={nanny.is_verified}
                                         onViewProfile={() => window.location.href = `/caregiver/${nanny.id}`}
-                                        onMessage={() => console.log(`Message ${nanny.id}`)}
+                                        onBook={() => {
+                                            setSelectedNannyId(nanny.id);
+                                            setSelectedNannyName(`${nanny.profiles?.first_name} ${nanny.profiles?.last_name}`);
+                                            setSelectedNannyRate(Number(nanny.nanny_details?.hourly_rate) || 0);
+                                            setIsBookingModalOpen(true);
+                                        }}
                                     />
                                 ))}
                             </div>
-                        </>
-                    )}
+                        )}
 
-                    {filteredNannies.length > 0 && (
-                        <div className="flex justify-center gap-2 mt-12">
-                            <button className="p-2 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 disabled:opacity-50" disabled><ChevronLeft size={20} /></button>
-                            <button className="w-10 h-10 rounded-lg bg-primary text-white font-medium shadow-md">1</button>
-                            <button className="p-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"><ChevronRight size={20} /></button>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Mobile Filter Modal */}
-            <Modal
-                isOpen={isFilterOpen}
-                onClose={() => setIsFilterOpen(false)}
-                title="Filters"
-                footer={
-                    <div className="flex gap-2 w-full">
-                        <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
-                        <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-primary hover:bg-primary-600 text-white">Apply</Button>
+                        {filteredNannies.length > 0 && (
+                            <div className="flex justify-center gap-2 mt-12 mb-8">
+                                <button className="p-2 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 disabled:opacity-50" disabled><ChevronLeft size={20} /></button>
+                                <button className="w-10 h-10 rounded-lg bg-primary text-white font-medium shadow-md">1</button>
+                                <button className="p-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"><ChevronRight size={20} /></button>
+                            </div>
+                        )}
                     </div>
-                }
-            >
-                <FilterSidebar />
-            </Modal>
-        </div>
+                </div>
+
+                {/* Mobile Filter Modal */}
+                <Modal
+                    isOpen={isFilterOpen}
+                    onClose={() => setIsFilterOpen(false)}
+                    title="Filters"
+                    footer={
+                        <div className="flex gap-2 w-full">
+                            <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
+                            <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-primary hover:bg-primary-600 text-white">Apply</Button>
+                        </div>
+                    }
+                >
+                    <FilterSidebar />
+                </Modal>
+
+                <DirectBookingModal
+                    isOpen={isBookingModalOpen}
+                    onClose={() => setIsBookingModalOpen(false)}
+                    nannyId={selectedNannyId || ''}
+                    nannyName={selectedNannyName}
+                    hourlyRate={selectedNannyRate}
+                />
+            </div>
+        </ParentLayout>
     );
 }

@@ -21,14 +21,20 @@ export default function CreateRequestPage() {
         start_time: '',
         duration_hours: 4,
         num_children: 1,
-        children_ages: [0],
-        special_requirements: '',
-        address: ''
+        children_ages: [],
+        special_requirements: ''
     });
 
+    const [missingLocation, setMissingLocation] = useState(false);
+
     useEffect(() => {
-        if (user?.profiles?.address) {
-            setFormData(prev => ({ ...prev, address: user.profiles!.address! }));
+        if (user?.profiles) {
+            // Check if user has location coordinates set
+            if (!user.profiles.lat || !user.profiles.lng) {
+                setMissingLocation(true);
+            } else {
+                setMissingLocation(false);
+            }
         }
     }, [user]);
 
@@ -89,6 +95,19 @@ export default function CreateRequestPage() {
                     <div className="mx-8 mt-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-start gap-3 text-red-600">
                         <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
                         <span>{error}</span>
+                    </div>
+                )}
+
+                {missingLocation && (
+                    <div className="mx-8 mt-8 p-4 bg-amber-50 rounded-xl border border-amber-100 flex items-start gap-3 text-amber-800">
+                        <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p className="font-medium">Location Required for Auto-Matching</p>
+                            <p className="text-sm mt-1">
+                                To automatically match you with nearby nannies, we need your precise location.
+                                Please <a href="/dashboard/profile" className="underline font-medium hover:text-amber-900">update your location in your profile</a> before creating a request.
+                            </p>
+                        </div>
                     </div>
                 )}
 
@@ -185,17 +204,8 @@ export default function CreateRequestPage() {
                             <div className="w-8 h-8 rounded-full bg-accent-50 flex items-center justify-center text-accent">
                                 <MapPin size={18} />
                             </div>
-                            Location & Details
+                            Special Requirements
                         </h2>
-                        <Input
-                            label="Address"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            placeholder="Enter full address"
-                            required
-                            className="rounded-xl"
-                        />
                         <div>
                             <label className="block text-sm font-medium text-neutral-700 mb-2">Special Requirements / Notes</label>
                             <textarea
