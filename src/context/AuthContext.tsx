@@ -12,12 +12,30 @@ interface AuthContextType {
     user: User | null;
     token: string | null;
     loading: boolean;
-    login: (token: string) => Promise<void>;
+    login: (token: string, userData?: User) => Promise<void>;
     logout: () => void;
     refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Helper function to decode JWT and extract basic info
+function decodeJWT(token: string): { role?: string; userId?: string } | null {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Failed to decode JWT:', e);
+        return null;
+    }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -97,19 +115,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const login = async (token: string) => {
+    const login = async (token: string, userData?: User) => {
         localStorage.setItem('token', token);
         // Store login timestamp for 15-day expiration
         localStorage.setItem('login_timestamp', Date.now().toString());
-        const userData = await checkAuth();
+        setToken(token);
+        setLoading(false); // Stop loading immediately since we have a token
 
-        console.log('Logged in user:', userData); // Debugging
+        if (userData) {
+            // Standard login: user data provided, set immediately
+            setUser(userData);
+            console.log('Logged in user:', userData);
 
-        if (userData?.role === 'nanny') {
-            router.push('/dashboard');
+            // Redirect immediately based on role
+            if (userData.role === 'nanny') {
+                router.push('/dashboard');
+            } else {
+                router.push('/browse');
+            }
         } else {
-            // Default to browse for parents and others
-            router.push('/browse');
+            // OAuth callback: decode JWT to get role for immediate redirect
+            const decoded = decodeJWT(token);
+            const role = decoded?.role;
+
+            // Redirect immediately based on decoded role
+            if (role === 'nanny') {
+                router.push('/dashboard');
+            } else {
+                router.push('/browse');
+            }
+
+            // Fetch full user data in background (non-blocking)
+            // Don't call checkAuth which sets loading state, just fetch user
+            api.users.me()
+                .then((userData) => {
+                    console.log('Background user fetch completed:', userData.email);
+                    setUser(userData);
+                })
+                .catch((error) => {
+                    console.error('Background user fetch failed:', error);
+                    // If token is invalid, logout
+                    if (error.message?.includes('401') || error.message?.includes('403')) {
+                        logout();
+                    }
+                });
         }
     };
 

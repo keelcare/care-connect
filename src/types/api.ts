@@ -66,11 +66,7 @@ export interface LoginDto {
 
 export interface AuthResponse {
     access_token: string;
-    user: {
-        id: string;
-        email: string;
-        role: UserRole;
-    };
+    user: User;
 }
 
 export interface GoogleUser {
