@@ -24,25 +24,12 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined);
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
+    const { token } = useAuth();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        if (!user) {
-            // Disconnect if user logs out
-            if (socket) {
-                console.log('User logged out, disconnecting socket');
-                socket.disconnect();
-                setSocket(null);
-                setConnected(false);
-            }
-            return;
-        }
-
-        const token = localStorage.getItem('token');
         if (!token) {
-            console.log('No token found, skipping socket connection');
             return;
         }
 
@@ -52,6 +39,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             auth: {
                 token
             },
+            transports: ['websocket'],
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionAttempts: 5
@@ -77,13 +65,15 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             console.log('Socket received event:', event, args);
         });
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSocket(newSocket);
 
         return () => {
             console.log('Cleaning up socket connection');
             newSocket.disconnect();
+            setConnected(false);
         };
-    }, [user]);
+    }, [token]);
 
     const joinRoom = useCallback((chatId: string) => {
         if (socket && connected) {

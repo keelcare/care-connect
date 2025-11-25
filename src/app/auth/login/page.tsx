@@ -21,7 +21,7 @@ export default function LoginPage() {
         setIsLoading(true);
         try {
             const response = await api.auth.login(formData);
-            await login(response.access_token);
+            await login(response.access_token, response.user);
         } catch (error) {
             console.error('Login failed:', error);
             alert('Login failed. Please check your credentials.');
