@@ -141,24 +141,20 @@ export default function BrowsePage() {
         <ParentLayout>
             <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
                 {/* Header Section - Sticky */}
-                <div className="sticky top-[72px] z-20 bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+                <div className="sticky top-[72px] z-20 bg-white/80 backdrop-blur-md border-b border-neutral-200/50 shadow-sm transition-all duration-300">
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <h1 className="text-3xl font-bold text-neutral-900 mb-2">Discover Caregivers</h1>
-                                <p className="text-neutral-600">Find trusted caregivers near you</p>
-                            </div>
                             <div className="flex items-center gap-4">
                                 {user && (
-                                    <div className="flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
+                                    <div className="flex items-center gap-2 text-sm text-neutral-600 bg-white/50 px-3 py-2 rounded-full border border-neutral-200/50 shadow-sm">
                                         <Search size={16} className="text-primary" />
-                                        <span className="max-w-[150px] truncate">
+                                        <span className="max-w-[150px] truncate font-medium">
                                             {user.profiles?.address || "Set Location"}
                                         </span>
                                         <button
                                             onClick={handleUpdateLocation}
                                             disabled={updatingLocation}
-                                            className="text-primary hover:text-primary-600 font-medium ml-1 disabled:opacity-50"
+                                            className="text-primary hover:text-primary-600 font-bold ml-1 disabled:opacity-50 text-xs uppercase tracking-wide"
                                         >
                                             {updatingLocation ? '...' : 'Update'}
                                         </button>
@@ -168,7 +164,59 @@ export default function BrowsePage() {
                         </div>
                     </div>
                 </div>
-                <main className="max-w-7xl mx-auto px-4 md:px-8 space-y-8 mt-6">
+
+                <main className="max-w-7xl mx-auto px-4 md:px-8 space-y-12 mt-8">
+                    {/* Hero Section */}
+                    <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white shadow-strong">
+                        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2038&auto=format&fit=crop')] opacity-10 bg-cover bg-center mix-blend-overlay"></div>
+                        <div className="relative z-10 p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="max-w-xl space-y-6">
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-display leading-tight">
+                                    Find the perfect <span className="text-primary-200">caregiver</span> for your family.
+                                </h1>
+                                <p className="text-lg text-primary-100 max-w-md leading-relaxed">
+                                    Connect with trusted, verified professionals for child care, senior care, and more.
+                                </p>
+                                <div className="flex flex-wrap gap-3 pt-2">
+                                    <Link href="/search">
+                                        <Button size="lg" className="rounded-full bg-white text-primary-900 hover:bg-neutral-100 font-bold px-8 h-12 shadow-lg border-0">
+                                            Start Searching
+                                        </Button>
+                                    </Link>
+                                    <Link href="/how-it-works">
+                                        <Button variant="outline" size="lg" className="rounded-full border-white/30 text-white hover:bg-white/10 hover:text-white font-medium px-6 h-12">
+                                            How it Works
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="hidden md:block relative">
+                                {/* Decorative elements could go here */}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Categories Section */}
+                    <section>
+                        <h2 className="text-2xl font-bold text-neutral-900 font-display mb-6">Browse by Category</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {[
+                                { name: 'Child Care', icon: '👶', query: 'childCare' },
+                                { name: 'Senior Care', icon: '👵', query: 'seniorCare' },
+                                { name: 'Pet Care', icon: '🐾', query: 'petCare' },
+                                { name: 'Housekeeping', icon: '🧹', query: 'housekeeping' },
+                                { name: 'Tutoring', icon: '📚', query: 'tutoring' },
+                                { name: 'Special Needs', icon: '💙', query: 'specialNeeds' },
+                            ].map((category) => (
+                                <Link href={`/search?service=${category.query}`} key={category.name}>
+                                    <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-300 flex flex-col items-center gap-3 text-center group cursor-pointer h-full justify-center">
+                                        <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{category.icon}</span>
+                                        <span className="font-medium text-neutral-900 group-hover:text-primary-700">{category.name}</span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
                     {/* Featured Section */}
                     <FeaturedCaregivers onDataLoaded={handleFeaturedLoaded} />
 

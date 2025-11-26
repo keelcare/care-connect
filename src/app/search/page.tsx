@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
-import { FilterSidebar } from '@/components/features/FilterSidebar';
+import { FilterSidebar, FilterState } from '@/components/features/FilterSidebar';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { Modal } from '@/components/ui/Modal';
 import { DirectBookingModal } from '@/components/features/DirectBookingModal';
@@ -32,6 +32,19 @@ export default function SearchPage() {
     const [updatingLocation, setUpdatingLocation] = useState(false);
     const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(false); // Desktop filter sidebar
     const { preferences, updatePreferences } = usePreferences();
+
+    const [filters, setFilters] = useState<FilterState>({
+        services: {
+            childCare: false,
+            seniorCare: false,
+            petCare: false,
+            housekeeping: false,
+            tutoring: false,
+            specialNeeds: false,
+        },
+        verifiedOnly: false,
+        priceRange: [10, 100],
+    });
 
     const handleUpdateLocation = () => {
         if (!navigator.geolocation) {
@@ -148,28 +161,61 @@ export default function SearchPage() {
         fetchNannies();
     }, [isNearby]);
 
-    // Filter nannies when search query changes
+    // Filter nannies when search query or filters change
     useEffect(() => {
-        if (!searchQuery.trim()) {
-            setFilteredNannies(nannies);
-            return;
+        let filtered = nannies;
+
+        // 1. Search Query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(nanny => {
+                const firstName = nanny.profiles?.first_name?.toLowerCase() || '';
+                const lastName = nanny.profiles?.last_name?.toLowerCase() || '';
+                const address = nanny.profiles?.address?.toLowerCase() || '';
+                const skills = nanny.nanny_details?.skills?.join(' ').toLowerCase() || '';
+
+                return firstName.includes(query) ||
+                    lastName.includes(query) ||
+                    address.includes(query) ||
+                    skills.includes(query);
+            });
         }
 
-        const query = searchQuery.toLowerCase();
-        const filtered = nannies.filter(nanny => {
-            const firstName = nanny.profiles?.first_name?.toLowerCase() || '';
-            const lastName = nanny.profiles?.last_name?.toLowerCase() || '';
-            const address = nanny.profiles?.address?.toLowerCase() || '';
-            const skills = nanny.nanny_details?.skills?.join(' ').toLowerCase() || '';
+        // 2. Verification
+        if (filters.verifiedOnly) {
+            filtered = filtered.filter(nanny => nanny.is_verified);
+        }
 
-            return firstName.includes(query) ||
-                lastName.includes(query) ||
-                address.includes(query) ||
-                skills.includes(query);
+        // 3. Price Range
+        filtered = filtered.filter(nanny => {
+            const rate = Number(nanny.nanny_details?.hourly_rate) || 0;
+            return rate >= filters.priceRange[0] && rate <= filters.priceRange[1];
         });
 
+        // 4. Services (Skills)
+        const selectedServices = Object.entries(filters.services)
+            .filter(([_, isSelected]) => isSelected)
+            .map(([key]) => key);
+
+        if (selectedServices.length > 0) {
+            filtered = filtered.filter(nanny => {
+                const nannySkills = nanny.nanny_details?.skills?.map(s => s.toLowerCase()) || [];
+                // Map service keys to potential skill strings
+                // This is a simple mapping, might need to be more robust based on actual skill data
+                return selectedServices.some(service => {
+                    if (service === 'childCare') return nannySkills.some(s => s.includes('child') || s.includes('baby') || s.includes('newborn'));
+                    if (service === 'seniorCare') return nannySkills.some(s => s.includes('senior') || s.includes('elderly'));
+                    if (service === 'petCare') return nannySkills.some(s => s.includes('pet') || s.includes('dog') || s.includes('cat'));
+                    if (service === 'housekeeping') return nannySkills.some(s => s.includes('house') || s.includes('clean'));
+                    if (service === 'tutoring') return nannySkills.some(s => s.includes('tutor') || s.includes('math') || s.includes('english') || s.includes('homework'));
+                    if (service === 'specialNeeds') return nannySkills.some(s => s.includes('special') || s.includes('disability'));
+                    return false;
+                });
+            });
+        }
+
         setFilteredNannies(filtered);
-    }, [searchQuery, nannies]);
+    }, [searchQuery, nannies, filters]);
 
 
     // Mock data for demo purposes
@@ -332,7 +378,12 @@ export default function SearchPage() {
                 <div className="flex-1 flex gap-6 overflow-hidden px-4 md:px-8 pb-4">
                     {/* Sidebar - Fixed/Scrollable independently */}
                     <div className={`hidden lg:block flex-shrink-0 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain transition-all duration-300 ${isDesktopFilterOpen ? 'w-80 opacity-100' : 'w-0 opacity-0'}`}>
-                        {isDesktopFilterOpen && <FilterSidebar />}
+                        {isDesktopFilterOpen && (
+                            <FilterSidebar
+                                filters={filters}
+                                onFilterChange={setFilters}
+                            />
+                        )}
                     </div>
 
                     {/* Profiles List - Scrollable independently */}
@@ -404,7 +455,10 @@ export default function SearchPage() {
                         </div>
                     }
                 >
-                    <FilterSidebar />
+                    <FilterSidebar
+                        filters={filters}
+                        onFilterChange={setFilters}
+                    />
                 </Modal>
 
                 <DirectBookingModal
