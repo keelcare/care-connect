@@ -20,52 +20,74 @@ export interface ProfileCardProps {
     compact?: boolean; // Compact mode for smaller cards
 }
 
-// Light, bright color palette with transparency
-const lightBrightColors = [
-    'bg-blue-100/60',
-    'bg-purple-100/60',
-    'bg-pink-100/60',
-    'bg-green-100/60',
-    'bg-yellow-100/60',
-    'bg-orange-100/60',
-    'bg-teal-100/60',
-    'bg-cyan-100/60',
-    'bg-indigo-100/60',
-    'bg-rose-100/60',
-    'bg-lime-100/60',
-    'bg-emerald-100/60',
-];
-
-// Corresponding darker shades for header
-const headerColors = [
-    'bg-blue-200/80',
-    'bg-purple-200/80',
-    'bg-pink-200/80',
-    'bg-green-200/80',
-    'bg-yellow-200/80',
-    'bg-orange-200/80',
-    'bg-teal-200/80',
-    'bg-cyan-200/80',
-    'bg-indigo-200/80',
-    'bg-rose-200/80',
-    'bg-lime-200/80',
-    'bg-emerald-200/80',
-];
-
-// Text colors for better contrast on light backgrounds
-const textColors = [
-    'text-blue-900',
-    'text-purple-900',
-    'text-pink-900',
-    'text-green-900',
-    'text-yellow-900',
-    'text-orange-900',
-    'text-teal-900',
-    'text-cyan-900',
-    'text-indigo-900',
-    'text-rose-900',
-    'text-lime-900',
-    'text-emerald-900',
+// Deep Glassmorphic Palette
+const colorPalettes = [
+    {
+        name: 'blue',
+        gradient: 'bg-gradient-to-br from-blue-400/30 via-blue-200/20 to-blue-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-blue-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-blue-100 text-blue-700',
+    },
+    {
+        name: 'purple',
+        gradient: 'bg-gradient-to-br from-purple-400/30 via-purple-200/20 to-purple-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-purple-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-purple-100 text-purple-700',
+    },
+    {
+        name: 'pink',
+        gradient: 'bg-gradient-to-br from-pink-400/30 via-pink-200/20 to-pink-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-pink-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-pink-100 text-pink-700',
+    },
+    {
+        name: 'green',
+        gradient: 'bg-gradient-to-br from-emerald-400/30 via-emerald-200/20 to-emerald-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-emerald-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+        name: 'orange',
+        gradient: 'bg-gradient-to-br from-orange-400/30 via-orange-200/20 to-orange-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-orange-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-orange-100 text-orange-700',
+    },
+    {
+        name: 'teal',
+        gradient: 'bg-gradient-to-br from-teal-400/30 via-teal-200/20 to-teal-50/10',
+        glassBorder: 'border-white/50',
+        text: 'text-slate-800',
+        subtext: 'text-slate-600',
+        accent: 'text-teal-600',
+        button: 'bg-slate-900',
+        buttonHover: 'hover:bg-slate-800',
+        badge: 'bg-teal-100 text-teal-700',
+    },
 ];
 
 // Simple hash function to get consistent color for same name
@@ -74,7 +96,7 @@ const getColorIndex = (str: string): number => {
     for (let i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    return Math.abs(hash) % lightBrightColors.length;
+    return Math.abs(hash) % colorPalettes.length;
 };
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -93,87 +115,89 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 }) => {
     // Get consistent random color based on name
     const colorIndex = useMemo(() => getColorIndex(name), [name]);
-    const headerBgColor = headerColors[colorIndex];
-    const contentBgColor = lightBrightColors[colorIndex];
-    const textColor = textColors[colorIndex];
+    const theme = colorPalettes[colorIndex];
 
     return (
-        <div className="group bg-white rounded-[24px] shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full border border-neutral-100">
-            {/* Colored Header Section - No Image */}
-            <div className={`relative ${compact ? 'p-5' : 'p-6'} ${headerBgColor} backdrop-blur-sm`}>
-                {/* Verified Badge */}
-                {isVerified && (
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 text-xs font-semibold text-primary shadow-sm">
-                        <ShieldCheck size={14} fill="currentColor" />
-                        Verified
+        <div className="group relative w-full h-full min-h-[420px] rounded-[32px] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white">
+            {/* Full Height Background Gradient (Simulating Image Area) */}
+            <div className={`absolute inset-0 ${theme.gradient} transition-transform duration-700 group-hover:scale-105`} />
+
+            {/* Decorative Blobs for extra depth */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/40 rounded-full blur-3xl opacity-60 pointer-events-none" />
+            <div className="absolute top-1/3 -left-10 w-40 h-40 bg-white/30 rounded-full blur-2xl opacity-50 pointer-events-none" />
+
+            {/* Main Content Glass Pane */}
+            <div className="absolute bottom-2 left-2 right-2 top-[35%] rounded-[24px] bg-white/40 backdrop-blur-xl border border-white/60 shadow-lg flex flex-col p-5 transition-all duration-300 group-hover:bg-white/50">
+
+                {/* Header: Name & Verification */}
+                <div className="flex justify-between items-start mb-1">
+                    <div className="flex flex-col">
+                        <h3 className={`text-2xl font-bold ${theme.text} tracking-tight flex items-center gap-2`}>
+                            {name}
+                            {isVerified && (
+                                <ShieldCheck size={18} className="text-green-500 fill-green-500/20" />
+                            )}
+                        </h3>
+                        <p className={`text-sm ${theme.subtext} font-medium`}>Professional Caregiver</p>
                     </div>
-                )}
 
-                {/* Name */}
-                <h3 className={`${textColor} font-bold ${compact ? 'text-lg' : 'text-xl'} mb-2 pr-16`}>
-                    {name}
-                </h3>
-
-                {/* Location */}
-                <div className={`flex items-center gap-1 ${textColor} opacity-80 text-sm mb-3`}>
-                    <MapPin size={14} />
-                    <span className="truncate">{location}</span>
-                    {distance !== undefined && (
-                        <span className="ml-1 text-xs bg-white/40 px-2 py-0.5 rounded-full">
-                            {distance.toFixed(1)} km
-                        </span>
-                    )}
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-1 bg-white/50 backdrop-blur-sm px-3 py-1.5 rounded-lg inline-flex">
-                    <Star size={16} className="text-yellow-500" fill="currentColor" />
-                    <span className={`font-bold ${textColor}`}>{rating}</span>
-                    <span className={`text-xs ${textColor} opacity-70`}>({reviewCount} reviews)</span>
-                </div>
-            </div>
-
-            {/* White Content Section */}
-            <div className={`${compact ? 'p-4' : 'p-5'} flex flex-col flex-1 bg-white`}>
-                {/* Hourly Rate */}
-                <div className="mb-3">
-                    <div className="text-2xl font-bold text-neutral-900">
-                        ₹{hourlyRate}<span className="text-sm text-neutral-500 font-normal">/hr</span>
+                    {/* Rating Badge */}
+                    <div className="flex items-center gap-1 bg-white/60 px-2.5 py-1 rounded-full shadow-sm border border-white/50">
+                        <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                        <span className="text-sm font-bold text-slate-800">{rating}</span>
                     </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-neutral-600 text-sm line-clamp-2 mb-4 flex-1">
+                <p className={`text-sm ${theme.subtext} line-clamp-2 mt-3 mb-4 leading-relaxed`}>
                     {description}
                 </p>
 
-                {/* Experience Badge */}
-                <div className="flex items-center gap-2 mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${contentBgColor} ${textColor}`}>
-                        {experience} experience
-                    </span>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                        <div className="p-1.5 bg-white/60 rounded-full">
+                            <MapPin size={14} className={theme.accent} />
+                        </div>
+                        <span className="truncate">{location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                        <div className="p-1.5 bg-white/60 rounded-full">
+                            <span className={`text-xs font-bold ${theme.accent}`}>Exp</span>
+                        </div>
+                        <span>{experience}</span>
+                    </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-3 mt-auto">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onViewProfile}
-                        className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-900"
-                    >
-                        View Profile
-                    </Button>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={onBook}
-                        className="w-full rounded-xl bg-primary hover:bg-primary-600 text-neutral-900 border border-neutral-200 shadow-md hover:shadow-lg"
-                    >
-                        Book Now
-                    </Button>
+                {/* Footer: Price & Actions */}
+                <div className="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/30">
+                    <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">Rate</span>
+                        <div className="flex items-baseline gap-1">
+                            <span className={`text-xl font-bold ${theme.text}`}>₹{hourlyRate}</span>
+                            <span className="text-xs text-slate-500">/hr</span>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={onViewProfile}
+                            className="rounded-full w-10 h-10 bg-white/50 hover:bg-white/80 text-slate-700 border border-white/50"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                        </Button>
+                        <Button
+                            onClick={onBook}
+                            className={`rounded-full px-6 ${theme.button} ${theme.buttonHover} text-white shadow-lg shadow-slate-200/50 border-none`}
+                        >
+                            Book Now
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
+
