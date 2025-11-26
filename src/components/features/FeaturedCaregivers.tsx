@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 import { ProfileCard } from './ProfileCard';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface CaregiverData {
     id: string;
@@ -22,8 +23,31 @@ interface CaregiverData {
     isVerified: boolean;
 }
 
-export const FeaturedCaregivers: React.FC = () => {
+// Helper to extract city from address string
+// Assumes format like "123 Main St, City, State" or just "City, State"
+const extractCity = (address: string | null): string => {
+    if (!address) return '';
+    const parts = address.split(',');
+    // If we have multiple parts, assume the second to last is city (if state is last)
+    // Or if 2 parts: "City, State" -> take first
+    // This is a heuristic.
+    if (parts.length >= 2) {
+        // Try to find the part that isn't the state/zip
+        // Let's just take the part before the last comma if > 2 parts?
+        // Or simpler: just return the whole string for fuzzy matching if it's short?
+        // Let's try to return the first part if it's "City, State"
+        return parts[0].trim();
+    }
+    return address.trim();
+};
+
+interface FeaturedCaregiversProps {
+    onDataLoaded?: (ids: string[]) => void;
+}
+
+export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLoaded }) => {
     const router = useRouter();
+    const { user } = useAuth();
     const [caregivers, setCaregivers] = useState<CaregiverData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -32,10 +56,46 @@ export const FeaturedCaregivers: React.FC = () => {
         const fetchCaregivers = async () => {
             try {
                 setLoading(true);
-                const nannies = await api.users.nannies();
+                let nannies: any[] = [];
 
-                // Transform the API data to match the ProfileCard component's expected props
-                const transformedData: CaregiverData[] = nannies.slice(0, 3).map((nanny: User) => ({
+                // 1. If user is logged in and has location (lat/lng), fetch nearby nannies within 10km
+                if (user?.profiles?.lat && user?.profiles?.lng) {
+                    const lat = parseFloat(user.profiles.lat);
+                    const lng = parseFloat(user.profiles.lng);
+                    
+                    try {
+                        // Fetch nannies within 10km radius
+                        const response = await api.location.nearbyNannies(lat, lng, 10);
+                        // Map NearbyNanny structure to User-like structure for transformation
+                        nannies = response.data.map(n => ({
+                            ...n,
+                            profiles: n.profile,
+                            nanny_details: n.nanny_details
+                        }));
+                    } catch (locErr) {
+                        console.error("Failed to fetch nearby nannies:", locErr);
+                        // Fallback to fetching all nannies if location search fails
+                        nannies = await api.users.nannies();
+                    }
+                } else {
+                    // 2. If no user or no location, fetch all nannies (default behavior)
+                    nannies = await api.users.nannies();
+                    
+                    // Optional: If user has address string but no lat/lng, we could try city matching here
+                    // but usually lat/lng should be present if address is set.
+                    if (user?.profiles?.address) {
+                        const userCity = extractCity(user.profiles.address);
+                        if (userCity) {
+                             nannies = nannies.filter((nanny: User) => {
+                                const nannyAddress = nanny.profiles?.address || '';
+                                return nannyAddress.toLowerCase().includes(userCity.toLowerCase());
+                            });
+                        }
+                    }
+                }
+
+                // Transform the API data
+                const transformedData: CaregiverData[] = nannies.slice(0, 3).map((nanny: any) => ({
                     id: nanny.id,
                     name: `${nanny.profiles?.first_name || ''} ${nanny.profiles?.last_name || ''}`.trim() || 'Anonymous',
                     image: nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
@@ -49,11 +109,13 @@ export const FeaturedCaregivers: React.FC = () => {
                 }));
 
                 setCaregivers(transformedData);
+                if (onDataLoaded) {
+                    onDataLoaded(transformedData.map(c => c.id));
+                }
                 setError(null);
             } catch (err) {
                 console.error('Error fetching caregivers:', err);
                 setError('Failed to load caregivers');
-                // Fallback to empty array on error
                 setCaregivers([]);
             } finally {
                 setLoading(false);
@@ -61,7 +123,7 @@ export const FeaturedCaregivers: React.FC = () => {
         };
 
         fetchCaregivers();
-    }, []);
+    }, [user]); // Re-run when user changes
 
     return (
         <section className="py-8">
@@ -69,7 +131,7 @@ export const FeaturedCaregivers: React.FC = () => {
                 <div>
                     <h2 className="text-2xl font-bold text-neutral-900 font-display">Featured Caregivers</h2>
                     <p className="text-neutral-500 mt-1">
-                        Highly rated professionals near you
+                        {user ? "Professionals in your area" : "Highly rated professionals near you"}
                     </p>
                 </div>
                 <Link href="/search" className="hidden lg:block">
@@ -98,17 +160,29 @@ export const FeaturedCaregivers: React.FC = () => {
 
             {/* Error State */}
             {error && !loading && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-                    <p className="text-red-600 font-medium">{error}</p>
-                    <p className="text-red-500 text-sm mt-2">Please try again later or contact support.</p>
+                <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-8 text-center">
+                    <MapPin className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                    <p className="text-neutral-900 font-medium mb-2">{error}</p>
+                    {user && !user.profiles?.address && (
+                        <Link href="/dashboard/settings">
+                            <Button variant="outline" className="mt-2">
+                                Update Location
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             )}
 
             {/* Empty State */}
             {!loading && !error && caregivers.length === 0 && (
                 <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-8 text-center">
-                    <p className="text-neutral-600 font-medium">No caregivers available at the moment</p>
-                    <p className="text-neutral-500 text-sm mt-2">Check back later for featured caregivers.</p>
+                    <p className="text-neutral-600 font-medium">No caregivers found in your area</p>
+                    <p className="text-neutral-500 text-sm mt-2">Try expanding your search or check back later.</p>
+                    <Link href="/search">
+                        <Button variant="outline" className="mt-4">
+                            Browse All
+                        </Button>
+                    </Link>
                 </div>
             )}
 

@@ -17,6 +17,11 @@ import { usePreferences } from '@/hooks/usePreferences';
 export default function BrowsePage() {
     const { user } = useAuth();
     const { addToast } = useToast();
+    const [featuredIds, setFeaturedIds] = React.useState<Set<string>>(new Set());
+
+    const handleFeaturedLoaded = (ids: string[]) => {
+        setFeaturedIds(new Set(ids));
+    };
     const [nearbyNannies, setNearbyNannies] = React.useState<User[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
@@ -129,6 +134,9 @@ export default function BrowsePage() {
         }
     }, [user]);
 
+    // Filter nearby nannies to exclude featured ones
+    const filteredNearbyNannies = nearbyNannies.filter(nanny => !featuredIds.has(nanny.id));
+
     return (
         <ParentLayout>
             <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
@@ -162,7 +170,7 @@ export default function BrowsePage() {
                 </div>
                 <main className="max-w-7xl mx-auto px-4 md:px-8 space-y-8 mt-6">
                     {/* Featured Section */}
-                    <FeaturedCaregivers />
+                    <FeaturedCaregivers onDataLoaded={handleFeaturedLoaded} />
 
                     {/* Nearby Section */}
                     <section>
@@ -179,16 +187,16 @@ export default function BrowsePage() {
                             <div className="text-center py-12 text-neutral-500">Loading nearby caregivers...</div>
                         ) : error ? (
                             <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>
-                        ) : nearbyNannies.length === 0 ? (
+                        ) : filteredNearbyNannies.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-3xl border border-neutral-100">
-                                <p className="text-neutral-500 mb-4">No caregivers found nearby.</p>
+                                <p className="text-neutral-500 mb-4">No other caregivers found nearby.</p>
                                 <Link href="/dashboard/profile">
                                     <Button variant="outline">Update Location</Button>
                                 </Link>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {nearbyNannies.map((nanny: any) => (
+                                {filteredNearbyNannies.map((nanny: any) => (
                                     <ProfileCard
                                         key={nanny.id}
                                         name={`${nanny.profiles?.first_name || 'Caregiver'} ${nanny.profiles?.last_name || ''}`}
