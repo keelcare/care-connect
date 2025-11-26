@@ -116,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const login = async (token: string, userData?: User) => {
+        console.log('AuthContext: login called', { hasToken: !!token, hasUserData: !!userData });
         localStorage.setItem('token', token);
         // Store login timestamp for 15-day expiration
         localStorage.setItem('login_timestamp', Date.now().toString());
@@ -124,19 +125,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (userData) {
             // Standard login: user data provided, set immediately
+            console.log('AuthContext: Setting user data immediately');
             setUser(userData);
             console.log('Logged in user:', userData);
 
             // Redirect immediately based on role
             if (userData.role === 'nanny') {
+                console.log('AuthContext: Redirecting to /dashboard');
                 router.push('/dashboard');
             } else {
+                console.log('AuthContext: Redirecting to /browse');
                 router.push('/browse');
             }
         } else {
             // OAuth callback: decode JWT to get role for immediate redirect
+            console.log('AuthContext: No user data, decoding JWT');
             const decoded = decodeJWT(token);
             const role = decoded?.role;
+            console.log('AuthContext: Decoded role:', role);
 
             // Redirect immediately based on decoded role
             if (role === 'nanny') {
@@ -147,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Fetch full user data in background (non-blocking)
             // Don't call checkAuth which sets loading state, just fetch user
+            console.log('AuthContext: Fetching user profile in background');
             api.users.me()
                 .then((userData) => {
                     console.log('Background user fetch completed:', userData.email);
