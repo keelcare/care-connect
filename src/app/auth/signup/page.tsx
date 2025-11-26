@@ -94,15 +94,66 @@ export default function SignupPage() {
         <div className="min-h-screen flex bg-white transition-colors duration-500">
             {/* Left Side - Branding (Desktop Only) */}
             <div className={`hidden lg:flex lg:w-1/2 relative bg-gradient-to-br ${currentTheme.gradient} overflow-hidden items-center justify-center p-12 transition-all duration-700`}>
-                {/* Floating Icon Cloud */}
-                <div className="absolute inset-0 pointer-events-none">
-                    {currentTheme.icons.map((item, index) => (
-                        <div key={`${role}-${index}`} className={`absolute ${item.pos} animate-bounce-slow`} style={{ animationDelay: item.delay }}>
-                            <div className="bg-white p-4 rounded-full shadow-lg animate-in zoom-in duration-500">
-                                <item.Icon className={`w-8 h-8 ${item.color}`} />
-                            </div>
+                {/* The Frame Animation (Sun & Soil) */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <style jsx>{`
+                        @keyframes shine-pulse {
+                            0%, 100% { transform: scale(1); opacity: 0.8; }
+                            50% { transform: scale(1.1); opacity: 1; }
+                        }
+                        @keyframes grow-wave {
+                            0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+                            50% { transform: translateY(-10px) scale(1.05); opacity: 1; }
+                        }
+                        @keyframes drift {
+                            0%, 100% { transform: translate(0, 0); }
+                            50% { transform: translate(5px, 5px); }
+                        }
+                        
+                        .corner-shape { transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+                        .is-active-corner { filter: drop-shadow(0 0 30px rgba(var(--glow-color), 0.5)); opacity: 1; }
+                        .is-passive-corner { opacity: 0.3; filter: blur(2px); transform: scale(0.9); }
+                        
+                        .sun-rays { transform-origin: top left; }
+                        .soil-growth { transform-origin: bottom right; }
+                        
+                        .active-sun .sun-rays { animation: shine-pulse 4s ease-in-out infinite; }
+                        .active-soil .soil-growth { animation: grow-wave 5s ease-in-out infinite; }
+                    `}</style>
+                    
+                    <div className="relative w-full h-full" style={{ 
+                        '--glow-color': role === 'family' ? '94, 234, 212' : '16, 185, 129'
+                    } as React.CSSProperties}>
+                        
+                        {/* Top-Left: The Source (Sun/Rays) - Active for Family */}
+                        <div className={`absolute -top-20 -left-20 w-[500px] h-[500px] corner-shape ${role === 'family' ? 'is-active-corner active-sun' : 'is-passive-corner'}`}>
+                            <svg width="100%" height="100%" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g className="sun-rays">
+                                    <circle cx="100" cy="100" r="80" stroke={role === 'family' ? '#0D9488' : '#A7F3D0'} strokeWidth="2" className="transition-colors duration-1000" />
+                                    <circle cx="100" cy="100" r="150" stroke={role === 'family' ? '#5EEAD4' : '#D1FAE5'} strokeWidth="40" strokeOpacity="0.2" className="transition-colors duration-1000" />
+                                    <circle cx="100" cy="100" r="250" stroke={role === 'family' ? '#99F6E4' : '#E0F2F1'} strokeWidth="60" strokeOpacity="0.1" className="transition-colors duration-1000" />
+                                    {/* Decorative Rays */}
+                                    <path d="M100 100 L400 250" stroke={role === 'family' ? '#5EEAD4' : '#A7F3D0'} strokeWidth="2" strokeDasharray="10 20" className="transition-colors duration-1000" />
+                                    <path d="M100 100 L250 400" stroke={role === 'family' ? '#5EEAD4' : '#A7F3D0'} strokeWidth="2" strokeDasharray="10 20" className="transition-colors duration-1000" />
+                                </g>
+                            </svg>
                         </div>
-                    ))}
+
+                        {/* Bottom-Right: The Foundation (Growth/Leaves) - Active for Caregiver */}
+                        <div className={`absolute -bottom-20 -right-20 w-[600px] h-[600px] corner-shape ${role === 'caregiver' ? 'is-active-corner active-soil' : 'is-passive-corner'}`}>
+                            <svg width="100%" height="100%" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g className="soil-growth">
+                                    <path d="M600 600 Q 400 500 300 300" stroke={role === 'caregiver' ? '#059669' : '#6EE7B7'} strokeWidth="2" className="transition-colors duration-1000" />
+                                    <circle cx="500" cy="500" r="120" fill={role === 'caregiver' ? '#10B981' : '#A7F3D0'} fillOpacity="0.1" className="transition-colors duration-1000" />
+                                    <circle cx="550" cy="550" r="200" fill={role === 'caregiver' ? '#34D399' : '#D1FAE5'} fillOpacity="0.1" className="transition-colors duration-1000" />
+                                    {/* Organic Shapes */}
+                                    <path d="M600 400 Q 500 450 450 600" stroke={role === 'caregiver' ? '#059669' : '#6EE7B7'} strokeWidth="2" strokeDasharray="5 10" className="transition-colors duration-1000" />
+                                    <circle cx="350" cy="350" r="20" fill={role === 'caregiver' ? '#047857' : '#6EE7B7'} className="transition-colors duration-1000 opacity-60" />
+                                    <circle cx="450" cy="450" r="40" fill={role === 'caregiver' ? '#059669' : '#34D399'} className="transition-colors duration-1000 opacity-40" />
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
                 <div key={role} className="relative z-10 max-w-lg text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
