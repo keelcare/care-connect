@@ -74,7 +74,7 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <Button type="submit" size="lg" isLoading={isLoading} className="w-full rounded-full bg-primary hover:bg-primary-600 text-white shadow-lg hover:shadow-xl transition-all">
+                    <Button type="submit" size="lg" isLoading={isLoading} className="w-full rounded-full bg-primary hover:bg-primary-600 text-black shadow-lg hover:shadow-xl transition-all">
                         Sign In
                     </Button>
                 </form>

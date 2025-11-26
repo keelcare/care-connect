@@ -189,7 +189,7 @@ export const Header: React.FC = () => {
                                 </Button>
                             </Link>
                             <Link href="/auth/signup">
-                                <Button className="rounded-full px-6 shadow-md hover:shadow-lg transition-all bg-primary hover:bg-primary-600 text-white">
+                                <Button className="rounded-full px-6 shadow-md hover:shadow-lg transition-all bg-primary hover:bg-primary-600 text-black">
                                     Sign Up
                                 </Button>
                             </Link>
