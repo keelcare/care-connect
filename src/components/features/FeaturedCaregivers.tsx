@@ -13,7 +13,6 @@ import { useAuth } from '@/context/AuthContext';
 interface CaregiverData {
     id: string;
     name: string;
-    image: string;
     rating: number;
     reviewCount: number;
     location: string;
@@ -62,7 +61,7 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLo
                 if (user?.profiles?.lat && user?.profiles?.lng) {
                     const lat = parseFloat(user.profiles.lat);
                     const lng = parseFloat(user.profiles.lng);
-                    
+
                     try {
                         // Fetch nannies within 10km radius
                         const response = await api.location.nearbyNannies(lat, lng, 10);
@@ -80,13 +79,13 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLo
                 } else {
                     // 2. If no user or no location, fetch all nannies (default behavior)
                     nannies = await api.users.nannies();
-                    
+
                     // Optional: If user has address string but no lat/lng, we could try city matching here
                     // but usually lat/lng should be present if address is set.
                     if (user?.profiles?.address) {
                         const userCity = extractCity(user.profiles.address);
                         if (userCity) {
-                             nannies = nannies.filter((nanny: User) => {
+                            nannies = nannies.filter((nanny: User) => {
                                 const nannyAddress = nanny.profiles?.address || '';
                                 return nannyAddress.toLowerCase().includes(userCity.toLowerCase());
                             });
@@ -98,7 +97,6 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLo
                 const transformedData: CaregiverData[] = nannies.slice(0, 3).map((nanny: any) => ({
                     id: nanny.id,
                     name: `${nanny.profiles?.first_name || ''} ${nanny.profiles?.last_name || ''}`.trim() || 'Anonymous',
-                    image: nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
                     rating: 4.8, // TODO: Calculate from reviews when available
                     reviewCount: 0, // TODO: Get from reviews API when available
                     location: nanny.profiles?.address || 'Location not specified',

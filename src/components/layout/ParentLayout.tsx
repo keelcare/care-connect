@@ -40,14 +40,14 @@ export default function ParentLayout({
     return (
         <>
             <Header />
-            <div className="min-h-screen bg-neutral-50 flex">
+            <div className="min-h-screen bg-neutral-50">
                 <ParentSidebar
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 />
 
                 {/* Main Content Area with Footer */}
-                <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
+                <div className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
                     <main className="flex-1 pb-8">
                         {children}
                     </main>

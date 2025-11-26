@@ -12,7 +12,8 @@ import {
     BookOpen,
     Heart,
     ShieldCheck,
-    DollarSign
+    DollarSign,
+    RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -74,17 +75,61 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
         });
     };
 
+    const resetAllFilters = () => {
+        onFilterChange({
+            services: {
+                childCare: false,
+                seniorCare: false,
+                petCare: false,
+                housekeeping: false,
+                tutoring: false,
+                specialNeeds: false,
+            },
+            verifiedOnly: false,
+            priceRange: [10, 100],
+        });
+    };
+
+    // Calculate active filter count
+    const activeServiceCount = Object.values(filters.services).filter(Boolean).length;
+    const isPriceChanged = filters.priceRange[0] !== 10 || filters.priceRange[1] !== 100;
+    const activeFilterCount = activeServiceCount + (filters.verifiedOnly ? 1 : 0) + (isPriceChanged ? 1 : 0);
+
     return (
-        <aside className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-8 h-full overflow-y-auto custom-scrollbar">
-            <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-neutral-900">Service Type</h3>
+        <aside className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-6 h-full overflow-y-auto custom-scrollbar">
+            {/* Header with Reset All */}
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+                <div>
+                    <h2 className="font-bold text-lg text-neutral-900">Filters</h2>
+                    {activeFilterCount > 0 && (
+                        <p className="text-xs text-neutral-500 mt-1">
+                            {activeFilterCount} active {activeFilterCount === 1 ? 'filter' : 'filters'}
+                        </p>
+                    )}
+                </div>
+                {activeFilterCount > 0 && (
                     <button
-                        className="text-xs font-medium text-primary hover:text-primary-600 transition-colors"
-                        onClick={clearServices}
+                        className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-50"
+                        onClick={resetAllFilters}
                     >
-                        Clear
+                        <RotateCcw size={14} />
+                        Reset All
                     </button>
+                )}
+            </div>
+
+            {/* Service Type Section */}
+            <div className="bg-neutral-50 rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-neutral-900 text-sm">Service Type</h3>
+                    {activeServiceCount > 0 && (
+                        <button
+                            className="text-xs font-medium text-primary hover:text-primary-600 transition-colors"
+                            onClick={clearServices}
+                        >
+                            Clear
+                        </button>
+                    )}
                 </div>
                 <div className="space-y-3">
                     <Checkbox
@@ -120,10 +165,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
                 </div>
             </div>
 
-            <div className="h-px bg-neutral-100"></div>
-
-            <div>
-                <h3 className="font-bold text-neutral-900 mb-4">Hourly Rate</h3>
+            {/* Hourly Rate Section */}
+            <div className="bg-neutral-50 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <DollarSign size={16} className="text-primary" />
+                    <h3 className="font-bold text-neutral-900 text-sm">Hourly Rate</h3>
+                </div>
                 <PriceRangeSlider
                     min={10}
                     max={100}
@@ -133,10 +180,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
                 />
             </div>
 
-            <div className="h-px bg-neutral-100"></div>
-
-            <div>
-                <h3 className="font-bold text-neutral-900 mb-4">Verification</h3>
+            {/* Verification Section */}
+            <div className="bg-neutral-50 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <ShieldCheck size={16} className="text-primary" />
+                    <h3 className="font-bold text-neutral-900 text-sm">Verification</h3>
+                </div>
                 <Toggle
                     label="Background Checked Only"
                     checked={filters.verifiedOnly}

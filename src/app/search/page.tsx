@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { useAuth } from '@/context/AuthContext';
@@ -96,6 +96,11 @@ export default function SearchPage() {
             }
         );
     };
+
+    // Calculate active filter count
+    const activeServiceCount = Object.values(filters.services).filter(Boolean).length;
+    const isPriceChanged = filters.priceRange[0] !== 10 || filters.priceRange[1] !== 100;
+    const activeFilterCount = activeServiceCount + (filters.verifiedOnly ? 1 : 0) + (isPriceChanged ? 1 : 0);
 
     const fetchNannies = async () => {
         try {
@@ -315,62 +320,104 @@ export default function SearchPage() {
 
     return (
         <ParentLayout>
-            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50 pt-4">
-                {/* Search Bar Section - Fixed */}
-                <div className="flex-none z-30 bg-neutral-50 px-4 md:px-8 py-3 shadow-sm relative">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-[20px] shadow-soft border border-neutral-100">
-                        <form className="flex-1 w-full" onSubmit={handleSearch}>
-                            <SearchInput
-                                placeholder="Search by name, location, or skills..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onClear={() => setSearchQuery('')}
-                                className="w-full h-10"
-                            />
-                        </form>
-                        <div className="flex items-center gap-3">
-                            {user && (
-                                <div className="hidden md:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-xl border border-neutral-100">
-                                    <MapPin size={16} className="text-primary" />
-                                    <span className="max-w-[150px] truncate">
-                                        {user.profiles?.address || "Set Location"}
-                                    </span>
-                                    <button
-                                        onClick={handleUpdateLocation}
-                                        disabled={updatingLocation}
-                                        className="text-primary hover:text-primary-600 font-medium ml-1 disabled:opacity-50"
-                                    >
-                                        {updatingLocation ? '...' : 'Update'}
-                                    </button>
-                                </div>
-                            )}
-                            <Button
-                                variant={isNearby ? "default" : "outline"}
-                                onClick={() => setIsNearby(!isNearby)}
-                                className={`rounded-xl flex items-center gap-2 ${isNearby ? 'bg-primary' : 'bg-white'}`}
-                            >
-                                <MapPin size={18} />
-                                Nearby
-                            </Button>
-                            <Button
-                                variant={isDesktopFilterOpen ? "default" : "outline"}
-                                onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                                className={`hidden lg:flex rounded-xl items-center gap-2 ${isDesktopFilterOpen ? 'bg-primary' : 'bg-white'}`}
-                            >
-                                <SlidersHorizontal size={18} />
-                                Filters
-                            </Button>
-                            <div className="text-sm text-neutral-500 whitespace-nowrap hidden md:block">
-                                {loading ? 'Loading...' : `Showing ${filteredNannies.length} of ${nannies.length} caregivers`}
+            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50">
+                {/* Enhanced Search Bar Section - Fixed */}
+                <div className="flex-none z-30 bg-white border-b border-neutral-100 shadow-sm">
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+                        {/* Main Search Row */}
+                        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                            {/* Search Input - Prominent */}
+                            <div className="flex-1 w-full">
+                                <form onSubmit={handleSearch} className="relative">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">
+                                        <Search size={20} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name, location, or skills..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full h-14 pl-12 pr-4 rounded-2xl border-2 border-neutral-200 focus:border-primary focus:outline-none text-neutral-900 placeholder:text-neutral-400 transition-colors"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                </form>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-3 w-full lg:w-auto">
+                                {user && (
+                                    <div className="hidden md:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-200">
+                                        <MapPin size={16} className="text-primary" />
+                                        <span className="max-w-[150px] truncate font-medium">
+                                            {user.profiles?.address || "Set Location"}
+                                        </span>
+                                        <button
+                                            onClick={handleUpdateLocation}
+                                            disabled={updatingLocation}
+                                            className="text-primary hover:text-primary-600 font-bold ml-1 disabled:opacity-50 text-xs"
+                                        >
+                                            {updatingLocation ? '...' : 'Update'}
+                                        </button>
+                                    </div>
+                                )}
+                                <Button
+                                    variant={isNearby ? "default" : "outline"}
+                                    onClick={() => setIsNearby(!isNearby)}
+                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium ${isNearby ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                >
+                                    <MapPin size={18} />
+                                    Nearby
+                                </Button>
+                                <Button
+                                    variant={isDesktopFilterOpen ? "default" : "outline"}
+                                    onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
+                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative ${isDesktopFilterOpen ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                >
+                                    <SlidersHorizontal size={18} />
+                                    Filters
+                                    {activeFilterCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                            {activeFilterCount}
+                                        </span>
+                                    )}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsFilterOpen(true)}
+                                    className="lg:hidden rounded-xl h-12 px-5 flex items-center gap-2 font-medium bg-white hover:bg-neutral-50 relative"
+                                >
+                                    <SlidersHorizontal size={18} />
+                                    Filters
+                                    {activeFilterCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                            {activeFilterCount}
+                                        </span>
+                                    )}
+                                </Button>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Mobile Filter Button */}
-                    <div className="lg:hidden mt-4">
-                        <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="w-full rounded-full bg-white shadow-sm flex items-center justify-center gap-2 py-6">
-                            <SlidersHorizontal size={16} /> Filters
-                        </Button>
+                        {/* Results Count */}
+                        <div className="mt-4 text-sm text-neutral-500">
+                            {loading ? 'Loading...' : (
+                                <>
+                                    Showing <span className="font-bold text-neutral-900">{filteredNannies.length}</span> of <span className="font-bold text-neutral-900">{nannies.length}</span> caregivers
+                                    {activeFilterCount > 0 && (
+                                        <span className="ml-2 text-primary font-medium">
+                                            • {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} active
+                                        </span>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -407,13 +454,12 @@ export default function SearchPage() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {filteredNannies.map((nanny) => (
                                     <ProfileCard
                                         key={nanny.id}
                                         compact={true}
                                         name={nanny.profiles?.first_name ? `${nanny.profiles.first_name} ${nanny.profiles.last_name}` : 'Caregiver'}
-                                        image={nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80'}
                                         rating={4.8}
                                         reviewCount={12}
                                         location={nanny.profiles?.address || 'Location not set'}

@@ -175,7 +175,6 @@ export default function RequestDetailsPage() {
                             <h2 className="text-xl font-bold text-neutral-900">Assigned Caregiver</h2>
                             <ProfileCard
                                 name={`${assignedNanny.profiles?.first_name} ${assignedNanny.profiles?.last_name}`}
-                                image={assignedNanny.profiles?.profile_image_url || ''}
                                 rating={4.9}
                                 reviewCount={12}
                                 location={assignedNanny.profiles?.address || ''}

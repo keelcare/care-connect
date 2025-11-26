@@ -9,9 +9,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-teal-400 to-teal-500 text-neutral-900 border border-transparent shadow-sm hover:scale-105 transition-transform duration-200 hover:shadow-md",
+        default: "bg-gradient-to-r from-teal-400 to-teal-500 text-neutral-900 border border-teal-600/20 shadow-sm hover:scale-105 transition-transform duration-200 hover:shadow-md",
         destructive:
-          "bg-error-600 text-white shadow-sm hover:bg-error-700",
+          "bg-error-600 text-neutral-900 border border-error-700 shadow-sm hover:bg-error-700",
         outline:
           "border border-neutral-200 bg-background text-neutral-900 hover:bg-neutral-50 hover:border-neutral-300",
         secondary:

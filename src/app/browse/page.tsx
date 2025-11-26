@@ -167,24 +167,24 @@ export default function BrowsePage() {
 
                 <main className="max-w-7xl mx-auto px-4 md:px-8 space-y-12 mt-8">
                     {/* Hero Section */}
-                    <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white shadow-strong">
-                        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2038&auto=format&fit=crop')] opacity-10 bg-cover bg-center mix-blend-overlay"></div>
+                    <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary-50 via-white to-primary-50 border border-primary-100 shadow-soft">
+                        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2038&auto=format&fit=crop')] opacity-5 bg-cover bg-center mix-blend-overlay"></div>
                         <div className="relative z-10 p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="max-w-xl space-y-6">
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-display leading-tight">
-                                    Find the perfect <span className="text-primary-200">caregiver</span> for your family.
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-display leading-tight text-neutral-900">
+                                    Find the perfect <span className="text-primary-600">caregiver</span> for your family.
                                 </h1>
-                                <p className="text-lg text-primary-100 max-w-md leading-relaxed">
+                                <p className="text-lg text-neutral-900 max-w-md leading-relaxed font-medium">
                                     Connect with trusted, verified professionals for child care, senior care, and more.
                                 </p>
                                 <div className="flex flex-wrap gap-3 pt-2">
                                     <Link href="/search">
-                                        <Button size="lg" className="rounded-full bg-white text-primary-900 hover:bg-neutral-100 font-bold px-8 h-12 shadow-lg border-0">
+                                        <Button size="lg" className="rounded-full bg-primary text-neutral-900 hover:bg-primary-600 font-bold px-8 h-12 shadow-lg border border-neutral-200 min-w-[180px]">
                                             Start Searching
                                         </Button>
                                     </Link>
                                     <Link href="/how-it-works">
-                                        <Button variant="outline" size="lg" className="rounded-full border-white/30 text-white hover:bg-white/10 hover:text-white font-medium px-6 h-12">
+                                        <Button variant="outline" size="lg" className="rounded-full bg-white text-neutral-900 border-neutral-200 hover:bg-neutral-50 font-medium px-8 h-12 min-w-[180px]">
                                             How it Works
                                         </Button>
                                     </Link>
@@ -248,7 +248,6 @@ export default function BrowsePage() {
                                     <ProfileCard
                                         key={nanny.id}
                                         name={`${nanny.profiles?.first_name || 'Caregiver'} ${nanny.profiles?.last_name || ''}`}
-                                        image={nanny.profiles?.profile_image_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80'}
                                         rating={4.8} // Mock data
                                         reviewCount={12} // Mock data
                                         location={nanny.profiles?.address || 'Location not specified'}
