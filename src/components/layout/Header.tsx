@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, Bell, User, LogOut, ChevronDown, Settings, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Bell, User, LogOut, ChevronDown, Settings, LayoutDashboard, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -76,6 +76,13 @@ export const Header: React.FC = () => {
 
                 {/* Auth Buttons / User Menu */}
                 <div className="hidden md:flex items-center gap-4">
+                    {/* Location Selector */}
+                    <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-primary/30 transition-colors cursor-pointer mr-2">
+                        <MapPin size={18} className="text-neutral-500" />
+                        <span className="text-sm font-medium truncate max-w-[150px]">Vittal Mallya Road, ...</span>
+                        <ChevronDown size={14} className="text-neutral-400" />
+                    </div>
+
                     {user ? (
                         <div className="flex items-center gap-4">
                             <button className="relative p-2 text-neutral-500 hover:text-primary transition-colors rounded-full hover:bg-neutral-50">

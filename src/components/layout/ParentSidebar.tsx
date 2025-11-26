@@ -57,28 +57,11 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
                 })}
             </nav>
 
-            <div className={`border-t border-neutral-100 ${isCollapsed ? 'p-4' : 'p-6'}`}>
-                <div className={`flex items-center gap-3 rounded-2xl bg-neutral-50 border border-neutral-100 ${isCollapsed ? 'justify-center p-2' : 'p-3'}`}>
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm flex-shrink-0">
-                        <Image
-                            src={user?.profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                            alt="User"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    {!isCollapsed && (
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-neutral-900 truncate">
-                                {user?.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'Loading...'}
-                            </p>
-                            <p className="text-xs text-neutral-500 truncate capitalize">
-                                Parent
-                            </p>
-                        </div>
-                    )}
+            {!isCollapsed && (
+                <div className="p-6 border-t border-neutral-100">
+                    {/* Profile section removed as per request */}
                 </div>
-            </div>
+            )}
         </aside>
     );
 };
