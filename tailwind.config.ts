@@ -18,6 +18,12 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))", // Soft Teal
           foreground: "hsl(var(--primary-foreground))",
+          50: "hsl(var(--primary-50))",
+          100: "hsl(var(--primary-100))",
+          600: "hsl(var(--primary-600))",
+          700: "hsl(var(--primary-700))",
+          800: "hsl(var(--primary-800))",
+          900: "hsl(var(--primary-900))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))", // Warm Coral
@@ -30,6 +36,18 @@ const config: Config = {
         muted: {
           DEFAULT: "hsl(var(--muted))", // Slate Grey
           foreground: "hsl(var(--muted-foreground))",
+        },
+        neutral: {
+          50: "hsl(var(--neutral-50))",
+          100: "hsl(var(--neutral-100))",
+          200: "hsl(var(--neutral-200))",
+          300: "hsl(var(--neutral-300))",
+          400: "hsl(var(--neutral-400))",
+          500: "hsl(var(--neutral-500))",
+          600: "hsl(var(--neutral-600))",
+          700: "hsl(var(--neutral-700))",
+          800: "hsl(var(--neutral-800))",
+          900: "hsl(var(--neutral-900))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
