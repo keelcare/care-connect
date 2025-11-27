@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { User, Heart, Mail, Lock, ArrowRight, Sun, Shield, Star, Briefcase, Sparkles } from 'lucide-react';
+import { User, Heart, Mail, Lock, ArrowRight, Sun, Shield, Star, Briefcase, Sparkles, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
@@ -91,9 +91,10 @@ export default function SignupPage() {
     const currentTheme = themes[role];
 
     return (
-        <div className="min-h-screen flex bg-white transition-colors duration-500">
+        <div className="h-screen flex bg-neutral-50 justify-center transition-colors duration-500 overflow-hidden">
+            <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
             {/* Left Side - Branding (Desktop Only) */}
-            <div className={`hidden lg:flex lg:w-1/2 relative bg-gradient-to-br ${currentTheme.gradient} overflow-hidden items-center justify-center p-12 transition-all duration-700`}>
+            <div className={`hidden lg:flex lg:w-1/2 h-full relative bg-gradient-to-br ${currentTheme.gradient} overflow-hidden items-center justify-center p-12 transition-all duration-700`}>
                 {/* The Frame Animation (Sun & Soil) */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <style jsx>{`
@@ -171,9 +172,16 @@ export default function SignupPage() {
             </div>
 
             {/* Right Side - Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 overflow-y-auto">
-                <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 md:p-12 overflow-y-auto">
+                <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 my-auto">
                     <div className="text-center lg:text-left">
+                        <Link 
+                            href="/" 
+                            className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-8 group"
+                        >
+                            <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                            Back to Home
+                        </Link>
                         <h2 className="text-3xl font-bold text-neutral-900 font-display">Create Account</h2>
                         <p className="text-neutral-500 mt-2">Start your journey with us today</p>
                     </div>
@@ -306,6 +314,7 @@ export default function SignupPage() {
                         </p>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );
