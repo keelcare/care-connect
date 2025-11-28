@@ -50,8 +50,12 @@ export default function DashboardPage() {
             setLoading(true);
             setError(null);
 
-            // Fetch nanny bookings
-            const bookingsData = await api.bookings.getNannyBookings();
+            // Fetch nanny bookings and user data in parallel
+            const [bookingsData, userData] = await Promise.all([
+                api.bookings.getNannyBookings(),
+                user?.id ? api.users.get(user.id) : Promise.resolve(null)
+            ]);
+
             setBookings(bookingsData);
 
             // Calculate stats from bookings
@@ -69,12 +73,14 @@ export default function DashboardPage() {
                 }
             });
 
-            // TODO: Fetch actual unread messages count and average rating from API
+            // Get average rating from user data (API automatically calculates it)
+            const averageRating = (userData as any)?.averageRating || 0;
+
             setStats({
                 totalBookings,
-                unreadMessages: 0, // Placeholder
+                unreadMessages: 0, // Placeholder - TODO: implement messages count
                 hoursOfCare: Math.round(totalHours),
-                averageRating: 0, // Placeholder - will be calculated from reviews
+                averageRating: averageRating,
             });
         } catch (err) {
             console.error('Failed to fetch dashboard data:', err);
