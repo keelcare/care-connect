@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { api } from '@/lib/api';
@@ -37,10 +37,19 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex bg-white">
+        <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+            <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
             {/* Left Side - Form */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12">
-                <div className="w-full max-w-md mx-auto">
+            <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
+                <div className="w-full max-w-md mx-auto my-auto">
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-8 group"
+                    >
+                        <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                        Back to Home
+                    </Link>
+
                     <div className="mb-10">
                         <Link href="/" className="inline-block mb-8">
                             <span className="text-2xl font-bold text-primary tracking-tight font-display">
@@ -123,7 +132,7 @@ export default function LoginPage() {
             </div>
 
             {/* Right Side - Animation */}
-            <div className="hidden lg:flex w-1/2 bg-[#F0FDF4] relative overflow-hidden items-center justify-center">
+            <div className="hidden lg:flex w-1/2 h-full bg-[#F0FDF4] relative overflow-hidden items-center justify-center">
                 <style jsx>{`
                     @keyframes sway {
                         0%, 100% { transform: rotate(-3deg); }
@@ -184,6 +193,7 @@ export default function LoginPage() {
                         </svg>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );
