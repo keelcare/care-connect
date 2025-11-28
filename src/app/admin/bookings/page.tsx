@@ -119,7 +119,7 @@ export default function AdminBookingsPage() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => router.push(`/dashboard/bookings/${booking.id}`)}
+                                            onClick={() => router.push(`/admin/bookings/${booking.id}`)}
                                             className="rounded-lg hover:bg-neutral-50"
                                         >
                                             View Details

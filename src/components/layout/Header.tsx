@@ -125,6 +125,15 @@ export const Header: React.FC = () => {
                                                     <LayoutDashboard size={18} />
                                                     <span className="font-medium">Dashboard</span>
                                                 </Link>
+                                            ) : user.role === 'admin' ? (
+                                                <Link
+                                                    href="/admin"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
+                                                >
+                                                    <LayoutDashboard size={18} />
+                                                    <span className="font-medium">Admin Dashboard</span>
+                                                </Link>
                                             ) : (
                                                 <Link
                                                     href="/browse"
@@ -257,11 +266,11 @@ export const Header: React.FC = () => {
                                         </div>
                                     </div>
                                     <Link
-                                        href={user.role === 'nanny' ? '/dashboard' : '/browse'}
+                                        href={user.role === 'nanny' ? '/dashboard' : user.role === 'admin' ? '/admin' : '/browse'}
                                         className="block px-4 py-3 rounded-xl hover:bg-neutral-50 text-neutral-600 font-medium"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
-                                        Dashboard
+                                        {user.role === 'admin' ? 'Admin Dashboard' : 'Dashboard'}
                                     </Link>
                                     <button
                                         onClick={() => {

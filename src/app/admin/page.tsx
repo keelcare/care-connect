@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { AdminStats } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Users, Calendar, CheckCircle } from 'lucide-react';
+import { Users, Calendar, CheckCircle, Bell } from 'lucide-react';
 import styles from './page.module.css';
 
 export default function AdminDashboard() {
@@ -114,6 +114,13 @@ export default function AdminDashboard() {
                     >
                         <Calendar className="mr-3" size={24} />
                         Manage Bookings
+                    </Button>
+                    <Button
+                        className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-white text-neutral-900 border border-neutral-200 hover:bg-neutral-50"
+                        onClick={() => router.push('/admin/notifications')}
+                    >
+                        <Bell className="mr-3" size={24} />
+                        Send Notifications
                     </Button>
                 </div>
             </div>

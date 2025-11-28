@@ -130,6 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Redirect immediately based on role
             if (userData.role === 'nanny') {
                 router.push('/dashboard');
+            } else if (userData.role === 'admin') {
+                router.push('/admin');
             } else {
                 router.push('/browse');
             }
@@ -141,6 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Redirect immediately based on decoded role
             if (role === 'nanny') {
                 router.push('/dashboard');
+            } else if (role === 'admin') {
+                router.push('/admin');
             } else {
                 router.push('/browse');
             }
