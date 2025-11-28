@@ -107,6 +107,7 @@ export const api = {
         create: (body: CreateReviewDto) => fetchApi<Review>('/reviews', { method: 'POST', body: JSON.stringify(body) }),
         getByUser: (userId: string) => fetchApi<Review[]>(`/reviews/user/${userId}`),
         getByBooking: (bookingId: string) => fetchApi<Review[]>(`/reviews/booking/${bookingId}`),
+        checkEligibility: (bookingId: string) => fetchApi<{ canReview: boolean; reason: string | null; existingReview?: Review }>(`/reviews/booking/${bookingId}/can-review`),
     },
     notifications: {
         send: (body: SendNotificationDto) => fetchApi<{ success: boolean }>('/notifications/send', { method: 'POST', body: JSON.stringify(body) }),

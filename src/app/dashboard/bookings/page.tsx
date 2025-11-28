@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import styles from './page.module.css';
 
+import { ReviewModal } from '@/components/reviews/ReviewModal';
+
 export default function BookingsPage() {
     const { user } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -19,6 +21,10 @@ export default function BookingsPage() {
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'requests' | 'upcoming' | 'completed' | 'cancelled'>('upcoming');
+
+    // Review Modal State
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -124,6 +130,11 @@ export default function BookingsPage() {
         }
     };
 
+    const handleOpenReview = (bookingId: string) => {
+        setSelectedBookingId(bookingId);
+        setIsReviewModalOpen(true);
+    };
+
     const getStatusBadgeStyles = (status: string) => {
         switch (status) {
             case 'CONFIRMED': return 'bg-green-100 text-green-700';
@@ -208,6 +219,19 @@ export default function BookingsPage() {
                     className="rounded-xl border-neutral-200"
                 >
                     Cancel
+                </Button>
+            );
+        }
+
+        if (booking.status === 'COMPLETED') {
+            buttons.push(
+                <Button
+                    key="review"
+                    size="sm"
+                    onClick={() => handleOpenReview(booking.id)}
+                    className="rounded-xl"
+                >
+                    Leave Review
                 </Button>
             );
         }
@@ -485,6 +509,18 @@ export default function BookingsPage() {
                         })}
                     </div>
                 )
+            )}
+
+            {selectedBookingId && (
+                <ReviewModal
+                    isOpen={isReviewModalOpen}
+                    onClose={() => setIsReviewModalOpen(false)}
+                    bookingId={selectedBookingId}
+                    onSuccess={() => {
+                        // Optional: Refresh data or show success message
+                        fetchData();
+                    }}
+                />
             )}
         </div>
     );

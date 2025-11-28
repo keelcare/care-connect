@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
 
+import { ReviewModal } from '@/components/reviews/ReviewModal';
+
 export default function ParentBookingsPage() {
     const { user } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -18,6 +20,10 @@ export default function ParentBookingsPage() {
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'requests' | 'upcoming' | 'completed' | 'cancelled'>('upcoming');
+
+    // Review Modal State
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -61,6 +67,11 @@ export default function ParentBookingsPage() {
         } finally {
             setActionLoading(null);
         }
+    };
+
+    const handleOpenReview = (bookingId: string) => {
+        setSelectedBookingId(bookingId);
+        setIsReviewModalOpen(true);
     };
 
     const getStatusBadgeStyles = (status: string) => {
@@ -110,6 +121,19 @@ export default function ParentBookingsPage() {
                     className="rounded-xl border-neutral-200"
                 >
                     Cancel
+                </Button>
+            );
+        }
+
+        if (booking.status === 'COMPLETED') {
+            buttons.push(
+                <Button
+                    key="review"
+                    size="sm"
+                    onClick={() => handleOpenReview(booking.id)}
+                    className="rounded-xl"
+                >
+                    Leave Review
                 </Button>
             );
         }
@@ -288,6 +312,18 @@ export default function ParentBookingsPage() {
                             })}
                         </div>
                     )
+                )}
+
+                {selectedBookingId && (
+                    <ReviewModal
+                        isOpen={isReviewModalOpen}
+                        onClose={() => setIsReviewModalOpen(false)}
+                        bookingId={selectedBookingId}
+                        onSuccess={() => {
+                            // Optional: Refresh data or show success message
+                            fetchData();
+                        }}
+                    />
                 )}
             </div>
         </ParentLayout>
