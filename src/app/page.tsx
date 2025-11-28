@@ -5,11 +5,13 @@ import { FeaturedServices } from "@/components/features/FeaturedServices";
 import { TrustedBy } from "@/components/features/TrustedBy";
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
+import { SplashLoader } from "@/components/ui/SplashLoader";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(true);
 
   // Redirect logged-in nannies to dashboard
   React.useEffect(() => {
@@ -17,6 +19,10 @@ export default function Home() {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
 
   // Show loading state while checking auth
   if (loading) {
@@ -34,6 +40,7 @@ export default function Home() {
 
   return (
     <>
+      {showSplash && <SplashLoader onFinish={handleSplashFinish} />}
       <Hero />
       <TrustedBy />
       <FeaturedServices />
