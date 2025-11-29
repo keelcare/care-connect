@@ -85,7 +85,10 @@ export const Header: React.FC = () => {
 
                     {user ? (
                         <div className="flex items-center gap-4">
-                            <button className="relative p-2 text-neutral-500 hover:text-primary transition-colors rounded-full hover:bg-neutral-50">
+                            <button
+                                onClick={() => router.push('/notifications')}
+                                className="relative p-2 text-neutral-500 hover:text-primary transition-colors rounded-full hover:bg-neutral-50"
+                            >
                                 <Bell size={20} />
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                             </button>
