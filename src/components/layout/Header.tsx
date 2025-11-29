@@ -175,7 +175,7 @@ export const Header: React.FC = () => {
                                             )}
 
                                             <Link
-                                                href="/dashboard/settings"
+                                                href={user.role === 'parent' ? '/settings' : '/dashboard/settings'}
                                                 onClick={() => setIsDropdownOpen(false)}
                                                 className="w-full px-4 py-3 text-left hover:bg-neutral-50 flex items-center gap-3 text-neutral-700 transition-colors"
                                             >

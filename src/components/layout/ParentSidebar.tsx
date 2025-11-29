@@ -22,7 +22,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
         { icon: Sparkles, label: 'Book a Service', href: '/book-service' },
         { icon: Calendar, label: 'Bookings', href: '/bookings' },
         { icon: MessageSquare, label: 'Messages', href: '/messages' },
-        { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+        { icon: Settings, label: 'Settings', href: '/settings' },
     ];
 
     return (
