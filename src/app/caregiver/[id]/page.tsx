@@ -71,7 +71,7 @@ const MOCK_USERS = {
     }
 };
 
-import { DirectBookingModal } from '@/components/features/DirectBookingModal';
+
 
 export default function CaregiverProfilePage() {
     const params = useParams();
@@ -82,7 +82,7 @@ export default function CaregiverProfilePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'about' | 'reviews' | 'availability'>('about');
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
     const [messageLoading, setMessageLoading] = useState(false);
 
     useEffect(() => {
@@ -119,9 +119,9 @@ export default function CaregiverProfilePage() {
 
     useEffect(() => {
         if (searchParams.get('book') === 'true') {
-            setIsBookingModalOpen(true);
+            router.push(`/book/${params.id}`);
         }
-    }, [searchParams]);
+    }, [searchParams, params.id, router]);
 
     const handleMessage = async () => {
         if (!user || !caregiver) return;
@@ -311,7 +311,7 @@ export default function CaregiverProfilePage() {
                                     <Button
                                         size="lg"
                                         className="w-full rounded-xl bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
-                                        onClick={() => setIsBookingModalOpen(true)}
+                                        onClick={() => router.push(`/book/${caregiver.id}`)}
                                     >
                                         Request Booking
                                     </Button>
@@ -362,16 +362,7 @@ export default function CaregiverProfilePage() {
                 </div>
             </div>
 
-            {/* Booking Modal */}
-            {caregiver && (
-                <DirectBookingModal
-                    isOpen={isBookingModalOpen}
-                    onClose={() => setIsBookingModalOpen(false)}
-                    nannyId={caregiver.id}
-                    nannyName={`${caregiver.profiles?.first_name} ${caregiver.profiles?.last_name}`}
-                    hourlyRate={parseFloat(caregiver.nanny_details?.hourly_rate || '0')}
-                />
-            )}
+
         </div>
     );
 }

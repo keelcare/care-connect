@@ -183,6 +183,7 @@ export default function RequestDetailsPage() {
                                 experience={`${assignedNanny.nanny_details?.experience_years} years`}
                                 isVerified={assignedNanny.is_verified}
                                 onViewProfile={() => router.push(`/caregiver/${assignedNanny.id}`)}
+                                onBook={() => router.push(`/book/${assignedNanny.id}`)}
                             />
                         </div>
                     )}

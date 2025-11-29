@@ -257,7 +257,7 @@ export default function BrowsePage() {
                                         isVerified={nanny.is_verified}
                                         distance={nanny.distance}
                                         onViewProfile={() => window.location.href = `/caregiver/${nanny.id}`}
-                                        onBook={() => window.location.href = `/caregiver/${nanny.id}?book=true`}
+                                        onBook={() => window.location.href = `/book/${nanny.id}`}
                                     />
                                 ))}
                             </div>

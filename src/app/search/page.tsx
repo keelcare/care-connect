@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui/SearchInput';
@@ -9,20 +10,17 @@ import { useToast } from '@/components/ui/ToastProvider';
 import { FilterSidebar, FilterState } from '@/components/features/FilterSidebar';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { Modal } from '@/components/ui/Modal';
-import { DirectBookingModal } from '@/components/features/DirectBookingModal';
+
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePreferences } from '@/hooks/usePreferences';
 
 export default function SearchPage() {
+    const router = useRouter();
     const { user, loading: authLoading } = useAuth();
     const { addToast } = useToast();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [selectedNannyId, setSelectedNannyId] = useState<string | undefined>(undefined);
-    const [selectedNannyName, setSelectedNannyName] = useState<string>('');
-    const [selectedNannyRate, setSelectedNannyRate] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [nannies, setNannies] = useState<User[]>([]);
     const [filteredNannies, setFilteredNannies] = useState<User[]>([]);
@@ -469,10 +467,7 @@ export default function SearchPage() {
                                         isVerified={nanny.is_verified}
                                         onViewProfile={() => window.location.href = `/caregiver/${nanny.id}`}
                                         onBook={() => {
-                                            setSelectedNannyId(nanny.id);
-                                            setSelectedNannyName(`${nanny.profiles?.first_name} ${nanny.profiles?.last_name}`);
-                                            setSelectedNannyRate(Number(nanny.nanny_details?.hourly_rate) || 0);
-                                            setIsBookingModalOpen(true);
+                                            router.push(`/book/${nanny.id}`);
                                         }}
                                     />
                                 ))}
@@ -507,13 +502,7 @@ export default function SearchPage() {
                     />
                 </Modal>
 
-                <DirectBookingModal
-                    isOpen={isBookingModalOpen}
-                    onClose={() => setIsBookingModalOpen(false)}
-                    nannyId={selectedNannyId || ''}
-                    nannyName={selectedNannyName}
-                    hourlyRate={selectedNannyRate}
-                />
+
             </div>
         </ParentLayout>
     );

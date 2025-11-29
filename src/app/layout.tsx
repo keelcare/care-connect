@@ -22,7 +22,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/search') ||
     pathname?.startsWith('/book-service') ||
     pathname?.startsWith('/bookings') ||
-    pathname?.startsWith('/messages');
+    pathname?.startsWith('/messages') ||
+    pathname?.startsWith('/book');
 
   return (
     <body>
