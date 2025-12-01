@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react';
+import { SlidersHorizontal, ChevronLeft, ChevronRight, MapPin, Search, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SearchInput } from '@/components/ui/SearchInput';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { FilterSidebar, FilterState } from '@/components/features/FilterSidebar';
@@ -28,7 +27,7 @@ export default function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     const [isNearby, setIsNearby] = useState(false);
     const [updatingLocation, setUpdatingLocation] = useState(false);
-    const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(false); // Desktop filter sidebar
+    const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(true);
     const { preferences, updatePreferences } = usePreferences();
 
     const [filters, setFilters] = useState<FilterState>({
@@ -60,13 +59,9 @@ export default function SearchPage() {
                             lng: longitude,
                         });
 
-                        // Wait for backend reverse geocoding to complete
                         await new Promise(resolve => setTimeout(resolve, 2000));
-
-                        // Fetch updated user data to get the address
                         const updatedUser = await api.users.me();
 
-                        // Update preferences with location
                         updatePreferences({
                             location: {
                                 lat: latitude,
@@ -76,7 +71,6 @@ export default function SearchPage() {
                         });
 
                         addToast({ message: "Location updated successfully", type: "success" });
-                        // Trigger a page reload to refresh user data
                         window.location.reload();
                     }
                 } catch (error) {
@@ -94,7 +88,6 @@ export default function SearchPage() {
         );
     };
 
-    // Calculate active filter count
     const activeServiceCount = Object.values(filters.services).filter(Boolean).length;
     const isPriceChanged = filters.priceRange[0] !== 0 || filters.priceRange[1] !== 2000;
     const activeFilterCount = activeServiceCount + (isPriceChanged ? 1 : 0);
@@ -105,10 +98,8 @@ export default function SearchPage() {
             setError(null);
 
             if (isNearby) {
-                // Get current location
                 if (!navigator.geolocation) {
                     setError('Geolocation is not supported by your browser');
-                    // Fallback to all nannies
                     const allNannies = await api.users.nannies();
                     setNannies(allNannies);
                     setFilteredNannies(allNannies);
@@ -120,17 +111,14 @@ export default function SearchPage() {
                     async (position) => {
                         try {
                             const { latitude, longitude } = position.coords;
-                            
-                            // Use backend API with radius 10km
                             const response = await api.location.nearbyNannies(latitude, longitude, 10);
                             
                             if (response.data && response.data.length > 0) {
-                                // Map nearby nannies to User type
                                 const mappedNannies = response.data.map(n => ({
                                     ...n,
                                     profiles: n.profile,
                                     nanny_details: n.nanny_details,
-                                    distance: n.distance // Keep distance from backend
+                                    distance: n.distance
                                 } as unknown as User));
                                 
                                 setNannies(mappedNannies);
@@ -150,7 +138,6 @@ export default function SearchPage() {
                     (err) => {
                         console.error(err);
                         setError('Unable to retrieve location. Please allow location access.');
-                        // Fallback to all nannies if location fails
                         api.users.nannies().then(allNannies => {
                             setNannies(allNannies);
                             setFilteredNannies(allNannies);
@@ -173,20 +160,15 @@ export default function SearchPage() {
 
     const handleSearch = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-        // Filtering is handled automatically by useEffect
     };
 
-
-    // Initial fetch and re-fetch when filter changes
     useEffect(() => {
         fetchNannies();
     }, [isNearby]);
 
-    // Filter nannies when search query or filters change
     useEffect(() => {
         let filtered = nannies;
 
-        // 1. Search Query
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(nanny => {
@@ -202,15 +184,11 @@ export default function SearchPage() {
             });
         }
 
-
-
-        // 3. Price Range
         filtered = filtered.filter(nanny => {
             const rate = Number(nanny.nanny_details?.hourly_rate) || 0;
             return rate >= filters.priceRange[0] && rate <= filters.priceRange[1];
         });
 
-        // 4. Services (Skills)
         const selectedServices = Object.entries(filters.services)
             .filter(([_, isSelected]) => isSelected)
             .map(([key]) => key);
@@ -218,8 +196,6 @@ export default function SearchPage() {
         if (selectedServices.length > 0) {
             filtered = filtered.filter(nanny => {
                 const nannySkills = nanny.nanny_details?.skills?.map(s => s.toLowerCase()) || [];
-                // Map service keys to potential skill strings
-                // This is a simple mapping, might need to be more robust based on actual skill data
                 return selectedServices.some(service => {
                     if (service === 'childCare') return nannySkills.some(s => s.includes('child') || s.includes('baby') || s.includes('newborn'));
                     if (service === 'seniorCare') return nannySkills.some(s => s.includes('senior') || s.includes('elderly'));
@@ -235,8 +211,6 @@ export default function SearchPage() {
         setFilteredNannies(filtered);
     }, [searchQuery, nannies, filters]);
 
-
-    // Mock data for demo purposes
     const MOCK_NANNIES: User[] = [
         {
             id: '1',
@@ -262,7 +236,7 @@ export default function SearchPage() {
                 skills: ['CPR Certified', 'First Aid', 'Early Childhood Education'],
                 experience_years: 5,
                 hourly_rate: '25.00',
-                bio: 'Experienced nanny with a passion for child development. I have worked with children of all ages and love creating fun, educational activities.',
+                bio: 'Experienced nanny with a passion for child development.',
                 availability_schedule: {},
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
@@ -283,7 +257,7 @@ export default function SearchPage() {
                 address: 'Queens, NY',
                 lat: '40.7282',
                 lng: '-73.7949',
-                profile_image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
+                profile_image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             },
@@ -292,7 +266,7 @@ export default function SearchPage() {
                 skills: ['Math Tutoring', 'Sports', 'Homework Help'],
                 experience_years: 3,
                 hourly_rate: '20.00',
-                bio: 'Energetic and responsible caregiver. I specialize in active play and can help with homework and tutoring.',
+                bio: 'Energetic and responsible caregiver specializing in active play.',
                 availability_schedule: {},
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
@@ -313,7 +287,7 @@ export default function SearchPage() {
                 address: 'Manhattan, NY',
                 lat: '40.7831',
                 lng: '-73.9712',
-                profile_image_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
+                profile_image_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=256&q=80',
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             },
@@ -322,7 +296,7 @@ export default function SearchPage() {
                 skills: ['Newborn Care', 'Sleep Training', 'Organic Cooking'],
                 experience_years: 8,
                 hourly_rate: '35.00',
-                bio: 'Professional nanny with extensive experience in newborn care. I am patient, reliable, and dedicated to providing the best care for your little ones.',
+                bio: 'Professional nanny with extensive experience in newborn care.',
                 availability_schedule: {},
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
@@ -330,19 +304,18 @@ export default function SearchPage() {
         }
     ];
 
-
     return (
         <ParentLayout>
-            <div className="h-screen flex flex-col overflow-hidden bg-neutral-50">
-                {/* Enhanced Search Bar Section - Fixed */}
-                <div className="flex-none z-30 bg-white border-b border-neutral-100 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
-                        {/* Main Search Row */}
+            <div className="h-screen flex flex-col overflow-hidden bg-stone-50">
+                {/* Search Header */}
+                <div className="flex-none z-30 bg-white border-b border-stone-100">
+                    <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">
+                        {/* Search Row */}
                         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-                            {/* Search Input - Prominent */}
+                            {/* Search Input */}
                             <div className="flex-1 w-full">
                                 <form onSubmit={handleSearch} className="relative">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
                                         <Search size={20} />
                                     </div>
                                     <input
@@ -350,15 +323,15 @@ export default function SearchPage() {
                                         placeholder="Search by name, location, or skills..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full h-14 pl-12 pr-4 rounded-2xl border-2 border-neutral-200 focus:border-primary focus:outline-none text-neutral-900 placeholder:text-neutral-400 transition-colors"
+                                        className="w-full h-12 pl-12 pr-12 rounded-xl border border-stone-200 focus:border-stone-400 focus:ring-2 focus:ring-stone-100 focus:outline-none text-stone-900 placeholder:text-stone-400 transition-all bg-stone-50"
                                     />
                                     {searchQuery && (
                                         <button
                                             type="button"
                                             onClick={() => setSearchQuery('')}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 flex items-center justify-center transition-colors"
                                         >
-                                            ✕
+                                            <X size={14} className="text-stone-600" />
                                         </button>
                                     )}
                                 </form>
@@ -366,37 +339,46 @@ export default function SearchPage() {
 
                             {/* Action Buttons */}
                             <div className="flex items-center gap-3 w-full lg:w-auto">
-
                                 <Button
                                     variant={isNearby ? "default" : "outline"}
                                     onClick={() => setIsNearby(!isNearby)}
-                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium ${isNearby ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${
+                                        isNearby 
+                                            ? 'bg-stone-900 hover:bg-stone-800 text-white' 
+                                            : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
+                                    }`}
                                 >
                                     <MapPin size={18} />
                                     Nearby
                                 </Button>
+                                
                                 <Button
                                     variant={isDesktopFilterOpen ? "default" : "outline"}
                                     onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative ${isDesktopFilterOpen ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${
+                                        isDesktopFilterOpen 
+                                            ? 'bg-stone-900 hover:bg-stone-800 text-white' 
+                                            : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
+                                    }`}
                                 >
                                     <SlidersHorizontal size={18} />
                                     Filters
                                     {activeFilterCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                                             {activeFilterCount}
                                         </span>
                                     )}
                                 </Button>
+                                
                                 <Button
                                     variant="outline"
                                     onClick={() => setIsFilterOpen(true)}
-                                    className="lg:hidden rounded-xl h-12 px-5 flex items-center gap-2 font-medium bg-white hover:bg-neutral-50 relative"
+                                    className="lg:hidden rounded-xl h-12 px-5 flex items-center gap-2 font-medium bg-white hover:bg-stone-50 border-stone-200 text-stone-700 relative"
                                 >
                                     <SlidersHorizontal size={18} />
                                     Filters
                                     {activeFilterCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                                             {activeFilterCount}
                                         </span>
                                     )}
@@ -405,50 +387,73 @@ export default function SearchPage() {
                         </div>
 
                         {/* Results Count */}
-                        <div className="mt-4 text-sm text-neutral-500">
-                            {loading ? 'Loading...' : (
-                                <>
-                                    Showing <span className="font-bold text-neutral-900">{filteredNannies.length}</span> of <span className="font-bold text-neutral-900">{nannies.length}</span> caregivers
-                                    {activeFilterCount > 0 && (
-                                        <span className="ml-2 text-primary font-medium">
-                                            • {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} active
-                                        </span>
-                                    )}
-                                </>
-                            )}
+                        <div className="mt-4 flex items-center justify-between">
+                            <p className="text-sm text-stone-500">
+                                {loading ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 size={14} className="animate-spin" />
+                                        Loading...
+                                    </span>
+                                ) : (
+                                    <>
+                                        Showing <span className="font-semibold text-stone-900">{filteredNannies.length}</span> of <span className="font-semibold text-stone-900">{nannies.length}</span> caregivers
+                                        {activeFilterCount > 0 && (
+                                            <span className="ml-2 text-stone-700 font-medium">
+                                                • {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} active
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Main Content - Scrollable */}
-                <div className="flex-1 flex gap-6 overflow-hidden px-4 md:px-8 pb-4">
-                    {/* Sidebar - Fixed/Scrollable independently */}
+                {/* Main Content */}
+                <div className="flex-1 flex gap-6 overflow-hidden px-4 md:px-6 pb-4">
+                    {/* Sidebar */}
                     <div className={`hidden lg:block flex-shrink-0 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain transition-all duration-300 ${isDesktopFilterOpen ? 'w-80 opacity-100' : 'w-0 opacity-0'}`}>
                         {isDesktopFilterOpen && (
-                            <FilterSidebar
-                                filters={filters}
-                                onFilterChange={setFilters}
-                            />
+                            <div className="pt-4">
+                                <FilterSidebar
+                                    filters={filters}
+                                    onFilterChange={setFilters}
+                                />
+                            </div>
                         )}
                     </div>
 
-                    {/* Profiles List - Scrollable independently */}
-                    <div className="flex-1 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain mt-4">
-                        {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">{error}</div>}
+                    {/* Results Grid */}
+                    <div className="flex-1 overflow-y-auto h-full pb-20 custom-scrollbar overscroll-contain pt-4">
+                        {error && (
+                            <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 border border-red-100">
+                                {error}
+                            </div>
+                        )}
 
                         {loading ? (
-                            <div className="text-center py-12 text-neutral-500">Loading...</div>
-                        ) : filteredNannies.length === 0 && !error ? (
-                            <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft flex flex-col items-center justify-center">
-                                <div className="w-32 h-32 bg-neutral-50 rounded-full flex items-center justify-center mb-6">
-                                    <SlidersHorizontal size={48} className="text-neutral-300" />
+                            <div className="flex items-center justify-center py-20">
+                                <div className="text-center">
+                                    <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-stone-500">Finding caregivers...</p>
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-2">No matches found</h3>
-                                <p className="text-neutral-500 mb-6 max-w-md">We couldn&apos;t find any caregivers matching your search. Try adjusting your filters or search terms.</p>
-                                <Button variant="default" onClick={() => {
-                                    setNannies(MOCK_NANNIES);
-                                    setFilteredNannies(MOCK_NANNIES);
-                                }} className="rounded-full px-8 bg-primary hover:bg-primary-600">
+                            </div>
+                        ) : filteredNannies.length === 0 && !error ? (
+                            <div className="text-center py-20 bg-white rounded-2xl border border-stone-100 flex flex-col items-center justify-center">
+                                <div className="w-20 h-20 bg-stone-100 rounded-full flex items-center justify-center mb-6">
+                                    <Search size={32} className="text-stone-400" />
+                                </div>
+                                <h3 className="text-xl font-bold text-stone-900 mb-2">No matches found</h3>
+                                <p className="text-stone-500 mb-6 max-w-md">
+                                    We couldn't find any caregivers matching your criteria. Try adjusting your filters or search terms.
+                                </p>
+                                <Button 
+                                    onClick={() => {
+                                        setNannies(MOCK_NANNIES);
+                                        setFilteredNannies(MOCK_NANNIES);
+                                    }} 
+                                    className="rounded-xl bg-stone-900 hover:bg-stone-800 text-white px-6"
+                                >
                                     Load Demo Data
                                 </Button>
                             </div>
@@ -467,19 +472,27 @@ export default function SearchPage() {
                                         experience={`${nanny.nanny_details?.experience_years || 0} years`}
                                         isVerified={nanny.is_verified}
                                         onViewProfile={() => window.location.href = `/caregiver/${nanny.id}`}
-                                        onBook={() => {
-                                            router.push(`/book/${nanny.id}`);
-                                        }}
+                                        onBook={() => router.push(`/book/${nanny.id}`)}
                                     />
                                 ))}
                             </div>
                         )}
 
+                        {/* Pagination */}
                         {filteredNannies.length > 0 && (
                             <div className="flex justify-center gap-2 mt-12 mb-8">
-                                <button className="p-2 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 disabled:opacity-50" disabled><ChevronLeft size={20} /></button>
-                                <button className="w-10 h-10 rounded-lg bg-primary text-white font-medium shadow-md">1</button>
-                                <button className="p-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"><ChevronRight size={20} /></button>
+                                <button 
+                                    className="p-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-50 hover:text-stone-600 disabled:opacity-50 transition-colors" 
+                                    disabled
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                                <button className="w-10 h-10 rounded-lg bg-stone-900 text-white font-medium">
+                                    1
+                                </button>
+                                <button className="p-2 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors">
+                                    <ChevronRight size={20} />
+                                </button>
                             </div>
                         )}
                     </div>
@@ -491,9 +504,20 @@ export default function SearchPage() {
                     onClose={() => setIsFilterOpen(false)}
                     title="Filters"
                     footer={
-                        <div className="flex gap-2 w-full">
-                            <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
-                            <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-primary hover:bg-primary-600 text-white">Apply</Button>
+                        <div className="flex gap-3 w-full">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setIsFilterOpen(false)} 
+                                className="flex-1 rounded-xl border-stone-200"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                onClick={() => setIsFilterOpen(false)} 
+                                className="flex-1 rounded-xl bg-stone-900 hover:bg-stone-800 text-white"
+                            >
+                                Apply Filters
+                            </Button>
                         </div>
                     }
                 >
@@ -502,8 +526,6 @@ export default function SearchPage() {
                         onFilterChange={setFilters}
                     />
                 </Modal>
-
-
             </div>
         </ParentLayout>
     );
