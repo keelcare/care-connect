@@ -1,84 +1,122 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight } from 'lucide-react';
 
 export const FeaturedServices: React.FC = () => {
+    const router = useRouter();
+
     const services = [
         {
             title: "Child Care",
-            icon: "lni-baby",
-            color: "text-yellow-600",
-            bg: "bg-yellow-100",
-            border: "group-hover:border-yellow-600"
+            description: "Experienced nannies and babysitters for children of all ages",
+            icon: Baby,
+            count: "5,200+ caregivers",
+            image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=400&auto=format&fit=crop"
         },
         {
             title: "Senior Care",
-            icon: "lni-heart",
-            color: "text-teal-600",
-            bg: "bg-teal-100",
-            border: "group-hover:border-teal-600"
+            description: "Compassionate care for elderly family members",
+            icon: Heart,
+            count: "3,100+ caregivers",
+            image: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=400&auto=format&fit=crop"
         },
         {
             title: "Pet Care",
-            icon: "lni-paw",
-            color: "text-rose-600",
-            bg: "bg-rose-100",
-            border: "group-hover:border-rose-600"
+            description: "Trusted pet sitters and dog walkers in your area",
+            icon: PawPrint,
+            count: "2,800+ caregivers",
+            image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=400&auto=format&fit=crop"
         },
         {
             title: "Housekeeping",
-            icon: "lni-home",
-            color: "text-blue-600",
-            bg: "bg-blue-100",
-            border: "group-hover:border-blue-600"
+            description: "Professional house cleaners and organizers",
+            icon: Home,
+            count: "1,900+ helpers",
+            image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop"
         },
         {
             title: "Tutoring",
-            icon: "lni-book",
-            color: "text-purple-600",
-            bg: "bg-purple-100",
-            border: "group-hover:border-purple-600"
+            description: "Qualified tutors for academic support",
+            icon: BookOpen,
+            count: "1,400+ tutors",
+            image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=400&auto=format&fit=crop"
         },
         {
             title: "Special Needs",
-            icon: "lni-hand",
-            color: "text-green-600",
-            bg: "bg-green-100",
-            border: "group-hover:border-green-600"
+            description: "Specialized care for those who need extra attention",
+            icon: Accessibility,
+            count: "800+ specialists",
+            image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=400&auto=format&fit=crop"
         },
     ];
 
+    const handleServiceClick = (serviceTitle: string) => {
+        router.push(`/browse?service=${encodeURIComponent(serviceTitle)}`);
+    };
+
     return (
-        <section className="py-24 px-6 bg-neutral-50">
+        <section className="py-24 px-6 bg-stone-50">
             <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-16 space-y-4">
-                    <h2 className="text-4xl font-bold text-neutral-900">Explore our services</h2>
-                    <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-                        We have the right caregiver for every need.
+                {/* Section Header */}
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+                    <div>
+                        <p className="text-sm font-semibold text-stone-400 uppercase tracking-widest mb-3">Our Services</p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-stone-900 max-w-lg">
+                            Care for every need, all in one place
+                        </h2>
+                    </div>
+                    <p className="text-stone-600 max-w-md">
+                        Whether you need help with childcare, eldercare, or everyday tasks, 
+                        we have verified professionals ready to assist.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {services.map((service, index) => (
-                        <div
-                            key={index}
-                            className={`group relative p-8 bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2 border-t-4 border-transparent ${service.border} cursor-pointer flex flex-col items-center text-center`}
-                        >
-                            <div className={`w-20 h-20 rounded-2xl ${service.bg} flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                                <i className={`lni ${service.icon} text-4xl ${service.color}`}></i>
+                {/* Services Grid */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {services.map((service, index) => {
+                        const IconComponent = service.icon;
+                        return (
+                            <div
+                                key={index}
+                                onClick={() => handleServiceClick(service.title)}
+                                className="group relative bg-white rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-500 hover:-translate-y-1 border border-stone-100"
+                            >
+                                {/* Card Content */}
+                                <div className="p-6">
+                                    {/* Icon */}
+                                    <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-stone-900 transition-colors duration-300">
+                                        <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
+                                    </div>
+
+                                    {/* Title */}
+                                    <h3 className="text-xl font-bold text-stone-900 mb-2 group-hover:text-stone-700 transition-colors">
+                                        {service.title}
+                                    </h3>
+
+                                    {/* Description */}
+                                    <p className="text-stone-500 text-sm mb-4 leading-relaxed">
+                                        {service.description}
+                                    </p>
+
+                                    {/* Footer */}
+                                    <div className="flex items-center justify-between pt-4 border-t border-stone-100">
+                                        <span className="text-xs font-medium text-stone-400">
+                                            {service.count}
+                                        </span>
+                                        <div className="flex items-center gap-1 text-sm font-semibold text-stone-900 group-hover:gap-2 transition-all">
+                                            <span>Browse</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Hover gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                             </div>
-
-                            <h3 className="text-2xl font-bold text-neutral-900 mb-3">
-                                {service.title}
-                            </h3>
-
-                            <p className="text-neutral-500">
-                                Trusted professionals for your {service.title.toLowerCase()} needs.
-                            </p>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </section>

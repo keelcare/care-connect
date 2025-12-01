@@ -3,6 +3,8 @@
 import { Hero } from "@/components/features/Hero";
 import { FeaturedServices } from "@/components/features/FeaturedServices";
 import { TrustedBy } from "@/components/features/TrustedBy";
+import { HowItWorks } from "@/components/features/HowItWorks";
+import { CTASection } from "@/components/features/CTASection";
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -27,8 +29,8 @@ export default function Home() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -44,6 +46,8 @@ export default function Home() {
       <Hero />
       <TrustedBy />
       <FeaturedServices />
+      <HowItWorks />
+      <CTASection />
     </>
   );
 }
