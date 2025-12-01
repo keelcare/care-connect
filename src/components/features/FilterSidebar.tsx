@@ -96,20 +96,20 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
     const activeFilterCount = activeServiceCount + (filters.verifiedOnly ? 1 : 0) + (isPriceChanged ? 1 : 0);
 
     return (
-        <aside className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-6 h-full overflow-y-auto custom-scrollbar">
+        <aside className="bg-white rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 p-6 space-y-6 h-full overflow-y-auto">
             {/* Header with Reset All */}
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+            <div className="flex items-center justify-between pb-4 border-b border-stone-100">
                 <div>
-                    <h2 className="font-bold text-lg text-neutral-900">Filters</h2>
+                    <h2 className="font-bold text-lg text-stone-900">Filters</h2>
                     {activeFilterCount > 0 && (
-                        <p className="text-xs text-neutral-500 mt-1">
+                        <p className="text-xs text-stone-500 mt-1">
                             {activeFilterCount} active {activeFilterCount === 1 ? 'filter' : 'filters'}
                         </p>
                     )}
                 </div>
                 {activeFilterCount > 0 && (
                     <button
-                        className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-50"
+                        className="flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
                         onClick={resetAllFilters}
                     >
                         <RotateCcw size={14} />
@@ -119,12 +119,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
             </div>
 
             {/* Service Type Section */}
-            <div className="bg-neutral-50 rounded-2xl p-4">
+            <div className="bg-stone-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-neutral-900 text-sm">Service Type</h3>
+                    <h3 className="font-bold text-stone-900 text-sm">Service Type</h3>
                     {activeServiceCount > 0 && (
                         <button
-                            className="text-xs font-medium text-primary hover:text-primary-600 transition-colors"
+                            className="text-xs font-medium text-stone-600 hover:text-stone-900 transition-colors"
                             onClick={clearServices}
                         >
                             Clear
@@ -166,10 +166,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
             </div>
 
             {/* Hourly Rate Section */}
-            <div className="bg-neutral-50 rounded-2xl p-4">
+            <div className="bg-stone-50 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-4">
-                    <DollarSign size={16} className="text-primary" />
-                    <h3 className="font-bold text-neutral-900 text-sm">Hourly Rate</h3>
+                    <DollarSign size={16} className="text-stone-700" />
+                    <h3 className="font-bold text-stone-900 text-sm">Hourly Rate</h3>
                 </div>
                 <PriceRangeSlider
                     min={10}
@@ -181,10 +181,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
             </div>
 
             {/* Verification Section */}
-            <div className="bg-neutral-50 rounded-2xl p-4">
+            <div className="bg-stone-50 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-4">
-                    <ShieldCheck size={16} className="text-primary" />
-                    <h3 className="font-bold text-neutral-900 text-sm">Verification</h3>
+                    <ShieldCheck size={16} className="text-stone-700" />
+                    <h3 className="font-bold text-stone-900 text-sm">Verification</h3>
                 </div>
                 <Toggle
                     label="Background Checked Only"
