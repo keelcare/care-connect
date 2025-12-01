@@ -22,24 +22,6 @@ interface CaregiverData {
     isVerified: boolean;
 }
 
-// Helper to extract city from address string
-// Assumes format like "123 Main St, City, State" or just "City, State"
-const extractCity = (address: string | null): string => {
-    if (!address) return '';
-    const parts = address.split(',');
-    // If we have multiple parts, assume the second to last is city (if state is last)
-    // Or if 2 parts: "City, State" -> take first
-    // This is a heuristic.
-    if (parts.length >= 2) {
-        // Try to find the part that isn't the state/zip
-        // Let's just take the part before the last comma if > 2 parts?
-        // Or simpler: just return the whole string for fuzzy matching if it's short?
-        // Let's try to return the first part if it's "City, State"
-        return parts[0].trim();
-    }
-    return address.trim();
-};
-
 interface FeaturedCaregiversProps {
     onDataLoaded?: (ids: string[]) => void;
 }
@@ -79,18 +61,6 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLo
                 } else {
                     // 2. If no user or no location, fetch all nannies (default behavior)
                     nannies = await api.users.nannies();
-
-                    // Optional: If user has address string but no lat/lng, we could try city matching here
-                    // but usually lat/lng should be present if address is set.
-                    if (user?.profiles?.address) {
-                        const userCity = extractCity(user.profiles.address);
-                        if (userCity) {
-                            nannies = nannies.filter((nanny: User) => {
-                                const nannyAddress = nanny.profiles?.address || '';
-                                return nannyAddress.toLowerCase().includes(userCity.toLowerCase());
-                            });
-                        }
-                    }
                 }
 
                 // Transform the API data

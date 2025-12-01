@@ -7,8 +7,9 @@ import Link from 'next/link';
 import { MapPin, Star, Clock, ShieldCheck, Calendar, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
-import { User } from '@/types/api';
+import { User, Review } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
+import { ReviewCard } from '@/components/features/ReviewCard';
 
 // Mock data for demo
 const MOCK_USERS = {
@@ -79,6 +80,7 @@ export default function CaregiverProfilePage() {
     const searchParams = useSearchParams();
     const { user } = useAuth();
     const [caregiver, setCaregiver] = useState<User | null>(null);
+    const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'about' | 'reviews' | 'availability'>('about');
@@ -104,8 +106,12 @@ export default function CaregiverProfilePage() {
                     return;
                 }
 
-                const data = await api.users.get(id);
-                setCaregiver(data);
+                const [userData, reviewsData] = await Promise.all([
+                    api.users.get(id),
+                    api.reviews.getByUser(id)
+                ]);
+                setCaregiver(userData);
+                setReviews(reviewsData);
             } catch (err) {
                 console.error(err);
                 setError('Failed to load caregiver profile');
@@ -264,10 +270,16 @@ export default function CaregiverProfilePage() {
                         )}
 
                         {activeTab === 'reviews' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                <div className="text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
-                                    <p className="text-neutral-500">Reviews coming soon</p>
-                                </div>
+                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+                                {reviews.length > 0 ? (
+                                    reviews.map((review) => (
+                                        <ReviewCard key={review.id} review={review} />
+                                    ))
+                                ) : (
+                                    <div className="text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
+                                        <p className="text-neutral-500">No reviews yet</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 

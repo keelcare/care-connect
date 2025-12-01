@@ -111,6 +111,10 @@ export default function SearchPage() {
                 // Get current location
                 if (!navigator.geolocation) {
                     setError('Geolocation is not supported by your browser');
+                    // Fallback to all nannies
+                    const allNannies = await api.users.nannies();
+                    setNannies(allNannies);
+                    setFilteredNannies(allNannies);
                     setLoading(false);
                     return;
                 }
@@ -119,19 +123,29 @@ export default function SearchPage() {
                     async (position) => {
                         try {
                             const { latitude, longitude } = position.coords;
-                            const response = await api.location.nearbyNannies(latitude, longitude, 10); // 10km radius default
-                            // Map nearby nannies to User type (adding distance info if needed later)
-                            const mappedNannies = response.data.map(n => ({
-                                ...n,
-                                profiles: n.profile,
-                                nanny_details: n.nanny_details
-                            } as unknown as User));
-
-                            setNannies(mappedNannies);
-                            setFilteredNannies(mappedNannies);
+                            
+                            // Use backend API with radius 10km
+                            const response = await api.location.nearbyNannies(latitude, longitude, 10);
+                            
+                            if (response.data && response.data.length > 0) {
+                                // Map nearby nannies to User type
+                                const mappedNannies = response.data.map(n => ({
+                                    ...n,
+                                    profiles: n.profile,
+                                    nanny_details: n.nanny_details,
+                                    distance: n.distance // Keep distance from backend
+                                } as unknown as User));
+                                
+                                setNannies(mappedNannies);
+                                setFilteredNannies(mappedNannies);
+                            } else {
+                                setNannies([]);
+                                setFilteredNannies([]);
+                            }
                         } catch (err) {
                             console.error(err);
-                            setError('Failed to fetch nearby caregivers');
+                            setError('Failed to fetch caregivers');
+                            setLoading(false);
                         } finally {
                             setLoading(false);
                         }
@@ -139,13 +153,18 @@ export default function SearchPage() {
                     (err) => {
                         console.error(err);
                         setError('Unable to retrieve location. Please allow location access.');
-                        setLoading(false);
+                        // Fallback to all nannies if location fails
+                        api.users.nannies().then(allNannies => {
+                            setNannies(allNannies);
+                            setFilteredNannies(allNannies);
+                            setLoading(false);
+                        });
                     }
                 );
             } else {
-                const response = await api.users.nannies();
-                setNannies(response);
-                setFilteredNannies(response);
+                const allNannies = await api.users.nannies();
+                setNannies(allNannies);
+                setFilteredNannies(allNannies);
                 setLoading(false);
             }
         } catch (err) {
@@ -353,21 +372,7 @@ export default function SearchPage() {
 
                             {/* Action Buttons */}
                             <div className="flex items-center gap-3 w-full lg:w-auto">
-                                {user && (
-                                    <div className="hidden md:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-200">
-                                        <MapPin size={16} className="text-primary" />
-                                        <span className="max-w-[150px] truncate font-medium">
-                                            {user.profiles?.address || "Set Location"}
-                                        </span>
-                                        <button
-                                            onClick={handleUpdateLocation}
-                                            disabled={updatingLocation}
-                                            className="text-primary hover:text-primary-600 font-bold ml-1 disabled:opacity-50 text-xs"
-                                        >
-                                            {updatingLocation ? '...' : 'Update'}
-                                        </button>
-                                    </div>
-                                )}
+
                                 <Button
                                     variant={isNearby ? "default" : "outline"}
                                     onClick={() => setIsNearby(!isNearby)}

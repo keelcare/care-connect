@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/ToastProvider';
 import { Avatar } from '@/components/ui/avatar';
+import { usePreferences } from '@/hooks/usePreferences';
+import { LocationModal } from '@/components/features/LocationModal';
 
 export const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,6 +19,8 @@ export const Header: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
     const { addToast } = useToast();
+    const { preferences } = usePreferences();
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -77,9 +81,14 @@ export const Header: React.FC = () => {
                 {/* Auth Buttons / User Menu */}
                 <div className="hidden md:flex items-center gap-4">
                     {/* Location Selector */}
-                    <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-primary/30 transition-colors cursor-pointer mr-2">
+                    <div 
+                        className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-primary/30 transition-colors cursor-pointer mr-2"
+                        onClick={() => setIsLocationModalOpen(true)}
+                    >
                         <MapPin size={18} className="text-neutral-500" />
-                        <span className="text-sm font-medium truncate max-w-[150px]">Vittal Mallya Road, ...</span>
+                        <span className="text-sm font-medium truncate max-w-[150px]">
+                            {preferences.location?.address || user?.profiles?.address || 'Set Location'}
+                        </span>
                         <ChevronDown size={14} className="text-neutral-400" />
                     </div>
 
@@ -287,6 +296,11 @@ export const Header: React.FC = () => {
                     </div>
                 </div>
             )}
+            {/* Location Modal */}
+            <LocationModal 
+                isOpen={isLocationModalOpen} 
+                onClose={() => setIsLocationModalOpen(false)} 
+            />
         </header>
     );
 };
