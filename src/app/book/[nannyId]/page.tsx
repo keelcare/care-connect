@@ -89,8 +89,8 @@ export default function DirectBookingPage() {
     if (loading) {
         return (
             <ParentLayout>
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div className="flex items-center justify-center min-h-screen bg-stone-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-900"></div>
                 </div>
             </ParentLayout>
         );
@@ -99,9 +99,9 @@ export default function DirectBookingPage() {
     if (!nanny) {
         return (
             <ParentLayout>
-                <div className="flex flex-col items-center justify-center min-h-screen">
-                    <h2 className="text-xl font-bold text-neutral-900">Nanny not found</h2>
-                    <Button onClick={() => router.push('/browse')} className="mt-4">
+                <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50">
+                    <h2 className="text-xl font-bold text-stone-900">Nanny not found</h2>
+                    <Button onClick={() => router.push('/browse')} className="mt-4 bg-stone-900 hover:bg-stone-800 rounded-xl">
                         Browse Caregivers
                     </Button>
                 </div>

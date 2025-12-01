@@ -150,9 +150,9 @@ export default function CaregiverProfilePage() {
         }
     };
 
-    if (loading) return <div className="flex items-center justify-center min-h-[50vh] text-neutral-500">Loading profile...</div>;
+    if (loading) return <div className="flex items-center justify-center min-h-[50vh] text-stone-500">Loading profile...</div>;
     if (error) return <div className="flex items-center justify-center min-h-[50vh] text-red-500">{error}</div>;
-    if (!caregiver) return <div className="flex items-center justify-center min-h-[50vh] text-neutral-500">Caregiver not found</div>;
+    if (!caregiver) return <div className="flex items-center justify-center min-h-[50vh] text-stone-500">Caregiver not found</div>;
 
     const { profiles, nanny_details } = caregiver;
 
@@ -160,11 +160,11 @@ export default function CaregiverProfilePage() {
         <div className="max-w-6xl mx-auto space-y-8 pb-20">
             {/* Header Section */}
             <div className="relative mb-20">
-                <div className="h-48 w-full bg-gradient-to-r from-teal-100 to-pink-100 rounded-b-[40px] relative overflow-hidden">
+                <div className="h-48 w-full bg-gradient-to-r from-stone-200 to-amber-100 rounded-b-[40px] relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
                 </div>
                 <div className="absolute -bottom-16 left-8 md:left-12 flex items-end gap-6">
-                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-[32px] border-4 border-white shadow-strong overflow-hidden bg-white">
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-white">
                         <Image
                             src={profiles?.profile_image_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80"}
                             alt={`${profiles?.first_name} ${profiles?.last_name}`}
@@ -173,17 +173,17 @@ export default function CaregiverProfilePage() {
                         />
                     </div>
                     <div className="mb-4">
-                        <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 font-display mb-2">
+                        <h1 className="text-3xl md:text-4xl font-bold text-stone-900 mb-2">
                             {profiles?.first_name} {profiles?.last_name}
                         </h1>
                         <div className="flex flex-wrap items-center gap-3">
                             {caregiver.is_verified && (
-                                <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium flex items-center gap-1 border border-teal-100">
+                                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium flex items-center gap-1 border border-emerald-100">
                                     <ShieldCheck size={14} />
                                     Verified
                                 </span>
                             )}
-                            <div className="flex items-center gap-1 text-neutral-600 text-sm bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm">
+                            <div className="flex items-center gap-1 text-stone-600 text-sm bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm">
                                 <MapPin size={16} />
                                 {profiles?.address || 'Location hidden'}
                             </div>
@@ -197,51 +197,51 @@ export default function CaregiverProfilePage() {
                 <div className="lg:col-span-2 space-y-8">
                     {/* Stats Row */}
                     <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-warning-50 flex items-center justify-center text-warning-600 mb-2">
+                        <div className="bg-white p-4 rounded-xl border border-stone-100 shadow-lg shadow-stone-200/50 flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 mb-2">
                                 <Star size={20} fill="currentColor" />
                             </div>
-                            <div className="font-bold text-neutral-900">4.9</div>
-                            <div className="text-xs text-neutral-500">Rating</div>
+                            <div className="font-bold text-stone-900">4.9</div>
+                            <div className="text-xs text-stone-500">Rating</div>
                         </div>
-                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary mb-2">
+                        <div className="bg-white p-4 rounded-xl border border-stone-100 shadow-lg shadow-stone-200/50 flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-700 mb-2">
                                 <Clock size={20} />
                             </div>
-                            <div className="font-bold text-neutral-900">{nanny_details?.experience_years || 0}y</div>
-                            <div className="text-xs text-neutral-500">Experience</div>
+                            <div className="font-bold text-stone-900">{nanny_details?.experience_years || 0}y</div>
+                            <div className="text-xs text-stone-500">Experience</div>
                         </div>
-                        <div className="bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-10 h-10 rounded-full bg-secondary-50 flex items-center justify-center text-secondary mb-2">
+                        <div className="bg-white p-4 rounded-xl border border-stone-100 shadow-lg shadow-stone-200/50 flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-700 mb-2">
                                 <Award size={20} />
                             </div>
-                            <div className="font-bold text-neutral-900">{nanny_details?.skills?.length || 0}</div>
-                            <div className="text-xs text-neutral-500">Skills</div>
+                            <div className="font-bold text-stone-900">{nanny_details?.skills?.length || 0}</div>
+                            <div className="text-xs text-stone-500">Skills</div>
                         </div>
                     </div>
 
                     {/* Tabs Navigation */}
-                    <div className="flex border-b border-neutral-200">
+                    <div className="flex border-b border-stone-200">
                         <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'about' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'about' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                             onClick={() => setActiveTab('about')}
                         >
                             About
-                            {activeTab === 'about' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                            {activeTab === 'about' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                         </button>
                         <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'reviews' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'reviews' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                             onClick={() => setActiveTab('reviews')}
                         >
                             Reviews
-                            {activeTab === 'reviews' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                            {activeTab === 'reviews' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                         </button>
                         <button
-                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'availability' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                            className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'availability' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                             onClick={() => setActiveTab('availability')}
                         >
                             Availability
-                            {activeTab === 'availability' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                            {activeTab === 'availability' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                         </button>
                     </div>
 
@@ -250,20 +250,20 @@ export default function CaregiverProfilePage() {
                         {activeTab === 'about' && (
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                 <section>
-                                    <h3 className="text-lg font-bold text-neutral-900 mb-3">About Me</h3>
-                                    <p className="text-neutral-600 leading-relaxed">
+                                    <h3 className="text-lg font-bold text-stone-900 mb-3">About Me</h3>
+                                    <p className="text-stone-600 leading-relaxed">
                                         {nanny_details?.bio || "No bio provided."}
                                     </p>
                                 </section>
 
                                 <section>
-                                    <h3 className="text-lg font-bold text-neutral-900 mb-3">Skills & Certifications</h3>
+                                    <h3 className="text-lg font-bold text-stone-900 mb-3">Skills & Certifications</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {nanny_details?.skills?.map((skill, index) => (
-                                            <span key={index} className="px-4 py-2 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-700 font-medium text-sm">
+                                            <span key={index} className="px-4 py-2 bg-stone-100 border border-stone-200 rounded-xl text-stone-700 font-medium text-sm">
                                                 {skill}
                                             </span>
-                                        )) || <span className="text-neutral-500">No skills listed</span>}
+                                        )) || <span className="text-stone-500">No skills listed</span>}
                                     </div>
                                 </section>
                             </div>
@@ -276,8 +276,8 @@ export default function CaregiverProfilePage() {
                                         <ReviewCard key={review.id} review={review} />
                                     ))
                                 ) : (
-                                    <div className="text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
-                                        <p className="text-neutral-500">No reviews yet</p>
+                                    <div className="text-center py-12 bg-stone-50 rounded-xl border border-stone-200 border-dashed">
+                                        <p className="text-stone-500">No reviews yet</p>
                                     </div>
                                 )}
                             </div>
@@ -288,15 +288,15 @@ export default function CaregiverProfilePage() {
                                 <div className="space-y-3">
                                     {nanny_details?.availability_schedule ? (
                                         Object.entries(nanny_details.availability_schedule).map(([day, slots]) => (
-                                            <div key={day} className="p-4 border border-neutral-100 rounded-xl bg-white flex items-center justify-between">
-                                                <div className="font-semibold text-neutral-900 capitalize">{day}</div>
-                                                <div className="text-sm font-medium text-primary bg-primary-50 px-3 py-1 rounded-lg">
+                                            <div key={day} className="p-4 border border-stone-100 rounded-xl bg-white flex items-center justify-between shadow-sm">
+                                                <div className="font-semibold text-stone-900 capitalize">{day}</div>
+                                                <div className="text-sm font-medium text-stone-700 bg-stone-100 px-3 py-1 rounded-lg">
                                                     {Array.isArray(slots) && slots.length > 0 ? slots.join(', ') : 'Unavailable'}
                                                 </div>
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-neutral-500">Contact for availability</p>
+                                        <p className="text-stone-500">Contact for availability</p>
                                     )}
                                 </div>
                             </div>
@@ -306,15 +306,15 @@ export default function CaregiverProfilePage() {
 
                 {/* Right Column - Sticky Booking Card */}
                 <div className="lg:col-span-1">
-                    <div className="sticky top-24 bg-white rounded-[32px] shadow-strong border border-neutral-100 p-6 space-y-6">
-                        <div className="flex items-end justify-between border-b border-neutral-100 pb-6">
+                    <div className="sticky top-24 bg-white rounded-2xl shadow-xl shadow-stone-200/50 border border-stone-100 p-6 space-y-6">
+                        <div className="flex items-end justify-between border-b border-stone-100 pb-6">
                             <div>
-                                <p className="text-neutral-500 text-sm mb-1">Hourly Rate</p>
-                                <div className="text-3xl font-bold text-neutral-900">
+                                <p className="text-stone-500 text-sm mb-1">Hourly Rate</p>
+                                <div className="text-3xl font-bold text-stone-900">
                                     ₹{nanny_details?.hourly_rate || 20}
                                 </div>
                             </div>
-                            <div className="text-neutral-500 text-sm mb-1">per hour</div>
+                            <div className="text-stone-500 text-sm mb-1">per hour</div>
                         </div>
 
                         <div className="space-y-3">
@@ -322,7 +322,7 @@ export default function CaregiverProfilePage() {
                                 <>
                                     <Button
                                         size="lg"
-                                        className="w-full rounded-xl bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                        className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                                         onClick={() => router.push(`/book/${caregiver.id}`)}
                                     >
                                         Request Booking
@@ -330,7 +330,7 @@ export default function CaregiverProfilePage() {
                                     <Button
                                         variant="outline"
                                         size="lg"
-                                        className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12"
+                                        className="w-full rounded-xl border-stone-200 hover:bg-stone-50 h-12 text-stone-700"
                                         onClick={handleMessage}
                                         disabled={messageLoading}
                                     >
@@ -342,7 +342,7 @@ export default function CaregiverProfilePage() {
                                     <Link href="/auth/signup" className="w-full">
                                         <Button
                                             size="lg"
-                                            className="w-full rounded-xl bg-secondary hover:bg-secondary/90 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                            className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                                         >
                                             Sign up to Book
                                         </Button>
@@ -351,13 +351,13 @@ export default function CaregiverProfilePage() {
                                         <Button
                                             variant="outline"
                                             size="lg"
-                                            className="w-full rounded-xl border-neutral-200 hover:bg-neutral-50 h-12"
+                                            className="w-full rounded-xl border-stone-200 hover:bg-stone-50 h-12 text-stone-700"
                                         >
                                             Sign up to Message
                                         </Button>
                                     </Link>
-                                    <p className="text-xs text-center text-neutral-500 pt-2">
-                                        Already have an account? <Link href="/auth/login" className="text-primary hover:underline font-medium">Log in</Link>
+                                    <p className="text-xs text-center text-stone-500 pt-2">
+                                        Already have an account? <Link href="/auth/login" className="text-stone-900 hover:underline font-medium">Log in</Link>
                                     </p>
                                 </>
                             )}
@@ -365,7 +365,7 @@ export default function CaregiverProfilePage() {
 
                         {user && (
                             <div className="text-center">
-                                <p className="text-xs text-neutral-400">
+                                <p className="text-xs text-stone-400">
                                     You won&apos;t be charged until the booking is confirmed.
                                 </p>
                             </div>

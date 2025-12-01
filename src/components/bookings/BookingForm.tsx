@@ -13,10 +13,10 @@ interface BookingFormProps {
 }
 
 const SERVICE_TYPES = [
-    { id: 'child-care', label: 'Child Care', icon: Baby, color: 'bg-yellow-100 text-yellow-600' },
-    { id: 'senior-care', label: 'Senior Care', icon: Heart, color: 'bg-teal-100 text-teal-600' },
-    { id: 'housekeeping', label: 'Housekeeping', icon: Home, color: 'bg-blue-100 text-blue-600' },
-    { id: 'tutoring', label: 'Tutoring', icon: GraduationCap, color: 'bg-purple-100 text-purple-600' },
+    { id: 'child-care', label: 'Child Care', icon: Baby, color: 'bg-amber-100 text-amber-700' },
+    { id: 'senior-care', label: 'Senior Care', icon: Heart, color: 'bg-rose-100 text-rose-700' },
+    { id: 'housekeeping', label: 'Housekeeping', icon: Home, color: 'bg-stone-200 text-stone-700' },
+    { id: 'tutoring', label: 'Tutoring', icon: GraduationCap, color: 'bg-stone-300 text-stone-800' },
 ];
 
 const TIME_SLOTS = [
@@ -80,7 +80,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Service Selection (Only for Auto Assign) */}
             {isAutoAssign && (
                 <div>
-                    <h3 className="text-lg font-bold text-neutral-900 mb-4">Select Service</h3>
+                    <h3 className="text-lg font-bold text-stone-900 mb-4">Select Service</h3>
                     <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                         {SERVICE_TYPES.map((service) => {
                             const Icon = service.icon;
@@ -90,15 +90,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                                     key={service.id}
                                     type="button"
                                     onClick={() => handleServiceSelect(service.id)}
-                                    className={`flex flex-col items-center min-w-[100px] p-4 rounded-2xl border-2 transition-all ${isSelected
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-neutral-100 hover:border-neutral-200 bg-white'
+                                    className={`flex flex-col items-center min-w-[100px] p-4 rounded-xl border-2 transition-all ${isSelected
+                                        ? 'border-stone-900 bg-stone-50'
+                                        : 'border-stone-100 hover:border-stone-300 bg-white'
                                         }`}
                                 >
                                     <div className={`w-12 h-12 rounded-full ${service.color} flex items-center justify-center mb-2`}>
                                         <Icon size={20} />
                                     </div>
-                                    <span className="text-sm font-medium text-neutral-900 whitespace-nowrap">{service.label}</span>
+                                    <span className="text-sm font-medium text-stone-900 whitespace-nowrap">{service.label}</span>
                                 </button>
                             );
                         })}
@@ -109,7 +109,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Date Selection */}
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-neutral-900">Choose a Date</h3>
+                    <h3 className="text-lg font-bold text-stone-900">Choose a Date</h3>
                     <div className="flex gap-2">
                         <Button
                             type="button"
@@ -117,7 +117,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                             size="sm"
                             onClick={() => setWeekOffset(prev => Math.max(0, prev - 1))}
                             disabled={weekOffset === 0}
-                            className="h-8 w-8 p-0 rounded-full"
+                            className="h-8 w-8 p-0 rounded-full border-stone-200 hover:bg-stone-100"
                         >
                             <ChevronLeft size={16} />
                         </Button>
@@ -126,13 +126,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                             variant="outline"
                             size="sm"
                             onClick={() => setWeekOffset(prev => prev + 1)}
-                            className="h-8 w-8 p-0 rounded-full"
+                            className="h-8 w-8 p-0 rounded-full border-stone-200 hover:bg-stone-100"
                         >
                             <ChevronRight size={16} />
                         </Button>
                     </div>
                 </div>
-                <div className="bg-neutral-50 rounded-3xl p-4">
+                <div className="bg-stone-100 rounded-2xl p-4">
                     <div className="grid grid-cols-7 gap-2">
                         {dates.map((date, index) => {
                             const isSelected = formData.date === date.toISOString().split('T')[0];
@@ -143,15 +143,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                                     key={index}
                                     type="button"
                                     onClick={() => handleDateSelect(date)}
-                                    className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all ${isSelected
-                                        ? 'bg-white shadow-md ring-2 ring-primary text-primary'
-                                        : 'hover:bg-white hover:shadow-sm text-neutral-600'
+                                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${isSelected
+                                        ? 'bg-stone-900 shadow-md text-white'
+                                        : 'hover:bg-white hover:shadow-sm text-stone-600'
                                         }`}
                                 >
                                     <span className="text-xs font-medium mb-1 opacity-70">
                                         {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                     </span>
-                                    <span className={`text-lg font-bold ${isToday && !isSelected ? 'text-primary' : ''}`}>
+                                    <span className={`text-lg font-bold ${isToday && !isSelected ? 'text-amber-600' : ''}`}>
                                         {date.getDate()}
                                     </span>
                                 </button>
@@ -163,7 +163,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
             {/* Time Selection */}
             <div>
-                <h3 className="text-lg font-bold text-neutral-900 mb-4">Choose Start Time</h3>
+                <h3 className="text-lg font-bold text-stone-900 mb-4">Choose Start Time</h3>
                 <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
                     {TIME_SLOTS.map((time) => {
                         const isSelected = formData.startTime === time;
@@ -173,8 +173,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                                 type="button"
                                 onClick={() => handleTimeSelect(time)}
                                 className={`py-2 px-3 rounded-xl text-sm font-medium border transition-all ${isSelected
-                                    ? 'bg-primary text-white border-primary shadow-md'
-                                    : 'bg-white border-neutral-200 text-neutral-700 hover:border-primary/50'
+                                    ? 'bg-stone-900 text-white border-stone-900 shadow-md'
+                                    : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400'
                                     }`}
                             >
                                 {time}
@@ -187,13 +187,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Duration & Children */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-bold text-neutral-900 mb-2">Duration</label>
+                    <label className="block text-sm font-bold text-stone-900 mb-2">Duration</label>
                     <select
                         name="duration"
                         value={formData.duration}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                        className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-400 transition-all bg-white text-stone-900"
                     >
                         <option value="">Select duration</option>
                         {DURATION_OPTIONS.map(opt => (
@@ -202,7 +202,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-bold text-neutral-900 mb-2">Number of Children</label>
+                    <label className="block text-sm font-bold text-stone-900 mb-2">Number of Children</label>
                     <Input
                         type="number"
                         name="numChildren"
@@ -218,31 +218,31 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
             {/* Special Requirements */}
             <div>
-                <label className="block text-sm font-bold text-neutral-900 mb-2">Special Requirements</label>
+                <label className="block text-sm font-bold text-stone-900 mb-2">Special Requirements</label>
                 <textarea
                     name="specialRequirements"
                     value={formData.specialRequirements}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-400 transition-all resize-none text-stone-900 placeholder:text-stone-400"
                     rows={3}
                     placeholder="Any allergies, specific instructions, etc."
                 />
             </div>
 
             {/* Summary & Submit */}
-            <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+            <div className="bg-stone-100 rounded-2xl p-6 border border-stone-200">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <p className="text-sm text-neutral-500">Total Estimated</p>
-                        <p className="text-2xl font-bold text-neutral-900">
+                        <p className="text-sm text-stone-500">Total Estimated</p>
+                        <p className="text-2xl font-bold text-stone-900">
                             {estimatedCost ? `₹${estimatedCost}` : '---'}
                         </p>
                     </div>
                     <div className="text-right">
-                        <p className="text-sm text-neutral-500">
+                        <p className="text-sm text-stone-500">
                             {formData.duration ? `${formData.duration} hours` : '0 hours'}
                         </p>
-                        <p className="text-sm text-neutral-500">
+                        <p className="text-sm text-stone-500">
                             {hourlyRate ? `₹${hourlyRate}/hr` : 'Rate varies'}
                         </p>
                     </div>
@@ -250,7 +250,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <Button
                     type="submit"
                     disabled={loading || !formData.date || !formData.startTime || !formData.duration}
-                    className="w-full h-12 text-lg rounded-xl bg-primary hover:bg-primary-600 text-white shadow-lg shadow-primary/25"
+                    className="w-full h-12 text-lg rounded-xl bg-stone-900 hover:bg-stone-800 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
                 >
                     {loading ? 'Processing...' : 'Confirm Booking'}
                 </Button>
