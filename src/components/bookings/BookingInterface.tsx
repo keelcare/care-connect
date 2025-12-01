@@ -27,19 +27,20 @@ export const BookingInterface: React.FC<BookingInterfaceProps> = ({
     const isDirectBooking = !!nanny;
 
     return (
-        <div className="min-h-screen bg-neutral-50 pb-20">
+        <div className="min-h-screen bg-stone-50 pb-20">
             <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <Button
                         variant="ghost"
-                        className="mb-4 -ml-2 text-neutral-500 hover:text-neutral-900"
+                        className="mb-4 -ml-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100"
                         onClick={() => router.back()}
                     >
                         <ChevronLeft size={20} className="mr-1" />
                         Back
                     </Button>
-                    <h1 className="text-3xl font-bold text-neutral-900">{title}</h1>
+                    <h1 className="text-3xl font-bold text-stone-900">{title}</h1>
+                    <p className="text-stone-500 mt-1">Fill in the details to complete your booking</p>
                 </div>
 
                 <div className={`grid gap-8 ${isDirectBooking ? 'lg:grid-cols-12' : 'max-w-3xl mx-auto'}`}>
@@ -57,7 +58,7 @@ export const BookingInterface: React.FC<BookingInterfaceProps> = ({
 
                     {/* Right Column - Booking Form */}
                     <div className={isDirectBooking ? 'lg:col-span-8' : 'w-full'}>
-                        <div className="bg-white rounded-[32px] p-6 md:p-8 shadow-sm border border-neutral-100">
+                        <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl shadow-stone-200/50 border border-stone-100">
                             <BookingForm
                                 isAutoAssign={!isDirectBooking}
                                 formData={formData}
