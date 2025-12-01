@@ -26,7 +26,6 @@ export interface FilterState {
         tutoring: boolean;
         specialNeeds: boolean;
     };
-    verifiedOnly: boolean;
     priceRange: [number, number];
 }
 
@@ -54,12 +53,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
         });
     };
 
-    const handleVerifiedChange = (checked: boolean) => {
-        onFilterChange({
-            ...filters,
-            verifiedOnly: checked
-        });
-    };
+
 
     const clearServices = () => {
         onFilterChange({
@@ -85,15 +79,14 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
                 tutoring: false,
                 specialNeeds: false,
             },
-            verifiedOnly: false,
-            priceRange: [10, 100],
+            priceRange: [0, 2000],
         });
     };
 
     // Calculate active filter count
     const activeServiceCount = Object.values(filters.services).filter(Boolean).length;
-    const isPriceChanged = filters.priceRange[0] !== 10 || filters.priceRange[1] !== 100;
-    const activeFilterCount = activeServiceCount + (filters.verifiedOnly ? 1 : 0) + (isPriceChanged ? 1 : 0);
+    const isPriceChanged = filters.priceRange[0] !== 0 || filters.priceRange[1] !== 2000;
+    const activeFilterCount = activeServiceCount + (isPriceChanged ? 1 : 0);
 
     return (
         <aside className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-6 h-full overflow-y-auto custom-scrollbar">
@@ -172,26 +165,15 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
                     <h3 className="font-bold text-neutral-900 text-sm">Hourly Rate</h3>
                 </div>
                 <PriceRangeSlider
-                    min={10}
-                    max={100}
+                    min={0}
+                    max={2000}
                     initialMin={filters.priceRange[0]}
                     initialMax={filters.priceRange[1]}
                     onChange={handlePriceChange}
                 />
             </div>
 
-            {/* Verification Section */}
-            <div className="bg-neutral-50 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-4">
-                    <ShieldCheck size={16} className="text-primary" />
-                    <h3 className="font-bold text-neutral-900 text-sm">Verification</h3>
-                </div>
-                <Toggle
-                    label="Background Checked Only"
-                    checked={filters.verifiedOnly}
-                    onChange={(e) => handleVerifiedChange(e.target.checked)}
-                />
-            </div>
+
         </aside>
     );
 };

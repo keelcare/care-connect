@@ -40,8 +40,7 @@ export default function SearchPage() {
             tutoring: false,
             specialNeeds: false,
         },
-        verifiedOnly: false,
-        priceRange: [10, 100],
+        priceRange: [0, 2000],
     });
 
     const handleUpdateLocation = () => {
@@ -97,8 +96,8 @@ export default function SearchPage() {
 
     // Calculate active filter count
     const activeServiceCount = Object.values(filters.services).filter(Boolean).length;
-    const isPriceChanged = filters.priceRange[0] !== 10 || filters.priceRange[1] !== 100;
-    const activeFilterCount = activeServiceCount + (filters.verifiedOnly ? 1 : 0) + (isPriceChanged ? 1 : 0);
+    const isPriceChanged = filters.priceRange[0] !== 0 || filters.priceRange[1] !== 2000;
+    const activeFilterCount = activeServiceCount + (isPriceChanged ? 1 : 0);
 
     const fetchNannies = async () => {
         try {
@@ -203,10 +202,7 @@ export default function SearchPage() {
             });
         }
 
-        // 2. Verification
-        if (filters.verifiedOnly) {
-            filtered = filtered.filter(nanny => nanny.is_verified);
-        }
+
 
         // 3. Price Range
         filtered = filtered.filter(nanny => {
