@@ -80,54 +80,62 @@ export default function BrowsePage() {
 
     React.useEffect(() => {
         const fetchNearby = async () => {
-            try {
-                let lat: number | null = null;
-                let lng: number | null = null;
+        try {
+            setLoading(true);
+            
+            let lat: number | null = null;
+            let lng: number | null = null;
 
-                // 1. Try to get location from user profile first
-                if (user?.profiles?.lat && user?.profiles?.lng) {
-                    lat = parseFloat(user.profiles.lat);
-                    lng = parseFloat(user.profiles.lng);
-                }
+            // 1. Try to get location from user profile first
+            if (user?.profiles?.lat && user?.profiles?.lng) {
+                lat = parseFloat(user.profiles.lat);
+                lng = parseFloat(user.profiles.lng);
+            }
 
-                // 2. If not in profile, try browser geolocation
-                if (lat === null || lng === null) {
-                    if (navigator.geolocation) {
-                        try {
-                            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                                navigator.geolocation.getCurrentPosition(resolve, reject);
-                            });
-                            lat = position.coords.latitude;
-                            lng = position.coords.longitude;
-                        } catch (e) {
-                            console.log("Geolocation permission denied or failed", e);
-                        }
+            // 2. If not in profile, try browser geolocation
+            if (lat === null || lng === null) {
+                if (navigator.geolocation) {
+                    try {
+                        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject);
+                        });
+                        lat = position.coords.latitude;
+                        lng = position.coords.longitude;
+                    } catch (e) {
+                        console.log("Geolocation permission denied or failed", e);
                     }
                 }
+            }
 
-                if (lat !== null && lng !== null) {
-                    const response = await api.location.nearbyNannies(lat, lng, 50); // 50km radius for browse page
+            if (lat !== null && lng !== null) {
+                // Use backend API with radius 10km
+                const response = await api.location.nearbyNannies(lat, lng, 10);
 
+                if (response.data && response.data.length > 0) {
                     // Map nearby nannies to User type
                     const mappedNannies = response.data.map(n => ({
                         ...n,
                         profiles: n.profile,
-                        nanny_details: n.nanny_details
+                        nanny_details: n.nanny_details,
+                        distance: n.distance
                     } as unknown as User));
 
                     setNearbyNannies(mappedNannies);
                 } else {
-                    // Fallback or just show empty/loading state if no location
-                    // For now, we can leave it empty or fetch random featured ones if we wanted
-                    setError("Please set your location in your profile to see nearby caregivers.");
+                    setNearbyNannies([]);
                 }
-            } catch (err) {
-                console.error(err);
-                setError("Failed to load nearby caregivers.");
-            } finally {
-                setLoading(false);
+            } else {
+                // If no location, fetch all (unsorted)
+                const allNannies = await api.users.nannies();
+                setNearbyNannies(allNannies);
             }
-        };
+        } catch (err) {
+            console.error(err);
+            setError("Failed to load nearby caregivers.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
         if (user) {
             fetchNearby();
@@ -140,30 +148,7 @@ export default function BrowsePage() {
     return (
         <ParentLayout>
             <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
-                {/* Header Section - Sticky */}
-                <div className="sticky top-[72px] z-20 bg-white/80 backdrop-blur-md border-b border-neutral-200/50 shadow-sm transition-all duration-300">
-                    <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                {user && (
-                                    <div className="flex items-center gap-2 text-sm text-neutral-600 bg-white/50 px-3 py-2 rounded-full border border-neutral-200/50 shadow-sm">
-                                        <Search size={16} className="text-primary" />
-                                        <span className="max-w-[150px] truncate font-medium">
-                                            {user.profiles?.address || "Set Location"}
-                                        </span>
-                                        <button
-                                            onClick={handleUpdateLocation}
-                                            disabled={updatingLocation}
-                                            className="text-primary hover:text-primary-600 font-bold ml-1 disabled:opacity-50 text-xs uppercase tracking-wide"
-                                        >
-                                            {updatingLocation ? '...' : 'Update'}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <main className="max-w-7xl mx-auto px-4 md:px-8 space-y-12 mt-8">
                     {/* Hero Section */}

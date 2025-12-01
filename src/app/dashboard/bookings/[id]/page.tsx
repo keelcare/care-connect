@@ -4,11 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking } from '@/types/api';
+import { Booking, Review } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { MessageCircle, Calendar, Clock, MapPin, User } from 'lucide-react';
+import { MessageCircle, Calendar, Clock, MapPin, User, Star } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
+import { Modal } from '@/components/ui/Modal';
+import { ReviewForm } from '@/components/features/ReviewForm';
+import { ReviewCard } from '@/components/features/ReviewCard';
 import styles from './page.module.css';
 
 export default function BookingDetailsPage() {
@@ -18,9 +21,11 @@ export default function BookingDetailsPage() {
     const bookingId = params.id as string;
 
     const [booking, setBooking] = useState<Booking | null>(null);
+    const [review, setReview] = useState<Review | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
     useEffect(() => {
         if (bookingId) {
@@ -32,11 +37,17 @@ export default function BookingDetailsPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.bookings.get(bookingId);
-            setBooking(data);
+            const [bookingData, reviewsData] = await Promise.all([
+                api.bookings.get(bookingId),
+                api.reviews.getByBooking(bookingId)
+            ]);
+            setBooking(bookingData);
+            if (reviewsData && reviewsData.length > 0) {
+                setReview(reviewsData[0]);
+            }
         } catch (err) {
-            console.error('Failed to fetch booking:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load booking');
+            console.error('Failed to fetch booking details:', err);
+            setError(err instanceof Error ? err.message : 'Failed to load booking details');
         } finally {
             setLoading(false);
         }
@@ -263,9 +274,26 @@ export default function BookingDetailsPage() {
                                         Cancel Booking
                                     </Button>
                                 )}
+
+                                {booking.status === 'COMPLETED' && !review && (
+                                    <Button 
+                                        className="rounded-xl shadow-lg hover:shadow-xl transition-all bg-yellow-500 hover:bg-yellow-600 text-white" 
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                    >
+                                        <Star size={18} className="mr-2" />
+                                        Leave a Review
+                                    </Button>
+                                )}
                             </>
                         )}
                     </div>
+
+                    {review && (
+                        <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8">
+                            <h3 className="text-xl font-bold text-neutral-900 mb-6">Your Review</h3>
+                            <ReviewCard review={review} />
+                        </div>
+                    )}
                 </div>
 
                 <div className="lg:col-span-1">
@@ -324,6 +352,22 @@ export default function BookingDetailsPage() {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                title="Write a Review"
+                maxWidth="500px"
+            >
+                <ReviewForm
+                    bookingId={bookingId}
+                    onSuccess={() => {
+                        setIsReviewModalOpen(false);
+                        fetchBooking();
+                    }}
+                    onCancel={() => setIsReviewModalOpen(false)}
+                />
+            </Modal>
         </div>
     );
 }
