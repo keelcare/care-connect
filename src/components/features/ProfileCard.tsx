@@ -105,12 +105,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
     return (
-        <div className="group relative">
+        <div className="group relative p-1">
             {/* Ambient glow effect */}
-            <div className={`absolute -inset-1 ${theme.glow} rounded-[28px] blur-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-500`} />
+            <div className={`absolute inset-0 ${theme.glow} rounded-[28px] blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-500`} />
             
             {/* Main card with glassmorphism */}
-            <div className="relative overflow-hidden rounded-[24px] bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(0,0,0,0.12)] group-hover:-translate-y-1">
+            <div className="relative overflow-hidden rounded-[24px] bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(0,0,0,0.12)] group-hover:-translate-y-1 h-full flex flex-col">
                 
                 {/* Gradient mesh background */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${theme.bg} opacity-60`} />
@@ -118,7 +118,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/30 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
                 
                 {/* Content layer */}
-                <div className="relative z-10">
+                <div className="relative z-10 flex flex-col flex-1">
                     {/* Header section */}
                     <div className="p-5 pb-4">
                         <div className="flex items-start gap-4">
@@ -166,13 +166,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     <div className="mx-5 h-px bg-gradient-to-r from-transparent via-stone-200/60 to-transparent" />
 
                     {/* Description section */}
-                    <div className="p-5 pt-4">
+                    <div className="p-5 pt-4 flex-1 flex flex-col">
                         <p className="text-sm text-stone-600 leading-relaxed line-clamp-2 mb-4">
                             {description}
                         </p>
 
                         {/* Location with frosted pill */}
-                        <div className="flex items-center gap-2 mb-5">
+                        <div className="flex items-center gap-2 mb-5 mt-auto">
                             <div className="inline-flex items-center gap-1.5 bg-stone-100/80 backdrop-blur-sm px-2.5 py-1 rounded-full">
                                 <MapPin size={12} className="text-stone-500" />
                                 <span className="text-xs font-medium text-stone-600">{location}</span>

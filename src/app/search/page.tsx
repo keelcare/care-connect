@@ -458,7 +458,7 @@ export default function SearchPage() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 auto-rows-max">
                                 {filteredNannies.map((nanny) => (
                                     <ProfileCard
                                         key={nanny.id}
