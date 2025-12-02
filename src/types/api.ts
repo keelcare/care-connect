@@ -15,7 +15,9 @@ export interface UserProfile {
     user_id: string;
     first_name: string | null;
     last_name: string | null;
+    full_name?: string | null; // Backend may return this
     phone: string | null;
+    bio?: string | null; // Backend may include bio here
     address: string | null;
     lat: string | null; // Decimal stored as string
     lng: string | null; // Decimal stored as string
@@ -374,6 +376,8 @@ export interface Favorite {
     nanny_id: string;
     created_at: string;
     nanny?: User;
+    // Backend returns nanny data under this key
+    users_favorite_nannies_nanny_idTousers?: User;
 }
 
 // Enhanced Review Types (with 5 rating categories)

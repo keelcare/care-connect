@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { Button } from '@/components/ui/button';
-import { RecurringBooking } from '@/types/api';
+import { RecurringBooking, Booking, User } from '@/types/api';
 import { formatRecurrencePattern } from '@/components/scheduling/DaySelector';
 import {
     Calendar,
@@ -16,13 +16,32 @@ import {
     Pause,
     Play,
     Repeat,
-    User,
+    User as UserIcon,
     CalendarDays,
     AlertCircle,
     CheckCircle2,
     XCircle,
+    X,
+    Star,
+    Search,
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface PreviousNanny {
+    id: string;
+    email: string;
+    profiles?: {
+        first_name?: string | null;
+        last_name?: string | null;
+        profile_image_url?: string | null;
+    };
+    nanny_details?: {
+        hourly_rate?: string | null;
+        experience_years?: number | null;
+    };
+    bookingCount: number;
+    lastBookedDate: string;
+}
 
 export default function RecurringBookingsPage() {
     const { user } = useAuth();
@@ -30,6 +49,9 @@ export default function RecurringBookingsPage() {
     const [bookings, setBookings] = useState<RecurringBooking[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [showNannyModal, setShowNannyModal] = useState(false);
+    const [previousNannies, setPreviousNannies] = useState<PreviousNanny[]>([]);
+    const [loadingNannies, setLoadingNannies] = useState(false);
 
     useEffect(() => {
         fetchRecurringBookings();
@@ -46,6 +68,54 @@ export default function RecurringBookingsPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const fetchPreviousNannies = async () => {
+        setLoadingNannies(true);
+        try {
+            // Fetch parent's past bookings
+            const bookings = await api.bookings.getParentBookings();
+            
+            // Extract unique nannies from bookings
+            const nannyMap = new Map<string, PreviousNanny>();
+            
+            bookings.forEach((booking: Booking) => {
+                const nanny = booking.nanny;
+                if (nanny && nanny.id) {
+                    const existing = nannyMap.get(nanny.id);
+                    if (existing) {
+                        existing.bookingCount += 1;
+                        // Update last booked date if this booking is more recent
+                        if (new Date(booking.created_at) > new Date(existing.lastBookedDate)) {
+                            existing.lastBookedDate = booking.created_at;
+                        }
+                    } else {
+                        nannyMap.set(nanny.id, {
+                            id: nanny.id,
+                            email: nanny.email,
+                            profiles: nanny.profiles,
+                            nanny_details: nanny.nanny_details,
+                            bookingCount: 1,
+                            lastBookedDate: booking.created_at,
+                        });
+                    }
+                }
+            });
+            
+            // Convert map to array and sort by booking count (most booked first)
+            const nanniesArray = Array.from(nannyMap.values()).sort((a, b) => b.bookingCount - a.bookingCount);
+            setPreviousNannies(nanniesArray);
+        } catch (error) {
+            console.error('Failed to fetch previous nannies:', error);
+            addToast({ message: 'Failed to load previous caregivers', type: 'error' });
+        } finally {
+            setLoadingNannies(false);
+        }
+    };
+
+    const handleNewRecurringClick = () => {
+        setShowNannyModal(true);
+        fetchPreviousNannies();
     };
 
     const handleToggleActive = async (id: string, currentStatus: boolean) => {
@@ -99,6 +169,13 @@ export default function RecurringBookingsPage() {
         return nanny?.email || 'Caregiver';
     };
 
+    const getPreviousNannyName = (nanny: PreviousNanny) => {
+        if (nanny.profiles?.first_name && nanny.profiles?.last_name) {
+            return `${nanny.profiles.first_name} ${nanny.profiles.last_name}`;
+        }
+        return nanny.email || 'Caregiver';
+    };
+
     return (
         <ParentLayout>
             <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-50 pb-20">
@@ -115,12 +192,13 @@ export default function RecurringBookingsPage() {
                                 </div>
                                 <p className="text-stone-500 mt-1">Manage your scheduled recurring care</p>
                             </div>
-                            <Link href="/browse">
-                                <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
-                                    <Plus size={18} className="mr-2" />
-                                    New Recurring
-                                </Button>
-                            </Link>
+                            <Button 
+                                onClick={handleNewRecurringClick}
+                                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                            >
+                                <Plus size={18} className="mr-2" />
+                                New Recurring
+                            </Button>
                         </div>
                     </div>
 
@@ -148,12 +226,13 @@ export default function RecurringBookingsPage() {
                             <p className="text-stone-500 mb-6">
                                 Set up recurring bookings for regular care needs like weekly babysitting.
                             </p>
-                            <Link href="/browse">
-                                <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
-                                    <Plus size={18} className="mr-2" />
-                                    Find a Caregiver
-                                </Button>
-                            </Link>
+                            <Button 
+                                onClick={handleNewRecurringClick}
+                                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                            >
+                                <Plus size={18} className="mr-2" />
+                                Find a Caregiver
+                            </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -193,7 +272,7 @@ export default function RecurringBookingsPage() {
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1 mt-1 text-sm text-stone-500">
-                                                    <User size={14} />
+                                                    <UserIcon size={14} />
                                                     <span>{getNannyName(booking)}</span>
                                                 </div>
                                             </div>
@@ -274,6 +353,116 @@ export default function RecurringBookingsPage() {
                     )}
                 </div>
             </div>
+
+            {/* Previous Nannies Modal */}
+            {showNannyModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-stone-200">
+                            <div>
+                                <h2 className="text-xl font-bold text-stone-900">Choose a Caregiver</h2>
+                                <p className="text-sm text-stone-500 mt-1">Select from previous caregivers or browse new ones</p>
+                            </div>
+                            <button
+                                onClick={() => setShowNannyModal(false)}
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="p-6 overflow-y-auto max-h-[50vh]">
+                            {loadingNannies ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                                </div>
+                            ) : previousNannies.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <UserIcon className="w-12 h-12 text-stone-300 mx-auto mb-4" />
+                                    <p className="text-stone-600 font-medium mb-2">No previous caregivers</p>
+                                    <p className="text-stone-500 text-sm">You haven't booked with any caregivers yet. Browse to find one.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <p className="text-sm text-stone-500 mb-4">
+                                        Your previous caregivers ({previousNannies.length})
+                                    </p>
+                                    {previousNannies.map((nanny) => {
+                                        const name = getPreviousNannyName(nanny);
+                                        const hourlyRate = nanny.nanny_details?.hourly_rate 
+                                            ? parseFloat(nanny.nanny_details.hourly_rate) 
+                                            : null;
+                                        const profileImage = nanny.profiles?.profile_image_url;
+
+                                        return (
+                                            <Link
+                                                key={nanny.id}
+                                                href={`/book/${nanny.id}?recurring=true`}
+                                                onClick={() => setShowNannyModal(false)}
+                                                className="flex items-center gap-4 p-4 rounded-xl border border-stone-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all group"
+                                            >
+                                                {/* Avatar */}
+                                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-100 to-stone-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    {profileImage ? (
+                                                        <img src={profileImage} alt={name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-xl font-bold text-stone-600">
+                                                            {name.charAt(0).toUpperCase()}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors truncate">
+                                                        {name}
+                                                    </h3>
+                                                    <div className="flex items-center gap-3 mt-1 text-sm text-stone-500">
+                                                        <span className="flex items-center gap-1">
+                                                            <Star size={12} className="text-amber-400 fill-amber-400" />
+                                                            4.9
+                                                        </span>
+                                                        <span>•</span>
+                                                        <span>{nanny.bookingCount} booking{nanny.bookingCount > 1 ? 's' : ''}</span>
+                                                        {hourlyRate && (
+                                                            <>
+                                                                <span>•</span>
+                                                                <span>₦{hourlyRate.toLocaleString()}/hr</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-stone-400 mt-1">
+                                                        Last booked: {formatDate(nanny.lastBookedDate)}
+                                                    </p>
+                                                </div>
+
+                                                {/* Arrow */}
+                                                <div className="text-stone-400 group-hover:text-emerald-600 transition-colors">
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-6 border-t border-stone-200 bg-stone-50">
+                            <Link href="/browse" onClick={() => setShowNannyModal(false)}>
+                                <Button className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    <Search size={18} className="mr-2" />
+                                    Browse All Caregivers
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
         </ParentLayout>
     );
 }
