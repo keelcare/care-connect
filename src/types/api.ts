@@ -66,6 +66,7 @@ export interface LoginDto {
 
 export interface AuthResponse {
     access_token: string;
+    refresh_token?: string;
     user: User;
 }
 
@@ -364,5 +365,103 @@ export interface CreateAvailabilityBlockDto {
     isRecurring?: boolean;
     recurrencePattern?: RecurrencePattern;
     reason?: string;
+}
+
+// Favorites Types
+export interface Favorite {
+    id: string;
+    parent_id: string;
+    nanny_id: string;
+    created_at: string;
+    nanny?: User;
+}
+
+// Enhanced Review Types (with 5 rating categories)
+export interface EnhancedReview {
+    id: string;
+    booking_id: string;
+    reviewer_id: string;
+    reviewee_id: string;
+    rating: number;
+    rating_punctuality?: number;
+    rating_professionalism?: number;
+    rating_care_quality?: number;
+    rating_communication?: number;
+    comment?: string;
+    response?: string;
+    created_at: string;
+    updated_at: string;
+    reviewer?: User;
+    reviewee?: User;
+    booking?: Booking;
+}
+
+export interface CreateEnhancedReviewDto {
+    bookingId: string;
+    revieweeId: string;
+    rating: number;
+    rating_punctuality?: number;
+    rating_professionalism?: number;
+    rating_care_quality?: number;
+    rating_communication?: number;
+    comment?: string;
+}
+
+export interface UpdateReviewDto {
+    rating?: number;
+    rating_punctuality?: number;
+    rating_professionalism?: number;
+    rating_care_quality?: number;
+    rating_communication?: number;
+    comment?: string;
+}
+
+export interface ReviewResponseDto {
+    response: string;
+}
+
+// Admin Enhanced Types
+export interface AdminDispute {
+    id: string;
+    booking_id: string;
+    reported_by: string;
+    reason: string;
+    status: 'open' | 'investigating' | 'resolved';
+    resolution?: string;
+    resolved_by?: string;
+    created_at: string;
+    updated_at: string;
+    booking?: Booking;
+    reporter?: User;
+}
+
+export interface AdminPaymentStats {
+    totalPayments: number;
+    pendingPayments: number;
+    totalRevenue: number;
+}
+
+export interface AdminAdvancedStats {
+    completionRate: number;
+    acceptanceRate: number;
+    totalRevenue: number;
+    popularBookingTimes: { hour: number; count: number }[];
+}
+
+export interface SystemSetting {
+    key: string;
+    value: string | number | boolean;
+    description?: string;
+}
+
+// Notification Types (enhanced)
+export interface Notification {
+    id: string;
+    user_id: string;
+    title: string;
+    message: string;
+    type: 'info' | 'warning' | 'success' | 'error';
+    is_read: boolean;
+    created_at: string;
 }
 

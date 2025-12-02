@@ -26,12 +26,31 @@ import {
     CreateRecurringBookingDto,
     UpdateRecurringBookingDto,
     AvailabilityBlock,
-    CreateAvailabilityBlockDto
+    CreateAvailabilityBlockDto,
+    Favorite,
+    EnhancedReview,
+    CreateEnhancedReviewDto,
+    UpdateReviewDto,
+    ReviewResponseDto,
+    AdminDispute,
+    AdminPaymentStats,
+    AdminAdvancedStats,
+    SystemSetting,
+    Notification
 } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+// Token refresh callback - will be set by AuthContext
+let tokenRefresher: (() => Promise<string | null>) | null = null;
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+export function setTokenRefresher(refresher: () => Promise<string | null>) {
+    tokenRefresher = refresher;
+}
+
+export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, skipRefresh = false): Promise<T> {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
     const headers = {
@@ -45,12 +64,55 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
         headers,
     });
 
-    const data = await response.json();
+    // Try to parse JSON, handle non-JSON responses
+    let data;
+    try {
+        data = await response.json();
+    } catch {
+        data = { message: 'Invalid response from server' };
+    }
 
     if (!response.ok) {
-        // Handle 401 Unauthorized - token expired or invalid
-        if (response.status === 401 && typeof window !== 'undefined') {
+        // Handle 401 Unauthorized - try to refresh token first
+        if (response.status === 401 && typeof window !== 'undefined' && !skipRefresh) {
+            // Try to refresh the token
+            if (tokenRefresher) {
+                // Prevent multiple simultaneous refresh attempts
+                if (!isRefreshing) {
+                    isRefreshing = true;
+                    refreshPromise = tokenRefresher();
+                }
+
+                const newToken = await refreshPromise;
+                isRefreshing = false;
+                refreshPromise = null;
+
+                if (newToken) {
+                    // Retry the original request with new token
+                    const retryHeaders = {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${newToken}`,
+                        ...options.headers,
+                    };
+
+                    const retryResponse = await fetch(`${API_URL}${endpoint}`, {
+                        ...options,
+                        headers: retryHeaders,
+                    });
+
+                    const retryData = await retryResponse.json();
+
+                    if (!retryResponse.ok) {
+                        throw new Error(retryData.message || 'An error occurred');
+                    }
+
+                    return retryData;
+                }
+            }
+
+            // If refresh failed or no refresher, logout
             localStorage.removeItem('token');
+            localStorage.removeItem('refresh_token');
             localStorage.removeItem('user_preferences');
             window.location.href = '/auth/login';
         }
@@ -64,6 +126,15 @@ export const api = {
     auth: {
         login: (body: LoginDto) => fetchApi<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
         signup: (body: SignupDto & { role: string }) => fetchApi<User>('/auth/signup', { method: 'POST', body: JSON.stringify(body) }),
+        refresh: (refreshToken: string) => 
+            fetchApi<{ access_token: string; refresh_token: string }>('/auth/refresh', { 
+                method: 'POST', 
+                body: JSON.stringify({ refreshToken }) 
+            }, true), // skipRefresh = true to prevent infinite loop
+        forgotPassword: (email: string) =>
+            fetchApi<{ message: string }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+        resetPassword: (token: string, newPassword: string) =>
+            fetchApi<{ message: string }>('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, newPassword }) }),
     },
     users: {
         me: () => fetchApi<User>('/users/me'),
@@ -143,5 +214,46 @@ export const api = {
         create: (body: CreateAvailabilityBlockDto) => 
             fetchApi<AvailabilityBlock>('/availability/block', { method: 'POST', body: JSON.stringify(body) }),
         delete: (id: string) => fetchApi<void>(`/availability/${id}`, { method: 'DELETE' }),
+    },
+    favorites: {
+        list: () => fetchApi<Favorite[]>('/favorites'),
+        add: (nannyId: string) => fetchApi<Favorite>(`/favorites/${nannyId}`, { method: 'POST' }),
+        remove: (nannyId: string) => fetchApi<void>(`/favorites/${nannyId}`, { method: 'DELETE' }),
+        check: (nannyId: string) => fetchApi<{ isFavorite: boolean }>(`/favorites/${nannyId}/check`),
+    },
+    enhancedReviews: {
+        create: (body: CreateEnhancedReviewDto) => 
+            fetchApi<EnhancedReview>('/reviews', { method: 'POST', body: JSON.stringify(body) }),
+        update: (id: string, body: UpdateReviewDto) => 
+            fetchApi<EnhancedReview>(`/reviews/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+        delete: (id: string) => fetchApi<void>(`/reviews/${id}`, { method: 'DELETE' }),
+        addResponse: (id: string, body: ReviewResponseDto) => 
+            fetchApi<EnhancedReview>(`/reviews/${id}/response`, { method: 'POST', body: JSON.stringify(body) }),
+    },
+    enhancedNotifications: {
+        list: () => fetchApi<Notification[]>('/notifications'),
+        markAsRead: (id: string) => fetchApi<Notification>(`/notifications/${id}/read`, { method: 'PUT' }),
+        markAllAsRead: () => fetchApi<void>('/notifications/read-all', { method: 'PUT' }),
+    },
+    enhancedAdmin: {
+        // Disputes
+        getDisputes: () => fetchApi<AdminDispute[]>('/admin/disputes'),
+        getDispute: (id: string) => fetchApi<AdminDispute>(`/admin/disputes/${id}`),
+        resolveDispute: (id: string, resolution: string) => 
+            fetchApi<AdminDispute>(`/admin/disputes/${id}/resolve`, { method: 'PUT', body: JSON.stringify({ resolution }) }),
+        // Payments
+        getPayments: () => fetchApi<any[]>('/admin/payments'),
+        getPaymentStats: () => fetchApi<AdminPaymentStats>('/admin/payments/stats'),
+        // Review Moderation
+        getReviews: () => fetchApi<EnhancedReview[]>('/admin/reviews'),
+        approveReview: (id: string) => fetchApi<EnhancedReview>(`/admin/reviews/${id}/approve`, { method: 'PUT' }),
+        rejectReview: (id: string) => fetchApi<EnhancedReview>(`/admin/reviews/${id}/reject`, { method: 'PUT' }),
+        // System Settings
+        getSettings: () => fetchApi<SystemSetting[]>('/admin/settings'),
+        getSetting: (key: string) => fetchApi<SystemSetting>(`/admin/settings/${key}`),
+        updateSetting: (key: string, value: any) => 
+            fetchApi<SystemSetting>(`/admin/settings/${key}`, { method: 'POST', body: JSON.stringify({ value }) }),
+        // Advanced Analytics
+        getAdvancedStats: () => fetchApi<AdminAdvancedStats>('/admin/stats/advanced'),
     },
 };

@@ -1,26 +1,29 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, setTokenRefresher } from '@/lib/api';
 import { User } from '@/types/api';
 
-// Token expires after 15 days
+// Token expires after 15 days for refresh token
 const TOKEN_EXPIRY_DAYS = 15;
+// Refresh access token 2 minutes before expiry
+const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
 
 interface AuthContextType {
     user: User | null;
     token: string | null;
     loading: boolean;
-    login: (token: string, userData?: User) => Promise<void>;
+    login: (token: string, userData?: User, refreshToken?: string) => Promise<void>;
     logout: () => void;
     refreshUser: () => Promise<void>;
+    refreshAccessToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Helper function to decode JWT and extract basic info
-function decodeJWT(token: string): { role?: string; userId?: string } | null {
+function decodeJWT(token: string): { role?: string; userId?: string; exp?: number; sub?: string } | null {
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -37,11 +40,100 @@ function decodeJWT(token: string): { role?: string; userId?: string } | null {
     }
 }
 
+// Get token expiration time in milliseconds
+function getTokenExpirationMs(token: string): number | null {
+    const decoded = decodeJWT(token);
+    if (!decoded?.exp) return null;
+    return decoded.exp * 1000; // Convert seconds to milliseconds
+}
+
+// Check if token is expired or about to expire
+function isTokenExpiringSoon(token: string): boolean {
+    const expirationMs = getTokenExpirationMs(token);
+    if (!expirationMs) return true;
+    return Date.now() >= expirationMs - TOKEN_REFRESH_BUFFER_MS;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Refresh access token using refresh token
+    const refreshAccessToken = useCallback(async (): Promise<string | null> => {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) {
+            console.log('No refresh token available');
+            return null;
+        }
+
+        try {
+            console.log('Refreshing access token...');
+            const response = await api.auth.refresh(refreshToken);
+            
+            // Store new tokens
+            localStorage.setItem('token', response.access_token);
+            localStorage.setItem('refresh_token', response.refresh_token);
+            setToken(response.access_token);
+            
+            // Schedule next refresh
+            scheduleTokenRefresh(response.access_token);
+            
+            console.log('Access token refreshed successfully');
+            return response.access_token;
+        } catch (error) {
+            console.error('Failed to refresh token:', error);
+            // Clear tokens on refresh failure
+            localStorage.removeItem('token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('login_timestamp');
+            setToken(null);
+            setUser(null);
+            return null;
+        }
+    }, []);
+
+    // Schedule token refresh before expiry
+    const scheduleTokenRefresh = useCallback((accessToken: string) => {
+        // Clear any existing timer
+        if (refreshTimerRef.current) {
+            clearTimeout(refreshTimerRef.current);
+        }
+
+        const expirationMs = getTokenExpirationMs(accessToken);
+        if (!expirationMs) return;
+
+        const timeUntilRefresh = expirationMs - Date.now() - TOKEN_REFRESH_BUFFER_MS;
+        
+        if (timeUntilRefresh > 0) {
+            console.log(`Scheduling token refresh in ${Math.round(timeUntilRefresh / 1000 / 60)} minutes`);
+            refreshTimerRef.current = setTimeout(() => {
+                refreshAccessToken();
+            }, timeUntilRefresh);
+        } else {
+            // Token is already expired or about to expire, refresh now
+            refreshAccessToken();
+        }
+    }, [refreshAccessToken]);
+
+    // Register the token refresher with the API module
+    useEffect(() => {
+        setTokenRefresher(refreshAccessToken);
+        return () => {
+            setTokenRefresher(() => Promise.resolve(null));
+        };
+    }, [refreshAccessToken]);
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (refreshTimerRef.current) {
+                clearTimeout(refreshTimerRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         checkAuth();
@@ -82,6 +174,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setToken(storedToken);
+        
+        // Schedule token refresh
+        scheduleTokenRefresh(storedToken);
 
         try {
             console.log('AuthContext: Verifying token...');
@@ -95,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('Unauthorized')) {
                 console.log('AuthContext: Invalid token, removing');
                 localStorage.removeItem('token');
+                localStorage.removeItem('refresh_token');
                 setUser(null);
             }
             // For other errors (network, server), keep the token but maybe set user to null? 
@@ -102,9 +198,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // For now, let's set user to null but keep token so we can retry?
             // Actually, if we set user to null, the app thinks we are logged out.
             // But we shouldn't log out on network error.
-
-            // If it's NOT a 401, we might want to keep the user logged in if we had one?
-            // But this is checkAuth, so we don't have a user yet.
 
             if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('Unauthorized')) {
                 setUser(null);
@@ -115,12 +208,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const login = async (token: string, userData?: User) => {
+    const login = async (token: string, userData?: User, refreshToken?: string) => {
         localStorage.setItem('token', token);
+        // Store refresh token if provided
+        if (refreshToken) {
+            localStorage.setItem('refresh_token', refreshToken);
+        }
         // Store login timestamp for 15-day expiration
         localStorage.setItem('login_timestamp', Date.now().toString());
         setToken(token);
         setLoading(false); // Stop loading immediately since we have a token
+        
+        // Schedule token refresh
+        scheduleTokenRefresh(token);
 
         if (userData) {
             // Standard login: user data provided, set immediately
@@ -167,7 +267,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = () => {
+        // Clear refresh timer
+        if (refreshTimerRef.current) {
+            clearTimeout(refreshTimerRef.current);
+        }
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
         localStorage.removeItem('login_timestamp');
         localStorage.removeItem('user_preferences'); // Clear preferences on logout
         setUser(null);
@@ -180,7 +285,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser, refreshAccessToken }}>
             {children}
         </AuthContext.Provider>
     );

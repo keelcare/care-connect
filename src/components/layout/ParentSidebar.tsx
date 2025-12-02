@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Calendar, MessageSquare, Sparkles, Settings, ChevronLeft, ChevronRight, User, Repeat } from 'lucide-react';
+import { Home, Search, Calendar, MessageSquare, Sparkles, Settings, ChevronLeft, ChevronRight, User, Repeat, Heart } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface ParentSidebarProps {
@@ -18,6 +18,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
     const navItems = [
         { icon: Home, label: 'Browse', href: '/browse' },
         { icon: Search, label: 'Search', href: '/search' },
+        { icon: Heart, label: 'Favorites', href: '/favorites' },
         { icon: Sparkles, label: 'Book a Service', href: '/book-service' },
         { icon: Calendar, label: 'Bookings', href: '/bookings' },
         { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },

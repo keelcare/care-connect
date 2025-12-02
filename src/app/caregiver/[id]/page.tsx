@@ -10,6 +10,7 @@ import { api } from '@/lib/api';
 import { User, Review } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { ReviewCard } from '@/components/features/ReviewCard';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 
 // Mock data for demo
 const MOCK_USERS = {
@@ -162,6 +163,17 @@ export default function CaregiverProfilePage() {
             <div className="relative mb-20">
                 <div className="h-48 w-full bg-gradient-to-r from-stone-200 to-amber-100 rounded-b-[40px] relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
+                    {/* Favorite Button in top right */}
+                    {user && user.role === 'parent' && (
+                        <div className="absolute top-4 right-4 z-10">
+                            <FavoriteButton 
+                                nannyId={caregiver.id}
+                                size="lg"
+                                showLabel
+                                className="shadow-lg"
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className="absolute -bottom-16 left-8 md:left-12 flex items-end gap-6">
                     <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-white">

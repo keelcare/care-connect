@@ -4,16 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { AdminStats } from '@/types/api';
+import { AdminStats, AdminAdvancedStats } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Users, Calendar, CheckCircle, Bell } from 'lucide-react';
+import { Users, Calendar, CheckCircle, Bell, AlertTriangle, Star, Settings, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import styles from './page.module.css';
 
 export default function AdminDashboard() {
     const { user } = useAuth();
     const router = useRouter();
     const [stats, setStats] = useState<AdminStats | null>(null);
+    const [advancedStats, setAdvancedStats] = useState<AdminAdvancedStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -32,8 +33,12 @@ export default function AdminDashboard() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.admin.getStats();
-            setStats(data);
+            const [basicStats, advanced] = await Promise.all([
+                api.admin.getStats(),
+                api.enhancedAdmin.getAdvancedStats().catch(() => null)
+            ]);
+            setStats(basicStats);
+            setAdvancedStats(advanced);
         } catch (err) {
             console.error('Failed to fetch stats:', err);
             setError(err instanceof Error ? err.message : 'Failed to load statistics');
@@ -100,7 +105,7 @@ export default function AdminDashboard() {
 
             <div className="space-y-6">
                 <h2 className="text-xl font-bold text-neutral-900">Quick Actions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Button
                         className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all"
                         onClick={() => router.push('/admin/users')}
@@ -122,8 +127,68 @@ export default function AdminDashboard() {
                         <Bell className="mr-3" size={24} />
                         Send Notifications
                     </Button>
+                    <Button
+                        className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                        onClick={() => router.push('/admin/disputes')}
+                    >
+                        <AlertTriangle className="mr-3" size={24} />
+                        View Disputes
+                    </Button>
+                    <Button
+                        className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+                        onClick={() => router.push('/admin/reviews')}
+                    >
+                        <Star className="mr-3" size={24} />
+                        Moderate Reviews
+                    </Button>
+                    <Button
+                        className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-stone-50 text-stone-700 border border-stone-200 hover:bg-stone-100"
+                        onClick={() => router.push('/admin/settings')}
+                    >
+                        <Settings className="mr-3" size={24} />
+                        System Settings
+                    </Button>
                 </div>
             </div>
+
+            {/* Advanced Analytics Section */}
+            {advancedStats && (
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-neutral-900">Analytics</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-2xl border border-emerald-200">
+                            <div className="flex items-center gap-3 mb-2">
+                                <TrendingUp size={20} className="text-emerald-600" />
+                                <span className="text-sm font-medium text-emerald-700">Completion Rate</span>
+                            </div>
+                            <p className="text-3xl font-bold text-emerald-800">{advancedStats.completionRate.toFixed(1)}%</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200">
+                            <div className="flex items-center gap-3 mb-2">
+                                <CheckCircle size={20} className="text-blue-600" />
+                                <span className="text-sm font-medium text-blue-700">Acceptance Rate</span>
+                            </div>
+                            <p className="text-3xl font-bold text-blue-800">{advancedStats.acceptanceRate.toFixed(1)}%</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-2xl border border-amber-200">
+                            <div className="flex items-center gap-3 mb-2">
+                                <DollarSign size={20} className="text-amber-600" />
+                                <span className="text-sm font-medium text-amber-700">Total Revenue</span>
+                            </div>
+                            <p className="text-3xl font-bold text-amber-800">₦{advancedStats.totalRevenue.toLocaleString()}</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-2xl border border-purple-200">
+                            <div className="flex items-center gap-3 mb-2">
+                                <Clock size={20} className="text-purple-600" />
+                                <span className="text-sm font-medium text-purple-700">Peak Hour</span>
+                            </div>
+                            <p className="text-3xl font-bold text-purple-800">
+                                {advancedStats.popularBookingTimes?.[0]?.hour || 9}:00
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
