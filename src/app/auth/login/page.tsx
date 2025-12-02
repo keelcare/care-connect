@@ -92,7 +92,7 @@ export default function LoginPage() {
                             type="submit" 
                             size="lg" 
                             isLoading={isLoading} 
-                            className="w-full rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white h-12 font-medium shadow-none transition-all"
+                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white h-12 font-medium shadow-none transition-all"
                         >
                             Sign in
                         </Button>
