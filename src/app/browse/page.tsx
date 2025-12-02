@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Search, Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight, MapPin, RefreshCw } from 'lucide-react';
 import { FeaturedCaregivers } from '@/components/features/FeaturedCaregivers';
 import { useAuth } from '@/context/AuthContext';
@@ -149,51 +148,75 @@ export default function BrowsePage() {
         <ParentLayout>
             <div className="min-h-screen bg-stone-50 pb-20 md:pb-8">
                 <main className="max-w-7xl mx-auto px-4 md:px-6 space-y-12 pt-8">
-                    {/* Hero Section */}
-                    <section className="relative overflow-hidden rounded-3xl bg-stone-900 text-white">
-                        <div className="absolute inset-0 opacity-10">
-                            <Image
-                                src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2038&auto=format&fit=crop"
-                                alt=""
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-stone-700/30 rounded-full blur-3xl" />
+                    {/* Hero Section - Clean Glassmorphic Design */}
+                    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-stone-100 via-stone-50 to-white border border-stone-200/50 shadow-2xl shadow-stone-300/30">
+                        {/* Layered gradient orbs for depth */}
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-stone-200/50 to-stone-300/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
+                        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-stone-300/40 to-stone-200/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-white/80 via-transparent to-transparent rounded-full" />
+                        
+                        {/* Subtle grid pattern overlay */}
+                        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, #78716c 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                        
+                        {/* Inner glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/40" />
                         
                         <div className="relative z-10 p-8 md:p-12 lg:p-16">
-                            <div className="max-w-2xl space-y-6">
-                                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                                    <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                                    <span className="text-sm font-medium text-white/90">15,000+ verified caregivers</span>
+                            <div className="max-w-3xl mx-auto text-center space-y-8">
+                                {/* Badge */}
+                                <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/90 shadow-lg shadow-stone-200/40">
+                                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                                    <span className="text-sm font-medium text-stone-600">15,000+ verified caregivers</span>
                                 </div>
                                 
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                                    Find the perfect
-                                    <span className="relative inline-block mx-2">
-                                        <span className="relative z-10">caregiver</span>
-                                        <span className="absolute bottom-1 left-0 w-full h-3 bg-amber-400/40 -rotate-1" />
+                                {/* Heading */}
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
+                                    Find the
+                                    <span className="relative mx-2 inline-block">
+                                        <span className="relative z-10 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                                            perfect caregiver
+                                        </span>
+                                        <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-emerald-200/60 via-teal-200/60 to-cyan-200/60 -rotate-1 rounded" />
                                     </span>
-                                    <br />for your family.
+                                    <br className="hidden md:block" />
+                                    for your family
                                 </h1>
                                 
-                                <p className="text-lg text-stone-300 max-w-lg leading-relaxed">
+                                {/* Description */}
+                                <p className="text-lg text-stone-500 max-w-xl mx-auto leading-relaxed">
                                     Connect with trusted, verified professionals for child care, senior care, pet care, and more.
                                 </p>
                                 
-                                <div className="flex flex-wrap gap-3 pt-2">
+                                {/* CTA Buttons */}
+                                <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                                     <Link href="/search">
-                                        <Button className="h-12 px-6 bg-white hover:bg-stone-100 text-stone-900 rounded-xl font-semibold shadow-lg group">
+                                        <Button className="h-12 px-8 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold shadow-xl shadow-stone-900/30 hover:shadow-2xl hover:shadow-stone-900/40 hover:-translate-y-0.5 transition-all duration-300 group">
                                             <Search className="w-5 h-5 mr-2" />
                                             Start Searching
                                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </Link>
                                     <Link href="/how-it-works">
-                                        <Button variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10 rounded-xl font-medium">
+                                        <Button variant="outline" className="h-12 px-8 bg-white/70 backdrop-blur-xl border-white/90 text-stone-700 hover:bg-white shadow-lg shadow-stone-200/30 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl font-medium">
                                             How it Works
                                         </Button>
                                     </Link>
+                                </div>
+                                
+                                {/* Stats - Glassmorphic cards with depth */}
+                                <div className="flex items-center justify-center gap-4 md:gap-6 pt-6">
+                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                                        <div className="text-2xl font-bold text-stone-900">15K+</div>
+                                        <div className="text-xs text-stone-500">Caregivers</div>
+                                    </div>
+                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                                        <div className="text-2xl font-bold text-stone-900">50K+</div>
+                                        <div className="text-xs text-stone-500">Families</div>
+                                    </div>
+                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                                        <div className="text-2xl font-bold text-amber-600">4.9★</div>
+                                        <div className="text-xs text-stone-500">Rating</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
