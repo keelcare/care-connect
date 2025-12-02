@@ -212,12 +212,12 @@ export const Header: React.FC = () => {
                     ) : (
                         <>
                             <Link href="/auth/login">
-                                <Button variant="ghost" className="text-neutral-600 hover:text-primary hover:bg-primary-50">
+                                <Button variant="ghost" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100">
                                     Log In
                                 </Button>
                             </Link>
                             <Link href="/auth/signup">
-                                <Button className="rounded-full px-6 shadow-md hover:shadow-lg transition-all bg-primary hover:bg-primary-600 text-black">
+                                <Button className="rounded-full px-6 shadow-md hover:shadow-lg transition-all bg-stone-900 hover:bg-stone-800 text-white">
                                     Sign Up
                                 </Button>
                             </Link>
@@ -297,10 +297,10 @@ export const Header: React.FC = () => {
                             ) : (
                                 <div className="grid grid-cols-2 gap-4">
                                     <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
-                                        <Button variant="outline" className="w-full rounded-xl">Log In</Button>
+                                        <Button variant="outline" className="w-full rounded-xl border-stone-200 text-stone-900">Log In</Button>
                                     </Link>
                                     <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-                                        <Button className="w-full rounded-xl bg-primary text-white">Sign Up</Button>
+                                        <Button className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 text-white">Sign Up</Button>
                                     </Link>
                                 </div>
                             )}

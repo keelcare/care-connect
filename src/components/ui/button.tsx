@@ -5,21 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-teal-400 to-teal-500 text-neutral-900 border border-teal-600/20 shadow-sm hover:scale-105 transition-transform duration-200 hover:shadow-md",
+        default: "bg-stone-900 text-white shadow-sm hover:bg-stone-800 transition-all duration-200",
         destructive:
-          "bg-error-600 text-neutral-900 border border-error-700 shadow-sm hover:bg-error-700",
+          "bg-red-600 text-white shadow-sm hover:bg-red-700",
         outline:
-          "border border-neutral-200 bg-background text-neutral-900 hover:bg-neutral-50 hover:border-neutral-300",
+          "border border-stone-200 bg-white text-stone-900 hover:bg-stone-50 hover:border-stone-300",
         secondary:
-          "bg-secondary text-neutral-900 border border-neutral-200 shadow-sm hover:bg-secondary/90",
-        ghost: "hover:bg-neutral-100 hover:text-neutral-900",
-        link: "text-primary underline-offset-4 hover:underline",
-        text: "text-primary hover:text-primary/80",
-        icon: "rounded-lg bg-neutral-100 hover:bg-neutral-200",
+          "bg-stone-100 text-stone-900 shadow-sm hover:bg-stone-200",
+        ghost: "text-stone-600 hover:bg-stone-100 hover:text-stone-900",
+        link: "text-stone-900 underline-offset-4 hover:underline",
+        text: "text-stone-700 hover:text-stone-900",
+        icon: "rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200",
       },
       size: {
         default: "h-10 px-4 py-2",

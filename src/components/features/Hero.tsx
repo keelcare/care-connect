@@ -121,9 +121,9 @@ export const Hero: React.FC = () => {
 
                         <Button
                             onClick={handleSearch}
-                            className="w-full md:w-auto rounded-full h-14 px-8 bg-primary hover:bg-primary-600 shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
+                            className="w-full md:w-auto rounded-full h-14 px-8 bg-stone-900 hover:bg-stone-800 shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
                         >
-                            <Search className="w-5 h-5 text-neutral-900" />
+                            <Search className="w-5 h-5 text-white" />
                         </Button>
                     </div>
                 </div>

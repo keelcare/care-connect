@@ -370,7 +370,7 @@ export default function SearchPage() {
                                 <Button
                                     variant={isNearby ? "default" : "outline"}
                                     onClick={() => setIsNearby(!isNearby)}
-                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium ${isNearby ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium ${isNearby ? 'bg-stone-900 hover:bg-stone-800 text-white' : 'bg-white hover:bg-stone-50 text-stone-900 border-stone-200'}`}
                                 >
                                     <MapPin size={18} />
                                     Nearby
@@ -378,7 +378,7 @@ export default function SearchPage() {
                                 <Button
                                     variant={isDesktopFilterOpen ? "default" : "outline"}
                                     onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative ${isDesktopFilterOpen ? 'bg-primary hover:bg-primary-600' : 'bg-white hover:bg-neutral-50'}`}
+                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative ${isDesktopFilterOpen ? 'bg-stone-900 hover:bg-stone-800 text-white' : 'bg-white hover:bg-stone-50 text-stone-900 border-stone-200'}`}
                                 >
                                     <SlidersHorizontal size={18} />
                                     Filters
@@ -391,7 +391,7 @@ export default function SearchPage() {
                                 <Button
                                     variant="outline"
                                     onClick={() => setIsFilterOpen(true)}
-                                    className="lg:hidden rounded-xl h-12 px-5 flex items-center gap-2 font-medium bg-white hover:bg-neutral-50 relative"
+                                    className="lg:hidden rounded-xl h-12 px-5 flex items-center gap-2 font-medium bg-white hover:bg-stone-50 text-stone-900 border-stone-200 relative"
                                 >
                                     <SlidersHorizontal size={18} />
                                     Filters
@@ -448,7 +448,7 @@ export default function SearchPage() {
                                 <Button variant="default" onClick={() => {
                                     setNannies(MOCK_NANNIES);
                                     setFilteredNannies(MOCK_NANNIES);
-                                }} className="rounded-full px-8 bg-primary hover:bg-primary-600">
+                                }} className="rounded-full px-8 bg-stone-900 hover:bg-stone-800 text-white">
                                     Load Demo Data
                                 </Button>
                             </div>
@@ -478,7 +478,7 @@ export default function SearchPage() {
                         {filteredNannies.length > 0 && (
                             <div className="flex justify-center gap-2 mt-12 mb-8">
                                 <button className="p-2 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 disabled:opacity-50" disabled><ChevronLeft size={20} /></button>
-                                <button className="w-10 h-10 rounded-lg bg-primary text-white font-medium shadow-md">1</button>
+                <button className="w-10 h-10 rounded-lg bg-stone-900 text-white font-medium shadow-md">1</button>
                                 <button className="p-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"><ChevronRight size={20} /></button>
                             </div>
                         )}
@@ -492,8 +492,8 @@ export default function SearchPage() {
                     title="Filters"
                     footer={
                         <div className="flex gap-2 w-full">
-                            <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
-                            <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-primary hover:bg-primary-600 text-white">Apply</Button>
+                            <Button variant="outline" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl border-stone-200 text-stone-900">Cancel</Button>
+                            <Button variant="default" onClick={() => setIsFilterOpen(false)} className="flex-1 rounded-xl bg-stone-900 hover:bg-stone-800 text-white">Apply</Button>
                         </div>
                     }
                 >

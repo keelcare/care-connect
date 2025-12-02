@@ -15,12 +15,12 @@ export const CTASection: React.FC = () => {
                     </p>
                     <div className={styles.buttons}>
                         <Link href="/auth/signup">
-                            <Button size="lg" style={{ backgroundColor: 'white', color: 'var(--color-primary-600)' }}>
+                            <Button size="lg" className="bg-white text-stone-900 hover:bg-stone-100 shadow-lg">
                                 Get Started
                             </Button>
                         </Link>
                         <Link href="/how-it-works">
-                            <Button variant="secondary" size="lg" style={{ borderColor: 'white', color: 'white' }}>
+                            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
                                 Learn More
                             </Button>
                         </Link>

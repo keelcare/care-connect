@@ -161,13 +161,13 @@ export default function AboutPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup">
-                            <Button className="w-full sm:w-auto rounded-full h-14 px-8 text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all bg-primary hover:bg-primary-600 text-black">
+                            <Button className="w-full sm:w-auto rounded-full h-14 px-8 text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all bg-stone-900 hover:bg-stone-800 text-white">
                                 Get Started
                                 <ArrowRight size={20} className="ml-2" />
                             </Button>
                         </Link>
                         <Link href="/search">
-                            <Button variant="outline" className="w-full sm:w-auto rounded-full h-14 px-8 text-lg border-2 hover:bg-neutral-50">
+                            <Button variant="outline" className="w-full sm:w-auto rounded-full h-14 px-8 text-lg border-2 border-stone-200 hover:bg-stone-50 text-stone-900">
                                 Find Caregivers
                             </Button>
                         </Link>

@@ -164,12 +164,12 @@ export default function BrowsePage() {
                                 </p>
                                 <div className="flex flex-wrap gap-3 pt-2">
                                     <Link href="/search">
-                                        <Button size="lg" className="rounded-full bg-primary text-neutral-900 hover:bg-primary-600 font-bold px-8 h-12 shadow-lg border border-neutral-200 min-w-[180px]">
+                                        <Button size="lg" className="rounded-full bg-stone-900 text-white hover:bg-stone-800 font-bold px-8 h-12 shadow-lg min-w-[180px]">
                                             Start Searching
                                         </Button>
                                     </Link>
                                     <Link href="/how-it-works">
-                                        <Button variant="outline" size="lg" className="rounded-full bg-white text-neutral-900 border-neutral-200 hover:bg-neutral-50 font-medium px-8 h-12 min-w-[180px]">
+                                        <Button variant="outline" size="lg" className="rounded-full bg-white text-stone-900 border-stone-200 hover:bg-stone-50 font-medium px-8 h-12 min-w-[180px]">
                                             How it Works
                                         </Button>
                                     </Link>
@@ -210,7 +210,7 @@ export default function BrowsePage() {
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-neutral-900 font-display">Nearby Caregivers</h2>
                             <Link href="/search?sort=distance">
-                                <Button variant="ghost" className="text-primary hover:text-primary-600">
+                                <Button variant="ghost" className="text-stone-700 hover:text-stone-900 hover:bg-stone-100">
                                     See All
                                 </Button>
                             </Link>
@@ -224,7 +224,7 @@ export default function BrowsePage() {
                             <div className="text-center py-12 bg-white rounded-3xl border border-neutral-100">
                                 <p className="text-neutral-500 mb-4">No other caregivers found nearby.</p>
                                 <Link href="/dashboard/profile">
-                                    <Button variant="outline">Update Location</Button>
+                                    <Button variant="outline" className="border-stone-200 text-stone-900">Update Location</Button>
                                 </Link>
                             </div>
                         ) : (
@@ -253,7 +253,7 @@ export default function BrowsePage() {
                 {/* Mobile FAB */}
                 <div className="fixed bottom-6 right-6 md:hidden z-50">
                     <Link href="/search">
-                        <Button size="lg" className="rounded-full w-14 h-14 shadow-strong bg-primary hover:bg-primary-600 text-white p-0 flex items-center justify-center">
+                        <Button size="lg" className="rounded-full w-14 h-14 shadow-xl bg-stone-900 hover:bg-stone-800 text-white p-0 flex items-center justify-center">
                             <Search size={24} />
                         </Button>
                     </Link>
