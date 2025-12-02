@@ -95,7 +95,7 @@ export const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
 
                     <div className="space-y-4">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-900 flex-shrink-0">
                                 <Calendar size={20} />
                             </div>
                             <div>
@@ -105,7 +105,7 @@ export const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
                         </div>
 
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-700 flex-shrink-0">
                                 <Clock size={20} />
                             </div>
                             <div>
@@ -118,7 +118,7 @@ export const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
 
                         {booking.notes && (
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
                                     <AlertCircle size={20} />
                                 </div>
                                 <div>

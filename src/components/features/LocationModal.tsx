@@ -144,7 +144,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose })
             <div className="space-y-6">
                 <Button
                     variant="outline"
-                    className="w-full h-12 flex items-center justify-center gap-2 text-primary border-primary/20 hover:bg-primary-50"
+                    className="w-full h-12 flex items-center justify-center gap-2 text-stone-900 border-stone-200 hover:bg-stone-100"
                     onClick={handleUseCurrentLocation}
                     disabled={geoLoading || loading}
                 >

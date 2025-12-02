@@ -26,16 +26,16 @@ export default function DashboardLayout({
     const router = useRouter();
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+        return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div></div>;
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50">
+        <div className="min-h-screen bg-stone-50">
             {/* Sidebar */}
-            <aside className="w-72 bg-white border-r border-neutral-100 fixed h-full z-30 hidden md:flex flex-col shadow-soft">
-                <div className="p-8 border-b border-neutral-100">
+            <aside className="w-72 bg-white border-r border-stone-100 fixed h-full z-30 hidden md:flex flex-col shadow-soft">
+                <div className="p-8 border-b border-stone-100">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <span className="text-3xl font-bold text-primary tracking-tight font-display">
+                        <span className="text-3xl font-bold text-stone-900 tracking-tight font-display">
                             CareConnect
                         </span>
                     </Link>
@@ -50,19 +50,19 @@ export default function DashboardLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 font-medium ${isActive
-                                    ? 'bg-primary/10 text-neutral-900'
-                                    : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                                    ? 'bg-stone-100 text-stone-900'
+                                    : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
                                     }`}
                             >
-                                <Icon size={20} className={isActive ? 'text-primary' : 'text-neutral-400'} />
+                                <Icon size={20} className={isActive ? 'text-stone-900' : 'text-stone-400'} />
                                 {item.label}
                             </Link>
                         );
                     })}
                 </nav>
 
-                <div className="p-6 border-t border-neutral-100">
-                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-50 border border-neutral-100">
+                <div className="p-6 border-t border-stone-100">
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-stone-50 border border-stone-100">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
                             <Image
                                 src={user?.profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
@@ -72,10 +72,10 @@ export default function DashboardLayout({
                             />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-neutral-900 truncate">
+                            <p className="text-sm font-bold text-stone-900 truncate">
                                 {user?.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'Loading...'}
                             </p>
-                            <p className="text-xs text-neutral-500 truncate capitalize">
+                            <p className="text-xs text-stone-500 truncate capitalize">
                                 {user?.role || '...'}
                             </p>
                         </div>

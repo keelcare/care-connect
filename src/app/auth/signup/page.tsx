@@ -43,22 +43,22 @@ export default function SignupPage() {
     // Theme Configuration
     const themes = {
         family: {
-            gradient: "from-indigo-50 via-white to-teal-50",
-            accent: "text-primary", // Teal
-            button: "bg-primary hover:bg-primary-600",
-            border: "border-primary",
-            bgSoft: "bg-teal-50",
+            gradient: "from-stone-50 via-white to-stone-100",
+            accent: "text-stone-900",
+            button: "bg-stone-900 hover:bg-stone-800",
+            border: "border-stone-900",
+            bgSoft: "bg-stone-50",
             title: (
                 <>
                     Find Trusted <br />
-                    <span className="text-primary">Caregivers</span>
+                    <span className="text-stone-900">Caregivers</span>
                 </>
             ),
             description: "Connect with verified professionals who treat your family like their own.",
             icons: [
                 { Icon: Sun, color: "text-yellow-400 fill-yellow-400", delay: "0s", pos: "top-[15%] left-[10%]" },
-                { Icon: Heart, color: "text-secondary fill-secondary", delay: "1s", pos: "top-[20%] right-[15%]" },
-                { Icon: Shield, color: "text-primary fill-primary/20", delay: "2s", pos: "bottom-[20%] left-[15%]" },
+                { Icon: Heart, color: "text-rose-400 fill-rose-400", delay: "1s", pos: "top-[20%] right-[15%]" },
+                { Icon: Shield, color: "text-stone-600 fill-stone-200", delay: "2s", pos: "bottom-[20%] left-[15%]" },
             ],
             
         },
@@ -272,7 +272,7 @@ export default function SignupPage() {
                             size="lg" 
                             isLoading={isLoading} 
                             disabled={!formData.agreeToTerms} 
-                            className={`w-full rounded-full text-black shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium ${currentTheme.button}`}
+                            className={`w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium ${currentTheme.button}`}
                         >
                             Create Account
                         </Button>

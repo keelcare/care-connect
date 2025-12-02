@@ -103,7 +103,7 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({ onDataLo
                     </p>
                 </div>
                 <Link href="/search" className="hidden lg:block">
-                    <Button variant="ghost" className="text-primary hover:text-primary-600 hover:bg-primary-50">
+                    <Button variant="ghost" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100">
                         View All <ArrowRight size={16} className="ml-2" />
                     </Button>
                 </Link>

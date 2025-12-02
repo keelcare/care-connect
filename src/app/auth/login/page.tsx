@@ -52,7 +52,7 @@ export default function LoginPage() {
 
                     <div className="mb-10">
                         <Link href="/" className="inline-block mb-8">
-                            <span className="text-2xl font-bold text-primary tracking-tight font-display">
+                            <span className="text-2xl font-bold text-stone-900 tracking-tight font-display">
                                 CareConnect
                             </span>
                         </Link>
@@ -68,7 +68,7 @@ export default function LoginPage() {
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
-                            className="bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary h-12"
+                            className="bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-stone-200 focus:border-stone-400 h-12"
                         />
 
                         <div className="space-y-2">
@@ -79,7 +79,7 @@ export default function LoginPage() {
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 required
-                                className="bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary h-12"
+                                className="bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-stone-200 focus:border-stone-400 h-12"
                             />
                             <div className="flex justify-end">
                                 <Link href="/auth/forgot-password" className="text-sm font-medium text-neutral-500 hover:text-neutral-800 transition-colors">

@@ -43,11 +43,11 @@ export default function AdminBookingsPage() {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case 'CONFIRMED': return 'bg-primary-100 text-primary-700';
-            case 'IN_PROGRESS': return 'bg-purple-100 text-purple-700';
-            case 'COMPLETED': return 'bg-green-100 text-green-700';
+            case 'CONFIRMED': return 'bg-emerald-100 text-emerald-700';
+            case 'IN_PROGRESS': return 'bg-stone-100 text-stone-700';
+            case 'COMPLETED': return 'bg-emerald-100 text-emerald-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
-            default: return 'bg-neutral-100 text-neutral-700';
+            default: return 'bg-stone-100 text-stone-700';
         }
     };
 
