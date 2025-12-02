@@ -7,11 +7,13 @@ import { api } from '@/lib/api';
 import { Booking, Review } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { MessageCircle, Calendar, Clock, MapPin, User, Star } from 'lucide-react';
+import { MessageCircle, Calendar, Clock, MapPin, User, Star, Navigation } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Modal } from '@/components/ui/Modal';
+import { CancellationModal } from '@/components/ui/CancellationModal';
 import { ReviewForm } from '@/components/features/ReviewForm';
 import { ReviewCard } from '@/components/features/ReviewCard';
+import { LiveLocationTracker } from '@/components/location/LiveLocationTracker';
 import styles from './page.module.css';
 
 export default function BookingDetailsPage() {
@@ -26,6 +28,7 @@ export default function BookingDetailsPage() {
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
     useEffect(() => {
         if (bookingId) {
@@ -81,10 +84,8 @@ export default function BookingDetailsPage() {
         }
     };
 
-    const handleCancelBooking = async () => {
+    const handleCancelBooking = async (reason: string) => {
         if (!booking) return;
-        const reason = prompt('Please provide a reason for cancellation:');
-        if (!reason) return;
 
         try {
             setActionLoading(true);
@@ -93,6 +94,7 @@ export default function BookingDetailsPage() {
         } catch (err) {
             console.error('Failed to cancel booking:', err);
             alert(err instanceof Error ? err.message : 'Failed to cancel booking');
+            throw err; // Re-throw so the modal knows it failed
         } finally {
             setActionLoading(false);
         }
@@ -270,7 +272,7 @@ export default function BookingDetailsPage() {
                                 )}
 
                                 {(booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') && (
-                                    <Button variant="outline" className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300" onClick={handleCancelBooking}>
+                                    <Button variant="outline" className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300" onClick={() => setIsCancelModalOpen(true)}>
                                         Cancel Booking
                                     </Button>
                                 )}
@@ -293,6 +295,17 @@ export default function BookingDetailsPage() {
                             <h3 className="text-xl font-bold text-neutral-900 mb-6">Your Review</h3>
                             <ReviewCard review={review} />
                         </div>
+                    )}
+
+                    {/* Live Location Tracker - Only for parents during active bookings */}
+                    {user?.role === 'parent' && (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') && (
+                        <LiveLocationTracker
+                            bookingId={bookingId}
+                            bookingStatus={booking.status}
+                            nannyName={getOtherPartyName()}
+                            destinationLat={booking.job?.location_lat ? parseFloat(booking.job.location_lat) : undefined}
+                            destinationLng={booking.job?.location_lng ? parseFloat(booking.job.location_lng) : undefined}
+                        />
                     )}
                 </div>
 
@@ -368,6 +381,15 @@ export default function BookingDetailsPage() {
                     onCancel={() => setIsReviewModalOpen(false)}
                 />
             </Modal>
+
+            <CancellationModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                onConfirm={handleCancelBooking}
+                type="booking"
+                startTime={booking.start_time}
+                title="Cancel Booking"
+            />
         </div>
     );
 }

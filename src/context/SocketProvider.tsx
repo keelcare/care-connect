@@ -5,6 +5,16 @@ import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { Message } from '@/types/api';
 
+interface GeofenceAlertData {
+    bookingId: string;
+    nannyName: string;
+    message: string;
+    distance: number;
+    radius: number;
+    timestamp: string;
+    type: 'left_geofence' | 'returned_geofence' | 'approaching';
+}
+
 interface SocketContextType {
     socket: Socket | null;
     connected: boolean;
@@ -17,6 +27,11 @@ interface SocketContextType {
     onTyping: (callback: (data: { userId: string; isTyping: boolean }) => void) => void;
     offNewMessage: (callback: (message: Message) => void) => void;
     offTyping: (callback: (data: { userId: string; isTyping: boolean }) => void) => void;
+    // Geofence events
+    onGeofenceAlert: (callback: (data: GeofenceAlertData) => void) => void;
+    offGeofenceAlert: (callback: (data: GeofenceAlertData) => void) => void;
+    subscribeToGeofence: (bookingId: string) => void;
+    unsubscribeFromGeofence: (bookingId: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -140,6 +155,33 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         }
     }, [socket]);
 
+    // Geofence event handlers
+    const onGeofenceAlert = useCallback((callback: (data: GeofenceAlertData) => void) => {
+        if (socket) {
+            socket.on('geofence:alert', callback);
+        }
+    }, [socket]);
+
+    const offGeofenceAlert = useCallback((callback: (data: GeofenceAlertData) => void) => {
+        if (socket) {
+            socket.off('geofence:alert', callback);
+        }
+    }, [socket]);
+
+    const subscribeToGeofence = useCallback((bookingId: string) => {
+        if (socket && connected) {
+            console.log('Subscribing to geofence alerts for booking:', bookingId);
+            socket.emit('geofence:subscribe', { bookingId });
+        }
+    }, [socket, connected]);
+
+    const unsubscribeFromGeofence = useCallback((bookingId: string) => {
+        if (socket && connected) {
+            console.log('Unsubscribing from geofence alerts for booking:', bookingId);
+            socket.emit('geofence:unsubscribe', { bookingId });
+        }
+    }, [socket, connected]);
+
     return (
         <SocketContext.Provider
             value={{
@@ -153,7 +195,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
                 onNewMessage,
                 onTyping,
                 offNewMessage,
-                offTyping
+                offTyping,
+                onGeofenceAlert,
+                offGeofenceAlert,
+                subscribeToGeofence,
+                unsubscribeFromGeofence,
             }}
         >
             {children}

@@ -179,6 +179,7 @@ export interface ServiceRequest {
         lng: number;
     };
     total_amount?: number;
+    cancellation_reason?: string;
     created_at: string;
     updated_at: string;
     parent?: User;
@@ -213,6 +214,8 @@ export interface Booking {
     end_time?: string;
     notes?: string;
     cancellation_reason?: string;
+    cancellation_fee?: number;
+    cancellation_fee_status?: 'pending' | 'paid' | 'waived';
     created_at: string;
     updated_at: string;
     job?: Job;

@@ -158,7 +158,7 @@ export const api = {
         create: (body: CreateServiceRequestDto) => fetchApi<ServiceRequest>('/requests', { method: 'POST', body: JSON.stringify(body) }),
         get: (id: string) => fetchApi<ServiceRequest>(`/requests/${id}`),
         getParentRequests: () => fetchApi<ServiceRequest[]>('/requests/parent/me'),
-        cancel: (id: string) => fetchApi<ServiceRequest>(`/requests/${id}/cancel`, { method: 'PUT' }),
+        cancel: (id: string, reason?: string) => fetchApi<ServiceRequest>(`/requests/${id}/cancel`, { method: 'PUT', body: reason ? JSON.stringify({ reason }) : undefined }),
         getMatches: (id: string) => fetchApi<User[]>(`/requests/${id}/matches`),
     },
     bookings: {

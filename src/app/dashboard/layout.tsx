@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList, CalendarOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
 
 export default function DashboardLayout({
     children,
@@ -90,6 +91,9 @@ export default function DashboardLayout({
                     {children}
                 </div>
             </main>
+
+            {/* Geofence Alert Banner - Shows for parents when nanny leaves designated area */}
+            <GeofenceAlertBanner position="top" autoDismiss={true} autoDismissTimeout={15000} />
 
             {/* Mobile Bottom Nav Placeholder - In a real app this would be a separate component visible only on mobile */}
         </div>

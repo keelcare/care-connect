@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronLeft, Calendar, Clock, MapPin, Users, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProfileCard } from '@/components/features/ProfileCard';
+import { CancellationModal } from '@/components/ui/CancellationModal';
 import { api } from '@/lib/api';
 import { ServiceRequest, User } from '@/types/api';
 import styles from './page.module.css';
@@ -18,6 +19,7 @@ export default function RequestDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [cancelling, setCancelling] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchRequestDetails = async () => {
@@ -44,18 +46,19 @@ export default function RequestDetailsPage() {
         fetchRequestDetails();
     }, [params.id]);
 
-    const handleCancel = async () => {
-        if (!request || !confirm('Are you sure you want to cancel this request?')) return;
+    const handleCancel = async (reason: string) => {
+        if (!request) return;
 
         try {
             setCancelling(true);
-            await api.requests.cancel(request.id);
+            await api.requests.cancel(request.id, reason);
             // Refresh data
             const updated = await api.requests.get(request.id);
             setRequest(updated);
         } catch (err) {
             console.error(err);
             alert('Failed to cancel request');
+            throw err; // Re-throw so the modal knows it failed
         } finally {
             setCancelling(false);
         }
@@ -168,6 +171,13 @@ export default function RequestDetailsPage() {
                                 <p className="text-neutral-900 bg-neutral-50 p-4 rounded-xl">{request.special_requirements}</p>
                             </div>
                         )}
+
+                        {request.cancellation_reason && (
+                            <div className="mt-8 pt-8 border-t border-neutral-100">
+                                <label className="block text-sm font-medium text-red-600 mb-2">Cancellation Reason</label>
+                                <p className="text-neutral-900 bg-red-50 p-4 rounded-xl border border-red-100">{request.cancellation_reason}</p>
+                            </div>
+                        )}
                     </div>
 
                     {assignedNanny && (
@@ -197,7 +207,7 @@ export default function RequestDetailsPage() {
                                 <Button
                                     variant="outline"
                                     className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 rounded-xl"
-                                    onClick={handleCancel}
+                                    onClick={() => setIsCancelModalOpen(true)}
                                     isLoading={cancelling}
                                 >
                                     Cancel Request
@@ -217,6 +227,15 @@ export default function RequestDetailsPage() {
                     </div>
                 </div>
             </div>
+
+            <CancellationModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                onConfirm={handleCancel}
+                type="request"
+                startTime={`${request.date}T${request.start_time}`}
+                title="Cancel Service Request"
+            />
         </div>
     );
 }
