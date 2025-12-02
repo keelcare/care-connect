@@ -57,7 +57,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
                             href={item.href}
                             className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${
                                 isActive
-                                    ? 'bg-stone-900 text-white'
+                                    ? 'bg-emerald-600 text-white'
                                     : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                             } ${isCollapsed ? 'justify-center' : ''}`}
                             title={isCollapsed ? item.label : undefined}

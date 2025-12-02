@@ -217,7 +217,7 @@ export const Header: React.FC = () => {
                                 </Button>
                             </Link>
                             <Link href="/auth/signup">
-                                <Button className="rounded-xl px-6 shadow-md hover:shadow-lg transition-all bg-stone-900 hover:bg-stone-800 text-white">
+                                <Button className="rounded-xl px-6 shadow-md hover:shadow-lg transition-all bg-emerald-600 hover:bg-emerald-700 text-white">
                                     Sign Up
                                 </Button>
                             </Link>
@@ -300,7 +300,7 @@ export const Header: React.FC = () => {
                                         <Button variant="outline" className="w-full rounded-xl border-stone-200">Log In</Button>
                                     </Link>
                                     <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-                                        <Button className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 text-white">Sign Up</Button>
+                                        <Button className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">Sign Up</Button>
                                     </Link>
                                 </div>
                             )}

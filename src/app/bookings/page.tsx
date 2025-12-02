@@ -131,7 +131,7 @@ export default function ParentBookingsPage() {
                     key="review"
                     size="sm"
                     onClick={() => handleOpenReview(booking.id)}
-                    className="rounded-xl bg-stone-900 hover:bg-stone-800"
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
                 >
                     Leave Review
                 </Button>
@@ -157,7 +157,7 @@ export default function ParentBookingsPage() {
                         <p className="text-stone-500 mt-1">Manage your appointments and requests</p>
                     </div>
                     <Link href="/dashboard/requests/create">
-                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all bg-stone-900 hover:bg-stone-800">
+                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all bg-emerald-600 hover:bg-emerald-700">
                             <Plus size={18} className="mr-2" /> New Request
                         </Button>
                     </Link>
@@ -170,28 +170,28 @@ export default function ParentBookingsPage() {
                         onClick={() => setActiveTab('requests')}
                     >
                         Requests
-                        {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                        {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                     </button>
                     <button
                         className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                         onClick={() => setActiveTab('upcoming')}
                     >
                         Upcoming
-                        {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                        {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                     </button>
                     <button
                         className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                         onClick={() => setActiveTab('completed')}
                     >
                         Completed
-                        {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                        {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                     </button>
                     <button
                         className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                         onClick={() => setActiveTab('cancelled')}
                     >
                         Cancelled
-                        {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                        {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                     </button>
                 </div>
 
@@ -203,7 +203,7 @@ export default function ParentBookingsPage() {
                 ) : error ? (
                     <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
                         <p className="text-red-600 mb-4">{error}</p>
-                        <Button onClick={fetchData} className="bg-stone-900 hover:bg-stone-800">Retry</Button>
+                        <Button onClick={fetchData} className="bg-emerald-600 hover:bg-emerald-700">Retry</Button>
                     </div>
                 ) : activeTab === 'requests' ? (
                     <div className="space-y-6">
@@ -215,7 +215,7 @@ export default function ParentBookingsPage() {
                                 <h3 className="text-xl font-bold text-stone-900 mb-2">No Requests Yet</h3>
                                 <p className="text-stone-500 mb-6 max-w-md mx-auto">You haven't created any service requests yet.</p>
                                 <Link href="/dashboard/requests/create">
-                                    <Button className="rounded-xl bg-stone-900 hover:bg-stone-800">
+                                    <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700">
                                         Create Your First Request
                                     </Button>
                                 </Link>
@@ -271,7 +271,7 @@ export default function ParentBookingsPage() {
                             <p className="text-stone-500 mb-6">No {activeTab} bookings found.</p>
                             <Button
                                 onClick={() => window.location.href = '/search'}
-                                className="rounded-xl bg-stone-900 hover:bg-stone-800"
+                                className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
                             >
                                 Find Care
                             </Button>

@@ -144,7 +144,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                                     type="button"
                                     onClick={() => handleDateSelect(date)}
                                     className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${isSelected
-                                        ? 'bg-stone-900 shadow-md text-white'
+                                        ? 'bg-emerald-600 shadow-md text-white'
                                         : 'hover:bg-white hover:shadow-sm text-stone-600'
                                         }`}
                                 >
@@ -173,7 +173,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                                 type="button"
                                 onClick={() => handleTimeSelect(time)}
                                 className={`py-2 px-3 rounded-xl text-sm font-medium border transition-all ${isSelected
-                                    ? 'bg-stone-900 text-white border-stone-900 shadow-md'
+                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
                                     : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400'
                                     }`}
                             >
@@ -250,7 +250,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <Button
                     type="submit"
                     disabled={loading || !formData.date || !formData.startTime || !formData.duration}
-                    className="w-full h-12 text-lg rounded-xl bg-stone-900 hover:bg-stone-800 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
+                    className="w-full h-12 text-lg rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
                 >
                     {loading ? 'Processing...' : 'Confirm Booking'}
                 </Button>

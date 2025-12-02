@@ -86,7 +86,7 @@ export const FeaturedServices: React.FC = () => {
                                 {/* Card Content */}
                                 <div className="p-6">
                                     {/* Icon */}
-                                    <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-stone-900 transition-colors duration-300">
+                                    <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
                                         <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
                                     </div>
 

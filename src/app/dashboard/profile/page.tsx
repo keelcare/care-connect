@@ -120,7 +120,7 @@ export default function ProfilePage() {
                                 className="w-32 h-32"
                                 ringColor="bg-white"
                             />
-                            <div className="absolute bottom-0 right-0 bg-stone-900 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
+                            <div className="absolute bottom-0 right-0 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
                                 {user.role}
                             </div>
                         </div>

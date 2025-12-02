@@ -97,7 +97,7 @@ export default function AboutPage() {
 
                             <div className="flex flex-wrap gap-4">
                                 <Link href="/browse">
-                                    <Button className="h-12 px-6 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold group">
+                                    <Button className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
                                         Find Caregivers
                                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
@@ -188,7 +188,7 @@ export default function AboutPage() {
                             <ul className="space-y-3 pt-4">
                                 {["Background-verified caregivers", "Transparent reviews and ratings", "Secure messaging and payments", "24/7 customer support"].map((item, index) => (
                                     <li key={index} className="flex items-center gap-3">
-                                        <div className="w-5 h-5 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
+                                        <div className="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
                                             <Check className="w-3 h-3 text-white" />
                                         </div>
                                         <span className="text-stone-700">{item}</span>
@@ -218,7 +218,7 @@ export default function AboutPage() {
                                     key={index}
                                     className="group bg-white rounded-2xl p-6 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 hover:-translate-y-1 border border-stone-100"
                                 >
-                                    <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-stone-900 transition-colors duration-300">
+                                    <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
                                         <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
                                     </div>
                                     <h3 className="text-xl font-bold text-stone-900 mb-2">{value.title}</h3>

@@ -45,7 +45,7 @@ export default function SignupPage() {
         family: {
             gradient: "from-stone-50 via-white to-stone-100",
             accent: "text-stone-900",
-            button: "bg-stone-900 hover:bg-stone-800",
+            button: "bg-emerald-600 hover:bg-emerald-700",
             border: "border-stone-900",
             bgSoft: "bg-stone-50",
             title: (

@@ -101,7 +101,7 @@ export default function DirectBookingPage() {
             <ParentLayout>
                 <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50">
                     <h2 className="text-xl font-bold text-stone-900">Nanny not found</h2>
-                    <Button onClick={() => router.push('/browse')} className="mt-4 bg-stone-900 hover:bg-stone-800 rounded-xl">
+                    <Button onClick={() => router.push('/browse')} className="mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-xl">
                         Browse Caregivers
                     </Button>
                 </div>

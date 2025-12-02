@@ -344,7 +344,7 @@ export default function SearchPage() {
                                     onClick={() => setIsNearby(!isNearby)}
                                     className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${
                                         isNearby 
-                                            ? 'bg-stone-900 hover:bg-stone-800 text-white' 
+                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
                                             : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
                                     }`}
                                 >
@@ -357,7 +357,7 @@ export default function SearchPage() {
                                     onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
                                     className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${
                                         isDesktopFilterOpen 
-                                            ? 'bg-stone-900 hover:bg-stone-800 text-white' 
+                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
                                             : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
                                     }`}
                                 >
@@ -452,7 +452,7 @@ export default function SearchPage() {
                                         setNannies(MOCK_NANNIES);
                                         setFilteredNannies(MOCK_NANNIES);
                                     }} 
-                                    className="rounded-xl bg-stone-900 hover:bg-stone-800 text-white px-6"
+                                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-6"
                                 >
                                     Load Demo Data
                                 </Button>
@@ -487,7 +487,7 @@ export default function SearchPage() {
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
-                                <button className="w-10 h-10 rounded-lg bg-stone-900 text-white font-medium">
+                                <button className="w-10 h-10 rounded-lg bg-emerald-600 text-white font-medium">
                                     1
                                 </button>
                                 <button className="p-2 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors">
@@ -514,7 +514,7 @@ export default function SearchPage() {
                             </Button>
                             <Button 
                                 onClick={() => setIsFilterOpen(false)} 
-                                className="flex-1 rounded-xl bg-stone-900 hover:bg-stone-800 text-white"
+                                className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                             >
                                 Apply Filters
                             </Button>

@@ -183,7 +183,7 @@ export default function ParentSettingsPage() {
                             </Button>
                             <Button 
                                 type="submit" 
-                                className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all bg-stone-900 hover:bg-stone-800 disabled:opacity-50" 
+                                className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50" 
                                 disabled={saving}
                             >
                                 {saving ? 'Saving...' : 'Save Changes'}

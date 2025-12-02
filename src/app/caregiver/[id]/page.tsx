@@ -227,21 +227,21 @@ export default function CaregiverProfilePage() {
                             onClick={() => setActiveTab('about')}
                         >
                             About
-                            {activeTab === 'about' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                            {activeTab === 'about' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                         </button>
                         <button
                             className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'reviews' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                             onClick={() => setActiveTab('reviews')}
                         >
                             Reviews
-                            {activeTab === 'reviews' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                            {activeTab === 'reviews' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                         </button>
                         <button
                             className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'availability' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                             onClick={() => setActiveTab('availability')}
                         >
                             Availability
-                            {activeTab === 'availability' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                            {activeTab === 'availability' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                         </button>
                     </div>
 
@@ -322,7 +322,7 @@ export default function CaregiverProfilePage() {
                                 <>
                                     <Button
                                         size="lg"
-                                        className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                        className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                                         onClick={() => router.push(`/book/${caregiver.id}`)}
                                     >
                                         Request Booking
@@ -342,7 +342,7 @@ export default function CaregiverProfilePage() {
                                     <Link href="/auth/signup" className="w-full">
                                         <Button
                                             size="lg"
-                                            className="w-full rounded-xl bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                                            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                                         >
                                             Sign up to Book
                                         </Button>

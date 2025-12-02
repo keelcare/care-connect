@@ -190,7 +190,7 @@ export default function BrowsePage() {
                                 {/* CTA Buttons */}
                                 <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                                     <Link href="/search">
-                                        <Button className="h-12 px-8 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold shadow-xl shadow-stone-900/30 hover:shadow-2xl hover:shadow-stone-900/40 hover:-translate-y-0.5 transition-all duration-300 group">
+                                        <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300 group">
                                             <Search className="w-5 h-5 mr-2" />
                                             Start Searching
                                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -304,7 +304,7 @@ export default function BrowsePage() {
                                         Update Location
                                     </Button>
                                     <Link href="/search">
-                                        <Button className="rounded-xl bg-stone-900 hover:bg-stone-800 text-white">
+                                        <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
                                             Browse All
                                         </Button>
                                     </Link>
@@ -336,7 +336,7 @@ export default function BrowsePage() {
                 {/* Mobile FAB */}
                 <div className="fixed bottom-6 right-6 md:hidden z-50">
                     <Link href="/search">
-                        <Button className="rounded-full w-14 h-14 shadow-xl bg-stone-900 hover:bg-stone-800 text-white p-0 flex items-center justify-center">
+                        <Button className="rounded-full w-14 h-14 shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white p-0 flex items-center justify-center">
                             <Search size={24} />
                         </Button>
                     </Link>

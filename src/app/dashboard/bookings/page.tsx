@@ -296,28 +296,28 @@ export default function BookingsPage() {
                     onClick={() => setActiveTab('requests')}
                 >
                     Requests
-                    {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                    {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                 </button>
                 <button
                     className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('upcoming')}
                 >
                     Upcoming
-                    {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                    {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                 </button>
                 <button
                     className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('completed')}
                 >
                     Completed
-                    {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                    {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                 </button>
                 <button
                     className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('cancelled')}
                 >
                     Cancelled
-                    {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
+                    {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
                 </button>
             </div>
 
@@ -387,7 +387,7 @@ export default function BookingsPage() {
                                                             Reject
                                                         </Button>
                                                         <Button
-                                                            className="w-full bg-stone-900 hover:bg-stone-800 text-white"
+                                                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                                                             onClick={() => handleAcceptAssignment(assignment.id)}
                                                             disabled={actionLoading === assignment.id}
                                                         >

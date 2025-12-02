@@ -115,7 +115,7 @@ export default function HowItWorksPage() {
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup">
-                            <Button className="h-12 px-6 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold group">
+                            <Button className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
                                 Get Started Free
                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                             </Button>
@@ -153,7 +153,7 @@ export default function HowItWorksPage() {
                                     <div className={`space-y-4 ${isEven ? 'lg:order-2' : ''}`}>
                                         <div className="flex items-center gap-4">
                                             <span className="text-6xl font-bold text-stone-200">{step.step}</span>
-                                            <div className="w-14 h-14 rounded-xl bg-stone-900 flex items-center justify-center">
+                                            <div className="w-14 h-14 rounded-xl bg-emerald-600 flex items-center justify-center">
                                                 <IconComponent className="w-7 h-7 text-white" />
                                             </div>
                                         </div>
@@ -214,7 +214,7 @@ export default function HowItWorksPage() {
                                         {String(index + 1).padStart(2, '0')}
                                     </span>
 
-                                    <div className="w-14 h-14 rounded-xl bg-stone-200 flex items-center justify-center mb-4 group-hover:bg-stone-900 transition-colors duration-300">
+                                    <div className="w-14 h-14 rounded-xl bg-stone-200 flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
                                         <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
                                     </div>
                                     <h3 className="text-xl font-bold text-stone-900 mb-2">{step.title}</h3>
@@ -226,7 +226,7 @@ export default function HowItWorksPage() {
 
                     <div className="text-center mt-12">
                         <Link href="/auth/signup?role=caregiver">
-                            <Button className="h-12 px-8 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold group">
+                            <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
                                 Apply as Caregiver
                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                             </Button>
@@ -336,7 +336,7 @@ export default function HowItWorksPage() {
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <Link href="/auth/signup">
-                                    <Button className="h-12 px-8 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold group">
+                                    <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
                                         Create Free Account
                                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
