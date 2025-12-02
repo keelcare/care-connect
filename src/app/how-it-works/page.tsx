@@ -3,8 +3,340 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, UserCheck, Calendar, MessageSquare, Shield, Star, ArrowRight, Check, CreditCard, Bell } from 'lucide-react';
+import { Search, UserCheck, Calendar, MessageSquare, Shield, Star, ArrowRight, Check, CreditCard, Bell, Heart, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/Input';
+import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/Checkbox';
+
+// Step 1 Animation: Profile Creation - Using Input, Avatar, Badge, Checkbox
+const ProfileCreationAnimation = () => (
+    <div className="relative w-full h-full flex items-center justify-center">
+        <style jsx>{`
+            @keyframes fadeInUp {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes pulse-ring {
+                0% { transform: scale(0.95); opacity: 0.5; }
+                50% { transform: scale(1.05); opacity: 0.3; }
+                100% { transform: scale(0.95); opacity: 0.5; }
+            }
+            @keyframes check-appear {
+                0% { transform: scale(0); opacity: 0; }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes typeText {
+                0% { width: 0; }
+                100% { width: 100%; }
+            }
+            .profile-card { animation: fadeInUp 0.6s ease-out forwards; }
+            .field-1 { animation: fadeInUp 0.5s ease-out 0.3s forwards; opacity: 0; }
+            .field-2 { animation: fadeInUp 0.5s ease-out 0.5s forwards; opacity: 0; }
+            .field-3 { animation: fadeInUp 0.5s ease-out 0.7s forwards; opacity: 0; }
+            .field-4 { animation: fadeInUp 0.5s ease-out 0.9s forwards; opacity: 0; }
+            .avatar-ring { animation: pulse-ring 2s ease-in-out infinite; }
+            .check-badge { animation: check-appear 0.4s ease-out 1.2s forwards; opacity: 0; }
+            .typing-text { animation: typeText 1s ease-out 0.5s forwards; overflow: hidden; white-space: nowrap; width: 0; }
+        `}</style>
+        
+        <div className="profile-card bg-white rounded-2xl shadow-xl p-5 w-72 border border-stone-100">
+            {/* Avatar Section */}
+            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-stone-100">
+                <div className="relative">
+                    <div className="avatar-ring absolute inset-0 rounded-full bg-emerald-200 scale-110"></div>
+                    <Avatar size="lg" fallback="JD" ringColor="bg-emerald-200" />
+                    <div className="check-badge absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                        <Check className="w-3 h-3 text-white" />
+                    </div>
+                </div>
+                <div>
+                    <div className="text-sm font-semibold text-stone-800">Jane Doe</div>
+                    <div className="text-xs text-stone-500">Parent Account</div>
+                </div>
+            </div>
+            
+            {/* Form Fields */}
+            <div className="space-y-3">
+                <div className="field-1">
+                    <Input 
+                        placeholder="Enter your name"
+                        value="Jane Doe"
+                        className="h-9 text-sm bg-stone-50 border-stone-200 rounded-lg"
+                        readOnly
+                    />
+                </div>
+                <div className="field-2">
+                    <Input 
+                        placeholder="Your location"
+                        value="Mumbai, India"
+                        className="h-9 text-sm bg-stone-50 border-stone-200 rounded-lg"
+                        leftIcon={<MapPin size={14} />}
+                        readOnly
+                    />
+                </div>
+                <div className="field-3 flex gap-2 flex-wrap">
+                    <Badge variant="success" className="text-xs px-2 py-0.5">Childcare</Badge>
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5">Elderly Care</Badge>
+                    <Badge className="text-xs px-2 py-0.5">Pet Care</Badge>
+                </div>
+                <div className="field-4 pt-1">
+                    <Checkbox label={<span className="text-xs text-stone-600">I agree to the Terms of Service</span>} checked readOnly />
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+// Step 2 Animation: Browse & Search - Using SearchInput, Card, Avatar, Badge
+const BrowseSearchAnimation = () => (
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+        <style jsx>{`
+            @keyframes slideIn {
+                0% { opacity: 0; transform: translateX(-30px); }
+                100% { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes cardFloat {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-6px); }
+            }
+            @keyframes searchPulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+                50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            }
+            @keyframes heartBeat {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+            }
+            .search-bar { animation: slideIn 0.5s ease-out forwards; }
+            .card-1 { animation: slideIn 0.5s ease-out 0.3s forwards, cardFloat 3s ease-in-out 1s infinite; opacity: 0; }
+            .card-2 { animation: slideIn 0.5s ease-out 0.5s forwards, cardFloat 3s ease-in-out 1.5s infinite; opacity: 0; }
+            .card-3 { animation: slideIn 0.5s ease-out 0.7s forwards, cardFloat 3s ease-in-out 2s infinite; opacity: 0; }
+            .search-icon { animation: searchPulse 2s ease-in-out infinite; }
+            .heart-icon { animation: heartBeat 1s ease-in-out infinite; }
+        `}</style>
+        
+        <div className="w-72">
+            {/* Search Bar using Input component */}
+            <div className="search-bar mb-4">
+                <Input 
+                    placeholder="Search caregivers..."
+                    value="Childcare in Mumbai"
+                    className="h-11 bg-white shadow-lg border-stone-100 rounded-xl text-sm"
+                    leftIcon={<div className="search-icon"><Search size={18} className="text-emerald-500" /></div>}
+                    readOnly
+                />
+            </div>
+            
+            {/* Mini Profile Cards */}
+            <div className="space-y-2">
+                {[
+                    { initials: 'PM', name: 'Priya M.', rate: '₹250/hr', rating: '4.9', color: 'bg-gradient-to-br from-violet-400 to-purple-500', fav: true },
+                    { initials: 'RK', name: 'Rahul K.', rate: '₹200/hr', rating: '4.8', color: 'bg-gradient-to-br from-orange-400 to-rose-500', fav: false },
+                    { initials: 'AS', name: 'Anita S.', rate: '₹300/hr', rating: '5.0', color: 'bg-gradient-to-br from-cyan-400 to-blue-500', fav: false }
+                ].map((caregiver, i) => (
+                    <Card key={i} className={`card-${i+1} p-0 border-stone-100 shadow-md hover:shadow-lg transition-shadow`}>
+                        <CardContent className="p-3 flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full ${caregiver.color} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
+                                {caregiver.initials}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium text-stone-800 truncate">{caregiver.name}</div>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-0.5">
+                                        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                                        <span className="text-xs text-stone-500">{caregiver.rating}</span>
+                                    </div>
+                                    <Badge variant="verified" className="text-[10px] px-1.5 py-0">{caregiver.rate}</Badge>
+                                </div>
+                            </div>
+                            <Heart className={`w-5 h-5 shrink-0 ${caregiver.fav ? 'heart-icon text-rose-500 fill-rose-500' : 'text-stone-300'}`} />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+// Step 3 Animation: Messaging - Using Avatar, Card, Button
+const MessagingAnimation = () => (
+    <div className="relative w-full h-full flex items-center justify-center">
+        <style jsx>{`
+            @keyframes messageFadeIn {
+                0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes typing {
+                0%, 60%, 100% { opacity: 0.3; }
+                30% { opacity: 1; }
+            }
+            @keyframes onlinePulse {
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.5; transform: scale(1.1); }
+            }
+            .msg-1 { animation: messageFadeIn 0.4s ease-out forwards; }
+            .msg-2 { animation: messageFadeIn 0.4s ease-out 0.6s forwards; opacity: 0; }
+            .msg-3 { animation: messageFadeIn 0.4s ease-out 1.2s forwards; opacity: 0; }
+            .msg-4 { animation: messageFadeIn 0.4s ease-out 1.8s forwards; opacity: 0; }
+            .typing-dot { animation: typing 1.4s ease-in-out infinite; }
+            .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+            .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+            .online-dot { animation: onlinePulse 2s ease-in-out infinite; }
+        `}</style>
+        
+        <Card className="w-72 p-0 overflow-hidden border-stone-100 shadow-xl">
+            {/* Chat Header */}
+            <div className="bg-stone-50 px-4 py-3 flex items-center justify-between border-b border-stone-100">
+                <div className="flex items-center gap-3">
+                    <Avatar size="sm" fallback="SP" ringColor="bg-emerald-200" />
+                    <div>
+                        <div className="text-sm font-semibold text-stone-800">Sneha Patel</div>
+                        <div className="flex items-center gap-1">
+                            <span className="online-dot w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span className="text-xs text-stone-500">Online</span>
+                        </div>
+                    </div>
+                </div>
+                <Badge variant="verified" className="text-[10px]">Verified</Badge>
+            </div>
+            
+            {/* Messages */}
+            <CardContent className="p-3 space-y-2 h-52 bg-white">
+                <div className="msg-1 flex justify-end">
+                    <div className="bg-emerald-500 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
+                        Hi! Are you available this Saturday?
+                    </div>
+                </div>
+                <div className="msg-2 flex justify-start">
+                    <div className="bg-stone-100 text-stone-800 text-xs px-3 py-2 rounded-2xl rounded-tl-sm max-w-[85%]">
+                        Yes, I&apos;m free from 9 AM! 😊
+                    </div>
+                </div>
+                <div className="msg-3 flex justify-end">
+                    <div className="bg-emerald-500 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
+                        Great! Can you come to Andheri West?
+                    </div>
+                </div>
+                <div className="msg-4 flex justify-start">
+                    <div className="bg-stone-100 text-stone-800 text-xs px-3 py-2 rounded-2xl rounded-tl-sm flex items-center gap-1">
+                        <span className="typing-dot w-1.5 h-1.5 bg-stone-400 rounded-full"></span>
+                        <span className="typing-dot w-1.5 h-1.5 bg-stone-400 rounded-full"></span>
+                        <span className="typing-dot w-1.5 h-1.5 bg-stone-400 rounded-full"></span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+);
+
+// Step 4 Animation: Book & Pay - Using Card, Button, Badge
+const BookPayAnimation = () => (
+    <div className="relative w-full h-full flex items-center justify-center">
+        <style jsx>{`
+            @keyframes calendarFadeIn {
+                0% { opacity: 0; transform: scale(0.9); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+            @keyframes selectDate {
+                0%, 100% { background-color: #10b981; }
+                50% { background-color: #059669; transform: scale(1.1); }
+            }
+            @keyframes confirmSlide {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes checkmarkDraw {
+                0% { stroke-dashoffset: 24; }
+                100% { stroke-dashoffset: 0; }
+            }
+            @keyframes shimmer {
+                0% { background-position: -200% 0; }
+                100% { background-position: 200% 0; }
+            }
+            .calendar { animation: calendarFadeIn 0.5s ease-out forwards; }
+            .date-selected { animation: selectDate 2s ease-in-out infinite; }
+            .confirm-card { animation: confirmSlide 0.5s ease-out 0.8s forwards; opacity: 0; }
+            .checkmark-circle { animation: calendarFadeIn 0.3s ease-out 1.3s forwards; opacity: 0; }
+            .checkmark path { stroke-dasharray: 24; animation: checkmarkDraw 0.4s ease-out 1.5s forwards; stroke-dashoffset: 24; }
+            .pay-btn { animation: confirmSlide 0.5s ease-out 1.8s forwards; opacity: 0; }
+            .shimmer-btn { 
+                background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #10b981 100%);
+                background-size: 200% 100%;
+                animation: shimmer 2s ease-in-out infinite;
+            }
+        `}</style>
+        
+        <div className="w-72">
+            {/* Mini Calendar */}
+            <Card className="calendar p-0 border-stone-100 shadow-xl mb-3">
+                <div className="px-4 py-3 flex items-center justify-between border-b border-stone-100">
+                    <span className="font-semibold text-stone-800 text-sm">December 2024</span>
+                    <Calendar className="w-4 h-4 text-emerald-500" />
+                </div>
+                <CardContent className="p-3">
+                    <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                            <div key={i} className="text-stone-400 py-1 font-medium">{d}</div>
+                        ))}
+                        {[...Array(31)].map((_, i) => (
+                            <div 
+                                key={i} 
+                                className={`py-1 rounded-md transition-all ${
+                                    i === 14 
+                                        ? 'date-selected bg-emerald-500 text-white font-bold shadow-md' 
+                                        : i === 13 || i === 15 
+                                            ? 'bg-emerald-100 text-emerald-700 font-medium' 
+                                            : 'text-stone-600 hover:bg-stone-50'
+                                }`}
+                            >
+                                {i + 1}
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+            
+            {/* Confirmation Card */}
+            <Card className="confirm-card p-0 border-stone-100 shadow-lg">
+                <CardContent className="p-3 flex items-center gap-3">
+                    <div className="checkmark-circle w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                        <svg className="checkmark w-5 h-5" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 13l4 4L19 7" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-stone-800">Booking Confirmed!</div>
+                        <div className="flex items-center gap-1 text-xs text-stone-500">
+                            <Clock size={10} />
+                            <span>Dec 15, 9:00 AM - 1:00 PM</span>
+                        </div>
+                    </div>
+                    <Badge variant="success" className="text-[10px] shrink-0">Paid</Badge>
+                </CardContent>
+            </Card>
+            
+            {/* Pay Button */}
+            <div className="pay-btn mt-3">
+                <Button className="w-full h-10 shimmer-btn text-white rounded-xl text-sm font-semibold gap-2 shadow-lg">
+                    <CreditCard size={16} />
+                    Pay ₹1,000
+                </Button>
+            </div>
+        </div>
+    </div>
+);
+
+// Animation components array
+const stepAnimations = [
+    ProfileCreationAnimation,
+    BrowseSearchAnimation,
+    MessagingAnimation,
+    BookPayAnimation,
+];
 
 export default function HowItWorksPage() {
     const parentSteps = [
@@ -25,9 +357,9 @@ export default function HowItWorksPage() {
         {
             step: "03",
             title: "Message & Interview",
-            description: "Chat directly with caregivers, ask questions, and schedule interviews to find your perfect match.",
+            description: "Chat directly with caregivers, ask questions, and discuss requirements to find your perfect match.",
             icon: MessageSquare,
-            features: ["Secure in-app messaging", "Video call option", "Share documents safely"]
+            features: ["Secure in-app messaging", "Ask questions directly", "Share documents safely"]
         },
         {
             step: "04",
@@ -175,10 +507,8 @@ export default function HowItWorksPage() {
 
                                     {/* Visual */}
                                     <div className={`${isEven ? 'lg:order-1' : ''}`}>
-                                        <div className="relative bg-white rounded-2xl p-8 shadow-lg shadow-stone-200/50 border border-stone-100">
-                                            <div className="aspect-video bg-stone-100 rounded-xl flex items-center justify-center">
-                                                <IconComponent className="w-20 h-20 text-stone-300" />
-                                            </div>
+                                        <div className="relative bg-gradient-to-br from-stone-50 to-stone-100 rounded-2xl p-8 shadow-lg shadow-stone-200/50 border border-stone-100 min-h-[280px]">
+                                            {React.createElement(stepAnimations[index])}
                                         </div>
                                     </div>
                                 </div>
@@ -303,7 +633,7 @@ export default function HowItWorksPage() {
                             },
                             {
                                 question: "Can I interview caregivers before booking?",
-                                answer: "Absolutely! We encourage families to message and video call with caregivers before making any commitments."
+                                answer: "Absolutely! We encourage families to message caregivers and ask questions before making any commitments."
                             },
                             {
                                 question: "What if I'm not satisfied with my caregiver?",
