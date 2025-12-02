@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Clock, ShieldCheck, Calendar, Award } from 'lucide-react';
+import { MapPin, Star, Clock, ShieldCheck, Calendar, Award, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User, Review } from '@/types/api';
@@ -326,6 +326,14 @@ export default function CaregiverProfilePage() {
                                         onClick={() => router.push(`/book/${caregiver.id}`)}
                                     >
                                         Request Booking
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 shadow-lg hover:shadow-xl transition-all h-12 font-medium"
+                                        onClick={() => router.push(`/book-recurring/${caregiver.id}`)}
+                                    >
+                                        <Repeat size={18} className="mr-2" />
+                                        Book Recurring
                                     </Button>
                                     <Button
                                         variant="outline"

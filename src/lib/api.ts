@@ -21,7 +21,12 @@ import {
     Review,
     CreateReviewDto,
     SendNotificationDto,
-    AdminStats
+    AdminStats,
+    RecurringBooking,
+    CreateRecurringBookingDto,
+    UpdateRecurringBookingDto,
+    AvailabilityBlock,
+    CreateAvailabilityBlockDto
 } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -123,5 +128,20 @@ export const api = {
         getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),
         accept: (id: string) => fetchApi<any>(`/assignments/${id}/accept`, { method: 'PUT' }),
         reject: (id: string, reason?: string) => fetchApi<any>(`/assignments/${id}/reject`, { method: 'PUT', body: JSON.stringify({ reason }) }),
+    },
+    recurringBookings: {
+        create: (body: CreateRecurringBookingDto) => 
+            fetchApi<RecurringBooking>('/recurring-bookings', { method: 'POST', body: JSON.stringify(body) }),
+        list: () => fetchApi<RecurringBooking[]>('/recurring-bookings'),
+        get: (id: string) => fetchApi<RecurringBooking>(`/recurring-bookings/${id}`),
+        update: (id: string, body: UpdateRecurringBookingDto) => 
+            fetchApi<RecurringBooking>(`/recurring-bookings/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+        delete: (id: string) => fetchApi<void>(`/recurring-bookings/${id}`, { method: 'DELETE' }),
+    },
+    availability: {
+        list: () => fetchApi<AvailabilityBlock[]>('/availability'),
+        create: (body: CreateAvailabilityBlockDto) => 
+            fetchApi<AvailabilityBlock>('/availability/block', { method: 'POST', body: JSON.stringify(body) }),
+        delete: (id: string) => fetchApi<void>(`/availability/${id}`, { method: 'DELETE' }),
     },
 };

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList, CalendarOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardLayout({
@@ -18,6 +18,7 @@ export default function DashboardLayout({
         { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
         { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
         { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
+        { icon: CalendarOff, label: 'Availability', href: '/dashboard/availability' },
         { icon: User, label: 'Profile', href: '/dashboard/profile' },
         { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
     ];

@@ -300,3 +300,69 @@ export interface AdminStats {
     activeBookings: number;
 }
 
+// Recurring Booking Types
+export type RecurrencePattern = 
+    | 'DAILY'
+    | 'WEEKLY_MON' | 'WEEKLY_TUE' | 'WEEKLY_WED' | 'WEEKLY_THU' | 'WEEKLY_FRI' | 'WEEKLY_SAT' | 'WEEKLY_SUN'
+    | 'WEEKLY_MON_WED_FRI' | 'WEEKLY_TUE_THU'
+    | 'MONTHLY_1' | 'MONTHLY_15' | 'MONTHLY_1_15'
+    | string; // Allow custom patterns like WEEKLY_MON_TUE_WED
+
+export interface RecurringBooking {
+    id: string;
+    parent_id: string;
+    nanny_id: string;
+    recurrence_pattern: RecurrencePattern;
+    start_date: string;
+    end_date?: string;
+    start_time: string;
+    duration_hours: number;
+    num_children: number;
+    children_ages: number[];
+    special_requirements?: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at?: string;
+    parent?: User;
+    nanny?: User;
+    bookings?: Booking[];
+}
+
+export interface CreateRecurringBookingDto {
+    nannyId: string;
+    recurrencePattern: RecurrencePattern;
+    startDate: string;
+    endDate?: string;
+    startTime: string;
+    durationHours: number;
+    numChildren: number;
+    childrenAges?: number[];
+    specialRequirements?: string;
+}
+
+export interface UpdateRecurringBookingDto {
+    recurrencePattern?: RecurrencePattern;
+    endDate?: string;
+    isActive?: boolean;
+}
+
+// Availability Block Types
+export interface AvailabilityBlock {
+    id: string;
+    nanny_id: string;
+    start_time: string;
+    end_time: string;
+    is_recurring: boolean;
+    recurrence_pattern?: RecurrencePattern;
+    reason?: string;
+    created_at: string;
+}
+
+export interface CreateAvailabilityBlockDto {
+    startTime: string;
+    endTime: string;
+    isRecurring?: boolean;
+    recurrencePattern?: RecurrencePattern;
+    reason?: string;
+}
+
