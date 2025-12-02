@@ -25,7 +25,9 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/messages') ||
     pathname?.startsWith('/book') ||
     pathname?.startsWith('/settings') ||
-    pathname?.startsWith('/notifications');
+    pathname?.startsWith('/notifications') ||
+    pathname?.startsWith('/recurring-bookings') ||
+    pathname?.startsWith('/book-recurring');
 
   return (
     <body>

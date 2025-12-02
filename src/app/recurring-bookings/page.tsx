@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -16,7 +15,6 @@ import {
     Trash2,
     Pause,
     Play,
-    ChevronLeft,
     Repeat,
     User,
     CalendarDays,
@@ -27,7 +25,6 @@ import {
 import Link from 'next/link';
 
 export default function RecurringBookingsPage() {
-    const router = useRouter();
     const { user } = useAuth();
     const { addToast } = useToast();
     const [bookings, setBookings] = useState<RecurringBooking[]>([]);
@@ -108,15 +105,6 @@ export default function RecurringBookingsPage() {
                 <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
                     {/* Header */}
                     <div className="mb-8">
-                        <Button
-                            variant="ghost"
-                            className="mb-4 -ml-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                            onClick={() => router.back()}
-                        >
-                            <ChevronLeft size={20} className="mr-1" />
-                            Back
-                        </Button>
-                        
                         <div className="flex items-center justify-between">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
