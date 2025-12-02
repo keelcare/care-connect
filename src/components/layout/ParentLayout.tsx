@@ -26,8 +26,8 @@ export default function ParentLayout({
     // Show loading state while checking auth
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen flex items-center justify-center bg-stone-50">
+                <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -40,14 +40,14 @@ export default function ParentLayout({
     return (
         <>
             <Header />
-            <div className="min-h-screen bg-neutral-50">
+            <div className="min-h-screen bg-stone-50">
                 <ParentSidebar
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 />
 
                 {/* Main Content Area with Footer */}
-                <div className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
+                <div className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
                     <main className="flex-1 pb-8">
                         {children}
                     </main>

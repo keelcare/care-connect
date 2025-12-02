@@ -2,51 +2,105 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { Star, Quote } from 'lucide-react';
 
 export const TrustedBy: React.FC = () => {
-    const users = [
-        { name: "Sarah M.", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "David K.", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "Jessica T.", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "Michael R.", image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "Emily W.", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "James L.", image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "Anna P.", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-        { name: "Robert H.", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
+    const testimonials = [
+        {
+            name: "Sarah Mitchell",
+            role: "Parent of 2",
+            image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
+            quote: "Found the perfect nanny within a week. The verification process gave us total peace of mind.",
+            rating: 5
+        },
+        {
+            name: "David Kim",
+            role: "Working Dad",
+            image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
+            quote: "The flexibility to book care on short notice has been a game-changer for our family.",
+            rating: 5
+        },
+        {
+            name: "Jessica Thompson",
+            role: "Mother of 3",
+            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
+            quote: "We've been using CareConnect for over a year now. Best decision we ever made.",
+            rating: 5
+        },
+        {
+            name: "Michael Rodriguez",
+            role: "Single Parent",
+            image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
+            quote: "The caregivers are professional, caring, and my kids absolutely love them.",
+            rating: 5
+        },
     ];
 
-    // Quadruple the array to ensure enough width for large screens and smooth looping
-    const scrollingUsers = [...users, ...users, ...users, ...users];
+    const stats = [
+        { value: "50k+", label: "Happy Families" },
+        { value: "15k+", label: "Verified Caregivers" },
+        { value: "4.9", label: "Average Rating" },
+        { value: "98%", label: "Would Recommend" },
+    ];
 
     return (
-        <section className="py-16 bg-neutral-50 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
-                <p className="text-neutral-500 font-medium uppercase tracking-widest text-sm">Trusted by thousands of families</p>
-            </div>
+        <section className="py-24 bg-white">
+            <div className="max-w-7xl mx-auto px-6">
+                {/* Stats Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
+                    {stats.map((stat, index) => (
+                        <div key={index} className="text-center">
+                            <p className="text-4xl md:text-5xl font-bold text-stone-900">{stat.value}</p>
+                            <p className="text-stone-500 mt-1">{stat.label}</p>
+                        </div>
+                    ))}
+                </div>
 
-            <div className="relative w-full">
-                {/* Gradient Overlays */}
-                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-neutral-50 to-transparent z-10"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-neutral-50 to-transparent z-10"></div>
+                {/* Section Header */}
+                <div className="text-center mb-16">
+                    <p className="text-sm font-semibold text-stone-400 uppercase tracking-widest mb-3">Testimonials</p>
+                    <h2 className="text-3xl md:text-4xl font-bold text-stone-900">
+                        Loved by families everywhere
+                    </h2>
+                </div>
 
-                {/* Infinite Scroll Container */}
-                <div className="flex gap-12 animate-scroll-infinite">
-                    {scrollingUsers.map((user, index) => (
-                        <div key={index} className="flex items-center gap-4 bg-white px-6 py-3 rounded-full shadow-sm border border-neutral-100 flex-shrink-0">
-                            <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                                <Image
-                                    src={user.image}
-                                    alt={user.name}
-                                    fill
-                                    className="object-cover"
-                                />
+                {/* Testimonials Grid */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {testimonials.map((testimonial, index) => (
+                        <div
+                            key={index}
+                            className="group relative bg-stone-50 rounded-2xl p-6 hover:bg-stone-100 transition-all duration-300 hover:-translate-y-1"
+                        >
+                            {/* Quote Icon */}
+                            <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-200/50 flex items-center justify-center">
+                                <Quote className="w-4 h-4 text-stone-400" />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-neutral-800 whitespace-nowrap">{user.name}</span>
-                                <div className="flex gap-0.5">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <i key={star} className="lni lni-star-filled text-yellow-400 text-[10px]"></i>
-                                    ))}
+
+                            {/* Rating */}
+                            <div className="flex gap-0.5 mb-4">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                                ))}
+                            </div>
+
+                            {/* Quote */}
+                            <p className="text-stone-600 text-sm leading-relaxed mb-6">
+                                &ldquo;{testimonial.quote}&rdquo;
+                            </p>
+
+                            {/* Author */}
+                            <div className="flex items-center gap-3">
+                                <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white">
+                                    <Image
+                                        src={testimonial.image}
+                                        alt={testimonial.name}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-stone-900">{testimonial.name}</p>
+                                    <p className="text-xs text-stone-500">{testimonial.role}</p>
                                 </div>
                             </div>
                         </div>

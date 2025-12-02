@@ -68,7 +68,7 @@ export default function RequestDetailsPage() {
                     <h1 className="text-3xl font-bold text-neutral-900 font-display">Request Details</h1>
                 </div>
                 <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
                 </div>
             </div>
         );
@@ -90,13 +90,13 @@ export default function RequestDetailsPage() {
 
     const getStatusInfo = (status: string) => {
         switch (status) {
-            case 'PENDING': return { color: 'text-yellow-700 bg-yellow-100', icon: <Clock size={20} />, text: 'Pending Assignment' };
-            case 'ASSIGNED': return { color: 'text-primary-700 bg-primary-100', icon: <CheckCircle size={20} />, text: 'Nanny Assigned' };
-            case 'ACCEPTED': return { color: 'text-green-700 bg-green-100', icon: <CheckCircle size={20} />, text: 'Booking Confirmed' };
-            case 'IN_PROGRESS': return { color: 'text-secondary-700 bg-secondary-100', icon: <Clock size={20} />, text: 'Service In Progress' };
-            case 'COMPLETED': return { color: 'text-neutral-700 bg-neutral-100', icon: <CheckCircle size={20} />, text: 'Completed' };
+            case 'PENDING': return { color: 'text-amber-700 bg-amber-100', icon: <Clock size={20} />, text: 'Pending Assignment' };
+            case 'ASSIGNED': return { color: 'text-stone-700 bg-stone-100', icon: <CheckCircle size={20} />, text: 'Nanny Assigned' };
+            case 'ACCEPTED': return { color: 'text-emerald-700 bg-emerald-100', icon: <CheckCircle size={20} />, text: 'Booking Confirmed' };
+            case 'IN_PROGRESS': return { color: 'text-stone-700 bg-stone-100', icon: <Clock size={20} />, text: 'Service In Progress' };
+            case 'COMPLETED': return { color: 'text-stone-700 bg-stone-100', icon: <CheckCircle size={20} />, text: 'Completed' };
             case 'CANCELLED': return { color: 'text-red-700 bg-red-100', icon: <XCircle size={20} />, text: 'Cancelled' };
-            default: return { color: 'text-neutral-700 bg-neutral-100', icon: <AlertTriangle size={20} />, text: status };
+            default: return { color: 'text-stone-700 bg-stone-100', icon: <AlertTriangle size={20} />, text: status };
         }
     };
 
@@ -104,7 +104,7 @@ export default function RequestDetailsPage() {
 
     return (
         <div className="space-y-8">
-            <Button variant="ghost" onClick={() => router.back()} className="pl-0 hover:bg-transparent hover:text-primary">
+            <Button variant="ghost" onClick={() => router.back()} className="pl-0 hover:bg-transparent hover:text-stone-900">
                 <ChevronLeft size={20} className="mr-1" /> Back to Requests
             </Button>
 
@@ -125,7 +125,7 @@ export default function RequestDetailsPage() {
                         <h2 className="text-xl font-bold text-neutral-900 mb-6">Service Information</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-900 flex-shrink-0">
                                     <Calendar size={20} />
                                 </div>
                                 <div>
@@ -134,7 +134,7 @@ export default function RequestDetailsPage() {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-secondary-50 flex items-center justify-center text-secondary flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-700 flex-shrink-0">
                                     <Clock size={20} />
                                 </div>
                                 <div>
@@ -143,7 +143,7 @@ export default function RequestDetailsPage() {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-accent-50 flex items-center justify-center text-accent flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
                                     <Users size={20} />
                                 </div>
                                 <div>

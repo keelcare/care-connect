@@ -81,7 +81,7 @@ export default function CreateRequestPage() {
 
     return (
         <div className="max-w-3xl mx-auto">
-            <Button variant="ghost" onClick={() => router.back()} className="mb-6 pl-0 hover:bg-transparent hover:text-primary">
+            <Button variant="ghost" onClick={() => router.back()} className="mb-6 pl-0 hover:bg-transparent hover:text-stone-900">
                 <ChevronLeft size={20} className="mr-1" /> Back to Requests
             </Button>
 
@@ -115,7 +115,7 @@ export default function CreateRequestPage() {
                     {/* Date & Time Section */}
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center text-primary">
+                            <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-900">
                                 <Calendar size={18} />
                             </div>
                             Date & Time
@@ -147,7 +147,7 @@ export default function CreateRequestPage() {
                                 name="duration_hours"
                                 value={formData.duration_hours}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border-neutral-200 focus:border-primary focus:ring-primary"
+                                className="w-full rounded-xl border-neutral-200 focus:border-stone-400 focus:ring-stone-400"
                             >
                                 {[2, 3, 4, 5, 6, 7, 8, 9, 10, 12].map(h => (
                                     <option key={h} value={h}>{h} hours</option>
@@ -161,7 +161,7 @@ export default function CreateRequestPage() {
                     {/* Children Section */}
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-secondary-50 flex items-center justify-center text-secondary">
+                            <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-700">
                                 <Users size={18} />
                             </div>
                             Children
@@ -172,7 +172,7 @@ export default function CreateRequestPage() {
                                 name="num_children"
                                 value={formData.num_children}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border-neutral-200 focus:border-primary focus:ring-primary"
+                                className="w-full rounded-xl border-neutral-200 focus:border-stone-400 focus:ring-stone-400"
                             >
                                 {[1, 2, 3, 4, 5].map(n => (
                                     <option key={n} value={n}>{n} Child{n > 1 ? 'ren' : ''}</option>
@@ -201,7 +201,7 @@ export default function CreateRequestPage() {
                     {/* Location Section */}
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-accent-50 flex items-center justify-center text-accent">
+                            <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600">
                                 <MapPin size={18} />
                             </div>
                             Special Requirements
@@ -212,7 +212,7 @@ export default function CreateRequestPage() {
                                 name="special_requirements"
                                 value={formData.special_requirements}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border-neutral-200 focus:border-primary focus:ring-primary min-h-[120px] p-3"
+                                className="w-full rounded-xl border-neutral-200 focus:border-stone-400 focus:ring-stone-400 min-h-[120px] p-3"
                                 placeholder="Any allergies, pets, or specific instructions..."
                                 rows={4}
                             />

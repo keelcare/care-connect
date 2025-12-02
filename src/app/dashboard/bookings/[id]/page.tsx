@@ -120,11 +120,11 @@ export default function BookingDetailsPage() {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case 'CONFIRMED': return 'bg-primary-100 text-primary-700';
-            case 'IN_PROGRESS': return 'bg-secondary-100 text-secondary-700';
-            case 'COMPLETED': return 'bg-green-100 text-green-700';
+            case 'CONFIRMED': return 'bg-emerald-100 text-emerald-700';
+            case 'IN_PROGRESS': return 'bg-stone-100 text-stone-700';
+            case 'COMPLETED': return 'bg-emerald-100 text-emerald-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
-            default: return 'bg-neutral-100 text-neutral-700';
+            default: return 'bg-stone-100 text-stone-700';
         }
     };
 
@@ -191,22 +191,22 @@ export default function BookingDetailsPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-900 flex-shrink-0">
                                     <Calendar size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-neutral-500 mb-1">Date</p>
-                                    <p className="text-neutral-900 font-medium">{startDateTime.date}</p>
+                                    <p className="text-sm font-medium text-stone-500 mb-1">Date</p>
+                                    <p className="text-stone-900 font-medium">{startDateTime.date}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-secondary-50 flex items-center justify-center text-secondary flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-700 flex-shrink-0">
                                     <Clock size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-neutral-500 mb-1">Time</p>
-                                    <p className="text-neutral-900 font-medium">
+                                    <p className="text-sm font-medium text-stone-500 mb-1">Time</p>
+                                    <p className="text-stone-900 font-medium">
                                         {startDateTime.time}
                                         {endDateTime && ` - ${endDateTime.time}`}
                                     </p>
@@ -215,12 +215,12 @@ export default function BookingDetailsPage() {
 
                             {booking.job?.location_lat && booking.job?.location_lng && (
                                 <div className="flex items-start gap-4 md:col-span-2">
-                                    <div className="w-10 h-10 rounded-full bg-accent-50 flex items-center justify-center text-accent flex-shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
                                         <MapPin size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-neutral-500 mb-1">Location</p>
-                                        <p className="text-neutral-900 font-medium">
+                                        <p className="text-sm font-medium text-stone-500 mb-1">Location</p>
+                                        <p className="text-stone-900 font-medium">
                                             {otherParty?.profiles?.address || 'Address not provided'}
                                         </p>
                                     </div>

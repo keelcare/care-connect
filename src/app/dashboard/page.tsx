@@ -37,8 +37,6 @@ export default function DashboardPage() {
             if (user.role === 'nanny') {
                 fetchDashboardData();
             } else {
-                // Redirect non-nanny users (e.g. parents) to browse page
-                // or just stop loading to prevent infinite spinner
                 router.push('/browse');
                 setLoading(false);
             }
@@ -50,7 +48,6 @@ export default function DashboardPage() {
             setLoading(true);
             setError(null);
 
-            // Fetch nanny bookings and user data in parallel
             const [bookingsData, userData] = await Promise.all([
                 api.bookings.getNannyBookings(),
                 user?.id ? api.users.get(user.id) : Promise.resolve(null)
@@ -58,11 +55,9 @@ export default function DashboardPage() {
 
             setBookings(bookingsData);
 
-            // Calculate stats from bookings
             const totalBookings = bookingsData.length;
             const completedBookings = bookingsData.filter(b => b.status === 'COMPLETED');
 
-            // Calculate total hours of care
             let totalHours = 0;
             completedBookings.forEach(booking => {
                 if (booking.start_time && booking.end_time) {
@@ -73,12 +68,11 @@ export default function DashboardPage() {
                 }
             });
 
-            // Get average rating from user data (API automatically calculates it)
             const averageRating = (userData as any)?.averageRating || 0;
 
             setStats({
                 totalBookings,
-                unreadMessages: 0, // Placeholder - TODO: implement messages count
+                unreadMessages: 0,
                 hoursOfCare: Math.round(totalHours),
                 averageRating: averageRating,
             });
@@ -111,7 +105,6 @@ export default function DashboardPage() {
 
     const handleMessageBooking = async (booking: Booking) => {
         try {
-            // Create or get chat for this booking
             const chat = await api.chat.create({ bookingId: booking.id });
             router.push(`/messages?chatId=${chat.id}`);
         } catch (err) {
@@ -119,16 +112,15 @@ export default function DashboardPage() {
         }
     };
 
-    // Filter upcoming bookings (CONFIRMED or IN_PROGRESS)
     const upcomingBookings = bookings
         .filter(b => ['CONFIRMED', 'IN_PROGRESS'].includes(b.status))
         .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
         .slice(0, 3);
 
     const statsDisplay = [
-        { label: 'Total Bookings', value: stats.totalBookings.toString(), icon: Calendar, color: 'text-primary', bg: 'bg-primary-50' },
-        { label: 'Unread Messages', value: stats.unreadMessages.toString(), icon: MessageSquare, color: 'text-secondary', bg: 'bg-secondary-50' },
-        { label: 'Hours of Care', value: stats.hoursOfCare.toString(), icon: Clock, color: 'text-warning-600', bg: 'bg-warning-50' },
+        { label: 'Total Bookings', value: stats.totalBookings.toString(), icon: Calendar, color: 'text-stone-900', bg: 'bg-stone-100' },
+        { label: 'Unread Messages', value: stats.unreadMessages.toString(), icon: MessageSquare, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        { label: 'Hours of Care', value: stats.hoursOfCare.toString(), icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
         { label: 'Average Rating', value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A', icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50' },
     ];
 
@@ -155,8 +147,8 @@ export default function DashboardPage() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-neutral-900 font-display">Dashboard Overview</h1>
-                    <p className="text-neutral-500 mt-1">
+                    <h1 className="text-3xl font-bold text-stone-900 font-display">Dashboard Overview</h1>
+                    <p className="text-stone-500 mt-1">
                         Welcome back, {user?.profiles?.first_name || 'User'}! Here's what's happening today.
                     </p>
                 </div>
@@ -166,11 +158,11 @@ export default function DashboardPage() {
                 {statsDisplay.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
-                        <div key={index} className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-shadow">
+                        <div key={index} className="bg-white p-6 rounded-[24px] border border-stone-100 shadow-soft hover:shadow-md transition-shadow">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-neutral-500">{stat.label}</p>
-                                    <h3 className="text-2xl font-bold text-neutral-900 mt-1">{stat.value}</h3>
+                                    <p className="text-sm font-medium text-stone-500">{stat.label}</p>
+                                    <h3 className="text-2xl font-bold text-stone-900 mt-1">{stat.value}</h3>
                                 </div>
                                 <div className={`p-3 rounded-2xl ${stat.bg}`}>
                                     <Icon size={20} className={stat.color} />
@@ -185,46 +177,46 @@ export default function DashboardPage() {
                 {/* Upcoming Bookings */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-neutral-900 font-display">Upcoming Bookings</h2>
+                        <h2 className="text-xl font-bold text-stone-900 font-display">Upcoming Bookings</h2>
                         <Link href="/dashboard/bookings">
-                            <Button variant="ghost" size="sm" className="text-primary hover:text-primary-600 hover:bg-primary-50">
+                            <Button variant="ghost" size="sm" className="text-stone-600 hover:text-stone-900 hover:bg-stone-100">
                                 View All <ChevronRight size={16} className="ml-1" />
                             </Button>
                         </Link>
                     </div>
 
                     {upcomingBookings.length === 0 ? (
-                        <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-12 text-center">
-                            <p className="text-neutral-500">No upcoming bookings yet.</p>
+                        <div className="bg-white rounded-[24px] border border-stone-100 shadow-soft p-12 text-center">
+                            <p className="text-stone-500">No upcoming bookings yet.</p>
                         </div>
                     ) : (
                         <>
                             {/* Next Booking Card with Gradient Border */}
-                            <div className="p-[2px] rounded-[26px] bg-gradient-to-r from-primary to-secondary shadow-md">
+                            <div className="p-[2px] rounded-[26px] bg-gradient-to-r from-stone-900 to-stone-700 shadow-md">
                                 <div className="bg-white rounded-[24px] p-6">
-                                    <div className="flex items-center gap-2 mb-4 text-primary font-bold text-sm uppercase tracking-wider">
+                                    <div className="flex items-center gap-2 mb-4 text-stone-900 font-bold text-sm uppercase tracking-wider">
                                         <Star size={14} fill="currentColor" /> Next Booking
                                     </div>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                                        <div className="flex-shrink-0 w-20 h-20 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary">
+                                        <div className="flex-shrink-0 w-20 h-20 bg-stone-100 rounded-2xl flex flex-col items-center justify-center text-stone-900">
                                             <span className="text-xs font-bold uppercase">{formatDate(upcomingBookings[0].start_time).month}</span>
                                             <span className="text-2xl font-bold">{formatDate(upcomingBookings[0].start_time).day}</span>
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-xl font-bold text-neutral-900 mb-2">
+                                            <h3 className="text-xl font-bold text-stone-900 mb-2">
                                                 {upcomingBookings[0].job?.title || 'Booking'}
                                             </h3>
-                                            <p className="text-neutral-500 text-sm mb-2">
-                                                with <span className="font-medium text-neutral-700">{getParentName(upcomingBookings[0])}</span>
+                                            <p className="text-stone-500 text-sm mb-2">
+                                                with <span className="font-medium text-stone-700">{getParentName(upcomingBookings[0])}</span>
                                             </p>
-                                            <div className="flex flex-wrap gap-4 text-neutral-500 text-sm">
+                                            <div className="flex flex-wrap gap-4 text-stone-500 text-sm">
                                                 <div className="flex items-center gap-1">
                                                     <Clock size={16} />
                                                     {formatTime(upcomingBookings[0].start_time)}
                                                     {upcomingBookings[0].end_time && ` - ${formatTime(upcomingBookings[0].end_time)}`}
                                                 </div>
                                                 <div className="flex items-center gap-1">
-                                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                                                     {upcomingBookings[0].status}
                                                 </div>
                                             </div>
@@ -242,24 +234,24 @@ export default function DashboardPage() {
 
                             {/* Other Bookings */}
                             {upcomingBookings.length > 1 && (
-                                <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft overflow-hidden">
-                                    <div className="divide-y divide-neutral-100">
+                                <div className="bg-white rounded-[24px] border border-stone-100 shadow-soft overflow-hidden">
+                                    <div className="divide-y divide-stone-100">
                                         {upcomingBookings.slice(1).map((booking) => {
                                             const { day, month } = formatDate(booking.start_time);
                                             return (
-                                                <div key={booking.id} className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-neutral-50 transition-colors">
-                                                    <div className="flex-shrink-0 w-14 h-14 bg-neutral-50 rounded-xl flex flex-col items-center justify-center text-neutral-600">
+                                                <div key={booking.id} className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-stone-50 transition-colors">
+                                                    <div className="flex-shrink-0 w-14 h-14 bg-stone-50 rounded-xl flex flex-col items-center justify-center text-stone-600">
                                                         <span className="text-[10px] font-bold uppercase">{month}</span>
                                                         <span className="text-lg font-bold">{day}</span>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-base font-bold text-neutral-900 truncate">
+                                                        <h4 className="text-base font-bold text-stone-900 truncate">
                                                             {booking.job?.title || 'Booking'}
                                                         </h4>
-                                                        <p className="text-neutral-500 text-xs mb-1">
+                                                        <p className="text-stone-500 text-xs mb-1">
                                                             with {getParentName(booking)}
                                                         </p>
-                                                        <p className="text-neutral-500 flex items-center gap-2 mt-1 text-sm">
+                                                        <p className="text-stone-500 flex items-center gap-2 mt-1 text-sm">
                                                             <Clock size={14} />
                                                             {formatTime(booking.start_time)}
                                                             {booking.end_time && ` - ${formatTime(booking.end_time)}`}
@@ -267,8 +259,8 @@ export default function DashboardPage() {
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'CONFIRMED'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-primary-100 text-primary-700'
+                                                            ? 'bg-emerald-100 text-emerald-700'
+                                                            : 'bg-stone-100 text-stone-700'
                                                             }`}>
                                                             {booking.status}
                                                         </span>
@@ -293,9 +285,9 @@ export default function DashboardPage() {
 
                 {/* Recent Activity / Notifications Placeholder */}
                 <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-neutral-900 font-display">Recent Activity</h2>
-                    <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 space-y-6">
-                        <p className="text-sm text-neutral-500 text-center py-4">
+                    <h2 className="text-xl font-bold text-stone-900 font-display">Recent Activity</h2>
+                    <div className="bg-white rounded-[24px] border border-stone-100 shadow-soft p-6 space-y-6">
+                        <p className="text-sm text-stone-500 text-center py-4">
                             Activity feed coming soon
                         </p>
                     </div>

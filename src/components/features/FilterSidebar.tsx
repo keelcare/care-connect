@@ -89,7 +89,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
     const activeFilterCount = activeServiceCount + (isPriceChanged ? 1 : 0);
 
     return (
-        <aside className="bg-white rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 p-6 space-y-6 h-full overflow-y-auto custom-scrollbar">
+        <aside className="bg-white rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 p-6 space-y-6 h-full overflow-y-auto">
             {/* Header with Reset All */}
             <div className="flex items-center justify-between pb-4 border-b border-stone-100">
                 <div>
@@ -172,8 +172,6 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onFilterC
                     onChange={handlePriceChange}
                 />
             </div>
-
-
         </aside>
     );
 };

@@ -128,8 +128,8 @@ export default function AdminUsersPage() {
                                     <td className="px-6 py-4 whitespace-nowrap text-neutral-600">{u.email}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                                                u.role === 'nanny' ? 'bg-primary-100 text-primary-700' :
-                                                    'bg-secondary-100 text-secondary-700'
+                                                u.role === 'nanny' ? 'bg-stone-100 text-stone-700' :
+                                                    'bg-emerald-100 text-emerald-700'
                                             }`}>
                                             {u.role}
                                         </span>

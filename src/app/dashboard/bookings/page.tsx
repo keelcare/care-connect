@@ -137,17 +137,17 @@ export default function BookingsPage() {
 
     const getStatusBadgeStyles = (status: string) => {
         switch (status) {
-            case 'CONFIRMED': return 'bg-green-100 text-green-700';
-            case 'IN_PROGRESS': return 'bg-primary-100 text-primary-700';
-            case 'COMPLETED': return 'bg-neutral-100 text-neutral-700';
+            case 'CONFIRMED': return 'bg-emerald-100 text-emerald-700';
+            case 'IN_PROGRESS': return 'bg-stone-100 text-stone-700';
+            case 'COMPLETED': return 'bg-stone-100 text-stone-700';
             case 'CANCELLED': return 'bg-red-100 text-red-700';
-            case 'PENDING': return 'bg-yellow-100 text-yellow-700';
-            case 'ASSIGNED': return 'bg-primary-100 text-primary-700';
-            case 'ACCEPTED': return 'bg-green-100 text-green-700';
+            case 'PENDING': return 'bg-amber-100 text-amber-700';
+            case 'ASSIGNED': return 'bg-stone-100 text-stone-700';
+            case 'ACCEPTED': return 'bg-emerald-100 text-emerald-700';
             case 'rejected': return 'bg-red-100 text-red-700';
-            case 'pending': return 'bg-yellow-100 text-yellow-700';
-            case 'accepted': return 'bg-green-100 text-green-700';
-            default: return 'bg-neutral-100 text-neutral-700';
+            case 'pending': return 'bg-amber-100 text-amber-700';
+            case 'accepted': return 'bg-emerald-100 text-emerald-700';
+            default: return 'bg-stone-100 text-stone-700';
         }
     };
 
@@ -290,34 +290,34 @@ export default function BookingsPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-neutral-200 overflow-x-auto">
+            <div className="flex border-b border-stone-200 overflow-x-auto">
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'requests' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'requests' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('requests')}
                 >
                     Requests
-                    {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    {activeTab === 'requests' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('upcoming')}
                 >
                     Upcoming
-                    {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    {activeTab === 'upcoming' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('completed')}
                 >
                     Completed
-                    {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    {activeTab === 'completed' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
                     onClick={() => setActiveTab('cancelled')}
                 >
                     Cancelled
-                    {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                    {activeTab === 'cancelled' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900 rounded-t-full"></div>}
                 </button>
             </div>
 
@@ -327,12 +327,12 @@ export default function BookingsPage() {
                     {user?.role === 'nanny' ? (
                         // Nanny Assignments View
                         assignments.length === 0 ? (
-                            <div className="text-center py-12 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-                                <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-3 text-primary">
+                            <div className="text-center py-12 bg-white rounded-[24px] border border-stone-100 shadow-soft">
+                                <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-3 text-stone-900">
                                     <Calendar size={24} />
                                 </div>
-                                <h3 className="text-lg font-bold text-neutral-900 mb-1">No New Requests</h3>
-                                <p className="text-neutral-500 text-sm">You don't have any pending service requests.</p>
+                                <h3 className="text-lg font-bold text-stone-900 mb-1">No New Requests</h3>
+                                <p className="text-stone-500 text-sm">You don't have any pending service requests.</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -387,7 +387,7 @@ export default function BookingsPage() {
                                                             Reject
                                                         </Button>
                                                         <Button
-                                                            className="w-full bg-primary hover:bg-primary-600 text-white"
+                                                            className="w-full bg-stone-900 hover:bg-stone-800 text-white"
                                                             onClick={() => handleAcceptAssignment(assignment.id)}
                                                             disabled={actionLoading === assignment.id}
                                                         >
@@ -405,7 +405,7 @@ export default function BookingsPage() {
                         // Parent Requests View
                         requests.length === 0 ? (
                             <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-                                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+                                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-900">
                                     <Plus size={32} />
                                 </div>
                                 <h3 className="text-xl font-bold text-neutral-900 mb-2">No Requests Yet</h3>
@@ -480,7 +480,7 @@ export default function BookingsPage() {
                             return (
                                 <div key={booking.id} className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
                                     <div className="flex items-center gap-4 flex-1">
-                                        <div className="flex-shrink-0 w-16 h-16 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary">
+                                        <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-2xl flex flex-col items-center justify-center text-stone-900">
                                             <span className="text-xs font-bold uppercase">{month}</span>
                                             <span className="text-xl font-bold">{day}</span>
                                         </div>

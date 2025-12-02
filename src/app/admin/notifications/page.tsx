@@ -77,7 +77,7 @@ export default function AdminNotificationsPage() {
 
             <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8">
                 <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-100">
-                    <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center text-primary">
+                    <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-900">
                         <Bell size={24} />
                     </div>
                     <div>
@@ -109,7 +109,7 @@ export default function AdminNotificationsPage() {
                                     name="type"
                                     value={formData.type}
                                     onChange={handleChange}
-                                    className="w-full p-3 pl-10 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                                    className="w-full p-3 pl-10 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all appearance-none"
                                 >
                                     <option value="email">Email</option>
                                     <option value="push">Push Notification</option>
@@ -132,7 +132,7 @@ export default function AdminNotificationsPage() {
                                 onChange={handleChange}
                                 placeholder="user@example.com"
                                 required
-                                className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
                             />
                         </div>
                     </div>
@@ -146,7 +146,7 @@ export default function AdminNotificationsPage() {
                             onChange={handleChange}
                             placeholder="Notification Subject"
                             required={formData.type === 'email'}
-                            className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
                         />
                     </div>
 
@@ -159,7 +159,7 @@ export default function AdminNotificationsPage() {
                             placeholder="Type your message here..."
                             required
                             rows={6}
-                            className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                            className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all resize-none"
                         />
                     </div>
 

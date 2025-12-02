@@ -2,19 +2,19 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Sun, Heart, Shield, Star, Book, User, Search } from 'lucide-react';
+import { Shield, Star, Users, Search, ChevronDown, MapPin, ArrowRight } from 'lucide-react';
 
 export const Hero: React.FC = () => {
     const router = useRouter();
     const [zipCode, setZipCode] = useState('');
     const [serviceType, setServiceType] = useState('Child Care');
+    const [isSelectOpen, setIsSelectOpen] = useState(false);
+
+    const serviceOptions = ['Child Care', 'Senior Care', 'Pet Care', 'Housekeeping'];
 
     const handleSearch = () => {
-        // Always redirect to browse page, regardless of zipcode validity
-        // If zipcode is provided, it could be used for filtering in the future
         if (zipCode.trim()) {
             router.push(`/browse?zipcode=${encodeURIComponent(zipCode)}&service=${encodeURIComponent(serviceType)}`);
         } else {
@@ -29,118 +29,212 @@ export const Hero: React.FC = () => {
     };
 
     return (
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50/50 via-white to-teal-50/50 px-6 pt-32 pb-20">
-            {/* Floating Icon Cloud */}
-            <div className="absolute inset-0 pointer-events-none">
-                {/* Sun - Top Left */}
-                <div className="absolute top-[15%] left-[10%] animate-bounce-slow" style={{ animationDelay: '0s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '0.5s' }}>
-                        <Sun className="w-8 h-8 text-yellow-400 fill-yellow-400" />
-                    </div>
-                </div>
-
-                {/* Heart - Top Right */}
-                <div className="absolute top-[20%] right-[15%] animate-bounce-slow" style={{ animationDelay: '1s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '1.5s' }}>
-                        <Heart className="w-8 h-8 text-secondary fill-secondary" />
-                    </div>
-                </div>
-
-                {/* Shield - Bottom Left */}
-                <div className="absolute bottom-[20%] left-[15%] animate-bounce-slow" style={{ animationDelay: '2s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '2.5s' }}>
-                        <Shield className="w-8 h-8 text-primary fill-primary/20" />
-                    </div>
-                </div>
-
-                {/* Star - Bottom Right */}
-                <div className="absolute bottom-[25%] right-[10%] animate-bounce-slow" style={{ animationDelay: '0.5s' }}>
-                    <div className="bg-white p-4 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '1s' }}>
-                        <Star className="w-8 h-8 text-orange-400 fill-orange-400" />
-                    </div>
-                </div>
-
-                {/* Book - Middle Left */}
-                <div className="absolute top-[50%] left-[5%] animate-bounce-slow" style={{ animationDelay: '1.5s' }}>
-                    <div className="bg-white p-3 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '2s' }}>
-                        <Book className="w-6 h-6 text-blue-400 fill-blue-400/20" />
-                    </div>
-                </div>
-
-                {/* User - Middle Right */}
-                <div className="absolute top-[45%] right-[5%] animate-bounce-slow" style={{ animationDelay: '2.5s' }}>
-                    <div className="bg-white p-3 rounded-full shadow-lg animate-shimmer" style={{ animationDelay: '3s' }}>
-                        <User className="w-6 h-6 text-purple-400 fill-purple-400/20" />
-                    </div>
-                </div>
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-stone-50">
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 opacity-[0.03]">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                }} />
             </div>
 
-            <div className="relative z-10 max-w-4xl mx-auto text-center space-y-10">
-                {/* Main Heading */}
-                <div className="space-y-4 animate-fade-in">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 leading-[1.1]">
-                        Care for the ones <br />
-                        <span className="text-primary">you love.</span>
-                    </h1>
-                    <p className="text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-                        Find trusted caregivers for your family. From child care to senior care, we connect you with the help you need.
-                    </p>
-                </div>
+            {/* Gradient orbs */}
+            <div className="absolute top-20 left-10 w-72 h-72 bg-stone-200/40 rounded-full blur-3xl" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-stone-300/30 rounded-full blur-3xl" />
 
-                {/* Conversational Search Box */}
-                <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                    <div className="inline-flex flex-col md:flex-row items-center bg-white rounded-[2rem] shadow-soft p-2 md:pl-8 border border-neutral-100 max-w-3xl mx-auto w-full relative z-20">
-                        <div className="flex items-center gap-3 w-full md:w-auto py-3 md:py-0 px-4 md:px-0">
-                            <span className="text-neutral-500 font-medium whitespace-nowrap">I am looking for</span>
-                            <select
-                                value={serviceType}
-                                onChange={(e) => setServiceType(e.target.value)}
-                                className="bg-transparent font-semibold text-neutral-900 outline-none cursor-pointer appearance-none min-w-[120px]"
-                            >
-                                <option>Child Care</option>
-                                <option>Senior Care</option>
-                                <option>Pet Care</option>
-                                <option>Housekeeping</option>
-                            </select>
-                            <i className="lni lni-chevron-down text-xs text-neutral-400"></i>
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-0">
+                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                    {/* Left Content */}
+                    <div className="space-y-8">
+                        {/* Badge */}
+                        <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-stone-200">
+                            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-sm font-medium text-stone-600">Trusted by 50,000+ families</span>
                         </div>
 
-                        <div className="hidden md:block w-px h-8 bg-neutral-200 mx-4"></div>
-
-                        <div className="flex items-center gap-3 w-full md:w-auto py-3 md:py-0 px-4 md:px-0 border-t md:border-t-0 border-neutral-100">
-                            <span className="text-neutral-500 font-medium whitespace-nowrap">in</span>
-                            <input
-                                type="text"
-                                placeholder="Zip Code"
-                                value={zipCode}
-                                onChange={(e) => setZipCode(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                className="bg-transparent font-semibold text-neutral-900 outline-none w-full md:w-32 placeholder-neutral-300"
-                            />
+                        {/* Main Heading */}
+                        <div className="space-y-4">
+                            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-stone-900 leading-[1.1]">
+                                Find the
+                                <span className="relative inline-block mx-3">
+                                    <span className="relative z-10">perfect</span>
+                                    <span className="absolute bottom-2 left-0 w-full h-3 bg-amber-200/60 -rotate-1" />
+                                </span>
+                                <br />
+                                care for your
+                                <br />
+                                <span className="text-stone-500">loved ones.</span>
+                            </h1>
+                            <p className="text-lg text-stone-600 max-w-lg leading-relaxed">
+                                Connect with verified, background-checked caregivers in your area. 
+                                From childcare to senior care, we make finding trusted help simple.
+                            </p>
                         </div>
 
-                        <Button
-                            onClick={handleSearch}
-                            className="w-full md:w-auto rounded-full h-14 px-8 bg-stone-900 hover:bg-stone-800 shadow-lg hover:shadow-xl transition-all ml-auto mt-2 md:mt-0"
-                        >
-                            <Search className="w-5 h-5 text-white" />
-                        </Button>
-                    </div>
-                </div>
+                        {/* Search Box */}
+                        <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50 p-2 border border-stone-200">
+                            <div className="flex flex-col md:flex-row gap-2">
+                                {/* Service Type Dropdown */}
+                                <div className="relative flex-1">
+                                    <button
+                                        onClick={() => setIsSelectOpen(!isSelectOpen)}
+                                        className="w-full flex items-center justify-between gap-2 px-4 py-4 rounded-xl hover:bg-stone-50 transition-colors text-left"
+                                    >
+                                        <div>
+                                            <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">Service</p>
+                                            <p className="text-stone-900 font-semibold">{serviceType}</p>
+                                        </div>
+                                        <ChevronDown className={`w-5 h-5 text-stone-400 transition-transform ${isSelectOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    
+                                    {isSelectOpen && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
+                                            {serviceOptions.map((option) => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => {
+                                                        setServiceType(option);
+                                                        setIsSelectOpen(false);
+                                                    }}
+                                                    className={`w-full px-4 py-3 text-left hover:bg-stone-50 transition-colors ${
+                                                        serviceType === option ? 'bg-stone-50 text-stone-900 font-medium' : 'text-stone-600'
+                                                    }`}
+                                                >
+                                                    {option}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
 
-                {/* Trust Badges */}
-                <div className="flex flex-wrap justify-center gap-6 md:gap-12 pt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                    <div className="flex items-center gap-2 text-neutral-600 bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/20 shadow-sm">
-                        <Shield className="w-5 h-5 text-primary" />
-                        <span className="font-medium">Background Checked</span>
+                                {/* Divider */}
+                                <div className="hidden md:block w-px bg-stone-200 my-2" />
+
+                                {/* Location Input */}
+                                <div className="flex-1 flex items-center gap-2 px-4 py-4 rounded-xl hover:bg-stone-50 transition-colors">
+                                    <MapPin className="w-5 h-5 text-stone-400" />
+                                    <div className="flex-1">
+                                        <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">Location</p>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter zip code"
+                                            value={zipCode}
+                                            onChange={(e) => setZipCode(e.target.value)}
+                                            onKeyPress={handleKeyPress}
+                                            className="w-full bg-transparent text-stone-900 font-semibold outline-none placeholder:text-stone-300 placeholder:font-normal"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Search Button */}
+                                <Button
+                                    onClick={handleSearch}
+                                    className="h-auto py-4 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all group"
+                                >
+                                    <Search className="w-5 h-5 mr-2" />
+                                    Search
+                                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Trust Indicators */}
+                        <div className="flex flex-wrap gap-6 pt-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
+                                    <Shield className="w-5 h-5 text-stone-700" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-stone-900">Verified</p>
+                                    <p className="text-xs text-stone-500">Background checked</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
+                                    <Star className="w-5 h-5 text-stone-700" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-stone-900">4.9 Rating</p>
+                                    <p className="text-xs text-stone-500">From 10k+ reviews</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
+                                    <Users className="w-5 h-5 text-stone-700" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-stone-900">15k+</p>
+                                    <p className="text-xs text-stone-500">Active caregivers</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 text-neutral-600 bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/20 shadow-sm">
-                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                        <span className="font-medium">4.8/5 Average Rating</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-neutral-600 bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/20 shadow-sm">
-                        <User className="w-5 h-5 text-secondary" />
-                        <span className="font-medium">10k+ Caregivers</span>
+
+                    {/* Right Content - Image Grid */}
+                    <div className="relative hidden lg:block">
+                        <div className="relative">
+                            {/* Main large image */}
+                            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-stone-300/50 aspect-[4/5]">
+                                <Image
+                                    src="https://images.unsplash.com/photo-1544776193-352d25ca82cd?q=80&w=800&auto=format&fit=crop"
+                                    alt="Caregiver with child"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent" />
+                            </div>
+
+                            {/* Floating card - Top Right */}
+                            <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-xl shadow-stone-200/50 border border-stone-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                                        <Shield className="w-6 h-6 text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-stone-900">100% Verified</p>
+                                        <p className="text-xs text-stone-500">All caregivers checked</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Floating card - Bottom Left */}
+                            <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl shadow-stone-200/50 border border-stone-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex -space-x-2">
+                                        {[1, 2, 3, 4].map((i) => (
+                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                                                <Image
+                                                    src={`https://images.unsplash.com/photo-${
+                                                        i === 1 ? '1438761681033-6461ffad8d80' :
+                                                        i === 2 ? '1500648767791-00dcc994a43e' :
+                                                        i === 3 ? '1494790108377-be9c29b29330' :
+                                                        '1507003211169-0a1dd7228f2d'
+                                                    }?w=100&h=100&fit=crop`}
+                                                    alt="User"
+                                                    width={32}
+                                                    height={32}
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-stone-900">Join 50k+</p>
+                                        <p className="text-xs text-stone-500">Happy families</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Rating badge */}
+                            <div className="absolute top-1/2 -right-8 transform -translate-y-1/2 bg-white rounded-xl p-3 shadow-lg border border-stone-100">
+                                <div className="flex items-center gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star key={star} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                                    ))}
+                                </div>
+                                <p className="text-xs text-stone-600 mt-1 text-center">Excellent</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -83,13 +83,13 @@ export default function BookServicePage() {
         <ParentLayout>
             {missingLocation && (
                 <div className="max-w-7xl mx-auto px-4 md:px-8 mt-4">
-                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-2xl flex items-start gap-3">
-                        <AlertCircle size={20} className="text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+                        <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-yellow-800">Location Required</p>
-                            <p className="text-sm text-yellow-700 mt-1">
+                            <p className="text-sm font-medium text-amber-800">Location Required</p>
+                            <p className="text-sm text-amber-700 mt-1">
                                 Please set your location in your{' '}
-                                <Link href="/dashboard/profile" className="underline font-medium">
+                                <Link href="/dashboard/profile" className="underline font-medium text-amber-900">
                                     profile settings
                                 </Link>
                                 {' '}to use auto-matching.

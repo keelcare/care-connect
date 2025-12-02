@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { UpdateUserDto } from '@/types/api';
 import ParentLayout from '@/components/layout/ParentLayout';
+import { User, Mail, Phone, MapPin, Image, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function ParentSettingsPage() {
     const { user, refreshUser } = useAuth();
@@ -81,10 +82,10 @@ export default function ParentSettingsPage() {
             <ParentLayout>
                 <div className="space-y-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-neutral-900 font-display">Account Settings</h1>
+                        <h1 className="text-3xl font-bold text-stone-900">Account Settings</h1>
                     </div>
                     <div className="flex justify-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
                     </div>
                 </div>
             </ParentLayout>
@@ -95,73 +96,96 @@ export default function ParentSettingsPage() {
         <ParentLayout>
             <div className="max-w-3xl mx-auto space-y-8 py-8 px-4 md:px-0">
                 <div>
-                    <h1 className="text-3xl font-bold text-neutral-900 font-display">Account Settings</h1>
-                    <p className="text-neutral-500 mt-2 text-lg">Manage your profile and account preferences</p>
+                    <h1 className="text-3xl font-bold text-stone-900">Account Settings</h1>
+                    <p className="text-stone-500 mt-2 text-lg">Manage your profile and account preferences</p>
                 </div>
 
                 {message && (
                     <div className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
-                        ? 'bg-green-50 border-green-100 text-green-700'
+                        ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
                         : 'bg-red-50 border-red-100 text-red-700'
                         }`}>
+                        {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
                         {message.text}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8 md:p-10 space-y-8">
+                    <div className="bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 p-8 md:p-10 space-y-8">
                         <div>
-                            <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">Personal Information</h2>
+                            <h2 className="text-xl font-bold text-stone-900 mb-6 pb-4 border-b border-stone-100 flex items-center gap-2">
+                                <User size={20} className="text-stone-600" />
+                                Personal Information
+                            </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Input
-                                    label="First Name"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    className="rounded-xl"
-                                />
-                                <Input
-                                    label="Last Name"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    className="rounded-xl"
-                                />
-                                <Input
-                                    label="Phone Number"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    className="rounded-xl"
-                                />
-                                <div className="md:col-span-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-stone-700 mb-2">First Name</label>
                                     <Input
-                                        label="Address"
-                                        name="address"
-                                        value={formData.address}
+                                        name="firstName"
+                                        value={formData.firstName}
                                         onChange={handleChange}
-                                        helperText="This will be used to calculate distances for search results."
-                                        className="rounded-xl"
+                                        className="rounded-xl border-stone-200 focus:border-stone-400 focus:ring-stone-900/10"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-stone-700 mb-2">Last Name</label>
+                                    <Input
+                                        name="lastName"
+                                        value={formData.lastName}
+                                        onChange={handleChange}
+                                        className="rounded-xl border-stone-200 focus:border-stone-400 focus:ring-stone-900/10"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-stone-700 mb-2 flex items-center gap-2">
+                                        <Phone size={14} className="text-stone-500" />
+                                        Phone Number
+                                    </label>
+                                    <Input
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className="rounded-xl border-stone-200 focus:border-stone-400 focus:ring-stone-900/10"
                                     />
                                 </div>
                                 <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-stone-700 mb-2 flex items-center gap-2">
+                                        <MapPin size={14} className="text-stone-500" />
+                                        Address
+                                    </label>
                                     <Input
-                                        label="Profile Image URL"
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        className="rounded-xl border-stone-200 focus:border-stone-400 focus:ring-stone-900/10"
+                                    />
+                                    <p className="text-xs text-stone-500 mt-2">This will be used to calculate distances for search results.</p>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-stone-700 mb-2 flex items-center gap-2">
+                                        <Image size={14} className="text-stone-500" />
+                                        Profile Image URL
+                                    </label>
+                                    <Input
                                         name="profileImageUrl"
                                         value={formData.profileImageUrl || ''}
                                         onChange={handleChange}
                                         placeholder="https://example.com/image.jpg"
-                                        className="rounded-xl"
+                                        className="rounded-xl border-stone-200 focus:border-stone-400 focus:ring-stone-900/10"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-100">
-                            <Button type="button" variant="ghost" className="rounded-xl">
+                        <div className="flex items-center justify-end gap-4 pt-6 border-t border-stone-100">
+                            <Button type="button" variant="ghost" className="rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100">
                                 Cancel
                             </Button>
-                            <Button type="submit" className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all" disabled={saving}>
+                            <Button 
+                                type="submit" 
+                                className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all bg-stone-900 hover:bg-stone-800 disabled:opacity-50" 
+                                disabled={saving}
+                            >
                                 {saving ? 'Saving...' : 'Save Changes'}
                             </Button>
                         </div>

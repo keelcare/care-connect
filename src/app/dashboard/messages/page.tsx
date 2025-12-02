@@ -349,7 +349,7 @@ function MessagesContent() {
                     {chats.map((chat) => (
                         <div
                             key={chat.id}
-                            className={`p-4 flex items-center gap-3 cursor-pointer transition-colors hover:bg-neutral-50 ${activeChat?.id === chat.id ? 'bg-primary-50/50 border-r-2 border-primary' : ''
+                            className={`p-4 flex items-center gap-3 cursor-pointer transition-colors hover:bg-stone-50 ${activeChat?.id === chat.id ? 'bg-stone-100 border-r-2 border-stone-900' : ''
                                 }`}
                             onClick={() => setActiveChat(chat)}
                         >
@@ -375,7 +375,7 @@ function MessagesContent() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className={`font-medium truncate ${activeChat?.id === chat.id ? 'text-primary-900' : 'text-neutral-900'}`}>
+                                    <span className={`font-medium truncate ${activeChat?.id === chat.id ? 'text-stone-900' : 'text-neutral-900'}`}>
                                         {chat.otherPartyName}
                                     </span>
                                 </div>
