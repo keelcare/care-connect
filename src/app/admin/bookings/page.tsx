@@ -9,10 +9,26 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import styles from './page.module.css';
 
+// Extended booking type to handle Prisma relation names from backend
+interface AdminBooking extends Booking {
+    // Prisma relation names from backend
+    jobs?: { title?: string; description?: string };
+    users_bookings_parent_idTousers?: {
+        id: string;
+        email: string;
+        profiles?: { first_name?: string | null; last_name?: string | null };
+    };
+    users_bookings_nanny_idTousers?: {
+        id: string;
+        email: string;
+        profiles?: { first_name?: string | null; last_name?: string | null };
+    };
+}
+
 export default function AdminBookingsPage() {
     const { user } = useAuth();
     const router = useRouter();
-    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [bookings, setBookings] = useState<AdminBooking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -32,13 +48,109 @@ export default function AdminBookingsPage() {
             setLoading(true);
             setError(null);
             const data = await api.admin.getBookings();
-            setBookings(data);
+            
+            // Enrich bookings with parent/nanny details if not already populated
+            const enrichedBookings = await Promise.all(
+                data.map(async (booking: AdminBooking) => {
+                    let enrichedBooking = { ...booking };
+                    
+                    // Fetch parent details if missing
+                    const parentFromPrisma = booking.users_bookings_parent_idTousers;
+                    const parentFromBooking = booking.parent;
+                    
+                    if (!parentFromPrisma?.profiles?.first_name && !parentFromBooking?.profiles?.first_name && booking.parent_id) {
+                        try {
+                            const parentDetails = await api.users.get(booking.parent_id);
+                            enrichedBooking.parent = parentDetails;
+                        } catch (err) {
+                            console.error(`Failed to fetch parent details for booking ${booking.id}:`, err);
+                        }
+                    }
+                    
+                    // Fetch nanny details if missing
+                    const nannyFromPrisma = booking.users_bookings_nanny_idTousers;
+                    const nannyFromBooking = booking.nanny;
+                    
+                    if (!nannyFromPrisma?.profiles?.first_name && !nannyFromBooking?.profiles?.first_name && booking.nanny_id) {
+                        try {
+                            const nannyDetails = await api.users.get(booking.nanny_id);
+                            enrichedBooking.nanny = nannyDetails;
+                        } catch (err) {
+                            console.error(`Failed to fetch nanny details for booking ${booking.id}:`, err);
+                        }
+                    }
+                    
+                    return enrichedBooking;
+                })
+            );
+            
+            setBookings(enrichedBookings);
         } catch (err) {
             console.error('Failed to fetch bookings:', err);
             setError(err instanceof Error ? err.message : 'Failed to load bookings');
         } finally {
             setLoading(false);
         }
+    };
+
+    // Helper function to get job title from various sources
+    const getJobTitle = (booking: AdminBooking): string => {
+        // Try Prisma relation name first
+        if (booking.jobs?.title) {
+            return booking.jobs.title;
+        }
+        // Try standard job relation
+        if (booking.job?.title) {
+            return booking.job.title;
+        }
+        // Fallback based on how booking was created
+        return 'Direct Booking';
+    };
+
+    // Helper function to get parent name
+    const getParentName = (booking: AdminBooking): string => {
+        // Try Prisma relation name first
+        const prismaParent = booking.users_bookings_parent_idTousers;
+        if (prismaParent?.profiles?.first_name && prismaParent?.profiles?.last_name) {
+            return `${prismaParent.profiles.first_name} ${prismaParent.profiles.last_name}`;
+        }
+        if (prismaParent?.email) {
+            return prismaParent.email;
+        }
+        
+        // Try standard parent relation
+        const parent = booking.parent;
+        if (parent?.profiles?.first_name && parent?.profiles?.last_name) {
+            return `${parent.profiles.first_name} ${parent.profiles.last_name}`;
+        }
+        if (parent?.email) {
+            return parent.email;
+        }
+        
+        return 'N/A';
+    };
+
+    // Helper function to get nanny name
+    const getNannyName = (booking: AdminBooking): string => {
+        // Try Prisma relation name first
+        const prismaNanny = booking.users_bookings_nanny_idTousers;
+        if (prismaNanny?.profiles?.first_name && prismaNanny?.profiles?.last_name) {
+            return `${prismaNanny.profiles.first_name} ${prismaNanny.profiles.last_name}`;
+        }
+        if (prismaNanny?.email) {
+            return prismaNanny.email;
+        }
+        
+        // Try standard nanny relation
+        const nanny = booking.nanny;
+        if (nanny?.profiles?.first_name && nanny?.profiles?.last_name) {
+            return `${nanny.profiles.first_name} ${nanny.profiles.last_name}`;
+        }
+        if (nanny?.email) {
+            return nanny.email;
+        }
+        
+        return 'N/A';
     };
 
     const getStatusClass = (status: string) => {
@@ -98,17 +210,9 @@ export default function AdminBookingsPage() {
                         <tbody className="divide-y divide-neutral-100">
                             {bookings.map((booking) => (
                                 <tr key={booking.id} className="hover:bg-neutral-50/50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">{booking.job?.title || 'N/A'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                                        {booking.parent?.profiles?.first_name && booking.parent?.profiles?.last_name
-                                            ? `${booking.parent.profiles.first_name} ${booking.parent.profiles.last_name}`
-                                            : booking.parent?.email || 'N/A'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                                        {booking.nanny?.profiles?.first_name && booking.nanny?.profiles?.last_name
-                                            ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name}`
-                                            : booking.nanny?.email || 'N/A'}
-                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">{getJobTitle(booking)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-neutral-600">{getParentName(booking)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-neutral-600">{getNannyName(booking)}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-neutral-500">{new Date(booking.start_time).toLocaleString()}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusClass(booking.status)}`}>

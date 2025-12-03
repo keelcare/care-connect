@@ -4,11 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking } from '@/types/api';
+import { Booking, User } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Calendar, Clock, MapPin, User, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, User as UserIcon, CheckCircle, XCircle } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
+
+// Extended booking type to handle Prisma relation names from backend
+interface AdminBooking extends Booking {
+    // Prisma relation names from backend
+    jobs?: { title?: string; description?: string; location_lat?: string; location_lng?: string };
+    users_bookings_parent_idTousers?: User;
+    users_bookings_nanny_idTousers?: User;
+}
 
 export default function AdminBookingDetailsPage() {
     const params = useParams();
@@ -16,7 +24,7 @@ export default function AdminBookingDetailsPage() {
     const { user } = useAuth();
     const bookingId = params.id as string;
 
-    const [booking, setBooking] = useState<Booking | null>(null);
+    const [booking, setBooking] = useState<AdminBooking | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
@@ -36,14 +44,74 @@ export default function AdminBookingDetailsPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.bookings.get(bookingId);
-            setBooking(data);
+            const data = await api.bookings.get(bookingId) as AdminBooking;
+            
+            // Enrich booking with parent/nanny details if not already populated
+            let enrichedBooking = { ...data };
+            
+            // Fetch parent details if missing
+            const parentFromPrisma = data.users_bookings_parent_idTousers;
+            const parentFromBooking = data.parent;
+            
+            if (!parentFromPrisma?.profiles?.first_name && !parentFromBooking?.profiles?.first_name && data.parent_id) {
+                try {
+                    const parentDetails = await api.users.get(data.parent_id);
+                    enrichedBooking.parent = parentDetails;
+                } catch (err) {
+                    console.error(`Failed to fetch parent details:`, err);
+                }
+            }
+            
+            // Fetch nanny details if missing
+            const nannyFromPrisma = data.users_bookings_nanny_idTousers;
+            const nannyFromBooking = data.nanny;
+            
+            if (!nannyFromPrisma?.profiles?.first_name && !nannyFromBooking?.profiles?.first_name && data.nanny_id) {
+                try {
+                    const nannyDetails = await api.users.get(data.nanny_id);
+                    enrichedBooking.nanny = nannyDetails;
+                } catch (err) {
+                    console.error(`Failed to fetch nanny details:`, err);
+                }
+            }
+            
+            setBooking(enrichedBooking);
         } catch (err) {
             console.error('Failed to fetch booking:', err);
             setError(err instanceof Error ? err.message : 'Failed to load booking');
         } finally {
             setLoading(false);
         }
+    };
+
+    // Helper function to get job info from various sources
+    const getJobInfo = (booking: AdminBooking) => {
+        return booking.jobs || booking.job || null;
+    };
+
+    // Helper function to get job title
+    const getJobTitle = (booking: AdminBooking): string => {
+        const job = getJobInfo(booking);
+        return job?.title || 'Direct Booking';
+    };
+
+    // Helper function to get parent info
+    const getParentInfo = (booking: AdminBooking): User | null => {
+        return booking.users_bookings_parent_idTousers || booking.parent || null;
+    };
+
+    // Helper function to get nanny info
+    const getNannyInfo = (booking: AdminBooking): User | null => {
+        return booking.users_bookings_nanny_idTousers || booking.nanny || null;
+    };
+
+    // Helper function to get user display name
+    const getUserName = (user: User | null): string => {
+        if (!user) return 'N/A';
+        if (user.profiles?.first_name && user.profiles?.last_name) {
+            return `${user.profiles.first_name} ${user.profiles.last_name}`;
+        }
+        return user.email || 'N/A';
     };
 
     const handleCompleteBooking = async () => {
@@ -126,6 +194,9 @@ export default function AdminBookingDetailsPage() {
 
     const startDateTime = formatDateTime(booking.start_time);
     const endDateTime = booking.end_time ? formatDateTime(booking.end_time) : null;
+    const jobInfo = getJobInfo(booking);
+    const parentInfo = getParentInfo(booking);
+    const nannyInfo = getNannyInfo(booking);
 
     return (
         <div className="max-w-6xl mx-auto space-y-8">
@@ -145,7 +216,7 @@ export default function AdminBookingDetailsPage() {
                 <div className="lg:col-span-2 space-y-8">
                     <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8">
                         <div className="flex items-center justify-between mb-8 pb-6 border-b border-neutral-100">
-                            <h2 className="text-2xl font-bold text-neutral-900">{booking.job?.title || 'Booking'}</h2>
+                            <h2 className="text-2xl font-bold text-neutral-900">{getJobTitle(booking)}</h2>
                             <span className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${getStatusClass(booking.status)}`}>
                                 {booking.status.toLowerCase().replace('_', ' ')}
                             </span>
@@ -175,7 +246,7 @@ export default function AdminBookingDetailsPage() {
                                 </div>
                             </div>
 
-                            {booking.job?.location_lat && booking.job?.location_lng && (
+                            {jobInfo?.location_lat && jobInfo?.location_lng && (
                                 <div className="flex items-start gap-4 md:col-span-2">
                                     <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
                                         <MapPin size={20} />
@@ -183,17 +254,17 @@ export default function AdminBookingDetailsPage() {
                                     <div>
                                         <p className="text-sm font-medium text-neutral-500 mb-1">Location</p>
                                         <p className="text-neutral-900 font-medium">
-                                            {booking.parent?.profiles?.address || 'Address not provided'}
+                                            {parentInfo?.profiles?.address || 'Address not provided'}
                                         </p>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {booking.job?.description && (
+                        {jobInfo?.description && (
                             <div className="mb-8 pt-6 border-t border-neutral-100">
                                 <h3 className="text-lg font-bold text-neutral-900 mb-3">Description</h3>
-                                <p className="text-neutral-600 leading-relaxed">{booking.job.description}</p>
+                                <p className="text-neutral-600 leading-relaxed">{jobInfo.description}</p>
                             </div>
                         )}
 
@@ -232,62 +303,58 @@ export default function AdminBookingDetailsPage() {
                     {/* Parent Details */}
                     <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-6">
                         <h3 className="text-lg font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100 flex items-center gap-2">
-                            <User size={20} className="text-stone-900" />
+                            <UserIcon size={20} className="text-stone-900" />
                             Parent Information
                         </h3>
 
-                        {booking.parent && (
+                        {parentInfo ? (
                             <div className="flex items-center gap-4 mb-4">
                                 <Avatar
-                                    src={booking.parent.profiles?.profile_image_url || undefined}
-                                    alt={booking.parent.profiles?.first_name || 'Parent'}
-                                    fallback={booking.parent.profiles?.first_name?.[0] || 'P'}
+                                    src={parentInfo.profiles?.profile_image_url || undefined}
+                                    alt={parentInfo.profiles?.first_name || 'Parent'}
+                                    fallback={parentInfo.profiles?.first_name?.[0] || 'P'}
                                     size="lg"
                                     ringColor="bg-stone-100"
                                 />
                                 <div>
-                                    <p className="font-bold text-neutral-900">
-                                        {booking.parent.profiles?.first_name
-                                            ? `${booking.parent.profiles.first_name} ${booking.parent.profiles.last_name}`
-                                            : booking.parent.email}
-                                    </p>
-                                    <p className="text-sm text-neutral-500">{booking.parent.email}</p>
-                                    {booking.parent.profiles?.phone && (
-                                        <p className="text-sm text-neutral-500 mt-1">{booking.parent.profiles.phone}</p>
+                                    <p className="font-bold text-neutral-900">{getUserName(parentInfo)}</p>
+                                    <p className="text-sm text-neutral-500">{parentInfo.email}</p>
+                                    {parentInfo.profiles?.phone && (
+                                        <p className="text-sm text-neutral-500 mt-1">{parentInfo.profiles.phone}</p>
                                     )}
                                 </div>
                             </div>
+                        ) : (
+                            <p className="text-neutral-500">No parent information available</p>
                         )}
                     </div>
 
                     {/* Nanny Details */}
                     <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-6">
                         <h3 className="text-lg font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100 flex items-center gap-2">
-                            <User size={20} className="text-secondary" />
+                            <UserIcon size={20} className="text-secondary" />
                             Nanny Information
                         </h3>
 
-                        {booking.nanny && (
+                        {nannyInfo ? (
                             <div className="flex items-center gap-4 mb-4">
                                 <Avatar
-                                    src={booking.nanny.profiles?.profile_image_url || undefined}
-                                    alt={booking.nanny.profiles?.first_name || 'Nanny'}
-                                    fallback={booking.nanny.profiles?.first_name?.[0] || 'N'}
+                                    src={nannyInfo.profiles?.profile_image_url || undefined}
+                                    alt={nannyInfo.profiles?.first_name || 'Nanny'}
+                                    fallback={nannyInfo.profiles?.first_name?.[0] || 'N'}
                                     size="lg"
                                     ringColor="bg-secondary/10"
                                 />
                                 <div>
-                                    <p className="font-bold text-neutral-900">
-                                        {booking.nanny.profiles?.first_name
-                                            ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name}`
-                                            : booking.nanny.email}
-                                    </p>
-                                    <p className="text-sm text-neutral-500">{booking.nanny.email}</p>
-                                    {booking.nanny.profiles?.phone && (
-                                        <p className="text-sm text-neutral-500 mt-1">{booking.nanny.profiles.phone}</p>
+                                    <p className="font-bold text-neutral-900">{getUserName(nannyInfo)}</p>
+                                    <p className="text-sm text-neutral-500">{nannyInfo.email}</p>
+                                    {nannyInfo.profiles?.phone && (
+                                        <p className="text-sm text-neutral-500 mt-1">{nannyInfo.profiles.phone}</p>
                                     )}
                                 </div>
                             </div>
+                        ) : (
+                            <p className="text-neutral-500">No nanny information available</p>
                         )}
                     </div>
                 </div>
