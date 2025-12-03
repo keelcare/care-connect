@@ -1,13 +1,13 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList, CalendarOff, Bell, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Calendar, Settings, User, ClipboardList, CalendarOff, Bell, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
-import { useState } from 'react';
+import { Avatar } from '@/components/ui/avatar';
 
 export default function DashboardLayout({
     children,
@@ -29,6 +29,31 @@ export default function DashboardLayout({
     const { user, loading, logout } = useAuth();
     const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+                setIsProfileDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            router.push('/');
+        } catch (error) {
+            console.error('Logout failed', error);
+        }
+    };
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div></div>;
@@ -125,29 +150,79 @@ export default function DashboardLayout({
                             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                         </Link>
 
-                        {/* User Avatar (visible on mobile) */}
-                        <div className="md:hidden">
-                            <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-stone-100">
-                                <Image
-                                    src={user?.profiles?.profile_image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                                    alt="User"
-                                    fill
-                                    className="object-cover"
+                        {/* Profile Dropdown */}
+                        <div className="relative" ref={profileDropdownRef}>
+                            <button
+                                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-all"
+                            >
+                                <Avatar
+                                    src={user?.profiles?.profile_image_url || undefined}
+                                    alt={user?.profiles?.first_name || 'User'}
+                                    fallback={user?.profiles?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                                    size="sm"
+                                    ringColor="bg-stone-100"
                                 />
-                            </div>
-                        </div>
+                                <ChevronDown size={16} className={`text-stone-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
 
-                        {/* Logout Button (desktop only) */}
-                        <button
-                            onClick={() => {
-                                logout();
-                                router.push('/');
-                            }}
-                            className="hidden md:flex items-center gap-2 px-4 py-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-all text-sm font-medium"
-                        >
-                            <LogOut size={18} />
-                            Logout
-                        </button>
+                            {/* Dropdown Menu */}
+                            {isProfileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-stone-200 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right z-50">
+                                    <div className="px-4 py-3 border-b border-stone-100">
+                                        <p className="font-bold text-stone-900 truncate">
+                                            {user?.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'User'}
+                                        </p>
+                                        <p className="text-xs text-stone-500 truncate">{user?.email}</p>
+                                    </div>
+
+                                    <div className="py-1">
+                                        <Link
+                                            href="/dashboard"
+                                            onClick={() => setIsProfileDropdownOpen(false)}
+                                            className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
+                                        >
+                                            <LayoutDashboard size={18} />
+                                            <span className="font-medium">Overview</span>
+                                        </Link>
+                                        <Link
+                                            href="/dashboard/profile"
+                                            onClick={() => setIsProfileDropdownOpen(false)}
+                                            className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
+                                        >
+                                            <User size={18} />
+                                            <span className="font-medium">My Profile</span>
+                                        </Link>
+                                        <Link
+                                            href="/dashboard/bookings"
+                                            onClick={() => setIsProfileDropdownOpen(false)}
+                                            className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
+                                        >
+                                            <Calendar size={18} />
+                                            <span className="font-medium">My Bookings</span>
+                                        </Link>
+                                        <Link
+                                            href="/dashboard/settings"
+                                            onClick={() => setIsProfileDropdownOpen(false)}
+                                            className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
+                                        >
+                                            <Settings size={18} />
+                                            <span className="font-medium">Settings</span>
+                                        </Link>
+                                    </div>
+
+                                    <div className="border-t border-stone-100 mt-1 pt-1">
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center gap-3 text-red-600 transition-colors"
+                                        >
+                                            <LogOut size={18} />
+                                            <span className="font-medium">Log Out</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
