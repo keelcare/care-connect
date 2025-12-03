@@ -23,17 +23,14 @@ import {
     FileText,
     Sparkles,
     CheckCircle2,
-    MapPin
+    MapPin,
+    GraduationCap
 } from 'lucide-react';
 import Link from 'next/link';
 
 const SERVICE_TYPES = [
-    { id: 'childCare', label: 'Child Care', icon: Baby, color: 'bg-amber-50 text-amber-600 border-amber-200', activeColor: 'bg-amber-500 text-white border-amber-500' },
-    { id: 'seniorCare', label: 'Senior Care', icon: Heart, color: 'bg-rose-50 text-rose-600 border-rose-200', activeColor: 'bg-rose-500 text-white border-rose-500' },
-    { id: 'petCare', label: 'Pet Care', icon: PawPrint, color: 'bg-emerald-50 text-emerald-600 border-emerald-200', activeColor: 'bg-emerald-500 text-white border-emerald-500' },
-    { id: 'housekeeping', label: 'Housekeeping', icon: Home, color: 'bg-blue-50 text-blue-600 border-blue-200', activeColor: 'bg-blue-500 text-white border-blue-500' },
-    { id: 'tutoring', label: 'Tutoring', icon: BookOpen, color: 'bg-purple-50 text-purple-600 border-purple-200', activeColor: 'bg-purple-500 text-white border-purple-500' },
-    { id: 'specialNeeds', label: 'Special Needs', icon: Accessibility, color: 'bg-teal-50 text-teal-600 border-teal-200', activeColor: 'bg-teal-500 text-white border-teal-500' },
+    { id: 'shadowTeacher', label: 'Shadow Teacher', icon: GraduationCap, color: 'bg-amber-50 text-amber-600 border-amber-200', activeColor: 'bg-amber-500 text-white border-amber-500' },
+    { id: 'specialNeeds', label: 'Special Needs', icon: Baby, color: 'bg-teal-50 text-teal-600 border-teal-200', activeColor: 'bg-teal-500 text-white border-teal-500' },
 ];
 
 const DURATION_OPTIONS = [
@@ -159,7 +156,13 @@ export default function BookServicePage() {
                         <Button
                             variant="ghost"
                             className="mb-4 -ml-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                            onClick={() => router.back()}
+                            onClick={() => {
+                                if (currentStep > 1) {
+                                    setCurrentStep(currentStep - 1);
+                                } else {
+                                    router.back();
+                                }
+                            }}
                         >
                             <ChevronLeft size={20} className="mr-1" />
                             Back
@@ -235,7 +238,7 @@ export default function BookServicePage() {
                                         <h2 className="text-xl font-bold text-stone-900">What service do you need?</h2>
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                                         {SERVICE_TYPES.map((service) => {
                                             const Icon = service.icon;
                                             const isSelected = formData.serviceType === service.id;
@@ -244,12 +247,12 @@ export default function BookServicePage() {
                                                     key={service.id}
                                                     type="button"
                                                     onClick={() => setFormData({ ...formData, serviceType: service.id })}
-                                                    className={`p-5 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-3 hover:scale-[1.02] ${
+                                                    className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-4 hover:scale-[1.02] min-w-[160px] md:min-w-[180px] ${
                                                         isSelected ? service.activeColor : `${service.color} hover:shadow-md`
                                                     }`}
                                                 >
-                                                    <Icon size={28} />
-                                                    <span className="font-medium text-sm">{service.label}</span>
+                                                    <Icon size={32} />
+                                                    <span className="font-bold text-base">{service.label}</span>
                                                 </button>
                                             );
                                         })}
@@ -311,6 +314,21 @@ export default function BookServicePage() {
                                         <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                                             {TIME_SLOTS.map((time) => {
                                                 const isSelected = formData.startTime === time;
+                                                
+                                                // Check if slot is in the past or within 15 mins
+                                                const selectedDateObj = availableDates.find(d => formatDate(d) === formData.date);
+                                                if (selectedDateObj && isToday(selectedDateObj)) {
+                                                    const [slotHours, slotMinutes] = time.split(':').map(Number);
+                                                    const now = new Date();
+                                                    const slotTime = new Date();
+                                                    slotTime.setHours(slotHours, slotMinutes || 0, 0, 0);
+                                                    
+                                                    // Add 15 minutes buffer to current time
+                                                    const bufferTime = new Date(now.getTime() + 15 * 60000);
+                                                    
+                                                    if (slotTime <= bufferTime) return null;
+                                                }
+
                                                 return (
                                                     <button
                                                         key={time}

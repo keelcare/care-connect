@@ -280,13 +280,7 @@ export default function BookingsPage() {
                     <h1 className="text-3xl font-bold text-neutral-900 font-display">My Bookings</h1>
                     <p className="text-neutral-500 mt-1">Manage your appointments and requests</p>
                 </div>
-                {user?.role === 'parent' && (
-                    <Link href="/dashboard/requests/create">
-                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all">
-                            <Plus size={18} className="mr-2" /> New Request
-                        </Button>
-                    </Link>
-                )}
+
             </div>
 
             {/* Tabs */}
@@ -410,11 +404,7 @@ export default function BookingsPage() {
                                 </div>
                                 <h3 className="text-xl font-bold text-neutral-900 mb-2">No Requests Yet</h3>
                                 <p className="text-neutral-500 mb-6 max-w-md mx-auto">You haven't created any service requests yet.</p>
-                                <Link href="/dashboard/requests/create">
-                                    <Button className="rounded-xl">
-                                        Create Your First Request
-                                    </Button>
-                                </Link>
+
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

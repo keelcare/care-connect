@@ -156,11 +156,7 @@ export default function ParentBookingsPage() {
                         <h1 className="text-3xl font-bold text-stone-900">My Bookings</h1>
                         <p className="text-stone-500 mt-1">Manage your appointments and requests</p>
                     </div>
-                    <Link href="/dashboard/requests/create">
-                        <Button className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all bg-emerald-600 hover:bg-emerald-700">
-                            <Plus size={18} className="mr-2" /> New Request
-                        </Button>
-                    </Link>
+
                 </div>
 
                 {/* Tabs */}
@@ -214,11 +210,7 @@ export default function ParentBookingsPage() {
                                 </div>
                                 <h3 className="text-xl font-bold text-stone-900 mb-2">No Requests Yet</h3>
                                 <p className="text-stone-500 mb-6 max-w-md mx-auto">You haven't created any service requests yet.</p>
-                                <Link href="/dashboard/requests/create">
-                                    <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700">
-                                        Create Your First Request
-                                    </Button>
-                                </Link>
+
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
