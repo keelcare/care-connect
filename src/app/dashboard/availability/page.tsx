@@ -19,9 +19,37 @@ import {
     X,
     CalendarOff,
     Repeat,
-    AlertCircle,
     CheckCircle2,
+    ChevronLeft,
+    Sparkles,
+    FileText,
+    CalendarDays,
 } from 'lucide-react';
+
+const TIME_SLOTS = [
+    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+    '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+];
+
+const BLOCK_TYPES = [
+    { 
+        id: 'oneTime', 
+        label: 'One-Time Block', 
+        description: 'Block a specific date or date range',
+        icon: CalendarOff, 
+        color: 'bg-orange-50 text-orange-600 border-orange-200', 
+        activeColor: 'bg-orange-500 text-white border-orange-500' 
+    },
+    { 
+        id: 'recurring', 
+        label: 'Recurring Block', 
+        description: 'Block same time every week',
+        icon: Repeat, 
+        color: 'bg-purple-50 text-purple-600 border-purple-200', 
+        activeColor: 'bg-purple-500 text-white border-purple-500' 
+    },
+];
 
 export default function AvailabilityPage() {
     const { user } = useAuth();
@@ -30,18 +58,32 @@ export default function AvailabilityPage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [currentStep, setCurrentStep] = useState(1);
 
     // Form state
     const [formData, setFormData] = useState({
+        blockType: '',
         startDate: '',
         endDate: '',
-        startTime: '09:00',
-        endTime: '17:00',
-        isRecurring: false,
+        startTime: '',
+        endTime: '',
         selectedDays: [] as string[],
         reason: '',
     });
     const [submitting, setSubmitting] = useState(false);
+
+    // Generate next 30 days for date selection
+    const getNextDays = () => {
+        const days = [];
+        for (let i = 0; i < 30; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() + i);
+            days.push(date);
+        }
+        return days;
+    };
+
+    const availableDates = getNextDays();
 
     useEffect(() => {
         fetchBlocks();
@@ -69,7 +111,12 @@ export default function AvailabilityPage() {
             return;
         }
 
-        if (formData.isRecurring && formData.selectedDays.length === 0) {
+        if (!formData.startTime || !formData.endTime) {
+            addToast({ message: 'Please select start and end times', type: 'error' });
+            return;
+        }
+
+        if (formData.blockType === 'recurring' && formData.selectedDays.length === 0) {
             addToast({ message: 'Please select at least one day for recurring block', type: 'error' });
             return;
         }
@@ -82,11 +129,13 @@ export default function AvailabilityPage() {
                 ? `${formData.endDate}T${formData.endTime}:00Z`
                 : `${formData.startDate}T${formData.endTime}:00Z`;
 
+            const isRecurring = formData.blockType === 'recurring';
+
             const payload = {
                 startTime: startDateTime,
                 endTime: endDateTime,
-                isRecurring: formData.isRecurring,
-                recurrencePattern: formData.isRecurring 
+                isRecurring,
+                recurrencePattern: isRecurring 
                     ? generateRecurrencePattern('weekly', formData.selectedDays)
                     : undefined,
                 reason: formData.reason || undefined,
@@ -94,8 +143,7 @@ export default function AvailabilityPage() {
 
             await api.availability.create(payload);
             addToast({ message: 'Availability block created successfully', type: 'success' });
-            setShowModal(false);
-            resetForm();
+            closeModal();
             fetchBlocks();
         } catch (error) {
             console.error('Failed to create availability block:', error);
@@ -121,14 +169,25 @@ export default function AvailabilityPage() {
 
     const resetForm = () => {
         setFormData({
+            blockType: '',
             startDate: '',
             endDate: '',
-            startTime: '09:00',
-            endTime: '17:00',
-            isRecurring: false,
+            startTime: '',
+            endTime: '',
             selectedDays: [],
             reason: '',
         });
+        setCurrentStep(1);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        resetForm();
+    };
+
+    const openModal = () => {
+        resetForm();
+        setShowModal(true);
     };
 
     const formatDateTime = (dateString: string) => {
@@ -137,6 +196,28 @@ export default function AvailabilityPage() {
             date: date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
             time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         };
+    };
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    const isToday = (date: Date) => {
+        const today = new Date();
+        return date.toDateString() === today.toDateString();
+    };
+
+    const canProceedToStep2 = formData.blockType !== '';
+    const canProceedToStep3 = formData.blockType === 'recurring' 
+        ? formData.selectedDays.length > 0 && formData.startDate !== ''
+        : formData.startDate !== '';
+    const canSubmit = formData.startTime !== '' && formData.endTime !== '';
+
+    const getStepLabels = () => {
+        if (formData.blockType === 'recurring') {
+            return ['Block Type', 'Days & Start', 'Time & Details'];
+        }
+        return ['Block Type', 'Select Date', 'Time & Details'];
     };
 
     return (
@@ -148,7 +229,7 @@ export default function AvailabilityPage() {
                     <p className="text-stone-500 mt-1">Manage your blocked times and recurring unavailability</p>
                 </div>
                 <Button
-                    onClick={() => setShowModal(true)}
+                    onClick={openModal}
                     className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                     <Plus size={18} className="mr-2" />
@@ -255,159 +336,428 @@ export default function AvailabilityPage() {
                 </div>
             )}
 
-            {/* Create Block Modal */}
+            {/* Create Block Modal - Enhanced UI */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-stone-100 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-stone-900">Block Time</h2>
-                            <button
-                                onClick={() => { setShowModal(false); resetForm(); }}
-                                className="p-2 hover:bg-stone-100 rounded-xl transition-colors"
-                            >
-                                <X size={20} className="text-stone-500" />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                            {/* Recurring Toggle */}
-                            <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
+                    <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                        {/* Modal Header */}
+                        <div className="p-6 border-b border-stone-100">
+                            <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <Repeat size={20} className="text-stone-600" />
-                                    <div>
-                                        <p className="font-medium text-stone-900">Recurring Block</p>
-                                        <p className="text-sm text-stone-500">Repeat on specific days every week</p>
+                                    {currentStep > 1 && (
+                                        <button
+                                            onClick={() => setCurrentStep(currentStep - 1)}
+                                            className="p-2 hover:bg-stone-100 rounded-xl transition-colors"
+                                        >
+                                            <ChevronLeft size={20} className="text-stone-500" />
+                                        </button>
+                                    )}
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                                            <CalendarOff className="w-5 h-5 text-emerald-600" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-stone-900">Block Time</h2>
+                                            <p className="text-sm text-stone-500">Set when you're unavailable</p>
+                                        </div>
                                     </div>
                                 </div>
                                 <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, isRecurring: !formData.isRecurring })}
-                                    className={`w-12 h-6 rounded-full transition-colors ${
-                                        formData.isRecurring ? 'bg-emerald-600' : 'bg-stone-300'
-                                    }`}
+                                    onClick={closeModal}
+                                    className="p-2 hover:bg-stone-100 rounded-xl transition-colors"
                                 >
-                                    <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
-                                        formData.isRecurring ? 'translate-x-6' : 'translate-x-0.5'
-                                    }`} />
+                                    <X size={20} className="text-stone-500" />
                                 </button>
                             </div>
 
-                            {/* Day Selector for Recurring */}
-                            {formData.isRecurring && (
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-3">
-                                        Select Days
-                                    </label>
-                                    <DaySelector
-                                        selectedDays={formData.selectedDays}
-                                        onChange={(days) => setFormData({ ...formData, selectedDays: days })}
-                                    />
+                            {/* Progress Steps */}
+                            <div className="flex items-center justify-between mt-4">
+                                {[1, 2, 3].map((step) => {
+                                    const stepLabels = getStepLabels();
+                                    return (
+                                        <React.Fragment key={step}>
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                                                    currentStep >= step 
+                                                        ? 'bg-emerald-600 text-white' 
+                                                        : 'bg-stone-100 text-stone-400'
+                                                }`}>
+                                                    {currentStep > step ? <CheckCircle2 size={16} /> : step}
+                                                </div>
+                                                <span className={`hidden sm:block text-xs font-medium ${
+                                                    currentStep >= step ? 'text-stone-900' : 'text-stone-400'
+                                                }`}>
+                                                    {stepLabels[step - 1]}
+                                                </span>
+                                            </div>
+                                            {step < 3 && (
+                                                <div className={`flex-1 h-1 mx-2 rounded-full transition-all ${
+                                                    currentStep > step ? 'bg-emerald-600' : 'bg-stone-200'
+                                                }`} />
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            {/* Step 1: Block Type Selection */}
+                            {currentStep === 1 && (
+                                <div className="p-6 md:p-8">
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                            <Sparkles size={16} className="text-emerald-600" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-stone-900">What type of block?</h3>
+                                    </div>
+                                    
+                                    <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+                                        {BLOCK_TYPES.map((type) => {
+                                            const Icon = type.icon;
+                                            const isSelected = formData.blockType === type.id;
+                                            return (
+                                                <button
+                                                    key={type.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, blockType: type.id })}
+                                                    className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-3 hover:scale-[1.02] flex-1 max-w-[220px] ${
+                                                        isSelected ? type.activeColor : `${type.color} hover:shadow-md`
+                                                    }`}
+                                                >
+                                                    <Icon size={32} />
+                                                    <div className="text-center">
+                                                        <span className="font-bold text-base block">{type.label}</span>
+                                                        <span className={`text-xs mt-1 block ${isSelected ? 'opacity-80' : 'text-stone-500'}`}>
+                                                            {type.description}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
 
-                            {/* Date Selection */}
-                            {!formData.isRecurring && (
-                                <div className="grid grid-cols-2 gap-4">
+                            {/* Step 2: Date/Days Selection */}
+                            {currentStep === 2 && (
+                                <div className="p-6 md:p-8">
+                                    {formData.blockType === 'recurring' ? (
+                                        <>
+                                            {/* Day Selection for Recurring */}
+                                            <div className="mb-8">
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                                                        <Repeat size={16} className="text-purple-600" />
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-stone-900">Select Days to Block</h3>
+                                                </div>
+                                                <p className="text-sm text-stone-500 mb-4">
+                                                    These days will be blocked every week
+                                                </p>
+                                                <DaySelector
+                                                    selectedDays={formData.selectedDays}
+                                                    onChange={(days) => setFormData({ ...formData, selectedDays: days })}
+                                                />
+                                            </div>
+
+                                            {/* Starting From Date */}
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                                        <CalendarDays size={16} className="text-emerald-600" />
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-stone-900">Starting From</h3>
+                                                </div>
+                                                
+                                                <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
+                                                    {availableDates.slice(0, 14).map((date) => {
+                                                        const dateStr = formatDate(date);
+                                                        const isSelected = formData.startDate === dateStr;
+                                                        return (
+                                                            <button
+                                                                key={dateStr}
+                                                                type="button"
+                                                                onClick={() => setFormData({ ...formData, startDate: dateStr })}
+                                                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
+                                                                    isSelected
+                                                                        ? 'bg-emerald-600 text-white border-emerald-600'
+                                                                        : 'bg-white border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
+                                                                }`}
+                                                            >
+                                                                <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-emerald-100' : 'text-stone-500'}`}>
+                                                                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                                                </span>
+                                                                <span className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-emerald-600' : ''}`}>
+                                                                    {date.getDate()}
+                                                                </span>
+                                                                <span className={`text-xs ${isSelected ? 'text-emerald-100' : 'text-stone-400'}`}>
+                                                                    {date.toLocaleDateString('en-US', { month: 'short' })}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Date Selection for One-Time Block */}
+                                            <div className="mb-8">
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                                                        <Calendar size={16} className="text-orange-600" />
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-stone-900">Select Start Date</h3>
+                                                </div>
+                                                
+                                                <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
+                                                    {availableDates.map((date) => {
+                                                        const dateStr = formatDate(date);
+                                                        const isSelected = formData.startDate === dateStr;
+                                                        return (
+                                                            <button
+                                                                key={dateStr}
+                                                                type="button"
+                                                                onClick={() => setFormData({ ...formData, startDate: dateStr })}
+                                                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
+                                                                    isSelected
+                                                                        ? 'bg-emerald-600 text-white border-emerald-600'
+                                                                        : 'bg-white border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
+                                                                }`}
+                                                            >
+                                                                <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-emerald-100' : 'text-stone-500'}`}>
+                                                                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                                                </span>
+                                                                <span className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-emerald-600' : ''}`}>
+                                                                    {date.getDate()}
+                                                                </span>
+                                                                <span className={`text-xs ${isSelected ? 'text-emerald-100' : 'text-stone-400'}`}>
+                                                                    {date.toLocaleDateString('en-US', { month: 'short' })}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* End Date Selection (Optional) */}
+                                            {formData.startDate && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-4">
+                                                        <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
+                                                            <Calendar size={16} className="text-stone-600" />
+                                                        </div>
+                                                        <h3 className="text-lg font-bold text-stone-900">End Date (Optional)</h3>
+                                                    </div>
+                                                    <p className="text-sm text-stone-500 mb-4">
+                                                        Leave empty for a single day block
+                                                    </p>
+                                                    
+                                                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
+                                                        {availableDates
+                                                            .filter(date => formatDate(date) >= formData.startDate)
+                                                            .map((date) => {
+                                                                const dateStr = formatDate(date);
+                                                                const isSelected = formData.endDate === dateStr;
+                                                                const isStartDate = formData.startDate === dateStr;
+                                                                return (
+                                                                    <button
+                                                                        key={dateStr}
+                                                                        type="button"
+                                                                        onClick={() => setFormData({ 
+                                                                            ...formData, 
+                                                                            endDate: isSelected ? '' : dateStr 
+                                                                        })}
+                                                                        className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
+                                                                            isSelected
+                                                                                ? 'bg-stone-700 text-white border-stone-700'
+                                                                                : isStartDate
+                                                                                    ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                                                                    : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50'
+                                                                        }`}
+                                                                    >
+                                                                        <span className={`text-xs font-medium mb-1 ${
+                                                                            isSelected ? 'text-stone-300' : isStartDate ? 'text-emerald-500' : 'text-stone-500'
+                                                                        }`}>
+                                                                            {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                                                        </span>
+                                                                        <span className={`text-xl font-bold`}>
+                                                                            {date.getDate()}
+                                                                        </span>
+                                                                        <span className={`text-xs ${
+                                                                            isSelected ? 'text-stone-300' : isStartDate ? 'text-emerald-500' : 'text-stone-400'
+                                                                        }`}>
+                                                                            {date.toLocaleDateString('en-US', { month: 'short' })}
+                                                                        </span>
+                                                                        {isStartDate && !isSelected && (
+                                                                            <span className="text-[10px] font-medium mt-1">Start</span>
+                                                                        )}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Step 3: Time Selection & Details */}
+                            {currentStep === 3 && (
+                                <div className="p-6 md:p-8">
+                                    {/* Start Time Selection */}
+                                    <div className="mb-8">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                                <Clock size={16} className="text-emerald-600" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-stone-900">Start Time</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                                            {TIME_SLOTS.map((time) => {
+                                                const isSelected = formData.startTime === time;
+                                                return (
+                                                    <button
+                                                        key={`start-${time}`}
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, startTime: time })}
+                                                        className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                                                            isSelected
+                                                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                                                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300 hover:bg-emerald-50'
+                                                        }`}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* End Time Selection */}
+                                    <div className="mb-8">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
+                                                <Clock size={16} className="text-stone-600" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-stone-900">End Time</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                                            {TIME_SLOTS.map((time) => {
+                                                const isSelected = formData.endTime === time;
+                                                const isDisabled = !!(formData.startTime && time <= formData.startTime);
+                                                return (
+                                                    <button
+                                                        key={`end-${time}`}
+                                                        type="button"
+                                                        onClick={() => !isDisabled && setFormData({ ...formData, endTime: time })}
+                                                        disabled={isDisabled}
+                                                        className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                                                            isDisabled
+                                                                ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed'
+                                                                : isSelected
+                                                                    ? 'bg-stone-700 text-white border-stone-700'
+                                                                    : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400 hover:bg-stone-50'
+                                                        }`}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Reason (Optional) */}
                                     <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-2">
-                                            Start Date
-                                        </label>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
+                                                <FileText size={16} className="text-stone-600" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-stone-900">Reason (Optional)</h3>
+                                        </div>
+                                        
                                         <input
-                                            type="date"
-                                            value={formData.startDate}
-                                            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                            min={new Date().toISOString().split('T')[0]}
-                                            className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
+                                            type="text"
+                                            value={formData.reason}
+                                            onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                                            placeholder="e.g., Personal appointment, Weekend off, Vacation"
+                                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none text-stone-700 placeholder:text-stone-400"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-2">
-                                            End Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={formData.endDate}
-                                            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                            min={formData.startDate || new Date().toISOString().split('T')[0]}
-                                            className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
-                                        />
-                                    </div>
+
+                                    {/* Summary Card */}
+                                    {formData.startTime && formData.endTime && (
+                                        <div className="mt-6 p-4 bg-stone-50 rounded-2xl border border-stone-200">
+                                            <p className="text-sm font-medium text-stone-700 mb-2">Summary</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                    formData.blockType === 'recurring' 
+                                                        ? 'bg-purple-100 text-purple-700' 
+                                                        : 'bg-orange-100 text-orange-700'
+                                                }`}>
+                                                    {formData.blockType === 'recurring' ? 'Recurring' : 'One-Time'}
+                                                </span>
+                                                {formData.blockType === 'recurring' ? (
+                                                    <span className="px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-medium">
+                                                        {formData.selectedDays.map(d => d.slice(0, 3)).join(', ')}
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-medium">
+                                                        {new Date(formData.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                        {formData.endDate && formData.endDate !== formData.startDate && 
+                                                            ` - ${new Date(formData.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                                                        }
+                                                    </span>
+                                                )}
+                                                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
+                                                    {formData.startTime} - {formData.endTime}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
-                            {/* For recurring, we still need a reference start date */}
-                            {formData.isRecurring && (
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-2">
-                                        Starting From
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={formData.startDate}
-                                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                        min={new Date().toISOString().split('T')[0]}
-                                        className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
-                                    />
-                                </div>
-                            )}
-
-                            {/* Time Selection */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-2">
-                                        Start Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={formData.startTime}
-                                        onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-2">
-                                        End Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={formData.endTime}
-                                        onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Reason */}
-                            <div>
-                                <label className="block text-sm font-medium text-stone-700 mb-2">
-                                    Reason (Optional)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.reason}
-                                    onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                                    placeholder="e.g., Personal appointment, Weekend off"
-                                    className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none"
-                                />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex gap-3 pt-4">
+                            {/* Navigation Buttons */}
+                            <div className="p-6 border-t border-stone-100 flex gap-3">
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => { setShowModal(false); resetForm(); }}
+                                    onClick={closeModal}
                                     className="flex-1 rounded-xl"
                                 >
                                     Cancel
                                 </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
-                                >
-                                    {submitting ? 'Creating...' : 'Block Time'}
-                                </Button>
+                                
+                                {currentStep < 3 ? (
+                                    <Button
+                                        type="button"
+                                        onClick={() => setCurrentStep(currentStep + 1)}
+                                        disabled={currentStep === 1 ? !canProceedToStep2 : !canProceedToStep3}
+                                        className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Continue
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        type="submit"
+                                        disabled={submitting || !canSubmit}
+                                        className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {submitting ? (
+                                            <span className="flex items-center gap-2">
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                                Creating...
+                                            </span>
+                                        ) : (
+                                            'Block Time'
+                                        )}
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </div>
