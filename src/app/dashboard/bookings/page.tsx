@@ -42,14 +42,54 @@ export default function BookingsPage() {
                     api.bookings.getNannyBookings(),
                     api.assignments.getNannyAssignments()
                 ]);
-                setBookings(bookingsData);
+                
+                // Fetch parent details for bookings that don't have profile info
+                const enrichedBookings = await Promise.all(
+                    bookingsData.map(async (booking) => {
+                        if (booking.parent?.profiles?.first_name) {
+                            return booking;
+                        }
+                        if (booking.parent_id) {
+                            try {
+                                const parentDetails = await api.users.get(booking.parent_id);
+                                return { ...booking, parent: parentDetails };
+                            } catch (err) {
+                                console.error(`Failed to fetch parent details for booking ${booking.id}:`, err);
+                                return booking;
+                            }
+                        }
+                        return booking;
+                    })
+                );
+                
+                setBookings(enrichedBookings);
                 setAssignments(assignmentsData);
             } else if (user?.role === 'parent') {
                 const [bookingsData, requestsData] = await Promise.all([
                     api.bookings.getParentBookings(),
                     api.requests.getParentRequests()
                 ]);
-                setBookings(bookingsData);
+                
+                // Fetch nanny details for bookings that don't have profile info
+                const enrichedBookings = await Promise.all(
+                    bookingsData.map(async (booking) => {
+                        if (booking.nanny?.profiles?.first_name) {
+                            return booking;
+                        }
+                        if (booking.nanny_id) {
+                            try {
+                                const nannyDetails = await api.users.get(booking.nanny_id);
+                                return { ...booking, nanny: nannyDetails };
+                            } catch (err) {
+                                console.error(`Failed to fetch nanny details for booking ${booking.id}:`, err);
+                                return booking;
+                            }
+                        }
+                        return booking;
+                    })
+                );
+                
+                setBookings(enrichedBookings);
                 setRequests(requestsData);
             }
         } catch (err) {

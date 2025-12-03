@@ -53,7 +53,28 @@ export default function DashboardPage() {
                 user?.id ? api.users.get(user.id) : Promise.resolve(null)
             ]);
 
-            setBookings(bookingsData);
+            // Enrich bookings with parent details if not already populated
+            const enrichedBookings = await Promise.all(
+                bookingsData.map(async (booking) => {
+                    // If parent profile info is already populated, return as-is
+                    if (booking.parent?.profiles?.first_name) {
+                        return booking;
+                    }
+                    // If we have a parent_id, fetch the parent details
+                    if (booking.parent_id) {
+                        try {
+                            const parentDetails = await api.users.get(booking.parent_id);
+                            return { ...booking, parent: parentDetails };
+                        } catch (err) {
+                            console.error(`Failed to fetch parent details for booking ${booking.id}:`, err);
+                            return booking;
+                        }
+                    }
+                    return booking;
+                })
+            );
+
+            setBookings(enrichedBookings);
 
             const totalBookings = bookingsData.length;
             const completedBookings = bookingsData.filter(b => b.status === 'COMPLETED');

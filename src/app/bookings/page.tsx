@@ -42,7 +42,33 @@ export default function ParentBookingsPage() {
                     api.bookings.getParentBookings(),
                     api.requests.getParentRequests()
                 ]);
-                setBookings(bookingsData);
+                
+                // Fetch nanny details for bookings that don't have profile info
+                const enrichedBookings = await Promise.all(
+                    bookingsData.map(async (booking) => {
+                        // If nanny profile already exists, use it
+                        if (booking.nanny?.profiles?.first_name) {
+                            return booking;
+                        }
+                        
+                        // Otherwise fetch the nanny details
+                        if (booking.nanny_id) {
+                            try {
+                                const nannyDetails = await api.users.get(booking.nanny_id);
+                                return {
+                                    ...booking,
+                                    nanny: nannyDetails
+                                };
+                            } catch (err) {
+                                console.error(`Failed to fetch nanny details for booking ${booking.id}:`, err);
+                                return booking;
+                            }
+                        }
+                        return booking;
+                    })
+                );
+                
+                setBookings(enrichedBookings);
                 setRequests(requestsData);
             }
         } catch (err) {
