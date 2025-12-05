@@ -86,6 +86,8 @@ export default function ParentBookingsPage() {
                 
                 setBookings(enrichedBookings);
                 setRequests(enrichedRequests);
+                console.log('Fetched Requests:', enrichedRequests);
+                console.log('Fetched Bookings:', enrichedBookings);
             }
         } catch (err) {
             console.error('Failed to fetch data:', err);
@@ -302,86 +304,104 @@ export default function ParentBookingsPage() {
                     </div>
                 ) : (
                     // Bookings List (Upcoming, Completed, Cancelled)
-                    filteredBookings.length === 0 ? (
-                        <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50">
-                            <p className="text-stone-500 mb-6">No {activeTab} bookings found.</p>
-                            <Button
-                                onClick={() => window.location.href = '/search'}
-                                className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
-                            >
-                                Find Care
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {/* Assigned Requests Section */}
-                            {activeTab === 'upcoming' && requests.filter(r => r.status === 'ASSIGNED').map((request) => (
-                                <div key={request.id} className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
-                                        ACTION REQUIRED
-                                    </div>
-                                    <div className="flex items-center gap-4 flex-1">
-                                        <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
-                                            <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
-                                            <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-bold text-stone-900">
-                                                Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
-                                            </h3>
-                                            <p className="text-stone-500 text-sm mb-1">
-                                                Nanny Assigned: <span className="font-bold text-stone-900">{request.nanny?.profiles?.first_name || 'Nanny'}</span>
-                                            </p>
-                                            <p className="text-stone-400 text-xs">
-                                                {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
-                                            </p>
-                                        </div>
-                                    </div>
+                    // Bookings List (Upcoming, Completed, Cancelled)
+                    (() => {
+                        console.log('Render - ActiveTab:', activeTab);
+                        console.log('Render - All Requests Statuses:', requests.map(r => ({ id: r.id, status: r.status })));
 
-                                    <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-                                        <Link href={`/requests/${request.id}`}>
-                                            <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200">
-                                                View & Confirm
-                                            </Button>
-                                        </Link>
-                                    </div>
+                        const assignedRequests = activeTab === 'upcoming' 
+                            ? requests.filter(r => r.status === 'ASSIGNED' || r.status === 'assigned') 
+                            : [];
+                        
+                        console.log('Render - AssignedRequests:', assignedRequests);
+                        
+                        const hasItems = filteredBookings.length > 0 || assignedRequests.length > 0;
+
+                        if (!hasItems) {
+                            return (
+                                <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50">
+                                    <p className="text-stone-500 mb-6">No {activeTab} bookings found.</p>
+                                    <Button
+                                        onClick={() => window.location.href = '/search'}
+                                        className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                                    >
+                                        Find Care
+                                    </Button>
                                 </div>
-                            ))}
+                            );
+                        }
 
-                            {filteredBookings.map((booking) => {
-                                const { day, month } = formatDate(booking.start_time);
-                                return (
-                                    <div key={booking.id} className="bg-white p-6 rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow">
+                        return (
+                            <div className="space-y-4">
+                                {/* Assigned Requests Section */}
+                                {assignedRequests.map((request) => (
+                                    <div key={request.id} className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+                                            ACTION REQUIRED
+                                        </div>
                                         <div className="flex items-center gap-4 flex-1">
-                                            <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-xl flex flex-col items-center justify-center text-stone-700">
-                                                <span className="text-xs font-bold uppercase">{month}</span>
-                                                <span className="text-xl font-bold">{day}</span>
+                                            <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
+                                                <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
+                                                <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-lg font-bold text-stone-900">
-                                                    {booking.job?.title || 'Booking'}
+                                                    Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
                                                 </h3>
                                                 <p className="text-stone-500 text-sm mb-1">
-                                                    with {getOtherPartyName(booking)}
+                                                    Nanny Assigned: <span className="font-bold text-stone-900">{request.nanny?.profiles?.first_name || 'Nanny'}</span>
                                                 </p>
                                                 <p className="text-stone-400 text-xs">
-                                                    {formatTime(booking.start_time)}
-                                                    {booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                                                    {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
-                                                {booking.status.toLowerCase().replace('_', ' ')}
-                                            </span>
-                                            {renderActionButtons(booking)}
+                                            <Link href={`/requests/${request.id}`}>
+                                                <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200">
+                                                    View & Confirm
+                                                </Button>
+                                            </Link>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    )
+                                ))}
+
+                                {filteredBookings.map((booking) => {
+                                    const { day, month } = formatDate(booking.start_time);
+                                    return (
+                                        <div key={booking.id} className="bg-white p-6 rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow">
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-xl flex flex-col items-center justify-center text-stone-700">
+                                                    <span className="text-xs font-bold uppercase">{month}</span>
+                                                    <span className="text-xl font-bold">{day}</span>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-stone-900">
+                                                        {booking.job?.title || 'Booking'}
+                                                    </h3>
+                                                    <p className="text-stone-500 text-sm mb-1">
+                                                        with {getOtherPartyName(booking)}
+                                                    </p>
+                                                    <p className="text-stone-400 text-xs">
+                                                        {formatTime(booking.start_time)}
+                                                        {booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
+                                                    {booking.status.toLowerCase().replace('_', ' ')}
+                                                </span>
+                                                {renderActionButtons(booking)}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })()
                 )}
 
                 {selectedBookingId && (
