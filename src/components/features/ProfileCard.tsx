@@ -18,6 +18,7 @@ export interface ProfileCardProps {
     onViewProfile?: () => void;
     onBook?: () => void;
     compact?: boolean; // Compact mode for smaller cards
+    hideBookButton?: boolean;
 }
 
 // iOS 26-inspired color themes with vibrant yet sophisticated palettes
@@ -99,6 +100,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     onViewProfile,
     onBook,
     compact = false,
+    hideBookButton = false,
 }) => {
     const themeIndex = useMemo(() => getThemeIndex(name), [name]);
     const theme = colorThemes[themeIndex];
@@ -195,13 +197,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             >
                                 <Eye size={18} />
                             </Button>
-                            <Button
-                                onClick={onBook}
-                                className={`flex-1 h-11 rounded-xl bg-gradient-to-r ${theme.accent} hover:opacity-90 text-white font-semibold shadow-lg shadow-stone-900/10 transition-all group/btn`}
-                            >
-                                <span>Book Now</span>
-                                <ArrowUpRight size={16} className="ml-1.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                            </Button>
+                            {!hideBookButton && (
+                                <Button
+                                    onClick={onBook}
+                                    className={`flex-1 h-11 rounded-xl bg-gradient-to-r ${theme.accent} hover:opacity-90 text-white font-semibold shadow-lg shadow-stone-900/10 transition-all group/btn`}
+                                >
+                                    <span>Book Now</span>
+                                    <ArrowUpRight size={16} className="ml-1.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
