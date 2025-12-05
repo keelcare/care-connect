@@ -58,9 +58,15 @@ export default function DirectBookingPage() {
 
         setSubmitting(true);
         try {
+            if (!formData.numChildren || Number(formData.numChildren) < 1) {
+                addToast({ message: "Please specify the number of children", type: "error" });
+                setSubmitting(false);
+                return;
+            }
+
             // Calculate end time
             const [hours, minutes] = formData.startTime.split(':').map(Number);
-            const startDate = new Date();
+            const startDate = new Date(formData.date);
             startDate.setHours(hours, minutes, 0, 0);
             const endDate = new Date(startDate.getTime() + Number(formData.duration) * 60 * 60 * 1000);
             const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;

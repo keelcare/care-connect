@@ -167,6 +167,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
                     {TIME_SLOTS.map((time) => {
                         const isSelected = formData.startTime === time;
+                        
+                        // Check if slot is in the past or within 15 mins
+                        const selectedDate = new Date(formData.date);
+                        const today = new Date();
+                        const isToday = selectedDate.toDateString() === today.toDateString();
+
+                        if (isToday) {
+                            const [slotHours, slotMinutes] = time.split(':').map(Number);
+                            const now = new Date();
+                            const slotTime = new Date();
+                            slotTime.setHours(slotHours, slotMinutes || 0, 0, 0);
+                            
+                            // Add 15 minutes buffer to current time
+                            const bufferTime = new Date(now.getTime() + 15 * 60000);
+                            
+                            if (slotTime <= bufferTime) return null;
+                        }
+
                         return (
                             <button
                                 key={time}
@@ -249,7 +267,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 </div>
                 <Button
                     type="submit"
-                    disabled={loading || !formData.date || !formData.startTime || !formData.duration}
+                    disabled={loading || !formData.date || !formData.startTime || !formData.duration || !formData.numChildren}
                     className="w-full h-12 text-lg rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
                 >
                     {loading ? 'Processing...' : 'Confirm Booking'}

@@ -26,9 +26,10 @@ export default function SignupPage() {
         e.preventDefault();
         setIsLoading(true);
         try {
+            const backendRole = role === 'family' ? 'parent' : 'nanny';
             await api.auth.signup({
                 ...formData,
-                role, // Include role in signup
+                role: backendRole,
             });
             // Auto login or redirect to login
             window.location.href = '/auth/login';

@@ -68,8 +68,24 @@ export default function ParentBookingsPage() {
                     })
                 );
                 
+                // Enrich requests with nanny details if assigned
+                const enrichedRequests = await Promise.all(
+                    requestsData.map(async (request) => {
+                        if (request.nanny_id && !request.nanny) {
+                            try {
+                                const nannyDetails = await api.users.get(request.nanny_id);
+                                return { ...request, nanny: nannyDetails };
+                            } catch (err) {
+                                console.error(`Failed to fetch nanny details for request ${request.id}:`, err);
+                                return request;
+                            }
+                        }
+                        return request;
+                    })
+                );
+                
                 setBookings(enrichedBookings);
-                setRequests(requestsData);
+                setRequests(enrichedRequests);
             }
         } catch (err) {
             console.error('Failed to fetch data:', err);
@@ -229,7 +245,7 @@ export default function ParentBookingsPage() {
                     </div>
                 ) : activeTab === 'requests' ? (
                     <div className="space-y-6">
-                        {requests.length === 0 ? (
+                        {requests.filter(r => r.status === 'PENDING').length === 0 ? (
                             <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50">
                                 <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-600">
                                     <Plus size={32} />
@@ -240,8 +256,8 @@ export default function ParentBookingsPage() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {requests.map((request) => (
-                                    <Link href={`/dashboard/requests/${request.id}`} key={request.id} className="group block bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 hover:shadow-2xl transition-all duration-200 overflow-hidden">
+                                {requests.filter(r => r.status === 'PENDING').map((request) => (
+                                    <div key={request.id} className="group block bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 transition-all duration-200 overflow-hidden">
                                         <div className="p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}>
@@ -252,7 +268,7 @@ export default function ParentBookingsPage() {
                                                 </span>
                                             </div>
 
-                                            <h3 className="text-lg font-bold text-stone-900 mb-4 group-hover:text-stone-700 transition-colors">
+                                            <h3 className="text-lg font-bold text-stone-900 mb-4 transition-colors">
                                                 Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
                                             </h3>
 
@@ -267,17 +283,19 @@ export default function ParentBookingsPage() {
                                                     <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500">
                                                         <Clock size={16} />
                                                     </div>
-                                                    <span>{request.start_time} ({request.duration_hours} hrs)</span>
+                                                    <span>
+                                                        {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500">
                                                         <MapPin size={16} />
                                                     </div>
-                                                    <span className="truncate">{request.location?.address || 'No location specified'}</span>
+                                                    <span className="truncate">{request.location?.address || user?.profiles?.address || 'No location specified'}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                    </Link>
+                                    </div>
                                 ))}
                             </div>
                         )}
@@ -296,6 +314,40 @@ export default function ParentBookingsPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
+                            {/* Assigned Requests Section */}
+                            {activeTab === 'upcoming' && requests.filter(r => r.status === 'ASSIGNED').map((request) => (
+                                <div key={request.id} className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+                                        ACTION REQUIRED
+                                    </div>
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
+                                            <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
+                                            <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-stone-900">
+                                                Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
+                                            </h3>
+                                            <p className="text-stone-500 text-sm mb-1">
+                                                Nanny Assigned: <span className="font-bold text-stone-900">{request.nanny?.profiles?.first_name || 'Nanny'}</span>
+                                            </p>
+                                            <p className="text-stone-400 text-xs">
+                                                {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
+                                        <Link href={`/requests/${request.id}`}>
+                                            <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200">
+                                                View & Confirm
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+
                             {filteredBookings.map((booking) => {
                                 const { day, month } = formatDate(booking.start_time);
                                 return (

@@ -183,6 +183,7 @@ export interface ServiceRequest {
     created_at: string;
     updated_at: string;
     parent?: User;
+    nanny?: User;
 }
 
 export interface CreateServiceRequestDto {
