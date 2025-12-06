@@ -126,10 +126,10 @@ export const api = {
     auth: {
         login: (body: LoginDto) => fetchApi<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
         signup: (body: SignupDto & { role: string }) => fetchApi<User>('/auth/signup', { method: 'POST', body: JSON.stringify(body) }),
-        refresh: (refreshToken: string) => 
-            fetchApi<{ access_token: string; refresh_token: string }>('/auth/refresh', { 
-                method: 'POST', 
-                body: JSON.stringify({ refreshToken }) 
+        refresh: (refreshToken: string) =>
+            fetchApi<{ access_token: string; refresh_token: string }>('/auth/refresh', {
+                method: 'POST',
+                body: JSON.stringify({ refreshToken })
             }, true), // skipRefresh = true to prevent infinite loop
         forgotPassword: (email: string) =>
             fetchApi<{ message: string }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
@@ -201,17 +201,17 @@ export const api = {
         reject: (id: string, reason?: string) => fetchApi<any>(`/assignments/${id}/reject`, { method: 'PUT', body: JSON.stringify({ reason }) }),
     },
     recurringBookings: {
-        create: (body: CreateRecurringBookingDto) => 
+        create: (body: CreateRecurringBookingDto) =>
             fetchApi<RecurringBooking>('/recurring-bookings', { method: 'POST', body: JSON.stringify(body) }),
         list: () => fetchApi<RecurringBooking[]>('/recurring-bookings'),
         get: (id: string) => fetchApi<RecurringBooking>(`/recurring-bookings/${id}`),
-        update: (id: string, body: UpdateRecurringBookingDto) => 
+        update: (id: string, body: UpdateRecurringBookingDto) =>
             fetchApi<RecurringBooking>(`/recurring-bookings/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
         delete: (id: string) => fetchApi<void>(`/recurring-bookings/${id}`, { method: 'DELETE' }),
     },
     availability: {
         list: () => fetchApi<AvailabilityBlock[]>('/availability'),
-        create: (body: CreateAvailabilityBlockDto) => 
+        create: (body: CreateAvailabilityBlockDto) =>
             fetchApi<AvailabilityBlock>('/availability/block', { method: 'POST', body: JSON.stringify(body) }),
         delete: (id: string) => fetchApi<void>(`/availability/${id}`, { method: 'DELETE' }),
     },
@@ -222,12 +222,12 @@ export const api = {
         check: (nannyId: string) => fetchApi<{ isFavorite: boolean }>(`/favorites/${nannyId}/check`),
     },
     enhancedReviews: {
-        create: (body: CreateEnhancedReviewDto) => 
+        create: (body: CreateEnhancedReviewDto) =>
             fetchApi<EnhancedReview>('/reviews', { method: 'POST', body: JSON.stringify(body) }),
-        update: (id: string, body: UpdateReviewDto) => 
+        update: (id: string, body: UpdateReviewDto) =>
             fetchApi<EnhancedReview>(`/reviews/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
         delete: (id: string) => fetchApi<void>(`/reviews/${id}`, { method: 'DELETE' }),
-        addResponse: (id: string, body: ReviewResponseDto) => 
+        addResponse: (id: string, body: ReviewResponseDto) =>
             fetchApi<EnhancedReview>(`/reviews/${id}/response`, { method: 'POST', body: JSON.stringify(body) }),
     },
     enhancedNotifications: {
@@ -239,7 +239,7 @@ export const api = {
         // Disputes
         getDisputes: () => fetchApi<AdminDispute[]>('/admin/disputes'),
         getDispute: (id: string) => fetchApi<AdminDispute>(`/admin/disputes/${id}`),
-        resolveDispute: (id: string, resolution: string) => 
+        resolveDispute: (id: string, resolution: string) =>
             fetchApi<AdminDispute>(`/admin/disputes/${id}/resolve`, { method: 'PUT', body: JSON.stringify({ resolution }) }),
         // Payments
         getPayments: () => fetchApi<any[]>('/admin/payments'),
@@ -251,9 +251,29 @@ export const api = {
         // System Settings
         getSettings: () => fetchApi<SystemSetting[]>('/admin/settings'),
         getSetting: (key: string) => fetchApi<SystemSetting>(`/admin/settings/${key}`),
-        updateSetting: (key: string, value: any) => 
+        updateSetting: (key: string, value: any) =>
             fetchApi<SystemSetting>(`/admin/settings/${key}`, { method: 'POST', body: JSON.stringify({ value }) }),
         // Advanced Analytics
         getAdvancedStats: () => fetchApi<AdminAdvancedStats>('/admin/stats/advanced'),
+    },
+    ai: {
+        chat: async (message: string) => {
+            const response = await fetch(`${API_URL}/ai/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(typeof window !== 'undefined' && localStorage.getItem('token') ? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            if (!response.ok) {
+                // Even if not OK, try to get text if possible, or throw
+                throw new Error('Failed to send message');
+            }
+
+            const text = await response.text();
+            return { response: text };
+        },
     },
 };

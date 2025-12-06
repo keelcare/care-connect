@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketProvider";
+import { Chatbot } from "@/components/ai/Chatbot";
 import "lineicons/dist/lineicons.css";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
             <main style={{ minHeight: hideHeaderFooter ? '100vh' : 'calc(100vh - 72px - 400px)' }}>
               {children}
             </main>
+            <Chatbot />
             {!hideHeaderFooter && <Footer />}
           </SocketProvider>
         </AuthProvider>
