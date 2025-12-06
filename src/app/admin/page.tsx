@@ -24,15 +24,28 @@ export default function AdminDashboard() {
             return;
         }
 
+        let intervalId: NodeJS.Timeout;
+
         if (user) {
             fetchStats();
+            // Poll every 30 seconds
+            intervalId = setInterval(() => {
+                fetchStats(true);
+            }, 30000);
         }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
     }, [user]);
 
-    const fetchStats = async () => {
+    const fetchStats = async (isPolling = false) => {
         try {
-            setLoading(true);
-            setError(null);
+            if (!isPolling) {
+                setLoading(true);
+                setError(null);
+            }
+
             const [basicStats, advanced] = await Promise.all([
                 api.admin.getStats(),
                 api.enhancedAdmin.getAdvancedStats().catch(() => null)
@@ -41,9 +54,13 @@ export default function AdminDashboard() {
             setAdvancedStats(advanced);
         } catch (err) {
             console.error('Failed to fetch stats:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load statistics');
+            if (!isPolling) {
+                setError(err instanceof Error ? err.message : 'Failed to load statistics');
+            }
         } finally {
-            setLoading(false);
+            if (!isPolling) {
+                setLoading(false);
+            }
         }
     };
 
@@ -59,7 +76,7 @@ export default function AdminDashboard() {
         return (
             <div className="h-[calc(100vh-120px)] flex flex-col items-center justify-center text-center p-8">
                 <p className="text-red-600 mb-4">{error || 'Failed to load dashboard'}</p>
-                <Button onClick={fetchStats}>Retry</Button>
+                <Button onClick={() => fetchStats()}>Retry</Button>
             </div>
         );
     }
@@ -175,7 +192,7 @@ export default function AdminDashboard() {
                                 <DollarSign size={20} className="text-amber-600" />
                                 <span className="text-sm font-medium text-amber-700">Total Revenue</span>
                             </div>
-                            <p className="text-3xl font-bold text-amber-800">₦{advancedStats.totalRevenue.toLocaleString()}</p>
+                            <p className="text-3xl font-bold text-amber-800">₹{advancedStats.totalRevenue.toLocaleString()}</p>
                         </div>
                         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-2xl border border-purple-200">
                             <div className="flex items-center gap-3 mb-2">
