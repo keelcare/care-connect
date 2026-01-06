@@ -12,68 +12,8 @@ import { useAuth } from '@/context/AuthContext';
 import { ReviewCard } from '@/components/features/ReviewCard';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 
-// Mock data for demo
-const MOCK_USERS = {
-    '1': {
-        id: '1',
-        email: 'sarah@example.com',
-        role: 'nanny',
-        is_verified: true,
-        profiles: {
-            first_name: 'Sarah',
-            last_name: 'Jenkins',
-            address: 'Brooklyn, NY',
-            profile_image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'
-        },
-        nanny_details: {
-            hourly_rate: '25.00',
-            experience_years: 5,
-            bio: 'Experienced nanny with a passion for child development. I have worked with children of all ages and love creating fun, educational activities.',
-            skills: ['CPR Certified', 'First Aid', 'Early Childhood Education'],
-            availability_schedule: { monday: ['9:00-17:00'], tuesday: ['9:00-17:00'] }
-        }
-    },
-    '2': {
-        id: '2',
-        email: 'michael@example.com',
-        role: 'nanny',
-        is_verified: false,
-        profiles: {
-            first_name: 'Michael',
-            last_name: 'Chen',
-            address: 'Queens, NY',
-            profile_image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
-        },
-        nanny_details: {
-            hourly_rate: '20.00',
-            experience_years: 3,
-            bio: 'Energetic and responsible caregiver. I specialize in active play and can help with homework and tutoring.',
-            skills: ['Math Tutoring', 'Sports', 'Homework Help'],
-            availability_schedule: { wednesday: ['14:00-18:00'], thursday: ['14:00-18:00'] }
-        }
-    },
-    '3': {
-        id: '3',
-        email: 'emily@example.com',
-        role: 'nanny',
-        is_verified: true,
-        profiles: {
-            first_name: 'Emily',
-            last_name: 'Davis',
-            address: 'Manhattan, NY',
-            profile_image_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
-        },
-        nanny_details: {
-            hourly_rate: '35.00',
-            experience_years: 8,
-            bio: 'Professional nanny with extensive experience in newborn care. I am patient, reliable, and dedicated to providing the best care for your little ones.',
-            skills: ['Newborn Care', 'Sleep Training', 'Organic Cooking'],
-            availability_schedule: { friday: ['8:00-16:00'] }
-        }
-    }
-};
-
-
+// Mock data for demo - REMOVED
+// const MOCK_USERS = { ... };
 
 export default function CaregiverProfilePage() {
     const params = useParams();
@@ -88,6 +28,11 @@ export default function CaregiverProfilePage() {
 
     const [messageLoading, setMessageLoading] = useState(false);
 
+    // Calculate average rating
+    const avgRating = reviews.length > 0
+        ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
+        : 'New';
+
     useEffect(() => {
         const fetchCaregiver = async () => {
             if (!params.id) return;
@@ -96,16 +41,6 @@ export default function CaregiverProfilePage() {
                 setLoading(true);
                 // Cast params.id to string as useParams can return string | string[]
                 const id = Array.isArray(params.id) ? params.id[0] : params.id;
-
-                // Mock data check for demo IDs
-                if (['1', '2', '3'].includes(id)) {
-                    // Simulate API delay
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    const mockUser = MOCK_USERS[id as keyof typeof MOCK_USERS];
-                    setCaregiver(mockUser as unknown as User);
-                    setLoading(false);
-                    return;
-                }
 
                 const [userData, reviewsData] = await Promise.all([
                     api.users.get(id),
@@ -166,7 +101,7 @@ export default function CaregiverProfilePage() {
                     {/* Favorite Button in top right */}
                     {user && user.role === 'parent' && (
                         <div className="absolute top-4 right-4 z-10">
-                            <FavoriteButton 
+                            <FavoriteButton
                                 nannyId={caregiver.id}
                                 size="lg"
                                 showLabel
@@ -213,7 +148,7 @@ export default function CaregiverProfilePage() {
                             <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 mb-2">
                                 <Star size={20} fill="currentColor" />
                             </div>
-                            <div className="font-bold text-stone-900">4.9</div>
+                            <div className="font-bold text-stone-900">{avgRating}</div>
                             <div className="text-xs text-stone-500">Rating</div>
                         </div>
                         <div className="bg-white p-4 rounded-xl border border-stone-100 shadow-lg shadow-stone-200/50 flex flex-col items-center text-center">

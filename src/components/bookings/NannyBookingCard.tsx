@@ -10,6 +10,8 @@ interface NannyBookingCardProps {
     selectedTime?: string;
     duration?: string;
     onMessage?: () => void;
+    rating?: number | string;
+    reviewCount?: number;
 }
 
 export const NannyBookingCard: React.FC<NannyBookingCardProps> = ({
@@ -17,11 +19,12 @@ export const NannyBookingCard: React.FC<NannyBookingCardProps> = ({
     selectedDate,
     selectedTime,
     duration,
-    onMessage
+    onMessage,
+    rating = "New",
+    reviewCount
 }) => {
     const { profiles, nanny_details } = nanny;
     const fullName = `${profiles?.first_name} ${profiles?.last_name}`;
-    const rating = 4.9; // Mock rating if not available
     const hourlyRate = nanny_details?.hourly_rate || 0;
 
     return (

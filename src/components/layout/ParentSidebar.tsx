@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Calendar, MessageSquare, Sparkles, Settings, ChevronLeft, ChevronRight, User, Repeat, Heart } from 'lucide-react';
+import { Home, Search, Calendar, MessageSquare, Sparkles, Settings, ChevronLeft, ChevronRight, User, Repeat, Heart, Star } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface ParentSidebarProps {
@@ -23,6 +23,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
         { icon: Calendar, label: 'Bookings', href: '/bookings' },
         { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
         { icon: MessageSquare, label: 'Messages', href: '/messages' },
+        { icon: Star, label: 'Reviews', href: '/dashboard/reviews' },
         { icon: Settings, label: 'Settings', href: '/settings' },
     ];
 
@@ -48,25 +49,24 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
                         Menu
                     </p>
                 )}
-                
+
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
-                    
+
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${
-                                isActive
-                                    ? 'bg-emerald-600 text-white'
-                                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
-                            } ${isCollapsed ? 'justify-center' : ''}`}
+                            className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${isActive
+                                ? 'bg-emerald-600 text-white'
+                                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                                } ${isCollapsed ? 'justify-center' : ''}`}
                             title={isCollapsed ? item.label : undefined}
                         >
-                            <Icon 
-                                size={20} 
-                                className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-stone-500 group-hover:text-stone-700'}`} 
+                            <Icon
+                                size={20}
+                                className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-stone-500 group-hover:text-stone-700'}`}
                             />
                             {!isCollapsed && (
                                 <span className={`font-medium ${isActive ? 'text-white' : ''}`}>

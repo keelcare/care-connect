@@ -112,7 +112,7 @@ export default function SearchPage() {
                         try {
                             const { latitude, longitude } = position.coords;
                             const response = await api.location.nearbyNannies(latitude, longitude, 10);
-                            
+
                             if (response.data && response.data.length > 0) {
                                 const mappedNannies = response.data.map(n => ({
                                     ...n,
@@ -120,7 +120,7 @@ export default function SearchPage() {
                                     nanny_details: n.nanny_details,
                                     distance: n.distance
                                 } as unknown as User));
-                                
+
                                 setNannies(mappedNannies);
                                 setFilteredNannies(mappedNannies);
                             } else {
@@ -342,24 +342,22 @@ export default function SearchPage() {
                                 <Button
                                     variant={isNearby ? "default" : "outline"}
                                     onClick={() => setIsNearby(!isNearby)}
-                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${
-                                        isNearby 
-                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                                    className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${isNearby
+                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                             : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
-                                    }`}
+                                        }`}
                                 >
                                     <MapPin size={18} />
                                     Nearby
                                 </Button>
-                                
+
                                 <Button
                                     variant={isDesktopFilterOpen ? "default" : "outline"}
                                     onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${
-                                        isDesktopFilterOpen 
-                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                                    className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${isDesktopFilterOpen
+                                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                             : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
-                                    }`}
+                                        }`}
                                 >
                                     <SlidersHorizontal size={18} />
                                     Filters
@@ -369,7 +367,7 @@ export default function SearchPage() {
                                         </span>
                                     )}
                                 </Button>
-                                
+
                                 <Button
                                     variant="outline"
                                     onClick={() => setIsFilterOpen(true)}
@@ -447,14 +445,24 @@ export default function SearchPage() {
                                 <p className="text-stone-500 mb-6 max-w-md">
                                     We couldn't find any caregivers matching your criteria. Try adjusting your filters or search terms.
                                 </p>
-                                <Button 
+                                <Button
                                     onClick={() => {
-                                        setNannies(MOCK_NANNIES);
-                                        setFilteredNannies(MOCK_NANNIES);
-                                    }} 
+                                        setFilters({
+                                            services: {
+                                                childCare: false,
+                                                seniorCare: false,
+                                                petCare: false,
+                                                housekeeping: false,
+                                                tutoring: false,
+                                                specialNeeds: false,
+                                            },
+                                            priceRange: [0, 2000],
+                                        });
+                                        setSearchQuery('');
+                                    }}
                                     className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-6"
                                 >
-                                    Load Demo Data
+                                    Clear Filters
                                 </Button>
                             </div>
                         ) : (
@@ -481,8 +489,8 @@ export default function SearchPage() {
                         {/* Pagination */}
                         {filteredNannies.length > 0 && (
                             <div className="flex justify-center gap-2 mt-12 mb-8">
-                                <button 
-                                    className="p-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-50 hover:text-stone-600 disabled:opacity-50 transition-colors" 
+                                <button
+                                    className="p-2 rounded-lg border border-stone-200 text-stone-400 hover:bg-stone-50 hover:text-stone-600 disabled:opacity-50 transition-colors"
                                     disabled
                                 >
                                     <ChevronLeft size={20} />
@@ -505,15 +513,15 @@ export default function SearchPage() {
                     title="Filters"
                     footer={
                         <div className="flex gap-3 w-full">
-                            <Button 
-                                variant="outline" 
-                                onClick={() => setIsFilterOpen(false)} 
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsFilterOpen(false)}
                                 className="flex-1 rounded-xl border-stone-200"
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                onClick={() => setIsFilterOpen(false)} 
+                            <Button
+                                onClick={() => setIsFilterOpen(false)}
                                 className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                             >
                                 Apply Filters
