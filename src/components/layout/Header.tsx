@@ -22,6 +22,7 @@ export const Header: React.FC = () => {
     const { preferences } = usePreferences();
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
+
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -39,6 +40,7 @@ export const Header: React.FC = () => {
     const handleLogout = async () => {
         try {
             await logout();
+            sessionStorage.removeItem('locationChecked'); // Clear location check flag
             addToast({ message: 'Logged out successfully', type: 'success' });
             router.push('/auth/login');
         } catch (error) {
@@ -59,7 +61,10 @@ export const Header: React.FC = () => {
         <header className="bg-white/90 backdrop-blur-md border-b border-stone-200 sticky top-0 z-50 h-[72px]">
             <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 group">
+                <Link 
+                    href={!user ? '/' : user.role === 'nanny' ? '/dashboard' : user.role === 'admin' ? '/admin' : '/browse'} 
+                    className="flex items-center gap-2 group"
+                >
                     <span className="text-2xl font-bold text-stone-900 tracking-tight font-display group-hover:opacity-80 transition-opacity">
                         CareConnect
                     </span>
@@ -80,17 +85,19 @@ export const Header: React.FC = () => {
 
                 {/* Auth Buttons / User Menu */}
                 <div className="hidden md:flex items-center gap-4">
-                    {/* Location Selector */}
-                    <div 
-                        className="hidden md:flex items-center gap-2 px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-100 transition-colors cursor-pointer mr-2"
-                        onClick={() => setIsLocationModalOpen(true)}
-                    >
-                        <MapPin size={18} className="text-stone-500" />
-                        <span className="text-sm font-medium truncate max-w-[150px]">
-                            {preferences.location?.address || user?.profiles?.address || 'Set Location'}
-                        </span>
-                        <ChevronDown size={14} className="text-stone-400" />
-                    </div>
+                    {/* Location Selector - Hidden on Landing Page */}
+                    {pathname !== '/' && (
+                        <div 
+                            className="hidden md:flex items-center gap-2 px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-100 transition-colors cursor-pointer mr-2"
+                            onClick={() => setIsLocationModalOpen(true)}
+                        >
+                            <MapPin size={18} className="text-stone-500" />
+                            <span className="text-sm font-medium truncate max-w-[150px]">
+                                {preferences.location?.address || user?.profiles?.address || 'Set Location'}
+                            </span>
+                            <ChevronDown size={14} className="text-stone-400" />
+                        </div>
+                    )}
 
                     {user ? (
                         <div className="flex items-center gap-4">
@@ -308,6 +315,7 @@ export const Header: React.FC = () => {
                     </div>
                 </div>
             )}
+
             {/* Location Modal */}
             <LocationModal 
                 isOpen={isLocationModalOpen} 

@@ -16,11 +16,11 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
     const { user } = useAuth();
 
     const navItems = [
-        { icon: Home, label: 'Browse', href: '/browse' },
-        { icon: Search, label: 'Search', href: '/search' },
-        { icon: Heart, label: 'Favorites', href: '/favorites' },
+
+        { icon: Search, label: 'Browse', href: '/browse' },
+        { icon: Heart, label: 'Saved Caregivers', href: '/favorites' },
         { icon: Sparkles, label: 'Book a Service', href: '/book-service' },
-        { icon: Calendar, label: 'Bookings', href: '/bookings' },
+        { icon: Calendar, label: 'Your Bookings', href: '/bookings' },
         { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
         { icon: MessageSquare, label: 'Messages', href: '/messages' },
         { icon: Star, label: 'Reviews', href: '/parent/reviews' },
@@ -43,7 +43,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
             </button>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 p-4 space-y-3 overflow-y-auto">
                 {!isCollapsed && (
                     <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider px-3 mb-3">
                         Menu
@@ -69,7 +69,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
                                 className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-stone-500 group-hover:text-stone-700'}`}
                             />
                             {!isCollapsed && (
-                                <span className={`font-medium ${isActive ? 'text-white' : ''}`}>
+                                <span className={`${isActive ? 'text-emerald-900' : ''}`}>
                                     {item.label}
                                 </span>
                             )}
@@ -78,33 +78,19 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
                 })}
             </nav>
 
-            {/* User Profile Section */}
-            {!isCollapsed && user && (
-                <div className="p-4 border-t border-stone-100">
-                    <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-stone-50">
-                        <div className="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center flex-shrink-0">
-                            <User size={18} className="text-stone-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-stone-900 truncate">
-                                {user.profiles?.first_name || 'User'}
-                            </p>
-                            <p className="text-xs text-stone-500 truncate">
-                                {user.email}
-                            </p>
-                        </div>
+            {/* Help Section */}
+            {!isCollapsed && (
+                <div className="px-4 pb-4">
+                    <div className="bg-stone-50 rounded-xl p-4 border border-stone-100 text-center">
+                        <p className="text-sm font-semibold text-stone-900 mb-1">Need help choosing?</p>
+                        <button className="text-xs text-emerald-600 font-medium hover:underline">
+                            Chat with an advisor
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Collapsed User Avatar */}
-            {isCollapsed && user && (
-                <div className="p-4 border-t border-stone-100 flex justify-center">
-                    <div className="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center">
-                        <User size={18} className="text-stone-600" />
-                    </div>
-                </div>
-            )}
+
         </aside>
     );
 };

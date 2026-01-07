@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { MapPin, Star, ShieldCheck, Eye, Sparkles, Clock, ArrowUpRight } from 'lucide-react';
+import { MapPin, Star, ShieldCheck, UserRound, Sparkles, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface ProfileCardProps {
@@ -127,7 +127,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             {/* Avatar with glass effect */}
                             <div className="relative">
                                 <div className={`w-16 h-16 rounded-2xl ${theme.avatarBg} flex items-center justify-center shadow-lg ring-2 ring-white/60`}>
-                                    <span className={`text-xl font-bold ${theme.avatarText}`}>{initials}</span>
+                                    <UserRound size={32} className={`${theme.avatarText} opacity-80`} />
                                 </div>
                                 {isVerified && (
                                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center ring-2 ring-white">
@@ -156,10 +156,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                                 </div>
                             </div>
 
-                            {/* Price badge - floating glass style */}
-                            <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-2 shadow-lg border border-white/60">
-                                <div className="text-xs text-stone-500 font-medium">per hour</div>
+                            {/* Price - Subtle placement */}
+                            <div className="flex flex-col items-end">
                                 <div className="text-lg font-bold text-stone-900">₹{hourlyRate}</div>
+                                <div className="text-xs text-stone-500 font-medium">/hr</div>
                             </div>
                         </div>
                     </div>
@@ -187,26 +187,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             )}
                         </div>
 
-                        {/* Action buttons - iOS style */}
-                        <div className="flex gap-2">
                             <Button
-                                size="icon"
-                                variant="ghost"
                                 onClick={onViewProfile}
-                                className="rounded-xl w-11 h-11 bg-white/60 hover:bg-white/90 backdrop-blur-sm border border-white/60 shadow-sm text-stone-600 hover:text-stone-900 transition-all"
+                                className={`flex-1 h-11 rounded-xl bg-gradient-to-r ${theme.accent} hover:opacity-90 text-white font-semibold shadow-lg shadow-stone-900/10 transition-all group/btn`}
                             >
-                                <Eye size={18} />
+                                <span>View Profile</span>
+                                <ArrowRight size={16} className="ml-1.5 group-hover/btn:translate-x-0.5 transition-transform" />
                             </Button>
-                            {!hideBookButton && (
-                                <Button
-                                    onClick={onBook}
-                                    className={`flex-1 h-11 rounded-xl bg-gradient-to-r ${theme.accent} hover:opacity-90 text-white font-semibold shadow-lg shadow-stone-900/10 transition-all group/btn`}
-                                >
-                                    <span>Book Now</span>
-                                    <ArrowUpRight size={16} className="ml-1.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                                </Button>
-                            )}
-                        </div>
                     </div>
                 </div>
             </div>

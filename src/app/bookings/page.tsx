@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking, ServiceRequest } from '@/types/api';
+import { Booking, ServiceRequest, User } from '@/types/api';
 import { Plus, Calendar, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -74,6 +74,7 @@ export default function ParentBookingsPage() {
                         if (request.nanny_id && !request.nanny) {
                             try {
                                 const nannyDetails = await api.users.get(request.nanny_id);
+                                console.log(`Fetched details for nanny ${request.nanny_id}:`, nannyDetails);
                                 return { ...request, nanny: nannyDetails };
                             } catch (err) {
                                 console.error(`Failed to fetch nanny details for request ${request.id}:`, err);
@@ -142,10 +143,19 @@ export default function ParentBookingsPage() {
         return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     };
 
+    const getNannyName = (nanny?: User) => {
+        if (!nanny) return 'Nanny';
+        // Handle various potential structures (singular, plural, array)
+        const profile = nanny.profiles || (nanny as any).profile || (Array.isArray((nanny as any).profiles) ? (nanny as any).profiles[0] : null);
+        
+        if (profile?.first_name) {
+            return `${profile.first_name} ${profile.last_name || ''}`.trim();
+        }
+        return nanny.email || 'Nanny';
+    };
+
     const getOtherPartyName = (booking: Booking) => {
-        return booking.nanny?.profiles?.first_name && booking.nanny?.profiles?.last_name
-            ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name}`
-            : booking.nanny?.email || 'Nanny';
+        return getNannyName(booking.nanny);
     };
 
     const renderActionButtons = (booking: Booking) => {
@@ -306,14 +316,9 @@ export default function ParentBookingsPage() {
                     // Bookings List (Upcoming, Completed, Cancelled)
                     // Bookings List (Upcoming, Completed, Cancelled)
                     (() => {
-                        console.log('Render - ActiveTab:', activeTab);
-                        console.log('Render - All Requests Statuses:', requests.map(r => ({ id: r.id, status: r.status })));
-
                         const assignedRequests = activeTab === 'upcoming' 
-                            ? requests.filter(r => r.status === 'ASSIGNED' || r.status === 'assigned') 
+                            ? requests.filter(r => r.status === 'assigned') 
                             : [];
-                        
-                        console.log('Render - AssignedRequests:', assignedRequests);
                         
                         const hasItems = filteredBookings.length > 0 || assignedRequests.length > 0;
 
@@ -335,36 +340,29 @@ export default function ParentBookingsPage() {
                             <div className="space-y-4">
                                 {/* Assigned Requests Section */}
                                 {assignedRequests.map((request) => (
-                                    <div key={request.id} className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
-                                            ACTION REQUIRED
-                                        </div>
-                                        <div className="flex items-center gap-4 flex-1">
-                                            <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
-                                                <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
-                                                <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
+                                    <Link key={request.id} href={`/requests/${request.id}`} className="block group">
+                                        <div className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
+                                                    <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
+                                                    <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">
+                                                        Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
+                                                    </h3>
+                                                    <p className="text-stone-500 text-sm mb-1">
+                                                        Nanny Assigned: <span className="font-bold text-stone-900">
+                                                            {getNannyName(request.nanny)}
+                                                        </span>
+                                                    </p>
+                                                    <p className="text-stone-400 text-xs">
+                                                        {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-stone-900">
-                                                    Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}
-                                                </h3>
-                                                <p className="text-stone-500 text-sm mb-1">
-                                                    Nanny Assigned: <span className="font-bold text-stone-900">{request.nanny?.profiles?.first_name || 'Nanny'}</span>
-                                                </p>
-                                                <p className="text-stone-400 text-xs">
-                                                    {new Date(request.start_time.includes('T') ? request.start_time : `1970-01-01T${request.start_time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} ({request.duration_hours} hrs)
-                                                </p>
-                                            </div>
                                         </div>
-
-                                        <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-                                            <Link href={`/requests/${request.id}`}>
-                                                <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200">
-                                                    View & Confirm
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </div>
+                                    </Link>
                                 ))}
 
                                 {filteredBookings.map((booking) => {

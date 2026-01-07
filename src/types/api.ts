@@ -159,7 +159,7 @@ export interface NearbySearchResponse<T> {
     data: T[];
 }
 
-export type RequestStatus = 'PENDING' | 'ASSIGNED' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type RequestStatus = 'PENDING' | 'ASSIGNED' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'pending' | 'assigned' | 'accepted' | 'in_progress' | 'completed' | 'cancelled';
 
 export interface ServiceRequest {
     id: string;

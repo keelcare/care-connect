@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Star, Clock, ShieldCheck, Calendar, Award, Repeat } from 'lucide-react';
+import { MapPin, Star, Clock, ShieldCheck, Calendar, Award, Repeat, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User, Review } from '@/types/api';
@@ -270,27 +270,31 @@ export default function CaregiverProfilePage() {
                                     <Button
                                         size="lg"
                                         className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
-                                        onClick={() => router.push(`/book/${caregiver.id}`)}
+                                        onClick={() => {
+                                            setActiveTab('availability');
+                                            document.querySelector('button[onClick*="availability"]')?.scrollIntoView({ behavior: 'smooth' });
+                                        }}
                                     >
-                                        Request Booking
+                                        View Availability
                                     </Button>
                                     <Button
                                         size="lg"
-                                        className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 shadow-lg hover:shadow-xl transition-all h-12 font-medium"
-                                        onClick={() => router.push(`/book-recurring/${caregiver.id}`)}
-                                    >
-                                        <Repeat size={18} className="mr-2" />
-                                        Book Recurring
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="lg"
-                                        className="w-full rounded-xl border-stone-200 hover:bg-stone-50 h-12 text-stone-700"
+                                        className="w-full rounded-xl bg-white border-2 border-emerald-100 text-emerald-700 hover:bg-emerald-50 shadow-sm transition-all h-12 font-medium"
                                         onClick={handleMessage}
                                         disabled={messageLoading}
                                     >
-                                        {messageLoading ? 'Starting Chat...' : 'Message'}
+                                        <MessageSquare size={18} className="mr-2" />
+                                        {messageLoading ? 'Starting Chat...' : 'Chat with Caregiver'}
                                     </Button>
+                                    {/* Secondary Booking Action */}
+                                    <div className="pt-2 text-center">
+                                        <button 
+                                            onClick={() => router.push(`/book/${caregiver.id}`)}
+                                            className="text-stone-400 text-sm hover:text-stone-600 underline"
+                                        >
+                                            Skip to booking form
+                                        </button>
+                                    </div>
                                 </>
                             ) : (
                                 <>

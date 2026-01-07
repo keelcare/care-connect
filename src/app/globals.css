@@ -3,8 +3,8 @@
 @layer base {
   :root {
     /* Color System - HSL */
-    --background: 210 20% 98%;
-    /* #F7F9FC Soft Cream/Off-White */
+    --background: 30 14% 98%;
+    /* #FAF9F7 Warm Off-White */
     --foreground: 218 23% 23%;
     /* #2D3748 Charcoal */
 
@@ -83,9 +83,9 @@
     --space-12: 3rem;
 
     /* Typography */
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-display: 'Outfit', 'Manrope', var(--font-sans);
-    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-display: "Outfit", "Manrope", var(--font-sans);
+    --font-mono: "JetBrains Mono", "Courier New", monospace;
 
     --font-weight-normal: 400;
     --font-weight-medium: 500;
@@ -99,10 +99,14 @@
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+      0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
+      0 8px 10px -6px rgba(0, 0, 0, 0.01);
 
     /* Z-Index */
     --z-modal-backdrop: 50;
@@ -116,7 +120,7 @@
   }
 
   body {
-    background-color: #F7F9FC;
+    background-color: #f7f9fc;
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -133,7 +137,7 @@
     font-family: var(--font-display);
     font-weight: var(--font-weight-semibold);
     line-height: 1.2;
-    color: hsl(var(--neutral-900));
+    color: #2e2e2e; /* Heading Gray */
   }
 
   h1 {
@@ -159,7 +163,6 @@
 }
 
 @layer utilities {
-
   /* Color Utilities */
   .color-primary {
     color: hsl(var(--primary));
@@ -205,7 +208,11 @@
 
   /* Text Utilities */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -251,25 +258,43 @@
 
 /* Animations */
 @keyframes bounce-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 .animate-bounce-slow {
   animation: bounce-slow 3s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 .animate-shimmer {
   animation: shimmer 2s ease-in-out infinite;
 }
 
 @keyframes scroll-infinite {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 .animate-scroll-infinite {
   animation: scroll-infinite 30s linear infinite;
@@ -278,9 +303,15 @@
 
 /* Gradient text animation */
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 .animate-gradient {
   animation: gradient 3s ease infinite;

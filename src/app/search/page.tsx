@@ -98,6 +98,38 @@ export default function SearchPage() {
             setError(null);
 
             if (isNearby) {
+                let lat: number | null = null;
+                let lng: number | null = null;
+
+                if (preferences.location?.lat && preferences.location?.lng) {
+                    lat = preferences.location.lat;
+                    lng = preferences.location.lng;
+                } else if (user?.profiles?.lat && user?.profiles?.lng) {
+                    lat = parseFloat(user.profiles.lat);
+                    lng = parseFloat(user.profiles.lng);
+                }
+
+                if (lat !== null && lng !== null) {
+                    const response = await api.location.nearbyNannies(lat, lng, 10);
+                    
+                    if (response.data && response.data.length > 0) {
+                        const mappedNannies = response.data.map(n => ({
+                            ...n,
+                            profiles: n.profile,
+                            nanny_details: n.nanny_details,
+                            distance: n.distance
+                        } as unknown as User));
+                        
+                        setNannies(mappedNannies);
+                        setFilteredNannies(mappedNannies);
+                    } else {
+                        setNannies([]);
+                        setFilteredNannies([]);
+                    }
+                    setLoading(false);
+                    return;
+                }
+
                 if (!navigator.geolocation) {
                     setError('Geolocation is not supported by your browser');
                     const allNannies = await api.users.nannies();
@@ -130,7 +162,6 @@ export default function SearchPage() {
                         } catch (err) {
                             console.error(err);
                             setError('Failed to fetch caregivers');
-                            setLoading(false);
                         } finally {
                             setLoading(false);
                         }
@@ -164,7 +195,7 @@ export default function SearchPage() {
 
     useEffect(() => {
         fetchNannies();
-    }, [isNearby]);
+    }, [isNearby, preferences]);
 
     useEffect(() => {
         let filtered = nannies;

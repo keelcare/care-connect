@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Search, Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight, MapPin, RefreshCw } from 'lucide-react';
+import { Search, Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight, MapPin, RefreshCw, ShieldCheck } from 'lucide-react';
 import { FeaturedCaregivers } from '@/components/features/FeaturedCaregivers';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -25,65 +25,106 @@ export default function BrowsePage() {
     const [nearbyNannies, setNearbyNannies] = React.useState<User[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
-    const [updatingLocation, setUpdatingLocation] = React.useState(false);
     const { preferences, updatePreferences } = usePreferences();
 
     const categories = [
-        { name: 'Child Care', icon: Baby, query: 'childCare', color: 'bg-amber-50 text-amber-600 hover:bg-amber-100' },
-        { name: 'Senior Care', icon: Heart, query: 'seniorCare', color: 'bg-rose-50 text-rose-600 hover:bg-rose-100' },
-        { name: 'Pet Care', icon: PawPrint, query: 'petCare', color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
-        { name: 'Housekeeping', icon: Home, query: 'housekeeping', color: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
-        { name: 'Tutoring', icon: BookOpen, query: 'tutoring', color: 'bg-purple-50 text-purple-600 hover:bg-purple-100' },
-        { name: 'Special Needs', icon: Accessibility, query: 'specialNeeds', color: 'bg-teal-50 text-teal-600 hover:bg-teal-100' },
+        { name: 'Child Care', icon: Baby, query: 'childCare', color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', description: 'Safe, nurturing care for your child' },
+        { name: 'Senior Care', icon: Heart, query: 'seniorCare', color: 'bg-rose-50 text-rose-600 hover:bg-rose-100', description: 'Dignity and comfort at home' },
+        { name: 'Pet Care', icon: PawPrint, query: 'petCare', color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', description: 'Loving care for your furry friends' },
+        { name: 'Housekeeping', icon: Home, query: 'housekeeping', color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', description: 'A clean, organized home' },
+        { name: 'Tutoring', icon: BookOpen, query: 'tutoring', color: 'bg-purple-50 text-purple-600 hover:bg-purple-100', description: 'Building confidence and skills' },
+        { name: 'Special Needs', icon: Accessibility, query: 'specialNeeds', color: 'bg-teal-50 text-teal-600 hover:bg-teal-100', description: 'Trained care with extra patience' },
     ];
 
-    const handleUpdateLocation = () => {
-        if (!navigator.geolocation) {
-            addToast({ message: "Geolocation is not supported by your browser", type: "error" });
-            return;
-        }
-
-        setUpdatingLocation(true);
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                try {
-                    const { latitude, longitude } = position.coords;
-                    if (user?.id) {
-                        await api.users.update(user.id, {
-                            lat: latitude,
-                            lng: longitude,
-                        });
-
-                        await new Promise(resolve => setTimeout(resolve, 2000));
-                        const updatedUser = await api.users.me();
-
-                        updatePreferences({
-                            location: {
-                                lat: latitude,
-                                lng: longitude,
-                                address: updatedUser.profiles?.address || 'Current Location'
-                            }
-                        });
-
-                        addToast({ message: "Location updated successfully", type: "success" });
-                        window.location.reload();
-                    }
-                } catch (error) {
-                    console.error("Error updating location:", error);
-                    addToast({ message: "Failed to update location", type: "error" });
-                } finally {
-                    setUpdatingLocation(false);
-                }
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-                addToast({ message: "Unable to retrieve your location", type: "error" });
-                setUpdatingLocation(false);
-            }
-        );
-    };
+    // Use a ref to prevent re-running update on every user object change if not needed
+    const lastUpdateRef = React.useRef<number>(0);
 
     React.useEffect(() => {
+        // Effect 1: Auto-update location on visit (Once per session)
+        const updateLocation = () => {
+             // Check session storage to see if we already updated this session
+             if (typeof window !== 'undefined' && sessionStorage.getItem('locationChecked')) {
+                 return;
+             }
+
+             if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        try {
+                            const { latitude, longitude } = position.coords;
+                            
+                            // Mark as checked for this session immediately to prevent double firing
+                            sessionStorage.setItem('locationChecked', 'true');
+                            
+                            // Reverse Geocoding to get Full Address
+                            let addressName = 'Current Location';
+                            try {
+                                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                                const data = await response.json();
+                                
+                                // Use display_name for full address as requested
+                                // Or construct it if display_name is too messy.
+                                // User asked for "entire address". Nominatim display_name is usually "House, Road, Neighbourhood, City, County, State, Postcode, Country"
+                                if (data.display_name) {
+                                    addressName = data.display_name;
+                                } else {
+                                     // Fallback construction
+                                    const addr = data.address;
+                                    const parts = [
+                                        addr.road || addr.pedestrian,
+                                        addr.city || addr.town || addr.village,
+                                        addr.state,
+                                        addr.country
+                                    ].filter(Boolean);
+                                    if (parts.length > 0) addressName = parts.join(', ');
+                                }
+                            } catch (error) {
+                                console.warn("Reverse geocoding failed", error);
+                            }
+
+                            if (user?.id) {
+                                lastUpdateRef.current = Date.now();
+                                // Update backend silently with address
+                                await api.users.update(user.id, {
+                                    lat: latitude,
+                                    lng: longitude,
+                                    address: addressName
+                                });
+                                // Fetch updated user for address (optional since we have it, but ensures sync)
+                                // const updatedUser = await api.users.me();
+                                
+                                updatePreferences({
+                                    location: {
+                                        lat: latitude,
+                                        lng: longitude,
+                                        address: addressName
+                                    }
+                                });
+                            } else {
+                                // Guest user
+                                updatePreferences({
+                                    location: {
+                                        lat: latitude,
+                                        lng: longitude,
+                                        address: addressName
+                                    }
+                                });
+                            }
+                        } catch (e) {
+                            console.error("Silent location update failed", e);
+                        }
+                    },
+                    (e) => console.log("Silent location update denied/failed", e)
+                );
+            }
+        };
+
+        // Trigger the update on mount/user change
+        updateLocation();
+    }, [user, updatePreferences]);
+
+    React.useEffect(() => {
+        // Effect 2: Fetch data when preferences (location) change
         const fetchNearby = async () => {
             try {
                 setLoading(true);
@@ -91,11 +132,16 @@ export default function BrowsePage() {
                 let lat: number | null = null;
                 let lng: number | null = null;
 
-                if (user?.profiles?.lat && user?.profiles?.lng) {
+                // Prioritize preferences (latest), then user profile
+                if (preferences.location?.lat && preferences.location?.lng) {
+                    lat = preferences.location.lat;
+                    lng = preferences.location.lng;
+                } else if (user?.profiles?.lat && user?.profiles?.lng) {
                     lat = parseFloat(user.profiles.lat);
                     lng = parseFloat(user.profiles.lng);
                 }
 
+                // Fallback to direct geolocation if still missing
                 if (lat === null || lng === null) {
                     if (navigator.geolocation) {
                         try {
@@ -110,7 +156,7 @@ export default function BrowsePage() {
                     }
                 }
 
-                if (lat !== null && lng !== null) {
+                if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
                     const response = await api.location.nearbyNannies(lat, lng, 10);
 
                     if (response.data && response.data.length > 0) {
@@ -140,87 +186,15 @@ export default function BrowsePage() {
         if (user) {
             fetchNearby();
         }
-    }, [user]);
-
+    }, [user, preferences]);
+    
     const filteredNearbyNannies = nearbyNannies.filter(nanny => !featuredIds.has(nanny.id));
 
     return (
         <ParentLayout>
-            <div className="min-h-screen bg-stone-50 pb-20 md:pb-8">
-                <main className="max-w-7xl mx-auto px-4 md:px-6 space-y-12 pt-8">
-                    {/* Hero Section - Clean Glassmorphic Design */}
-                    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-stone-100 via-stone-50 to-white border border-stone-200/50 shadow-2xl shadow-stone-300/30">
-                        {/* Layered gradient orbs for depth */}
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-stone-200/50 to-stone-300/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
-                        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-stone-300/40 to-stone-200/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-white/80 via-transparent to-transparent rounded-full" />
-                        
-                        {/* Subtle grid pattern overlay */}
-                        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, #78716c 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                        
-                        {/* Inner glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/40" />
-                        
-                        <div className="relative z-10 p-8 md:p-12 lg:p-16">
-                            <div className="max-w-3xl mx-auto text-center space-y-8">
-                                {/* Badge */}
-                                <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/90 shadow-lg shadow-stone-200/40">
-                                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                                    <span className="text-sm font-medium text-stone-600">15,000+ verified caregivers</span>
-                                </div>
-                                
-                                {/* Heading */}
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
-                                    Find the
-                                    <span className="relative mx-2 inline-block">
-                                        <span className="relative z-10 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                                            perfect caregiver
-                                        </span>
-                                        <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-emerald-200/60 via-teal-200/60 to-cyan-200/60 -rotate-1 rounded" />
-                                    </span>
-                                    <br className="hidden md:block" />
-                                    for your family
-                                </h1>
-                                
-                                {/* Description */}
-                                <p className="text-lg text-stone-500 max-w-xl mx-auto leading-relaxed">
-                                    Connect with trusted, verified professionals for child care, senior care, pet care, and more.
-                                </p>
-                                
-                                {/* CTA Buttons */}
-                                <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-                                    <Link href="/search">
-                                        <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300 group">
-                                            <Search className="w-5 h-5 mr-2" />
-                                            Start Searching
-                                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                        </Button>
-                                    </Link>
-                                    <Link href="/how-it-works">
-                                        <Button variant="outline" className="h-12 px-8 bg-white/70 backdrop-blur-xl border-white/90 text-stone-700 hover:bg-white shadow-lg shadow-stone-200/30 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl font-medium">
-                                            How it Works
-                                        </Button>
-                                    </Link>
-                                </div>
-                                
-                                {/* Stats - Glassmorphic cards with depth */}
-                                <div className="flex items-center justify-center gap-4 md:gap-6 pt-6">
-                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                                        <div className="text-2xl font-bold text-stone-900">15K+</div>
-                                        <div className="text-xs text-stone-500">Caregivers</div>
-                                    </div>
-                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                                        <div className="text-2xl font-bold text-stone-900">50K+</div>
-                                        <div className="text-xs text-stone-500">Families</div>
-                                    </div>
-                                    <div className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/80 shadow-lg shadow-stone-200/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                                        <div className="text-2xl font-bold text-amber-600">4.9★</div>
-                                        <div className="text-xs text-stone-500">Rating</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+            <div className="min-h-screen bg-warm-white pb-20 md:pb-8">
+                <main className="max-w-7xl mx-auto px-4 md:px-6 space-y-20 pt-8">
+
 
                     {/* Categories Section */}
                     <section>
@@ -241,10 +215,42 @@ export default function BrowsePage() {
                                                 <IconComponent className="w-7 h-7" />
                                             </div>
                                             <span className="font-medium text-stone-900">{category.name}</span>
+                                            <span className="text-xs text-stone-500 px-2">{category.description}</span>
                                         </div>
                                     </Link>
                                 );
                             })}
+                        </div>
+                    </section>
+
+                    {/* Safety Promise Section - Visual Break */}
+                    <section className="bg-white rounded-3xl p-8 md:p-12 border border-stone-100 shadow-xl shadow-stone-200/40 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                            <div className="flex-1 space-y-4 text-center md:text-left">
+                                <div className="inline-flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full text-emerald-700 text-sm font-medium">
+                                    <ShieldCheck className="w-4 h-4" />
+                                    <span>Our Safety Promise</span>
+                                </div>
+                                <h2 className="text-3xl font-bold text-stone-900">We take safety seriously, so you don't have to worry.</h2>
+                                <p className="text-lg text-stone-600 leading-relaxed">
+                                    Every caregiver on our platform goes through a rigorous 7-point background check, interview process, and ID verification. We believe trust is earned, not given.
+                                </p>
+                            </div>
+                            <div className="flex-shrink-0 grid grid-cols-2 gap-4">
+                                <div className="bg-stone-50 p-4 rounded-2xl text-center">
+                                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                        <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                                    </div>
+                                    <p className="font-semibold text-stone-900 text-sm">Background Checked</p>
+                                </div>
+                                <div className="bg-stone-50 p-4 rounded-2xl text-center">
+                                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                        <div className="w-5 h-5 rounded-full border-2 border-emerald-600 flex items-center justify-center text-[10px] font-bold text-emerald-600">ID</div>
+                                    </div>
+                                    <p className="font-semibold text-stone-900 text-sm">ID Verified</p>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -258,16 +264,8 @@ export default function BrowsePage() {
                                 <h2 className="text-2xl font-bold text-stone-900">Nearby Caregivers</h2>
                                 <p className="text-stone-500 mt-1">Caregivers in your area</p>
                             </div>
+
                             <div className="flex items-center gap-3">
-                                <Button 
-                                    variant="outline" 
-                                    onClick={handleUpdateLocation}
-                                    disabled={updatingLocation}
-                                    className="rounded-xl border-stone-200 text-stone-600 hover:bg-stone-50"
-                                >
-                                    <RefreshCw className={`w-4 h-4 mr-2 ${updatingLocation ? 'animate-spin' : ''}`} />
-                                    Update Location
-                                </Button>
                                 <Link href="/search?sort=distance">
                                     <Button variant="ghost" className="text-stone-600 hover:text-stone-900 font-medium">
                                         See All
@@ -296,13 +294,6 @@ export default function BrowsePage() {
                                 <h3 className="text-lg font-semibold text-stone-900 mb-2">No caregivers found nearby</h3>
                                 <p className="text-stone-500 mb-6">Try updating your location or browse all caregivers.</p>
                                 <div className="flex items-center justify-center gap-3">
-                                    <Button 
-                                        variant="outline" 
-                                        onClick={handleUpdateLocation}
-                                        className="rounded-xl border-stone-200"
-                                    >
-                                        Update Location
-                                    </Button>
                                     <Link href="/search">
                                         <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
                                             Browse All
