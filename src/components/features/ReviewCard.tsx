@@ -8,9 +8,10 @@ import { Avatar } from '@/components/ui/avatar';
 
 interface ReviewCardProps {
     review: Review;
+    type?: 'received' | 'written';
 }
 
-export function ReviewCard({ review }: ReviewCardProps) {
+export function ReviewCard({ review, type = 'received' }: ReviewCardProps) {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -20,11 +21,13 @@ export function ReviewCard({ review }: ReviewCardProps) {
         });
     };
 
-    const getReviewerName = () => {
-        if (review.reviewer?.profiles?.first_name && review.reviewer?.profiles?.last_name) {
-            return `${review.reviewer.profiles.first_name} ${review.reviewer.profiles.last_name}`;
+    const targetUser = type === 'received' ? review.reviewer : review.reviewee;
+
+    const getTargetName = () => {
+        if (targetUser?.profiles?.first_name && targetUser?.profiles?.last_name) {
+            return `${targetUser.profiles.first_name} ${targetUser.profiles.last_name}`;
         }
-        return review.reviewer?.email || 'Anonymous';
+        return targetUser?.email || 'Anonymous';
     };
 
     return (
@@ -33,15 +36,15 @@ export function ReviewCard({ review }: ReviewCardProps) {
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
                         <Avatar
-                            src={review.reviewer?.profiles?.profile_image_url || undefined}
-                            alt={getReviewerName()}
-                            fallback={getReviewerName().charAt(0).toUpperCase()}
+                            src={targetUser?.profiles?.profile_image_url || undefined}
+                            alt={getTargetName()}
+                            fallback={getTargetName().charAt(0).toUpperCase()}
                             size="md"
                             ringColor="bg-secondary/20"
                         />
                     </div>
                     <div>
-                        <p className={styles.name}>{getReviewerName()}</p>
+                        <p className={styles.name}>{getTargetName()}</p>
                         <p className={styles.date}>{formatDate(review.created_at)}</p>
                     </div>
                 </div>

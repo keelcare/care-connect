@@ -142,7 +142,7 @@ export default function DashboardPage() {
         { label: 'Total Bookings', value: stats.totalBookings.toString(), icon: Calendar, color: 'text-stone-900', bg: 'bg-stone-100' },
         { label: 'Unread Messages', value: stats.unreadMessages.toString(), icon: MessageSquare, color: 'text-emerald-600', bg: 'bg-emerald-50' },
         { label: 'Hours of Care', value: stats.hoursOfCare.toString(), icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-        { label: 'Average Rating', value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A', icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50' },
+        { label: 'Average Rating', value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A', icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50', href: '/nanny/reviews' },
     ];
 
     if (authLoading || loading) {
@@ -178,8 +178,11 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {statsDisplay.map((stat, index) => {
                     const Icon = stat.icon;
-                    return (
-                        <div key={index} className="bg-white p-6 rounded-[24px] border border-stone-100 shadow-soft hover:shadow-md transition-shadow">
+                    // @ts-ignore - Adding href to stat object dynamically
+                    const href = stat.href;
+
+                    const CardContent = () => (
+                        <div className={`bg-white p-6 rounded-[24px] border border-stone-100 shadow-soft hover:shadow-md transition-shadow ${href ? 'cursor-pointer' : ''}`}>
                             <div className="flex items-start justify-between">
                                 <div>
                                     <p className="text-sm font-medium text-stone-500">{stat.label}</p>
@@ -191,6 +194,16 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     );
+
+                    if (href) {
+                        return (
+                            <Link key={index} href={href}>
+                                <CardContent />
+                            </Link>
+                        );
+                    }
+
+                    return <div key={index}><CardContent /></div>;
                 })}
             </div>
 

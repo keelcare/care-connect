@@ -184,6 +184,7 @@ export const api = {
         getByUser: (userId: string) => fetchApi<Review[]>(`/reviews/user/${userId}`),
         getByBooking: (bookingId: string) => fetchApi<Review[]>(`/reviews/booking/${bookingId}`),
         checkEligibility: (bookingId: string) => fetchApi<{ canReview: boolean; reason: string | null; existingReview?: Review }>(`/reviews/booking/${bookingId}/can-review`),
+        getWrittenBy: (userId: string) => fetchApi<Review[]>(`/reviews/written-by/${userId}`), // New endpoint for reviews written by user
     },
     notifications: {
         send: (body: SendNotificationDto) => fetchApi<{ success: boolean }>('/notifications/send', { method: 'POST', body: JSON.stringify(body) }),

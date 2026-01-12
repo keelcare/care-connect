@@ -23,7 +23,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
         { icon: Calendar, label: 'Bookings', href: '/bookings' },
         { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
         { icon: MessageSquare, label: 'Messages', href: '/messages' },
-        { icon: Star, label: 'Reviews', href: '/dashboard/reviews' },
+        { icon: Star, label: 'Reviews', href: '/parent/reviews' },
         { icon: Settings, label: 'Settings', href: '/settings' },
     ];
 
