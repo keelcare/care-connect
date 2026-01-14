@@ -24,7 +24,6 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
         { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
         { icon: MessageSquare, label: 'Messages', href: '/messages' },
         { icon: Star, label: 'Reviews', href: '/parent/reviews' },
-        { icon: Settings, label: 'Settings', href: '/settings' },
     ];
 
     return (
@@ -44,12 +43,9 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({ isCollapsed = fals
 
             {/* Navigation */}
             <nav className="flex-1 p-4 space-y-3 overflow-y-auto">
-                {!isCollapsed && (
-                    <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider px-3 mb-3">
-                        Menu
-                    </p>
-                )}
-
+                <p className={`text-xs font-semibold text-stone-400 uppercase tracking-wider px-3 mb-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0 select-none' : 'opacity-100'}`}>
+                    Menu
+                </p>
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;

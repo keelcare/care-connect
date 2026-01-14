@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, Bell, User, LogOut, ChevronDown, Settings, LayoutDashboard, MapPin } from 'lucide-react';
+import { Menu, X, Bell, ChevronDown, MapPin, LogOut, Settings, LayoutDashboard, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -13,29 +13,13 @@ import { LocationModal } from '@/components/features/LocationModal';
 
 export const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
     const { user, logout } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const { addToast } = useToast();
     const { preferences } = usePreferences();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
 
     const handleLogout = async () => {
         try {
@@ -50,7 +34,6 @@ export const Header: React.FC = () => {
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
     // Don't show header on auth pages or dashboard (dashboard has its own sidebar/header structure usually)
     // BUT we are now using Header in DashboardLayout for parents, so we need to be careful.
@@ -109,10 +92,11 @@ export const Header: React.FC = () => {
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                             </button>
 
-                            <div className="relative" ref={dropdownRef}>
-                                <button
-                                    onClick={toggleDropdown}
-                                    className="flex items-center gap-2 pl-1 pr-1 py-1 rounded-xl border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-all"
+                            {/* Profile Dropdown */}
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center gap-2 focus:outline-none"
                                 >
                                     <Avatar
                                         src={user.profiles?.profile_image_url || undefined}
@@ -121,98 +105,58 @@ export const Header: React.FC = () => {
                                         size="sm"
                                         ringColor="bg-stone-100"
                                     />
-                                    <ChevronDown size={16} className={`text-stone-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown size={14} className={`text-stone-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {/* Dropdown Menu */}
-                                {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-stone-200 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                                        <div className="px-4 py-3 border-b border-stone-100">
-                                            <p className="font-bold text-stone-900 truncate">
-                                                {user.profiles?.first_name ? `${user.profiles.first_name} ${user.profiles.last_name}` : 'User'}
-                                            </p>
-                                            <p className="text-xs text-stone-500 truncate">{user.email}</p>
-                                        </div>
+                                {isProfileOpen && (
+                                    <>
+                                        {/* Backdrop to close */}
+                                        <div 
+                                            className="fixed inset-0 z-40 cursor-default" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                        />
+                                        
+                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-stone-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                            <div className="px-4 py-2 border-b border-stone-50 mb-1">
+                                                <p className="text-sm font-semibold text-stone-900 truncate">
+                                                    {user.profiles?.first_name || 'User'}
+                                                </p>
+                                                <p className="text-xs text-stone-500 truncate">
+                                                    {user.email}
+                                                </p>
+                                            </div>
 
-                                        <div className="py-1">
-                                            {user.role === 'nanny' ? (
-                                                <Link
-                                                    href="/dashboard"
-                                                    onClick={() => setIsDropdownOpen(false)}
-                                                    className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                >
-                                                    <LayoutDashboard size={18} />
-                                                    <span className="font-medium">Dashboard</span>
-                                                </Link>
-                                            ) : user.role === 'admin' ? (
-                                                <Link
-                                                    href="/admin"
-                                                    onClick={() => setIsDropdownOpen(false)}
-                                                    className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                >
-                                                    <LayoutDashboard size={18} />
-                                                    <span className="font-medium">Admin Dashboard</span>
-                                                </Link>
-                                            ) : (
-                                                <Link
-                                                    href="/browse"
-                                                    onClick={() => setIsDropdownOpen(false)}
-                                                    className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                >
-                                                    <LayoutDashboard size={18} />
-                                                    <span className="font-medium">Browse</span>
-                                                </Link>
-                                            )}
-
-                                            {user.role === 'parent' && (
-                                                <>
-                                                    <Link
-                                                        href="/book-service"
-                                                        onClick={() => setIsDropdownOpen(false)}
-                                                        className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                    >
-                                                        <User size={18} />
-                                                        <span className="font-medium">Book a Service</span>
-                                                    </Link>
-                                                    <Link
-                                                        href="/bookings"
-                                                        onClick={() => setIsDropdownOpen(false)}
-                                                        className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                    >
-                                                        <User size={18} />
-                                                        <span className="font-medium">My Bookings</span>
-                                                    </Link>
-                                                    <Link
-                                                        href="/messages"
-                                                        onClick={() => setIsDropdownOpen(false)}
-                                                        className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
-                                                    >
-                                                        <User size={18} />
-                                                        <span className="font-medium">Messages</span>
-                                                    </Link>
-                                                </>
-                                            )}
-
-                                            <Link
-                                                href={user.role === 'parent' ? '/settings' : '/dashboard/settings'}
-                                                onClick={() => setIsDropdownOpen(false)}
-                                                className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center gap-3 text-stone-700 transition-colors"
+                                            <Link 
+                                                href={user.role === 'nanny' ? '/dashboard' : user.role === 'admin' ? '/admin' : '/browse'}
+                                                className="flex items-center gap-2 px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors"
+                                                onClick={() => setIsProfileOpen(false)}
                                             >
-                                                <Settings size={18} />
-                                                <span className="font-medium">Settings</span>
+                                                <LayoutDashboard size={16} />
+                                                <span>Dashboard</span>
                                             </Link>
-                                        </div>
 
-                                        <div className="border-t border-stone-100 mt-1 pt-1">
-                                            <button
-                                                onClick={handleLogout}
-                                                className="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center gap-3 text-red-600 transition-colors"
+                                            <Link 
+                                                href="/settings"
+                                                className="flex items-center gap-2 px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors"
+                                                onClick={() => setIsProfileOpen(false)}
                                             >
-                                                <LogOut size={18} />
-                                                <span className="font-medium">Log Out</span>
+                                                <Settings size={16} />
+                                                <span>Settings</span>
+                                            </Link>
+
+                                            <button
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    handleLogout();
+                                                }}
+                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                <LogOut size={16} />
+                                                <span>Log Out</span>
                                             </button>
                                         </div>
-                                    </div>
+                                    </>
                                 )}
                             </div>
                         </div>

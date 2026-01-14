@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Search, Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight, MapPin, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Search, Baby, Heart, PawPrint, Home, BookOpen, Accessibility, ArrowRight, MapPin, RefreshCw, ShieldCheck, GraduationCap, HandHelping, HandHeart } from 'lucide-react';
 import { FeaturedCaregivers } from '@/components/features/FeaturedCaregivers';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -28,12 +28,12 @@ export default function BrowsePage() {
     const { preferences, updatePreferences } = usePreferences();
 
     const categories = [
-        { name: 'Child Care', icon: Baby, query: 'childCare', color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', description: 'Safe, nurturing care for your child' },
-        { name: 'Senior Care', icon: Heart, query: 'seniorCare', color: 'bg-rose-50 text-rose-600 hover:bg-rose-100', description: 'Dignity and comfort at home' },
-        { name: 'Pet Care', icon: PawPrint, query: 'petCare', color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', description: 'Loving care for your furry friends' },
-        { name: 'Housekeeping', icon: Home, query: 'housekeeping', color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', description: 'A clean, organized home' },
-        { name: 'Tutoring', icon: BookOpen, query: 'tutoring', color: 'bg-purple-50 text-purple-600 hover:bg-purple-100', description: 'Building confidence and skills' },
-        { name: 'Special Needs', icon: Accessibility, query: 'specialNeeds', color: 'bg-teal-50 text-teal-600 hover:bg-teal-100', description: 'Trained care with extra patience' },
+        { name: 'Child Care', icon: Baby, query: 'childCare', color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', description: 'Safe, nurturing care for your child', disabled: false },
+        { name: 'Special Needs', icon: HandHeart, query: 'specialNeeds', color: 'bg-teal-50 text-teal-600 hover:bg-teal-100', description: 'Trained care with extra patience', disabled: false },
+        { name: 'Shadow Teacher', icon: GraduationCap, query: 'shadowTeacher', color: 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100', description: 'Academic support & guidance', disabled: false },
+        { name: 'Senior Care', icon: Heart, query: 'seniorCare', color: 'bg-stone-50 text-stone-300', description: 'Coming soon', disabled: true },
+        { name: 'Pet Care', icon: PawPrint, query: 'petCare', color: 'bg-stone-50 text-stone-300', description: 'Coming soon', disabled: true },
+        { name: 'Housekeeping', icon: Home, query: 'housekeeping', color: 'bg-stone-50 text-stone-300', description: 'Coming soon', disabled: true },
     ];
 
     // Use a ref to prevent re-running update on every user object change if not needed
@@ -157,23 +157,37 @@ export default function BrowsePage() {
                 }
 
                 if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
-                    const response = await api.location.nearbyNannies(lat, lng, 10);
+                    try {
+                        // Use a reasonable radius (e.g. 50km) for "Nearby"
+                        const response = await api.location.nearbyNannies(lat, lng, 50);
 
-                    if (response.data && response.data.length > 0) {
-                        const mappedNannies = response.data.map(n => ({
-                            ...n,
-                            profiles: n.profile,
-                            nanny_details: n.nanny_details,
-                            distance: n.distance
-                        } as unknown as User));
-
-                        setNearbyNannies(mappedNannies);
-                    } else {
-                        setNearbyNannies([]);
+                        if (response.data && response.data.length > 0) {
+                            const mappedNannies = response.data.map(n => ({
+                                ...n,
+                                profiles: n.profile,
+                                nanny_details: n.nanny_details,
+                                distance: n.distance
+                            } as unknown as User));
+                            setNearbyNannies(mappedNannies);
+                        } else {
+                            // Explicitly set empty if none found nearby
+                            setNearbyNannies([]);
+                        }
+                    } catch (e) {
+                         console.warn("Nearby fetch failed", e);
+                         setNearbyNannies([]);
+                         setError("Could not load nearby caregivers.");
                     }
                 } else {
-                    const allNannies = await api.users.nannies();
-                    setNearbyNannies(allNannies);
+                     // If we don't have a location, we can't show "nearby".
+                     // User request implies strictness, so maybe show none or prompt for location?
+                     // Current behavior was fallback. Let's show all if NO location is known at all (guest),
+                     // but if location is known and no one is there, show none.
+                     // Actually, if lat/lng is null, we usually fallback to all. 
+                     // But user said "make it radius based".
+                     // I will keep fallback ONLY if location is totally unknown.
+                     const allNannies = await api.users.nannies();
+                     setNearbyNannies(allNannies);
                 }
             } catch (err) {
                 console.error(err);
@@ -208,15 +222,26 @@ export default function BrowsePage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                             {categories.map((category) => {
                                 const IconComponent = category.icon;
+                                // @ts-ignore - disabled property added dynamically
+                                const isDisabled = category.disabled;
+                                
+                                const content = (
+                                    <div className={`group bg-white p-6 rounded-2xl border ${isDisabled ? 'border-stone-100 opacity-60 cursor-not-allowed' : 'border-stone-100 hover:border-stone-200 hover:shadow-lg hover:shadow-stone-200/50 cursor-pointer'} transition-all duration-300 flex flex-col items-center gap-3 text-center h-full justify-center`}>
+                                        <div className={`w-14 h-14 rounded-xl ${category.color} flex items-center justify-center transition-transform duration-300 ${!isDisabled && 'group-hover:scale-110'}`}>
+                                            <IconComponent className="w-7 h-7" />
+                                        </div>
+                                        <span className={`font-medium ${isDisabled ? 'text-stone-400' : 'text-stone-900'}`}>{category.name}</span>
+                                        <span className="text-xs text-stone-500 px-2">{category.description}</span>
+                                    </div>
+                                );
+
+                                if (isDisabled) {
+                                    return <div key={category.name}>{content}</div>;
+                                }
+
                                 return (
                                     <Link href={`/search?service=${category.query}`} key={category.name}>
-                                        <div className="group bg-white p-6 rounded-2xl border border-stone-100 hover:border-stone-200 hover:shadow-lg hover:shadow-stone-200/50 transition-all duration-300 flex flex-col items-center gap-3 text-center cursor-pointer h-full justify-center">
-                                            <div className={`w-14 h-14 rounded-xl ${category.color} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
-                                                <IconComponent className="w-7 h-7" />
-                                            </div>
-                                            <span className="font-medium text-stone-900">{category.name}</span>
-                                            <span className="text-xs text-stone-500 px-2">{category.description}</span>
-                                        </div>
+                                        {content}
                                     </Link>
                                 );
                             })}
