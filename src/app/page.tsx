@@ -15,10 +15,16 @@ export default function Home() {
   const router = useRouter();
   const [showSplash, setShowSplash] = useState(true);
 
-  // Redirect logged-in nannies to dashboard
+  // Redirect logged-in users to their respective dashboards
   React.useEffect(() => {
-    if (!loading && user?.role === 'nanny') {
-      router.push('/dashboard');
+    if (!loading && user) {
+      if (user.role === 'nanny') {
+        router.push('/dashboard');
+      } else if (user.role === 'parent') {
+        router.push('/browse');
+      } else if (user.role === 'admin') {
+        router.push('/admin');
+      }
     }
   }, [user, loading, router]);
 
@@ -35,8 +41,8 @@ export default function Home() {
     );
   }
 
-  // Don't render home page for nannies (they'll be redirected)
-  if (user?.role === 'nanny') {
+  // Don't render home page for logged-in users (they'll be redirected)
+  if (user) {
     return null;
   }
 

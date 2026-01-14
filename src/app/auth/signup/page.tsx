@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { User, Heart, Mail, Lock, ArrowRight, Sun, Shield, Star, Briefcase, Sparkles, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
@@ -11,7 +12,13 @@ import { api } from '@/lib/api';
 type Role = 'family' | 'caregiver';
 
 export default function SignupPage() {
-    const [role, setRole] = useState<Role>('family');
+    const searchParams = useSearchParams();
+    const roleParam = searchParams.get('role');
+    
+    // Map 'parent' -> 'family' and 'nanny' -> 'caregiver'
+    const initialRole: Role = roleParam === 'nanny' ? 'caregiver' : 'family';
+
+    const [role, setRole] = useState<Role>(initialRole);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',

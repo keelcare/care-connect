@@ -24,13 +24,15 @@ import {
     Sparkles,
     CheckCircle2,
     MapPin,
-    GraduationCap
+    GraduationCap,
+    HandHelping,
+    HandHeart
 } from 'lucide-react';
 import Link from 'next/link';
 
 const SERVICE_TYPES = [
     { id: 'shadowTeacher', label: 'Shadow Teacher', icon: GraduationCap, color: 'bg-amber-50 text-amber-600 border-amber-200', activeColor: 'bg-amber-500 text-white border-amber-500' },
-    { id: 'specialNeeds', label: 'Special Needs', icon: Baby, color: 'bg-teal-50 text-teal-600 border-teal-200', activeColor: 'bg-teal-500 text-white border-teal-500' },
+    { id: 'specialNeeds', label: 'Special Needs', icon: HandHeart, color: 'bg-teal-50 text-teal-600 border-teal-200', activeColor: 'bg-teal-500 text-white border-teal-500' },
 ];
 
 const DURATION_OPTIONS = [

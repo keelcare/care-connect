@@ -115,6 +115,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('user_preferences');
             window.location.href = '/auth/login';
+            return new Promise(() => {}); // Wait for redirect
         }
         throw new Error(data.message || 'An error occurred');
     }

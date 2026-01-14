@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { ParentSidebar } from '@/components/layout/ParentSidebar';
 import { Footer } from '@/components/layout/Footer';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { useAuth } from '@/context/AuthContext';
 
 export default function ParentLayout({
@@ -54,6 +55,7 @@ export default function ParentLayout({
                     <Footer />
                 </div>
             </div>
+            <MobileBottomNav />
         </>
     );
 }

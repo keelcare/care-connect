@@ -8,28 +8,20 @@ import { Shield, Star, Users, Search, ChevronDown, MapPin, ArrowRight } from 'lu
 
 export const Hero: React.FC = () => {
     const router = useRouter();
-    const [zipCode, setZipCode] = useState('');
+
     const [serviceType, setServiceType] = useState('Child Care');
     const [isSelectOpen, setIsSelectOpen] = useState(false);
 
     const serviceOptions = ['Child Care', 'Senior Care', 'Pet Care', 'Housekeeping'];
 
     const handleSearch = () => {
-        if (zipCode.trim()) {
-            router.push(`/browse?zipcode=${encodeURIComponent(zipCode)}&service=${encodeURIComponent(serviceType)}`);
-        } else {
-            router.push('/browse');
-        }
+        router.push('/auth/signup?role=parent');
     };
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
+
 
     return (
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-stone-50">
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-warm-white">
             {/* Subtle background pattern */}
             <div className="absolute inset-0 opacity-[0.03]">
                 <div className="absolute inset-0" style={{
@@ -53,16 +45,16 @@ export const Hero: React.FC = () => {
 
                         {/* Main Heading */}
                         <div className="space-y-4">
-                            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-stone-900 leading-[1.1]">
-                                Find the
+                            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-heading-gray leading-[1.1]">
+                                Care you can
                                 <span className="relative inline-block mx-3">
-                                    <span className="relative z-10">perfect</span>
+                                    <span className="relative z-10">trust,</span>
                                     <span className="absolute bottom-2 left-0 w-full h-3 bg-amber-200/60 -rotate-1" />
                                 </span>
                                 <br />
-                                care for your
+                                for the people who
                                 <br />
-                                <span className="text-stone-500">loved ones.</span>
+                                <span className="text-stone-500">matter most.</span>
                             </h1>
                             <p className="text-lg text-stone-600 max-w-lg leading-relaxed">
                                 Connect with verified, background-checked caregivers in your area. 
@@ -72,15 +64,15 @@ export const Hero: React.FC = () => {
 
                         {/* Search Box */}
                         <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50 p-2 border border-stone-200">
-                            <div className="flex flex-col md:flex-row gap-2">
+                            <div className="flex flex-col md:flex-row gap-2 items-center">
                                 {/* Service Type Dropdown */}
-                                <div className="relative flex-1">
+                                <div className="relative flex-1 w-full">
                                     <button
                                         onClick={() => setIsSelectOpen(!isSelectOpen)}
                                         className="w-full flex items-center justify-between gap-2 px-4 py-4 rounded-xl hover:bg-stone-50 transition-colors text-left"
                                     >
                                         <div>
-                                            <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">Service</p>
+                                            <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">I'm looking for...</p>
                                             <p className="text-stone-900 font-semibold">{serviceType}</p>
                                         </div>
                                         <ChevronDown className={`w-5 h-5 text-stone-400 transition-transform ${isSelectOpen ? 'rotate-180' : ''}`} />
@@ -106,34 +98,23 @@ export const Hero: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Divider */}
-                                <div className="hidden md:block w-px bg-stone-200 my-2" />
-
-                                {/* Location Input */}
-                                <div className="flex-1 flex items-center gap-2 px-4 py-4 rounded-xl hover:bg-stone-50 transition-colors">
-                                    <MapPin className="w-5 h-5 text-stone-400" />
-                                    <div className="flex-1">
-                                        <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">Location</p>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter zip code"
-                                            value={zipCode}
-                                            onChange={(e) => setZipCode(e.target.value)}
-                                            onKeyPress={handleKeyPress}
-                                            className="w-full bg-transparent text-stone-900 font-semibold outline-none placeholder:text-stone-300 placeholder:font-normal"
-                                        />
-                                    </div>
-                                </div>
-
                                 {/* Search Button */}
                                 <Button
                                     onClick={handleSearch}
-                                    className="h-auto py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all group"
+                                    className="w-full md:w-auto h-auto py-4 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all group whitespace-nowrap"
                                 >
-                                    <Search className="w-5 h-5 mr-2" />
-                                    Search
-                                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    SEARCH
                                 </Button>
+                                
+                                {/* I'm a Caregiver Link */}
+                                <div className="px-4 whitespace-nowrap">
+                                     <button 
+                                        onClick={() => router.push('/auth/signup?role=nanny')}
+                                        className="text-sm font-bold text-emerald-700 hover:text-emerald-800 uppercase tracking-wide"
+                                     >
+                                        I'M A CAREGIVER
+                                     </button>
+                                </div>
                             </div>
                         </div>
 
@@ -173,15 +154,16 @@ export const Hero: React.FC = () => {
                     <div className="relative hidden lg:block">
                         <div className="relative">
                             {/* Main large image */}
-                            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-stone-300/50 aspect-[4/5]">
+                            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-stone-300/50 aspect-[4/5] hover:shadow-3xl transition-shadow duration-500">
                                 <Image
                                     src="https://images.unsplash.com/photo-1544776193-352d25ca82cd?q=80&w=800&auto=format&fit=crop"
                                     alt="Caregiver with child"
                                     fill
-                                    className="object-cover"
+                                    className="object-cover contrast-75 brightness-105"
                                     priority
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/10 to-transparent mix-blend-overlay" />
+                                <div className="absolute inset-0 bg-orange-50/10 pointer-events-none" /> {/* Warm overlay */}
                             </div>
 
                             {/* Floating card - Top Right */}

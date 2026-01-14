@@ -98,8 +98,45 @@ export default function SearchPage() {
             setError(null);
 
             if (isNearby) {
+                let lat: number | null = null;
+                let lng: number | null = null;
+
+                // 1. Try to get location from preferences or user profile
+                if (preferences.location?.lat && preferences.location?.lng) {
+                    lat = preferences.location.lat;
+                    lng = preferences.location.lng;
+                } else if (user?.profiles?.lat && user?.profiles?.lng) {
+                    lat = parseFloat(user.profiles.lat);
+                    lng = parseFloat(user.profiles.lng);
+                }
+
+                // 2. If we have valid coordinates, use them
+                if (lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) {
+                    try {
+                        const response = await api.location.nearbyNannies(lat, lng, 10);
+                        
+                        if (response.data && response.data.length > 0) {
+                            const mappedNannies = response.data.map(n => ({
+                                ...n,
+                                profiles: n.profile,
+                                nanny_details: n.nanny_details,
+                                distance: n.distance
+                            } as unknown as User));
+                            
+                            setNannies(mappedNannies);
+                            setFilteredNannies(mappedNannies);
+                            setLoading(false);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn("Nearby fetch from preferences failed, falling back...", e);
+                        // Don't return, let it fall through to geolocation or default
+                    }
+                }
+
+                // 3. If no prefs or prefs failed, try direct geolocation
                 if (!navigator.geolocation) {
-                    setError('Geolocation is not supported by your browser');
+                    // Fallback to all nannies if geo not supported
                     const allNannies = await api.users.nannies();
                     setNannies(allNannies);
                     setFilteredNannies(allNannies);
@@ -124,28 +161,41 @@ export default function SearchPage() {
                                 setNannies(mappedNannies);
                                 setFilteredNannies(mappedNannies);
                             } else {
+                                // No nearby found -> show empty or fallback? Usually empty for "Nearby" is correct behavior if truly none.
+                                // But to be safe and match behavior, we could show all? No, if checking nearby, 'none found' is valid.
+                                // But if API errored, we want fallback.
                                 setNannies([]);
                                 setFilteredNannies([]);
                             }
                         } catch (err) {
-                            console.error(err);
-                            setError('Failed to fetch caregivers');
-                            setLoading(false);
+                            console.warn("Geolocation nearby fetch failed", err);
+                            // Fallback to all nannies so page isn't broken
+                            try {
+                                const allNannies = await api.users.nannies();
+                                setNannies(allNannies);
+                                setFilteredNannies(allNannies);
+                            } catch (fallbackErr) {
+                                setError('Failed to load caregivers.');
+                            }
                         } finally {
                             setLoading(false);
                         }
                     },
                     (err) => {
-                        console.error(err);
-                        setError('Unable to retrieve location. Please allow location access.');
+                        console.warn("Geolocation denied/error", err);
+                        // Fallback to all nannies
                         api.users.nannies().then(allNannies => {
                             setNannies(allNannies);
                             setFilteredNannies(allNannies);
                             setLoading(false);
+                        }).catch(() => {
+                            setLoading(false);
+                            setError('Failed to load caregivers.');
                         });
                     }
                 );
             } else {
+                // Not "Nearby" -> just fetch all
                 const allNannies = await api.users.nannies();
                 setNannies(allNannies);
                 setFilteredNannies(allNannies);
@@ -153,7 +203,14 @@ export default function SearchPage() {
             }
         } catch (err) {
             console.error(err);
-            setError('An error occurred while fetching caregivers');
+            // One last attempt to fetch generic list if everything else exploded
+            try {
+                const allNannies = await api.users.nannies();
+                setNannies(allNannies);
+                setFilteredNannies(allNannies);
+            } catch (finalErr) {
+                 setError('An error occurred while fetching caregivers');
+            }
             setLoading(false);
         }
     };
@@ -164,7 +221,7 @@ export default function SearchPage() {
 
     useEffect(() => {
         fetchNannies();
-    }, [isNearby]);
+    }, [isNearby, preferences]);
 
     useEffect(() => {
         let filtered = nannies;
