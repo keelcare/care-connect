@@ -57,15 +57,31 @@ export default function AdminUsersPage() {
     };
 
     const handleBanUser = async (userId: string) => {
-        if (!confirm('Are you sure you want to ban this user?')) return;
+        const reason = prompt('Please enter a reason for banning this user (optional):');
+        if (reason === null) return; // Cancelled
 
         try {
             setActionLoading(userId);
-            const updated = await api.admin.banUser(userId);
-            setUsers(users.map(u => u.id === userId ? updated : u));
+            const updated = await api.admin.banUser(userId, reason || undefined);
+            setUsers(users.map(u => u.id === userId ? { ...updated, is_active: false } : u));
         } catch (err) {
             console.error('Failed to ban user:', err);
             alert(err instanceof Error ? err.message : 'Failed to ban user');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleUnbanUser = async (userId: string) => {
+        if (!confirm('Are you sure you want to unban this user?')) return;
+
+        try {
+            setActionLoading(userId);
+            const updated = await api.admin.unbanUser(userId);
+            setUsers(users.map(u => u.id === userId ? { ...updated, is_active: true } : u));
+        } catch (err) {
+            console.error('Failed to unban user:', err);
+            alert(err instanceof Error ? err.message : 'Failed to unban user');
         } finally {
             setActionLoading(null);
         }
@@ -128,8 +144,8 @@ export default function AdminUsersPage() {
                                     <td className="px-6 py-4 whitespace-nowrap text-neutral-600">{u.email}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                                                u.role === 'nanny' ? 'bg-stone-100 text-stone-700' :
-                                                    'bg-emerald-100 text-emerald-700'
+                                            u.role === 'nanny' ? 'bg-stone-100 text-stone-700' :
+                                                'bg-emerald-100 text-emerald-700'
                                             }`}>
                                             {u.role}
                                         </span>
@@ -155,24 +171,25 @@ export default function AdminUsersPage() {
                                             <Spinner />
                                         ) : (
                                             <div className="flex items-center gap-2">
-                                                {!u.is_verified && (
+                                                {u.is_active !== false ? (
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={() => handleVerifyUser(u.id)}
-                                                        className="rounded-lg text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                                                        onClick={() => handleBanUser(u.id)}
+                                                        className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
                                                     >
-                                                        Verify
+                                                        Ban
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleUnbanUser(u.id)}
+                                                        className="rounded-lg text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300"
+                                                    >
+                                                        Unban
                                                     </Button>
                                                 )}
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleBanUser(u.id)}
-                                                    className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                                                >
-                                                    Ban
-                                                </Button>
                                             </div>
                                         )}
                                     </td>

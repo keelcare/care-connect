@@ -140,11 +140,10 @@ export default function DashboardLayout({
                         {/* Notification Bell */}
                         <Link
                             href="/dashboard/notifications"
-                            className={`relative p-2.5 rounded-xl transition-all ${
-                                pathname === '/dashboard/notifications'
-                                    ? 'bg-stone-100 text-stone-900'
-                                    : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
-                            }`}
+                            className={`relative p-2.5 rounded-xl transition-all ${pathname === '/dashboard/notifications'
+                                ? 'bg-stone-100 text-stone-900'
+                                : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+                                }`}
                         >
                             <Bell size={20} />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
@@ -247,11 +246,10 @@ export default function DashboardLayout({
                                             key={item.href}
                                             href={item.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
-                                                isActive
-                                                    ? 'bg-stone-100 text-stone-900'
-                                                    : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                                            }`}
+                                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${isActive
+                                                ? 'bg-stone-100 text-stone-900'
+                                                : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                                                }`}
                                         >
                                             <Icon size={20} className={isActive ? 'text-stone-900' : 'text-stone-400'} />
                                             {item.label}

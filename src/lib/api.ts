@@ -36,10 +36,13 @@ import {
     AdminPaymentStats,
     AdminAdvancedStats,
     SystemSetting,
-    Notification
+    Notification,
+    IdentityDocument,
+    VerificationUploadResponse,
+    AdminVerificationRejectDto
 } from '@/types/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Token refresh callback - will be set by AuthContext
 let tokenRefresher: (() => Promise<string | null>) | null = null;
@@ -194,7 +197,8 @@ export const api = {
         getBookings: () => fetchApi<Booking[]>('/admin/bookings'),
         getStats: () => fetchApi<AdminStats>('/admin/stats'),
         verifyUser: (id: string) => fetchApi<User>(`/admin/users/${id}/verify`, { method: 'PUT' }),
-        banUser: (id: string) => fetchApi<User>(`/admin/users/${id}/ban`, { method: 'PUT' }),
+        banUser: (id: string, reason?: string) => fetchApi<User>(`/admin/users/${id}/ban`, { method: 'PUT', body: JSON.stringify({ reason }) }),
+        unbanUser: (id: string) => fetchApi<User>(`/admin/users/${id}/unban`, { method: 'PUT' }),
     },
     assignments: {
         getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),
@@ -276,5 +280,29 @@ export const api = {
             const text = await response.text();
             return { response: text };
         },
+    },
+    verification: {
+        upload: (formData: FormData) => {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            return fetch(`${API_URL}/verification/upload`, {
+                method: 'POST',
+                headers: {
+                    ...(token && { Authorization: `Bearer ${token}` }),
+                    // Content-Type is intentionally omitted to let the browser set it with boundary
+                },
+                body: formData
+            }).then(async (res) => {
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({ message: 'Upload failed' }));
+                    throw new Error(errorData.message || 'Upload failed');
+                }
+                return res.json();
+            });
+        },
+        reset: () => fetchApi<void>('/verification/reset', { method: 'DELETE' }),
+        getPending: () => fetchApi<User[]>('/verification/pending'),
+        approve: (id: string) => fetchApi<{ identity_verification_status: string; verification_rejection_reason: null }>(`/verification/${id}/approve`, { method: 'POST' }),
+        reject: (id: string, body: AdminVerificationRejectDto) =>
+            fetchApi<{ identity_verification_status: string; verification_rejection_reason: string }>(`/verification/${id}/reject`, { method: 'POST', body: JSON.stringify(body) }),
     },
 };
