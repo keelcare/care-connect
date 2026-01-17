@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { useRouter } from 'next/navigation';
 import { api, setTokenRefresher } from '@/lib/api';
 import { User } from '@/types/api';
+import { tokenStorage } from '@/lib/tokenStorage';
 
 // Token expires after 15 days for refresh token
 const TOKEN_EXPIRY_DAYS = 15;
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Refresh access token using refresh token
     const refreshAccessToken = useCallback(async (): Promise<string | null> => {
-        const refreshToken = localStorage.getItem('refresh_token');
+        const refreshToken = tokenStorage.getRefreshToken();
         if (!refreshToken) {
             console.log('No refresh token available');
             return null;
@@ -72,23 +73,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             console.log('Refreshing access token...');
             const response = await api.auth.refresh(refreshToken);
-            
-            // Store new tokens
-            localStorage.setItem('token', response.access_token);
-            localStorage.setItem('refresh_token', response.refresh_token);
+
+            // Store new tokens (also sets in cookie)
+            tokenStorage.setToken(response.access_token);
+            tokenStorage.setRefreshToken(response.refresh_token);
             setToken(response.access_token);
-            
+
             // Schedule next refresh
             scheduleTokenRefresh(response.access_token);
-            
+
             console.log('Access token refreshed successfully');
             return response.access_token;
         } catch (error) {
             console.error('Failed to refresh token:', error);
             // Clear tokens on refresh failure
-            localStorage.removeItem('token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('login_timestamp');
+            tokenStorage.clearAll();
             setToken(null);
             setUser(null);
             return null;
@@ -106,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!expirationMs) return;
 
         const timeUntilRefresh = expirationMs - Date.now() - TOKEN_REFRESH_BUFFER_MS;
-        
+
         if (timeUntilRefresh > 0) {
             console.log(`Scheduling token refresh in ${Math.round(timeUntilRefresh / 1000 / 60)} minutes`);
             refreshTimerRef.current = setTimeout(() => {
@@ -153,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const checkAuth = async () => {
-        const storedToken = localStorage.getItem('token');
+        const storedToken = tokenStorage.getToken();
         if (!storedToken) {
             console.log('AuthContext: No token found');
             setToken(null);
@@ -164,9 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Check if token has expired (15 days)
         if (isTokenExpired()) {
             console.log('AuthContext: Token expired (15 days), logging out');
-            localStorage.removeItem('token');
-            localStorage.removeItem('login_timestamp');
-            localStorage.removeItem('user_preferences');
+            tokenStorage.clearAll();
             setToken(null);
             setUser(null);
             setLoading(false);
@@ -174,7 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setToken(storedToken);
-        
+
         // Schedule token refresh
         scheduleTokenRefresh(storedToken);
 
@@ -183,14 +180,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const userData = await api.users.me();
             console.log('AuthContext: User verified', userData.email);
             setUser(userData);
+
+            // Check if user is banned - redirect to help page
+            if (userData.is_active === false) {
+                console.log('User is banned, redirecting to /nanny/help');
+                router.push('/nanny/help');
+            }
+
             return userData;
         } catch (error: any) {
             console.error('AuthContext: Auth check failed:', error);
             // Only remove token if it's an auth error (401/403)
             if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('Unauthorized')) {
                 console.log('AuthContext: Invalid token, removing');
-                localStorage.removeItem('token');
-                localStorage.removeItem('refresh_token');
+                tokenStorage.clearAll();
                 setUser(null);
             }
             // For other errors (network, server), keep the token but maybe set user to null? 
@@ -209,16 +212,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const login = async (token: string, userData?: User, refreshToken?: string) => {
-        localStorage.setItem('token', token);
-        // Store refresh token if provided
+        // Store tokens (also sets in cookie for middleware)
+        tokenStorage.setToken(token);
         if (refreshToken) {
-            localStorage.setItem('refresh_token', refreshToken);
+            tokenStorage.setRefreshToken(refreshToken);
         }
         // Store login timestamp for 15-day expiration
         localStorage.setItem('login_timestamp', Date.now().toString());
         setToken(token);
         setLoading(false); // Stop loading immediately since we have a token
-        
+
         // Schedule token refresh
         scheduleTokenRefresh(token);
 
@@ -226,6 +229,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Standard login: user data provided, set immediately
             setUser(userData);
             console.log('Logged in user:', userData);
+
+            // Check if user is banned - redirect to help page
+            if (userData.is_active === false) {
+                console.log('User is banned, redirecting to /nanny/help');
+                router.push('/nanny/help');
+                return;
+            }
 
             // Redirect immediately based on role
             if (userData.role === 'nanny') {
@@ -255,6 +265,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .then((userData) => {
                     console.log('Background user fetch completed:', userData.email);
                     setUser(userData);
+
+                    // Check if user is banned and redirect
+                    if (userData.is_active === false) {
+                        console.log('User is banned, redirecting to /nanny/help');
+                        router.push('/nanny/help');
+                    }
                 })
                 .catch((error) => {
                     console.error('Background user fetch failed:', error);
@@ -271,10 +287,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (refreshTimerRef.current) {
             clearTimeout(refreshTimerRef.current);
         }
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('login_timestamp');
-        localStorage.removeItem('user_preferences'); // Clear preferences on logout
+        tokenStorage.clearAll();
         setUser(null);
         setToken(null);
         router.push('/auth/login');

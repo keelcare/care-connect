@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { AdminStats, AdminAdvancedStats } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Users, Calendar, CheckCircle, Bell, AlertTriangle, Star, Settings, TrendingUp, DollarSign, Clock } from 'lucide-react';
+import { Users, Calendar, CheckCircle, Bell, AlertTriangle, Star, Settings, TrendingUp, DollarSign, Clock, ShieldCheck } from 'lucide-react';
 import styles from './page.module.css';
 
 export default function AdminDashboard() {
@@ -164,6 +164,13 @@ export default function AdminDashboard() {
                     >
                         <Settings className="mr-3" size={24} />
                         System Settings
+                    </Button>
+                    <Button
+                        className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"
+                        onClick={() => router.push('/admin/verifications')}
+                    >
+                        <ShieldCheck className="mr-3" size={24} />
+                        Verify Nannies
                     </Button>
                 </div>
             </div>

@@ -5,10 +5,34 @@ export interface User {
     email: string;
     role: UserRole;
     is_verified: boolean;
+    is_active: boolean;
+    ban_reason?: string | null;
+    identity_verification_status?: 'pending' | 'verified' | 'rejected' | null;
+    verification_rejection_reason?: string | null;
+    identity_documents?: IdentityDocument[];
     created_at: string;
     updated_at: string;
     profiles?: UserProfile;
     nanny_details?: NannyDetails;
+}
+
+export interface IdentityDocument {
+    id: string;
+    type: 'AADHAR' | 'PAN' | 'VOTER_ID';
+    id_number: string;
+    file_path: string;
+    original_name?: string;
+    uploaded_at: string;
+}
+
+export interface VerificationUploadResponse {
+    id: string;
+    identity_verification_status: string;
+    identity_documents: IdentityDocument[];
+}
+
+export interface AdminVerificationRejectDto {
+    reason: string;
 }
 
 export interface UserProfile {
@@ -308,7 +332,7 @@ export interface AdminStats {
 }
 
 // Recurring Booking Types
-export type RecurrencePattern = 
+export type RecurrencePattern =
     | 'DAILY'
     | 'WEEKLY_MON' | 'WEEKLY_TUE' | 'WEEKLY_WED' | 'WEEKLY_THU' | 'WEEKLY_FRI' | 'WEEKLY_SAT' | 'WEEKLY_SUN'
     | 'WEEKLY_MON_WED_FRI' | 'WEEKLY_TUE_THU'

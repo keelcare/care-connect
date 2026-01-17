@@ -35,6 +35,17 @@ export default function DashboardPage() {
 
         if (user) {
             if (user.role === 'nanny') {
+                // Redirect banned users to help page FIRST
+                if (user.is_active === false) {
+                    router.push('/nanny/help');
+                    return;
+                }
+
+                // Redirect to verification if not verified
+                if (user.identity_verification_status !== 'verified') {
+                    router.push('/nanny/verification');
+                    return;
+                }
                 fetchDashboardData();
             } else {
                 router.push('/browse');
