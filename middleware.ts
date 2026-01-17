@@ -25,13 +25,17 @@ export function middleware(request: NextRequest) {
     // Get token from cookie
     const token = request.cookies.get('token')?.value;
 
+    let response: NextResponse;
+
+    // Default response: continue
+    response = NextResponse.next();
+
     // If no token and trying to access protected route, redirect to login
     if (!token && PROTECTED_ROUTES.some(route => pathname.startsWith(route))) {
-        return NextResponse.redirect(new URL('/auth/login', request.url));
+        response = NextResponse.redirect(new URL('/auth/login', request.url));
     }
-
     // If token exists, decode it to check user status
-    if (token) {
+    else if (token) {
         try {
             // Decode JWT to get user info
             const payload = JSON.parse(
@@ -39,30 +43,41 @@ export function middleware(request: NextRequest) {
             );
 
             const isActive = payload.is_active ?? true; // Default to true if not specified
-            const role = payload.role;
 
             // If user is banned (is_active === false)
             if (isActive === false) {
-                // Allow access to help page
-                if (BANNED_USER_ALLOWED_ROUTES.some(route => pathname.startsWith(route))) {
-                    return NextResponse.next();
-                }
-
-                // Redirect to help page for any other route
-                if (pathname !== '/nanny/help') {
-                    return NextResponse.redirect(new URL('/nanny/help', request.url));
+                // Redirect to help page for any other route (except allowed ones)
+                if (!BANNED_USER_ALLOWED_ROUTES.some(route => pathname.startsWith(route)) && pathname !== '/nanny/help') {
+                    response = NextResponse.redirect(new URL('/nanny/help', request.url));
                 }
             }
-
-            // If user is active nanny trying to access dashboard/nanny routes
-            // Let them through - component-level guards will handle verification
         }
         catch (error) {
             console.error('Middleware: Failed to decode token', error);
         }
     }
 
-    return NextResponse.next();
+    // --- Content Security Policy ---
+    const cspHeader = `
+        default-src 'self';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
+        font-src 'self' data:;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        frame-ancestors 'none';
+        block-all-mixed-content;
+        upgrade-insecure-requests;
+    `;
+
+    response.headers.set(
+        'Content-Security-Policy',
+        cspHeader.replace(/\s{2,}/g, ' ').trim()
+    );
+
+    return response;
 }
 
 export const config = {
