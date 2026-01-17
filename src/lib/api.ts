@@ -45,27 +45,27 @@ import {
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Token refresh callback - will be set by AuthContext
-let tokenRefresher: (() => Promise<string | null>) | null = null;
+// NOTE: With cookie-based auth, refresh is simpler but we still need to handle 401s
+let tokenRefresher: (() => Promise<boolean>) | null = null;
 let isRefreshing = false;
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
-export function setTokenRefresher(refresher: () => Promise<string | null>) {
+export function setTokenRefresher(refresher: () => Promise<boolean>) {
     tokenRefresher = refresher;
 }
 
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, skipRefresh = false): Promise<T> {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
+    // With Cookie-based auth, we MUST send credentials
+    const fetchOptions: RequestInit = {
+        ...options,
+        credentials: 'include', // This sends cookies with the request
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
     };
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
-        ...options,
-        headers,
-    });
+    const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
     // Try to parse JSON, handle non-JSON responses
     let data;
@@ -76,6 +76,33 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
     }
 
     if (!response.ok) {
+        // Handle 429 Too Many Requests - Exponential Backoff
+        if (response.status === 429) {
+            const retryCount = (options as any)._retryCount || 0;
+            const MAX_RETRIES = 3;
+
+            if (retryCount < MAX_RETRIES) {
+                // Default to 1s, 2s, 4s... or use Retry-After header if available
+                const retryAfterHeader = response.headers.get('Retry-After');
+                let waitTime = 1000 * Math.pow(2, retryCount);
+
+                if (retryAfterHeader) {
+                    const seconds = parseInt(retryAfterHeader, 10);
+                    if (!isNaN(seconds)) {
+                        waitTime = seconds * 1000;
+                    }
+                }
+
+                console.warn(`Rate limited (429). Retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+
+                return fetchApi<T>(endpoint, {
+                    ...options,
+                    _retryCount: retryCount + 1
+                } as any, skipRefresh);
+            }
+        }
+
         // Handle 401 Unauthorized - try to refresh token first
         if (response.status === 401 && typeof window !== 'undefined' && !skipRefresh) {
             // Try to refresh the token
@@ -86,22 +113,19 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
                     refreshPromise = tokenRefresher();
                 }
 
-                const newToken = await refreshPromise;
+                const refreshSuccess = await refreshPromise;
                 isRefreshing = false;
                 refreshPromise = null;
 
-                if (newToken) {
-                    // Retry the original request with new token
-                    const retryHeaders = {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${newToken}`,
-                        ...options.headers,
-                    };
+                if (refreshSuccess) {
+                    // Retry the original request (cookies will be upgraded automatically)
+                    const retryResponse = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
-                    const retryResponse = await fetch(`${API_URL}${endpoint}`, {
-                        ...options,
-                        headers: retryHeaders,
-                    });
+                    // Also handle 429 on retry
+                    if (retryResponse.status === 429) {
+                        // As simple heuristic, if we get 429 immediately after refresh, just fail or let user retry.
+                        // Or implement loop. For now return what we got.
+                    }
 
                     const retryData = await retryResponse.json();
 
@@ -113,12 +137,12 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
                 }
             }
 
-            // If refresh failed or no refresher, logout
-            localStorage.removeItem('token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user_preferences');
-            window.location.href = '/auth/login';
-            return new Promise(() => {}); // Wait for redirect
+            // If refresh failed or no refresher, logout is handled by the consumer (AuthContext) redirects
+            // or we can redirect here
+            if (window.location.pathname !== '/auth/login') {
+                window.location.href = '/auth/login';
+            }
+            throw new Error('Session expired');
         }
         throw new Error(data.message || 'An error occurred');
     }
@@ -128,13 +152,16 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
 
 export const api = {
     auth: {
-        login: (body: LoginDto) => fetchApi<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+        // Login now returns just the user, tokens are in cookies
+        login: (body: LoginDto) => fetchApi<{ user: User }>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
         signup: (body: SignupDto & { role: string }) => fetchApi<User>('/auth/signup', { method: 'POST', body: JSON.stringify(body) }),
-        refresh: (refreshToken: string) =>
-            fetchApi<{ access_token: string; refresh_token: string }>('/auth/refresh', {
+        // Refresh now expects empty body, tokens in cookies
+        refresh: () =>
+            fetchApi<void>('/auth/refresh', {
                 method: 'POST',
-                body: JSON.stringify({ refreshToken })
+                body: JSON.stringify({})
             }, true), // skipRefresh = true to prevent infinite loop
+        logout: () => fetchApi<void>('/auth/logout', { method: 'POST' }),
         forgotPassword: (email: string) =>
             fetchApi<{ message: string }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
         resetPassword: (token: string, newPassword: string) =>

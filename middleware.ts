@@ -22,8 +22,8 @@ const PROTECTED_ROUTES = [
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Get token from cookie
-    const token = request.cookies.get('token')?.value;
+    // Get token from cookie (HttpOnly cookie set by backend)
+    const token = request.cookies.get('access_token')?.value;
 
     let response: NextResponse;
 

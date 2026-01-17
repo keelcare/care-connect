@@ -3,6 +3,7 @@
 import React, { useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 import styles from './page.module.css';
 
 function CallbackContent() {
@@ -26,42 +27,20 @@ function CallbackContent() {
                 return;
             }
 
-            // Try hash fragment first (more secure - not sent to server)
-            let token: string | null = null;
-            let userData: any = null;
+            try {
+                // With cookie-based auth, we just fetch the user. 
+                // The cookies are already set by the backend redirect.
+                console.log('Fetching user data for callback...');
+                const user = await api.users.me();
 
-            if (typeof window !== 'undefined' && window.location.hash) {
-                try {
-                    const hash = window.location.hash.substring(1);
-                    const params = new URLSearchParams(hash);
-                    token = params.get('access_token') || params.get('token');
-                    const userJson = params.get('user');
-                    if (userJson) {
-                        userData = JSON.parse(decodeURIComponent(userJson));
-                    }
-                    // Clear hash immediately after reading for security
-                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
-                } catch (e) {
-                    console.error('Failed to parse hash data:', e);
-                }
-            }
-
-            // Fallback to query params (current backend behavior)
-            if (!token) {
-                token = searchParams.get('token') || searchParams.get('access_token');
-            }
-
-            if (token) {
-                try {
-                    // Pass user data if available (from hash), otherwise login will fetch it
-                    await login(token, userData);
-                } catch (err) {
-                    console.error('Failed to login with token:', err);
-                    router.push('/auth/login?error=auth_failed');
-                }
-            } else {
-                console.error('No token found in URL');
-                router.push('/auth/login?error=no_token');
+                // If we get here, we are logged in
+                await login(user);
+                // AuthContext login will handle the redirect
+            } catch (err) {
+                console.error('Failed to verify session during callback:', err);
+                // Fallback: Check if there's a token in URL (legacy support or odd flow)
+                // But generally we should redirect to login if me() fails
+                router.push('/auth/login?error=auth_failed');
             }
         };
 

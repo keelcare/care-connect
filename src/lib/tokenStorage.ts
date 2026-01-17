@@ -1,42 +1,37 @@
+// DEPRECATED: Tokens are now stored in HttpOnly cookies managed by the browser.
+// This file remains for backward compatibility during migration but should not be used for new auth logic.
 import Cookies from 'js-cookie';
 
 export const tokenStorage = {
     setToken: (token: string) => {
-        localStorage.setItem('token', token);
-        // Also set in cookie for middleware
-        Cookies.set('token', token, {
-            expires: 15, // 15 days
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production'
-        });
+        // No-op: Browser handles cookies
+        console.warn('tokenStorage.setToken is deprecated. Tokens are handled via HttpOnly cookies.');
     },
 
     getToken: () => {
-        return localStorage.getItem('token');
+        // Return null or check cookies if needed, but really we shouldn't be reading tokens client side
+        return null;
     },
 
     removeToken: () => {
-        localStorage.removeItem('token');
-        Cookies.remove('token');
+        // No-op
     },
 
     setRefreshToken: (token: string) => {
-        localStorage.setItem('refresh_token', token);
+        // No-op
     },
 
     getRefreshToken: () => {
-        return localStorage.getItem('refresh_token');
+        return null;
     },
 
     removeRefreshToken: () => {
-        localStorage.removeItem('refresh_token');
+        // No-op
     },
 
     clearAll: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
         localStorage.removeItem('login_timestamp');
         localStorage.removeItem('user_preferences');
-        Cookies.remove('token');
+        // Browser clears cookies on logout endpoint call
     }
 };
