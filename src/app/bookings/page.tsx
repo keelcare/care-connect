@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Booking, ServiceRequest, User } from '@/types/api';
-import { Plus, Calendar, Clock, MapPin } from 'lucide-react';
+import { Plus, Calendar, Clock, MapPin, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
+import { usePayment } from '@/hooks/usePayment';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 
@@ -21,9 +22,48 @@ export default function ParentBookingsPage() {
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'requests' | 'upcoming' | 'completed' | 'cancelled'>('upcoming');
 
+    // Payment Hook
+    const { handlePayment, loading: paymentLoading } = usePayment();
+    const [paidBookingIds, setPaidBookingIds] = useState<string[]>([]); // Simulate DB
+
     // Review Modal State
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+
+    // Load paid status from local storage
+    useEffect(() => {
+        const savedPaid = localStorage.getItem('paidBookingIds');
+        if (savedPaid) {
+            setPaidBookingIds(JSON.parse(savedPaid));
+        }
+    }, []);
+
+    const handlePayNow = (booking: Booking) => {
+        // Calculate amount (mock logic: $20/hr * duration)
+        // If duration is missing, default to 4 hours
+        let duration = 4;
+        if (booking.start_time && booking.end_time) {
+            const start = new Date(booking.start_time).getTime();
+            const end = new Date(booking.end_time).getTime();
+            duration = (end - start) / (1000 * 60 * 60);
+        }
+        
+        // Default rate $20/hr, Min $50
+        const amount = Math.max(duration * 20, 50);
+
+        handlePayment({
+            bookingId: booking.id,
+            amount: amount,
+            onSuccess: () => {
+                const newPaid = [...paidBookingIds, booking.id];
+                setPaidBookingIds(newPaid);
+                localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
+            },
+            onError: (err) => {
+                console.error("Payment failed", err);
+            }
+        });
+    };
 
     useEffect(() => {
         if (user) {
@@ -145,8 +185,17 @@ export default function ParentBookingsPage() {
 
     const getNannyName = (nanny?: User) => {
         if (!nanny) return 'Nanny';
-        // Handle various potential structures (singular, plural, array)
-        const profile = nanny.profiles || (nanny as any).profile || (Array.isArray((nanny as any).profiles) ? (nanny as any).profiles[0] : null);
+        
+        let profile = nanny.profiles as any;
+
+        // Handle if profiles is an array (common in some backend configurations)
+        if (Array.isArray(profile)) {
+            profile = profile[0];
+        } 
+        // Handle legacy/alternative field name
+        else if (!profile && (nanny as any).profile) {
+            profile = (nanny as any).profile;
+        }
         
         if (profile?.first_name) {
             return `${profile.first_name} ${profile.last_name || ''}`.trim();
@@ -180,19 +229,43 @@ export default function ParentBookingsPage() {
         }
 
         if (booking.status === 'COMPLETED') {
+            const isPaid = paidBookingIds.includes(booking.id);
+
+            if (!isPaid) {
+                buttons.push(
+                    <Button
+                        key="pay"
+                        size="sm"
+                        onClick={() => handlePayNow(booking)}
+                        disabled={paymentLoading}
+                        className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+                    >
+                        {paymentLoading ? 'Processing...' : 'Pay Now'}
+                    </Button>
+                );
+            } else {
+                 buttons.push(
+                    <div key="paid" className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium text-sm mr-2">
+                        <Check size={14} />
+                        Paid
+                    </div>
+                );
+            }
+
             buttons.push(
                 <Button
                     key="review"
                     size="sm"
                     onClick={() => handleOpenReview(booking.id)}
                     className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                    disabled={!isPaid} // Optional: Require payment before review? Let's leave enabled/disabled based on choice. User asked for payment AT END.
                 >
                     Leave Review
                 </Button>
             );
         }
 
-        return buttons.length > 0 ? <div className="flex gap-2">{buttons}</div> : null;
+        return buttons.length > 0 ? <div className="flex gap-2 items-center">{buttons}</div> : null;
     };
 
     const filteredBookings = bookings.filter(booking => {

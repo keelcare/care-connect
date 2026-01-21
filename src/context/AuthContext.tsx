@@ -34,8 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await api.auth.refresh();
             console.log('Session refreshed successfully');
             return true;
-        } catch (error) {
-            console.error('Failed to refresh session:', error);
+        } catch (error: any) {
+            // If there's no refresh token, it just means the user isn't logged in or session expired completely
+            if (error.message?.includes('No refresh token') || error.message?.includes('Unauthorized')) {
+                console.log('Session refresh failed (no token):', error.message);
+            } else {
+                console.error('Failed to refresh session:', error);
+            }
             setUser(null);
             return false;
         }
