@@ -23,7 +23,10 @@ import { api } from '@/lib/api';
 
 type Role = 'family' | 'caregiver';
 
-export default function SignupPage() {
+import { Suspense } from 'react';
+import { Spinner } from '@/components/ui/Spinner';
+
+function SignupContent() {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get('role');
 
@@ -592,5 +595,13 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-stone-50"><Spinner /></div>}>
+      <SignupContent />
+    </Suspense>
   );
 }

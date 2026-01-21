@@ -53,21 +53,19 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined);
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    if (!user) {
       return;
     }
 
-    console.log('Initializing socket connection with token');
+    console.log('Initializing socket connection with cookies');
     // Initialize socket connection
     const newSocket = io(API_URL, {
-      auth: {
-        token,
-      },
+      withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -102,7 +100,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       newSocket.disconnect();
       setConnected(false);
     };
-  }, [token]);
+  }, [user]);
 
   const joinRoom = useCallback(
     (chatId: string) => {

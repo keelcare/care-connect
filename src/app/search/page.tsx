@@ -342,6 +342,7 @@ export default function SearchPage() {
       email: 'sarah@example.com',
       role: 'nanny',
       is_verified: true,
+      is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       profiles: {
@@ -373,6 +374,7 @@ export default function SearchPage() {
       email: 'michael@example.com',
       role: 'nanny',
       is_verified: true,
+      is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       profiles: {
@@ -404,6 +406,7 @@ export default function SearchPage() {
       email: 'emily@example.com',
       role: 'nanny',
       is_verified: true,
+      is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       profiles: {
