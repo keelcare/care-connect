@@ -17,8 +17,8 @@ export function LocationSender({
   bookingStatus,
   onStatusChange,
 }: LocationSenderProps) {
-  const { token } = useAuth();
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const { user } = useAuth();
+  const socketRef = useRef<Socket | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
@@ -34,12 +34,12 @@ export function LocationSender({
 
   // Initialize socket connection
   useEffect(() => {
-    if (!token || !bookingId) return;
+    if (!user || !bookingId) return;
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
     const newSocket = io(`${API_URL}/location`, {
-      auth: { token },
+      withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
     });
@@ -52,18 +52,19 @@ export function LocationSender({
       console.log('Location sender socket disconnected');
     });
 
-    setSocket(newSocket);
+    socketRef.current = newSocket;
 
     return () => {
       newSocket.disconnect();
+      socketRef.current = null;
     };
-  }, [token, bookingId]);
+  }, [user, bookingId]);
 
   // Send location update
   const sendLocationUpdate = useCallback(
     (lat: number, lng: number) => {
-      if (socket?.connected) {
-        socket.emit('location:update', {
+      if (socketRef.current?.connected) {
+        socketRef.current.emit('location:update', {
           bookingId,
           lat,
           lng,
@@ -71,7 +72,7 @@ export function LocationSender({
         console.log('Location sent:', { lat, lng });
       }
     },
-    [socket, bookingId]
+    [bookingId]
   );
 
   // Start sharing location
@@ -160,9 +161,12 @@ export function LocationSender({
   // Auto-start sharing when status changes to EN_ROUTE
   useEffect(() => {
     if (bookingStatus === 'EN_ROUTE' && !isSharing) {
-      startSharing();
+      // Defer execution to avoid synchronous state update warning
+      const timer = setTimeout(() => startSharing(), 0);
+      return () => clearTimeout(timer);
     } else if (!canShare && isSharing) {
-      stopSharing();
+      const timer = setTimeout(() => stopSharing(), 0);
+      return () => clearTimeout(timer);
     }
   }, [bookingStatus, canShare, isSharing, startSharing, stopSharing]);
 

@@ -35,13 +35,38 @@ export function GeofenceAlertBanner({
   autoDismiss = true,
   autoDismissTimeout = 15000,
 }: GeofenceAlertBannerProps) {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const [alerts, setAlerts] = useState<GeofenceAlert[]>([]);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = React.useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   // Only parents should see geofence alerts
-  const shouldConnect = user?.role === 'parent' && !!token;
+  const shouldConnect = user?.role === 'parent';
+
+  const playAlertSound = () => {
+    // ... (rest of function)
+    try {
+      const audioContext = new (
+        window.AudioContext ||
+        (window as typeof window & { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext
+      )();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      gainNode.gain.value = 0.1;
+
+      oscillator.start();
+      setTimeout(() => oscillator.stop(), 200);
+    } catch (e) {
+      console.log('Could not play alert sound');
+    }
+  };
 
   useEffect(() => {
     if (!shouldConnect) return;
@@ -50,12 +75,14 @@ export function GeofenceAlertBanner({
 
     // Connect to location namespace for geofence alerts
     const newSocket = io(`${API_URL}/location`, {
-      auth: { token },
+      withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
     });
+
+    socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
       console.log('Geofence alert socket connected');
@@ -105,8 +132,6 @@ export function GeofenceAlertBanner({
       playAlertSound();
     });
 
-    setSocket(newSocket);
-
     return () => {
       if (bookingId) {
         newSocket.emit('geofence:unsubscribe', { bookingId });
@@ -114,8 +139,9 @@ export function GeofenceAlertBanner({
         newSocket.emit('geofence:unsubscribeAll');
       }
       newSocket.disconnect();
+      socketRef.current = null;
     };
-  }, [shouldConnect, token, bookingId, onAlert]);
+  }, [shouldConnect, user, bookingId, onAlert]);
 
   // Auto-dismiss alerts
   useEffect(() => {
@@ -128,30 +154,7 @@ export function GeofenceAlertBanner({
     return () => clearTimeout(timer);
   }, [alerts, autoDismiss, autoDismissTimeout]);
 
-  const playAlertSound = () => {
-    // Create a simple beep sound
-    try {
-      const audioContext = new (
-        window.AudioContext ||
-        (window as typeof window & { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext
-      )();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      gainNode.gain.value = 0.1;
-
-      oscillator.start();
-      setTimeout(() => oscillator.stop(), 200);
-    } catch (e) {
-      console.log('Could not play alert sound');
-    }
-  };
 
   const dismissAlert = (index: number) => {
     setAlerts((prev) => prev.filter((_, i) => i !== index));

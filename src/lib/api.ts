@@ -1,7 +1,5 @@
-import {
   LoginDto,
   SignupDto,
-  AuthResponse,
   User,
   UpdateUserDto,
   Coordinates,
@@ -37,8 +35,6 @@ import {
   AdminAdvancedStats,
   SystemSetting,
   Notification,
-  IdentityDocument,
-  VerificationUploadResponse,
   AdminVerificationRejectDto,
 } from '@/types/api';
 

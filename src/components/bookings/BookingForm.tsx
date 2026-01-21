@@ -83,9 +83,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   hourlyRate,
 }) => {
   const [weekOffset, setWeekOffset] = useState(0);
-  const [dates, setDates] = useState<Date[]>([]);
-
-  useEffect(() => {
+  const dates = React.useMemo(() => {
     const today = new Date();
     const nextDays = [];
     for (let i = 0; i < 7; i++) {
@@ -93,7 +91,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       date.setDate(today.getDate() + i + weekOffset * 7);
       nextDays.push(date);
     }
-    setDates(nextDays);
+    return nextDays;
   }, [weekOffset]);
 
   const handleDateSelect = (date: Date) => {

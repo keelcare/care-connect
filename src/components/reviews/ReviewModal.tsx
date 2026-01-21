@@ -28,17 +28,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   const [eligibilityError, setEligibilityError] = useState<string | null>(null);
   const [canReview, setCanReview] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && bookingId) {
-      checkEligibility();
-      // Reset form
-      setRating(0);
-      setComment('');
-      setEligibilityError(null);
-    }
-  }, [isOpen, bookingId]);
-
-  const checkEligibility = async () => {
+  const checkEligibility = React.useCallback(async () => {
     try {
       setCheckingEligibility(true);
       const response = await api.reviews.checkEligibility(bookingId);
@@ -50,9 +40,6 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         setEligibilityError(
           response.reason || 'You cannot review this booking.'
         );
-
-        // If already reviewed, maybe show the review?
-        // For now, just showing the error/reason is enough as per requirements.
       }
     } catch (error) {
       console.error('Failed to check eligibility:', error);
@@ -61,7 +48,17 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     } finally {
       setCheckingEligibility(false);
     }
-  };
+  }, [bookingId]);
+
+  useEffect(() => {
+    if (isOpen && bookingId) {
+      checkEligibility();
+      // Reset form
+      setRating(0);
+      setComment('');
+      setEligibilityError(null);
+    }
+  }, [isOpen, bookingId, checkEligibility]);
 
   const handleSubmit = async () => {
     if (rating === 0) {

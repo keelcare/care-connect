@@ -78,7 +78,7 @@ export const NannyBookingCard: React.FC<NannyBookingCardProps> = ({
         <div className="bg-stone-50 rounded-xl p-4 border border-stone-100">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-stone-900 font-bold border border-stone-200">
-              {new Date(selectedDate || Date.now()).getDate()}
+              {new Date(selectedDate || new Date()).getDate()}
             </div>
             <div>
               <p className="text-sm font-medium text-stone-900">

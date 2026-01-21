@@ -32,8 +32,8 @@ export function LiveLocationTracker({
   destinationLat,
   destinationLng,
 }: LiveLocationTrackerProps) {
-  const { token } = useAuth();
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const { user } = useAuth();
+  const socketRef = React.useRef<Socket | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
   const [geofenceAlert, setGeofenceAlert] = useState<GeofenceAlert | null>(
     null
@@ -45,18 +45,20 @@ export function LiveLocationTracker({
   const shouldTrack = ['EN_ROUTE', 'IN_PROGRESS'].includes(bookingStatus);
 
   useEffect(() => {
-    if (!shouldTrack || !token || !bookingId) return;
+    if (!shouldTrack || !user || !bookingId) return;
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
     // Connect to location namespace
     const newSocket = io(`${API_URL}/location`, {
-      auth: { token },
+      withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
     });
+
+    socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
       console.log('Location socket connected');
@@ -91,13 +93,12 @@ export function LiveLocationTracker({
       setTimeout(() => setGeofenceAlert(null), 10000);
     });
 
-    setSocket(newSocket);
-
     return () => {
       newSocket.emit('location:unsubscribe', { bookingId });
       newSocket.disconnect();
+      socketRef.current = null;
     };
-  }, [shouldTrack, token, bookingId]);
+  }, [shouldTrack, user, bookingId]);
 
   // Calculate distance between two points
   const calculateDistance = useCallback(

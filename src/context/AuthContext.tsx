@@ -11,12 +11,8 @@ import React, {
 import { useRouter } from 'next/navigation';
 import { api, setTokenRefresher } from '@/lib/api';
 import { User } from '@/types/api';
-import { tokenStorage } from '@/lib/tokenStorage';
 
-// Token expires after 15 days for refresh token
-const TOKEN_EXPIRY_DAYS = 15;
-// Refresh access token 2 minutes before expiry
-const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
+
 
 interface AuthContextType {
   user: User | null;
@@ -65,12 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshSession]);
 
-  // Initial Auth Check
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       console.log('AuthContext: Verifying session...');
       // Just call /users/me. If we have valid cookies, it returns the user.
@@ -81,9 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (userData.is_active === false) {
         console.log('User is banned, redirecting to /nanny/help');
         router.push('/nanny/help');
-        // We still set the user so functionality like "Contest Ban" can work?
-        // Or maybe the middleware handles it? Middleware handles route protection.
-        // We should set the user so the UI knows who they are.
+        // We still set the user so the UI knows who they are.
       }
 
       setUser(userData);
@@ -93,7 +82,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  // Initial Auth Check
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const login = async (userData: User) => {
     // Standard login: user data provided, set immediately
