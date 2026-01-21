@@ -14,8 +14,8 @@ export interface User {
   is_verified: boolean;
   oauth_provider?: 'google' | null;
   oauth_provider_id?: string | null;
-  created_at: string;  // ISO 8601 timestamp
-  updated_at: string;  // ISO 8601 timestamp
+  created_at: string; // ISO 8601 timestamp
+  updated_at: string; // ISO 8601 timestamp
   profiles?: UserProfile;
   nanny_details?: NannyDetails;
   // Note: Sensitive fields excluded from API responses:
@@ -38,17 +38,17 @@ export interface UserProfile {
 
 export interface NannyDetails {
   user_id: string;
-  skills: string[];  // e.g., ["CPR Certified", "First Aid", "Early Childhood Education"]
+  skills: string[]; // e.g., ["CPR Certified", "First Aid", "Early Childhood Education"]
   experience_years: number | null;
-  hourly_rate: string | null;  // Decimal stored as string (e.g., "800.00")
+  hourly_rate: string | null; // Decimal stored as string (e.g., "800.00")
   bio: string | null;
   availability_schedule: AvailabilitySchedule | null;
-  created_at: string;  // ISO 8601 timestamp
-  updated_at: string;  // ISO 8601 timestamp
+  created_at: string; // ISO 8601 timestamp
+  updated_at: string; // ISO 8601 timestamp
 }
 
 export interface AvailabilitySchedule {
-  [day: string]: string[];  // e.g., { "monday": ["09:00-17:00", "18:00-21:00"] }
+  [day: string]: string[]; // e.g., { "monday": ["09:00-17:00", "18:00-21:00"] }
 }
 ```
 

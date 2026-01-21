@@ -9,6 +9,7 @@ Please create comprehensive documentation that will enable the frontend team to 
 Create a complete API reference guide that includes:
 
 #### General Information
+
 - **Base URL**: What is the backend API base URL?
   - Local development URL (e.g., `http://localhost:3000`)
   - Staging URL (if applicable)
@@ -17,6 +18,7 @@ Create a complete API reference guide that includes:
 - **Default Response Format**: JSON structure conventions
 
 #### Authentication & Authorization
+
 - **Authentication Method**: Describe the authentication strategy (JWT, OAuth, session-based, etc.)
 - **How to Obtain Tokens**: Step-by-step process for authentication
   - Login endpoint details
@@ -28,12 +30,14 @@ Create a complete API reference guide that includes:
 - **Protected vs Public Endpoints**: Clear indication of which endpoints require authentication
 
 #### CORS Configuration
+
 - **Allowed Origins**: What frontend origins are allowed?
 - **Allowed Methods**: What HTTP methods are supported?
 - **Allowed Headers**: What custom headers can be sent?
 - **Credentials**: Are credentials (cookies, authorization headers) allowed?
 
 #### All API Endpoints
+
 For **each endpoint**, provide:
 
 1. **Endpoint Path**: Full path (e.g., `/api/users/:id`)
@@ -61,7 +65,8 @@ For **each endpoint**, provide:
    - Example error responses
 
 **Example Format:**
-```markdown
+
+````markdown
 ### GET /api/users/:id
 
 **Description**: Retrieve a user profile by ID
@@ -69,14 +74,17 @@ For **each endpoint**, provide:
 **Authentication**: Required
 
 **Path Parameters**:
+
 - `id` (string, required): User UUID
 
 **Query Parameters**: None
 
 **Request Headers**:
+
 - `Authorization: Bearer <token>` (required)
 
 **Response** (200 OK):
+
 ```json
 {
   "id": "uuid-here",
@@ -87,11 +95,14 @@ For **each endpoint**, provide:
   "createdAt": "2025-01-01T00:00:00.000Z"
 }
 ```
+````
 
 **Error Responses**:
+
 - 401 Unauthorized: Missing or invalid token
 - 404 Not Found: User not found
-```
+
+````
 
 #### Pagination
 - How is pagination implemented?
@@ -129,15 +140,18 @@ interface User {
 interface UserProfile {
   // ... complete interface
 }
-```
+````
 
 #### DTOs (Data Transfer Objects)
+
 For each endpoint, provide the TypeScript interfaces for:
+
 - Request DTOs (CreateUserDto, UpdateUserDto, etc.)
 - Response DTOs
 - Query parameter DTOs
 
 #### Enums
+
 All enums used in the backend (e.g., UserRole, NannyStatus, etc.)
 
 ---
@@ -147,7 +161,9 @@ All enums used in the backend (e.g., UserRole, NannyStatus, etc.)
 Document all environment variables needed:
 
 #### Backend Environment Variables
+
 List all environment variables the backend uses, so the frontend team understands the backend configuration:
+
 ```
 DATABASE_URL=
 JWT_SECRET=
@@ -155,7 +171,9 @@ GOOGLE_MAPS_API_KEY=
 ```
 
 #### Frontend Environment Variables Needed
+
 Specify what the frontend needs to configure:
+
 ```
 VITE_API_BASE_URL=http://localhost:3000
 VITE_GOOGLE_MAPS_API_KEY=your-key-here
@@ -168,12 +186,14 @@ VITE_GOOGLE_MAPS_API_KEY=your-key-here
 Provide clear instructions for:
 
 #### Prerequisites
+
 - Node.js version required
 - PostgreSQL version
 - Docker (if used)
 - Any other dependencies
 
 #### Local Development Setup
+
 ```bash
 # Step-by-step commands to:
 # 1. Clone the repository
@@ -185,12 +205,14 @@ Provide clear instructions for:
 ```
 
 #### Database Setup
+
 - How to create the database
 - How to run migrations
 - How to seed test data
 - Database connection details
 
 #### Running the Backend
+
 - Development mode command
 - Production mode command
 - Default port
@@ -203,6 +225,7 @@ Provide clear instructions for:
 Document the error response format and common errors:
 
 #### Standard Error Response Format
+
 ```json
 {
   "statusCode": 400,
@@ -218,6 +241,7 @@ Document the error response format and common errors:
 ```
 
 #### Common Error Codes
+
 - 400: Bad Request - What causes this?
 - 401: Unauthorized - What causes this?
 - 403: Forbidden - What causes this?
@@ -233,17 +257,20 @@ Document the error response format and common errors:
 For each major feature, provide:
 
 #### User & Profile Management
+
 - Available endpoints
 - User roles and permissions
 - Profile fields and validation rules
 
 #### Location & Geo Matching
+
 - How location data is stored
 - Geo-matching algorithm details
 - Required Google Maps API setup
 - Coordinate format (latitude, longitude)
 
 #### [Any Other Features]
+
 - Document each feature's API surface
 
 ---
@@ -253,14 +280,17 @@ For each major feature, provide:
 Provide information about:
 
 #### Test Accounts
+
 - Sample user credentials for testing
 - Different user roles available
 
 #### Seed Data
+
 - What test data is available?
 - How to reset/reseed the database
 
 #### API Testing
+
 - Postman collection (if available)
 - Example cURL commands for key endpoints
 
@@ -271,13 +301,16 @@ Provide information about:
 Document:
 
 #### Production URLs
+
 - API base URL
 - WebSocket URL (if applicable)
 
 #### Environment Differences
+
 - What changes between development and production?
 
 #### Health & Status Endpoints
+
 - Health check endpoint
 - Status/version endpoint
 
@@ -306,6 +339,7 @@ Please create the following files in the backend repository:
 ## Format
 
 Please use clear markdown formatting with:
+
 - Code blocks with syntax highlighting
 - Tables for structured data
 - Clear headings and subheadings

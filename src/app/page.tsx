@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Hero } from "@/components/features/Hero";
-import { FeaturedServices } from "@/components/features/FeaturedServices";
-import { TrustedBy } from "@/components/features/TrustedBy";
-import { HowItWorks } from "@/components/features/HowItWorks";
-import { CTASection } from "@/components/features/CTASection";
+import { Hero } from '@/components/features/Hero';
+import { FeaturedServices } from '@/components/features/FeaturedServices';
+import { TrustedBy } from '@/components/features/TrustedBy';
+import { HowItWorks } from '@/components/features/HowItWorks';
+import { CTASection } from '@/components/features/CTASection';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { SplashLoader } from "@/components/ui/SplashLoader";
+import { SplashLoader } from '@/components/ui/SplashLoader';
 
 export default function Home() {
   const { user, loading } = useAuth();

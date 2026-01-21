@@ -1,10 +1,13 @@
 # Search Page Data Issue - RESOLVED ✅
 
 ## Problem
+
 The frontend at `localhost:3000/search` was not showing any data from the database because **there was no endpoint to fetch all caregivers/nannies**.
 
 ## Root Cause
+
 The backend only had:
+
 - `/location/nannies/nearby` - requires lat/lng coordinates (location-based search)
 - `/users/:id` - fetches a single user by ID
 
@@ -13,12 +16,14 @@ There was **no general endpoint to list all nannies** for a search/browse page.
 ## Solution Implemented
 
 ### 1. Created New Endpoint: `GET /users/nannies`
+
 - **Location**: `/Applications/Vscode/care-connect-backend/src/users/users.controller.ts`
 - **Purpose**: Returns all users with role "nanny"
 - **Authentication**: Not required (public endpoint)
 - **Response**: Array of nanny objects with profiles and nanny_details
 
 ### 2. Added Service Method: `findAllNannies()`
+
 - **Location**: `/Applications/Vscode/care-connect-backend/src/users/users.service.ts`
 - **Features**:
   - Filters users by role = 'nanny'
@@ -32,6 +37,7 @@ There was **no general endpoint to list all nannies** for a search/browse page.
     - reset_password_token
 
 ### 3. Updated Documentation
+
 - **API.md**: Added complete endpoint documentation
 - **FRONTEND_INTEGRATION.md**: Added usage example
 
@@ -55,6 +61,7 @@ const nannies = await response.json();
 ## Testing
 
 Tested the endpoint:
+
 ```bash
 curl http://localhost:4000/users/nannies
 ```
@@ -65,11 +72,13 @@ curl http://localhost:4000/users/nannies
 ## Next Steps for Frontend
 
 Update your `/search` page to fetch data from:
+
 ```
 http://localhost:4000/users/nannies
 ```
 
 This will return all available caregivers with their:
+
 - Personal information (name, email, phone, address)
 - Location coordinates (lat, lng)
 - Skills and experience
@@ -80,6 +89,7 @@ This will return all available caregivers with their:
 ## Alternative: Location-Based Search
 
 If you want to show nannies based on user's location, use:
+
 ```
 http://localhost:4000/location/nannies/nearby?lat=12.9716&lng=77.5946&radius=10
 ```

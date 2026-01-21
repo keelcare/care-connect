@@ -7,12 +7,12 @@
 
 ## Environment Differences
 
-| Feature | Development | Production |
-|---------|-------------|------------|
+| Feature      | Development             | Production                             |
+| ------------ | ----------------------- | -------------------------------------- |
 | **Database** | Local Docker PostgreSQL | Managed Cloud Database (e.g., AWS RDS) |
-| **Logging** | Console (Verbose) | Structured Logging (JSON) |
-| **CORS** | `*` or `localhost` | Restricted to frontend domain |
-| **SSL** | HTTP | HTTPS (Required) |
+| **Logging**  | Console (Verbose)       | Structured Logging (JSON)              |
+| **CORS**     | `*` or `localhost`      | Restricted to frontend domain          |
+| **SSL**      | HTTP                    | HTTPS (Required)                       |
 
 ## Health Checks
 

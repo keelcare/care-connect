@@ -1,113 +1,113 @@
 .container {
-    max-width: 1400px;
-    margin: 0 auto;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
 }
 
 .title {
-    font-size: 1.875rem;
-    font-weight: var(--font-weight-bold);
-    color: hsl(var(--neutral-900));
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-bold);
+  color: hsl(var(--neutral-900));
 }
 
 .tableContainer {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid hsl(var(--neutral-200));
-    overflow: hidden;
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid hsl(var(--neutral-200));
+  overflow: hidden;
 }
 
 .table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table thead {
-    background: hsl(var(--neutral-50));
+  background: hsl(var(--neutral-50));
 }
 
 .table th {
-    padding: var(--space-4) var(--space-5);
-    text-align: left;
-    font-size: 0.8125rem;
-    font-weight: var(--font-weight-semibold);
-    color: hsl(var(--neutral-700));
-    border-bottom: 1px solid hsl(var(--neutral-200));
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  padding: var(--space-4) var(--space-5);
+  text-align: left;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--neutral-700));
+  border-bottom: 1px solid hsl(var(--neutral-200));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .table td {
-    padding: var(--space-4) var(--space-5);
-    font-size: 0.9375rem;
-    color: hsl(var(--neutral-900));
-    border-bottom: 1px solid hsl(var(--neutral-100));
+  padding: var(--space-4) var(--space-5);
+  font-size: 0.9375rem;
+  color: hsl(var(--neutral-900));
+  border-bottom: 1px solid hsl(var(--neutral-100));
 }
 
 .table tbody tr {
-    transition: background-color var(--transition-fast);
+  transition: background-color var(--transition-fast);
 }
 
 .table tbody tr:hover {
-    background: hsl(var(--neutral-50));
+  background: hsl(var(--neutral-50));
 }
 
 .badge {
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.025em;
-    text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
 }
 
 .statusConfirmed {
-    background: hsl(var(--success-50));
-    color: hsl(var(--success-700));
+  background: hsl(var(--success-50));
+  color: hsl(var(--success-700));
 }
 
 .statusInProgress {
-    background: hsl(var(--warning-50));
-    color: hsl(var(--warning-700));
+  background: hsl(var(--warning-50));
+  color: hsl(var(--warning-700));
 }
 
 .statusCompleted {
-    background: hsl(var(--primary-50));
-    color: hsl(var(--primary));
+  background: hsl(var(--primary-50));
+  color: hsl(var(--primary));
 }
 
 .statusCancelled {
-    background: hsl(var(--neutral-100));
-    color: hsl(var(--neutral-600));
+  background: hsl(var(--neutral-100));
+  color: hsl(var(--neutral-600));
 }
 
 .loadingState,
 .errorState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-12) var(--space-6);
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
 }
 
 .errorState p {
-    color: hsl(var(--error-600));
-    margin-bottom: var(--space-4);
+  color: hsl(var(--error-600));
+  margin-bottom: var(--space-4);
 }
 
 @media (max-width: 968px) {
-    .tableContainer {
-        overflow-x: auto;
-    }
+  .tableContainer {
+    overflow-x: auto;
+  }
 
-    .table {
-        min-width: 900px;
-    }
+  .table {
+    min-width: 900px;
+  }
 }

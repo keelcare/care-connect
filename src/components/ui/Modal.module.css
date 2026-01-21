@@ -1,97 +1,97 @@
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: var(--z-modal-backdrop);
-    animation: fadeIn 0.2s ease-out;
-    padding: var(--space-4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-backdrop);
+  animation: fadeIn 0.2s ease-out;
+  padding: var(--space-4);
 }
 
 .modal {
-    background-color: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    z-index: var(--z-modal);
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: var(--z-modal);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .header {
-    padding: var(--space-4) var(--space-6);
-    border-bottom: 1px solid var(--color-gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .title {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-gray-900);
-    margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0;
 }
 
 .closeBtn {
-    background: none;
-    border: none;
-    padding: var(--space-1);
-    cursor: pointer;
-    color: var(--color-gray-500);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-fast);
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--color-gray-500);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
 }
 
 .closeBtn:hover {
-    background-color: var(--color-gray-100);
-    color: var(--color-gray-700);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
 }
 
 .content {
-    padding: var(--space-6);
-    overflow-y: auto;
+  padding: var(--space-6);
+  overflow-y: auto;
 }
 
 .footer {
-    padding: var(--space-4) var(--space-6);
-    border-top: 1px solid var(--color-gray-200);
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-gray-200);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.96);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

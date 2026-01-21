@@ -47,6 +47,7 @@ GOOGLE_CALLBACK_URL=http://localhost:4000/auth/google/callback
 When a user signs up via Google OAuth, the following data is stored:
 
 **In `users` table:**
+
 - `email`: User's Google email
 - `role`: Default 'parent'
 - `is_verified`: Set to `true` (Google emails are pre-verified)
@@ -56,6 +57,7 @@ When a user signs up via Google OAuth, the following data is stored:
 - `oauth_refresh_token`: Google refresh token
 
 **In `profiles` table (automatically created):**
+
 - `first_name`: From Google profile
 - `last_name`: From Google profile
 - `profile_image_url`: User's Google profile picture
@@ -63,11 +65,13 @@ When a user signs up via Google OAuth, the following data is stored:
 ### Code Implementation
 
 **Google Strategy** (`src/auth/strategies/google.strategy.ts`):
+
 - Configures Passport Google OAuth strategy
 - Extracts user data from Google profile
 - Returns user object with OAuth tokens
 
 **Auth Service** (`src/auth/auth.service.ts`):
+
 - `googleLogin()` method handles the OAuth flow
 - Creates user with profile if new
 - Links OAuth to existing email if found
@@ -80,11 +84,13 @@ When a user signs up via Google OAuth, the following data is stored:
 Since Google OAuth requires browser interaction, you cannot test it with curl. Instead:
 
 1. **Start the backend**:
+
    ```bash
    npm run start:dev
    ```
 
 2. **Navigate to the OAuth endpoint**:
+
    ```
    http://localhost:4000/auth/google
    ```
@@ -108,6 +114,7 @@ Since Google OAuth requires browser interaction, you cannot test it with curl. I
 For a complete flow, the frontend should:
 
 1. **Redirect to OAuth**:
+
    ```javascript
    window.location.href = 'http://localhost:4000/auth/google';
    ```
@@ -138,15 +145,19 @@ After setting up Google OAuth, verify:
 ## Common Issues
 
 ### Issue: "redirect_uri_mismatch"
+
 **Solution**: Ensure `GOOGLE_CALLBACK_URL` in `.env` matches the redirect URI in Google Cloud Console exactly.
 
 ### Issue: "invalid_client"
+
 **Solution**: Double-check `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correct.
 
 ### Issue: User created but no profile
+
 **Solution**: This was fixed in commit `d3dedc6e`. Ensure you have the latest code.
 
 ### Issue: OAuth tokens not stored
+
 **Solution**: Check that `oauth_access_token` and `oauth_refresh_token` are being passed from the strategy to the service.
 
 ## Security Notes
@@ -159,6 +170,7 @@ After setting up Google OAuth, verify:
 ## Next Steps
 
 Once Google OAuth is working:
+
 1. Test with multiple Google accounts
 2. Test linking OAuth to existing email account
 3. Implement frontend OAuth flow

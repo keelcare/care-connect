@@ -1,113 +1,117 @@
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 244, 230, 0.98) 100%);
-    backdrop-filter: blur(10px);
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient(90deg, #FF8C00, #9C27B0, #00BCD4) 1;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    transition: all var(--transition-fast);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 244, 230, 0.98) 100%
+  );
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #ff8c00, #9c27b0, #00bcd4) 1;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  transition: all var(--transition-fast);
 }
 
 .header.scrolled {
-    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.1);
-    background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(255, 140, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 var(--space-6);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .logo {
-    font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
-    background: var(--gradient-rainbow);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    transition: transform var(--transition-fast);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  background: var(--gradient-rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: transform var(--transition-fast);
 }
 
 .logo:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .logo svg {
-    color: var(--color-accent-500);
+  color: var(--color-accent-500);
 }
 
 .nav {
-    display: none;
+  display: none;
 }
 
 .navLinks {
-    display: flex;
-    gap: var(--space-8);
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .navLink {
-    font-family: var(--font-primary);
-    font-size: 16px;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-600);
-    text-decoration: none;
-    transition: color var(--transition-fast);
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-600);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .navLink:hover {
-    color: var(--color-primary-500);
+  color: var(--color-primary-500);
 }
 
 .navLink.active {
-    color: var(--color-primary-600);
-    font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-600);
+  font-weight: var(--font-weight-semibold);
 }
 
 .authButtons {
-    display: none;
-    gap: var(--space-4);
-    align-items: center;
+  display: none;
+  gap: var(--space-4);
+  align-items: center;
 }
 
 .mobileMenuBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--color-gray-700);
-    cursor: pointer;
-    padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  padding: var(--space-2);
 }
 
 /* Desktop Styles */
 @media (min-width: 768px) {
-    .nav {
-        display: block;
-    }
+  .nav {
+    display: block;
+  }
 
-    .authButtons {
-        display: flex;
-    }
+  .authButtons {
+    display: flex;
+  }
 
-    .mobileMenuBtn {
-        display: none;
-    }
+  .mobileMenuBtn {
+    display: none;
+  }
 }

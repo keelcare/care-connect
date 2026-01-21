@@ -27,8 +27,8 @@ Create a custom hook `usePayment.ts` to handle the logic.
 
 ```typescript
 // hooks/usePayment.ts
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -43,7 +43,7 @@ export const usePayment = () => {
     setLoading(true);
     try {
       // 1. Create Order
-      const { data: order } = await axios.post("/api/payments/create-order", {
+      const { data: order } = await axios.post('/api/payments/create-order', {
         bookingId,
       });
 
@@ -51,37 +51,37 @@ export const usePayment = () => {
         key: order.key, // Backend returns the Key ID
         amount: order.amount * 100, // Amount in paise
         currency: order.currency,
-        name: "CareConnect",
-        description: "Nanny Service Payment",
+        name: 'CareConnect',
+        description: 'Nanny Service Payment',
         order_id: order.orderId,
         handler: async (response: RazorpayResponse) => {
           // 3. Verify Payment
           try {
-            await axios.post("/api/payments/verify", response);
-            alert("Payment Successful! Booking Confirmed.");
+            await axios.post('/api/payments/verify', response);
+            alert('Payment Successful! Booking Confirmed.');
             // TODO: Redirect to Booking Success Page
           } catch (verifyError) {
-            alert("Payment Verification Failed");
+            alert('Payment Verification Failed');
           }
         },
         prefill: {
-          name: "Parent Name", // Fetch from Context
-          email: "parent@example.com",
-          contact: "9999999999",
+          name: 'Parent Name', // Fetch from Context
+          email: 'parent@example.com',
+          contact: '9999999999',
         },
         theme: {
-          color: "#3399cc",
+          color: '#3399cc',
         },
       };
 
       const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
+      rzp.on('payment.failed', function (response: any) {
         alert(response.error.description);
       });
       rzp.open();
     } catch (error) {
-      console.error("Payment initialization failed", error);
-      alert("Could not start payment.");
+      console.error('Payment initialization failed', error);
+      alert('Could not start payment.');
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ export const usePayment = () => {
 ## 4. Using the Hook in Components
 
 ```tsx
-import { usePayment } from "../hooks/usePayment";
+import { usePayment } from '../hooks/usePayment';
 
 export const BookingSummary = ({ bookingId }) => {
   const { handlePayment, loading } = usePayment();
@@ -107,7 +107,7 @@ export const BookingSummary = ({ bookingId }) => {
         disabled={loading}
         className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {loading ? "Processing..." : "Pay Now"}
+        {loading ? 'Processing...' : 'Pay Now'}
       </button>
     </div>
   );

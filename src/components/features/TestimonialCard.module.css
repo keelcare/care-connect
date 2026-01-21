@@ -1,68 +1,68 @@
 .card {
-    max-width: 500px;
-    border-radius: var(--radius-2xl);
-    background: white;
-    padding: var(--space-8);
-    border: 3px solid transparent;
-    background-image: linear-gradient(white, white), var(--gradient-rainbow);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 30px rgba(156, 39, 176, 0.15);
-    transition: all var(--transition-normal);
-    position: relative;
+  max-width: 500px;
+  border-radius: var(--radius-2xl);
+  background: white;
+  padding: var(--space-8);
+  border: 3px solid transparent;
+  background-image: linear-gradient(white, white), var(--gradient-rainbow);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(156, 39, 176, 0.15);
+  transition: all var(--transition-normal);
+  position: relative;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(156, 39, 176, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(156, 39, 176, 0.25);
 }
 
 .quoteIcon {
-    color: var(--color-secondary-400);
-    margin-bottom: var(--space-4);
-    opacity: 0.6;
+  color: var(--color-secondary-400);
+  margin-bottom: var(--space-4);
+  opacity: 0.6;
 }
 
 .quote {
-    font-family: var(--font-primary);
-    font-size: 18px;
-    line-height: 1.75;
-    color: var(--color-gray-800);
-    margin-bottom: var(--space-6);
-    font-style: italic;
+  font-family: var(--font-primary);
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--color-gray-800);
+  margin-bottom: var(--space-6);
+  font-style: italic;
 }
 
 .author {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: var(--color-gray-200);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--color-gray-200);
 }
 
 .authorInfo {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .name {
-    font-weight: var(--font-weight-semibold);
-    font-size: 16px;
-    color: var(--color-gray-900);
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  color: var(--color-gray-900);
 }
 
 .role {
-    font-size: 12px;
-    color: var(--color-gray-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: var(--font-weight-medium);
+  font-size: 12px;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-medium);
 }

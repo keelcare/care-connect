@@ -1,11 +1,13 @@
 # Feature 4: Service Request & Auto-Matching (Frontend)
 
 ## Summary
+
 Implemented the frontend interface for parents to create, view, and manage service requests, enabling the auto-matching system.
 
 ## Features Implemented
 
 ### 1. **Service Request Management**
+
 - **List View**: `/dashboard/requests`
   - Displays all requests created by the parent
   - Visual status badges (Pending, Assigned, etc.)
@@ -21,6 +23,7 @@ Implemented the frontend interface for parents to create, view, and manage servi
   - Cancellation capability
 
 ### 2. **API Integration**
+
 - Updated `src/lib/api.ts` with `requests` endpoints:
   - `create`: Create new request
   - `get`: Fetch single request
@@ -30,6 +33,7 @@ Implemented the frontend interface for parents to create, view, and manage servi
 - Updated `src/types/api.ts` with `ServiceRequest` and `CreateServiceRequestDto` interfaces.
 
 ### 3. **UI Components**
+
 - Updated `Button` component with `outline` and `ghost` variants for better UI flexibility.
 - Added "Requests" link to the Dashboard Sidebar.
 

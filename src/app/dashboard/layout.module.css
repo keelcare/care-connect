@@ -1,114 +1,114 @@
 .container {
-    display: flex;
-    min-height: calc(100vh - 72px);
-    background: hsl(var(--neutral-50));
+  display: flex;
+  min-height: calc(100vh - 72px);
+  background: hsl(var(--neutral-50));
 }
 
 .sidebar {
-    width: 280px;
-    background: white;
-    border-right: 1px solid hsl(var(--neutral-200));
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 72px;
-    height: calc(100vh - 72px);
-    overflow-y: auto;
+  width: 280px;
+  background: white;
+  border-right: 1px solid hsl(var(--neutral-200));
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 72px;
+  height: calc(100vh - 72px);
+  overflow-y: auto;
 }
 
 .nav {
-    flex: 1;
-    padding: var(--space-6) var(--space-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+  flex: 1;
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .navItem {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-lg);
-    font-size: 0.9375rem;
-    font-weight: var(--font-weight-medium);
-    color: hsl(var(--neutral-600));
-    text-decoration: none;
-    transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-medium);
+  color: hsl(var(--neutral-600));
+  text-decoration: none;
+  transition: all var(--transition-fast);
 }
 
 .navItem:hover {
-    background: hsl(var(--neutral-100));
-    color: hsl(var(--neutral-900));
+  background: hsl(var(--neutral-100));
+  color: hsl(var(--neutral-900));
 }
 
 .navItem.active {
-    background: hsl(var(--primary-50));
-    color: hsl(var(--primary));
-    font-weight: var(--font-weight-semibold);
+  background: hsl(var(--primary-50));
+  color: hsl(var(--primary));
+  font-weight: var(--font-weight-semibold);
 }
 
 .navItem svg {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .userProfile {
-    padding: var(--space-4);
-    border-top: 1px solid hsl(var(--neutral-200));
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 1px solid hsl(var(--neutral-200));
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .avatar {
-    border-radius: var(--radius-full);
-    object-fit: cover;
+  border-radius: var(--radius-full);
+  object-fit: cover;
 }
 
 .userInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-    flex: 1;
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .userName {
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-semibold);
-    color: hsl(var(--neutral-900));
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--neutral-900));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userRole {
-    font-size: 0.75rem;
-    color: hsl(var(--neutral-500));
-    text-transform: capitalize;
+  font-size: 0.75rem;
+  color: hsl(var(--neutral-500));
+  text-transform: capitalize;
 }
 
 .main {
-    flex: 1;
-    padding: var(--space-8) var(--space-6);
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
+  flex: 1;
+  padding: var(--space-8) var(--space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 @media (max-width: 968px) {
-    .sidebar {
-        position: fixed;
-        left: -280px;
-        z-index: 50;
-        transition: left var(--transition-base);
-    }
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    z-index: 50;
+    transition: left var(--transition-base);
+  }
 
-    .sidebar.open {
-        left: 0;
-    }
+  .sidebar.open {
+    left: 0;
+  }
 
-    .main {
-        padding: var(--space-6) var(--space-4);
-    }
+  .main {
+    padding: var(--space-6) var(--space-4);
+  }
 }

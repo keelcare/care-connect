@@ -1,109 +1,109 @@
 .card {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid hsl(var(--neutral-200));
-    padding: var(--space-6);
-    transition: all var(--transition-base);
-    cursor: pointer;
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid hsl(var(--neutral-200));
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+  cursor: pointer;
 }
 
 .card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-    border-color: hsl(var(--neutral-300));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: hsl(var(--neutral-300));
 }
 
 .cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--space-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-5);
 }
 
 .cardTitle {
-    font-size: 1.125rem;
-    font-weight: var(--font-weight-semibold);
-    color: hsl(var(--neutral-900));
-    margin-bottom: var(--space-1);
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--neutral-900));
+  margin-bottom: var(--space-1);
 }
 
 .cardSubtitle {
-    font-size: 0.875rem;
-    color: hsl(var(--neutral-500));
+  font-size: 0.875rem;
+  color: hsl(var(--neutral-500));
 }
 
 .statusBadge {
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.025em;
-    text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
 }
 
 .statusConfirmed {
-    background-color: hsl(var(--success-50));
-    color: hsl(var(--success-700));
+  background-color: hsl(var(--success-50));
+  color: hsl(var(--success-700));
 }
 
 .statusInProgress {
-    background-color: hsl(var(--warning-50));
-    color: hsl(var(--warning-700));
+  background-color: hsl(var(--warning-50));
+  color: hsl(var(--warning-700));
 }
 
 .statusCompleted {
-    background-color: hsl(var(--primary-50));
-    color: hsl(var(--primary));
+  background-color: hsl(var(--primary-50));
+  color: hsl(var(--primary));
 }
 
 .statusCancelled {
-    background-color: hsl(var(--neutral-100));
-    color: hsl(var(--neutral-600));
+  background-color: hsl(var(--neutral-100));
+  color: hsl(var(--neutral-600));
 }
 
 .cardDetails {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    margin-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
 }
 
 .detailRow {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: 0.875rem;
-    color: hsl(var(--neutral-600));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: hsl(var(--neutral-600));
 }
 
 .detailRow svg {
-    color: hsl(var(--neutral-400));
-    flex-shrink: 0;
+  color: hsl(var(--neutral-400));
+  flex-shrink: 0;
 }
 
 .cardActions {
-    display: flex;
-    gap: var(--space-3);
-    padding-top: var(--space-4);
-    border-top: 1px solid hsl(var(--neutral-100));
+  display: flex;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid hsl(var(--neutral-100));
 }
 
 .loadingSpinner {
-    display: flex;
-    justify-content: center;
-    padding: var(--space-4);
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
 }
 
 @media (max-width: 640px) {
-    .card {
-        padding: var(--space-5);
-    }
+  .card {
+    padding: var(--space-5);
+  }
 
-    .cardActions {
-        flex-direction: column;
-    }
+  .cardActions {
+    flex-direction: column;
+  }
 
-    .cardActions button {
-        width: 100%;
-    }
+  .cardActions button {
+    width: 100%;
+  }
 }

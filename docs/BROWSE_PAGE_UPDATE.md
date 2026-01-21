@@ -1,11 +1,13 @@
 # Browse Page & Role-Based Redirects
 
 ## Summary
+
 Implemented a new "Browse" page for general users (parents) and updated the authentication flow to redirect users based on their role upon login.
 
 ## Changes
 
 ### 1. **Browse Page** (`src/app/browse/page.tsx`)
+
 - **New Page**: Created a dedicated landing page for authenticated parents.
 - **Features**:
   - Welcome header with user's name.
@@ -14,6 +16,7 @@ Implemented a new "Browse" page for general users (parents) and updated the auth
   - Links to the full search page.
 
 ### 2. **Auth Context** (`src/context/AuthContext.tsx`)
+
 - **Role-Based Redirect**: Updated the `login` function to check the user's role after authentication.
   - **Parents** -> Redirect to `/browse`
   - **Nannies/Others** -> Redirect to `/dashboard`

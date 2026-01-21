@@ -1,90 +1,92 @@
 .card {
-    width: 100%;
-    max-width: 360px;
-    border-radius: var(--radius-2xl);
-    background: white;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    transition: all var(--transition-slow);
-    display: flex;
-    flex-direction: column;
-    border: 2px solid transparent;
-    position: relative;
+  width: 100%;
+  max-width: 360px;
+  border-radius: var(--radius-2xl);
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  position: relative;
 }
 
 .card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: var(--radius-2xl);
-    padding: 2px;
-    background: linear-gradient(135deg, #FF8C00, #9C27B0, #00BCD4);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity var(--transition-slow);
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--radius-2xl);
+  padding: 2px;
+  background: linear-gradient(135deg, #ff8c00, #9c27b0, #00bcd4);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-slow);
 }
 
 .card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(255, 140, 0, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(255, 140, 0, 0.2);
 }
 
 .card:hover::before {
-    opacity: 1;
+  opacity: 1;
 }
 
 .iconContainer {
-    width: 80px;
-    height: 80px;
-    border-radius: var(--radius-2xl);
-    background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: var(--space-6);
-    color: white;
-    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
-    transition: transform var(--transition-normal);
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-2xl);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-6);
+  color: white;
+  box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
+  transition: transform var(--transition-normal);
 }
 
 .card:hover .iconContainer {
-    transform: scale(1.1) rotate(5deg);
+  transform: scale(1.1) rotate(5deg);
 }
 
 .content {
-    padding: 0 var(--space-6) var(--space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    flex-grow: 1;
+  padding: 0 var(--space-6) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-grow: 1;
 }
 
 .title {
-    font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-gray-900);
-    margin: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0;
 }
 
 .description {
-    font-size: 16px;
-    color: var(--color-gray-700);
-    line-height: 1.5;
-    margin-bottom: var(--space-4);
-    flex-grow: 1;
+  font-size: 16px;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+  flex-grow: 1;
 }
 
 .cta {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 .button {
-    padding-left: 0;
-    justify-content: flex-start;
+  padding-left: 0;
+  justify-content: flex-start;
 }

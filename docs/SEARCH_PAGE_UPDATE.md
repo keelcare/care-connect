@@ -3,16 +3,19 @@
 ## Changes Made
 
 ### Overview
+
 Updated the `/search` page to browse all available nannies without requiring geolocation or distance-based filtering.
 
 ### API Endpoint Changes
 
 **Before:**
+
 - Used location-based endpoints:
   - `POST /location/geocode` - Convert address to coordinates
   - `GET /location/nannies/nearby?lat={lat}&lng={lng}&radius={radius}` - Fetch nearby nannies
 
 **After:**
+
 - Now uses simple user endpoint:
   - `GET /users/nannies` - Fetch all nannies
 
@@ -59,8 +62,8 @@ Updated the `/search` page to browse all available nannies without requiring geo
 ### Testing
 
 To test the changes:
+
 1. Navigate to `localhost:3000/search`
 2. Page should load all available nannies automatically
 3. Type in the search box to filter by name, location, or skills
 4. If no data from backend, click "Load Demo Data" to see mock nannies
-

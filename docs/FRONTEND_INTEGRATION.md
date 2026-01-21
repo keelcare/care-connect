@@ -7,6 +7,7 @@ This document provides comprehensive integration details for **all completed and
 ---
 
 ## Table of Contents
+
 1. [Authentication & Authorization](#1-authentication--authorization) ✅
 2. [Service Request & Matching](#2-service-request--matching) ✅
 3. [Booking System](#3-booking-system) ✅
@@ -27,6 +28,7 @@ This document provides comprehensive integration details for **all completed and
 ### 1.1 Refresh Token Rotation
 
 **What's Expected:**
+
 - Store both `access_token` and `refresh_token` after login
 - Implement token refresh logic before access token expires
 - Handle token rotation seamlessly
@@ -34,6 +36,7 @@ This document provides comprehensive integration details for **all completed and
 **Endpoints:**
 
 #### Login (Returns Both Tokens)
+
 ```http
 POST /auth/login
 Content-Type: application/json
@@ -45,6 +48,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGc...",
@@ -58,6 +62,7 @@ Content-Type: application/json
 ```
 
 #### Refresh Token
+
 ```http
 POST /auth/refresh
 Content-Type: application/json
@@ -68,6 +73,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "new_access_token",
@@ -78,6 +84,7 @@ Content-Type: application/json
 ### 1.2 Forgot/Reset Password
 
 **What's Expected:**
+
 - Forgot password form (email input)
 - Reset password form (token + new password)
 - Success/error messaging
@@ -85,6 +92,7 @@ Content-Type: application/json
 **Endpoints:**
 
 #### Request Password Reset
+
 ```http
 POST /auth/forgot-password
 Content-Type: application/json
@@ -95,6 +103,7 @@ Content-Type: application/json
 ```
 
 #### Reset Password
+
 ```http
 POST /auth/reset-password
 Content-Type: application/json
@@ -108,10 +117,12 @@ Content-Type: application/json
 ### 1.3 Email Verification
 
 **What's Expected:**
+
 - Verification link handler (from email)
 - Display verification status
 
 **Endpoint:**
+
 ```http
 GET /auth/verify?token=verification_token
 ```
@@ -123,10 +134,12 @@ GET /auth/verify?token=verification_token
 ### 2.1 Cancel Request
 
 **What's Expected:**
+
 - Cancel button on pending requests
 - Confirmation dialog
 
 **Endpoint:**
+
 ```http
 PUT /requests/:id/cancel
 Authorization: Bearer {access_token}
@@ -139,11 +152,13 @@ Authorization: Bearer {access_token}
 ### 3.1 Cancellation with Reason & Fee
 
 **What's Expected:**
+
 - Cancellation form with reason dropdown/textarea
 - Display cancellation fee if within 24 hours
 - Confirmation before cancelling
 
 **Endpoint:**
+
 ```http
 PUT /bookings/:id/cancel
 Authorization: Bearer {access_token}
@@ -155,12 +170,13 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
   "status": "CANCELLED",
   "cancellation_reason": "Emergency came up",
-  "cancellation_fee": 25.00,
+  "cancellation_fee": 25.0,
   "cancellation_fee_status": "pending"
 }
 ```
@@ -170,6 +186,7 @@ Content-Type: application/json
 ## 4. Admin Module
 
 **What's Expected:**
+
 - Admin dashboard with multiple sections
 - Role-based access control (admin only)
 
@@ -184,6 +201,7 @@ PUT /admin/users/:id/ban
 ### 4.2 Dispute Resolution
 
 **Endpoints:**
+
 ```http
 GET /admin/disputes
 GET /admin/disputes/:id
@@ -204,11 +222,12 @@ GET /admin/payments/stats
 ```
 
 **Response (Stats):**
+
 ```json
 {
   "totalPayments": 150,
   "pendingPayments": 5,
-  "totalRevenue": 12500.00
+  "totalRevenue": 12500.0
 }
 ```
 
@@ -241,11 +260,12 @@ GET /admin/stats/advanced
 ```
 
 **Response (Advanced):**
+
 ```json
 {
   "completionRate": 92.5,
   "acceptanceRate": 85.0,
-  "totalRevenue": 12500.00,
+  "totalRevenue": 12500.0,
   "popularBookingTimes": [
     { "hour": 9, "count": 45 },
     { "hour": 14, "count": 38 }
@@ -258,6 +278,7 @@ GET /admin/stats/advanced
 ## 5. Reviews & Ratings
 
 **What's Expected:**
+
 - Review form with 5 rating categories (1-5 stars each)
 - Edit/delete options for own reviews
 - Response functionality for reviewees
@@ -320,11 +341,13 @@ Content-Type: application/json
 ### 6.1 Favorite Nannies
 
 **What's Expected:**
+
 - Favorite/unfavorite button on nanny profiles
 - List of favorite nannies
 - Visual indicator on favorited nannies
 
 **Endpoints:**
+
 ```http
 GET /favorites
 POST /favorites/:nannyId
@@ -334,11 +357,13 @@ DELETE /favorites/:nannyId
 ### 6.2 Live Location Tracking
 
 **What's Expected:**
+
 - Real-time map showing nanny location
 - WebSocket connection for live updates
 - Display for parents only when booking is "en route"
 
 **WebSocket Connection:**
+
 ```javascript
 import io from 'socket.io-client';
 
@@ -357,17 +382,19 @@ socket.on('location:updated', (data) => {
 socket.emit('location:update', {
   bookingId: 'xxx',
   lat: 40.7128,
-  lng: -74.0060
+  lng: -74.006,
 });
 ```
 
 ### 6.3 Geofencing Alerts
 
 **What's Expected:**
+
 - Alert notification when nanny leaves geofence
 - Display geofence radius on map
 
 **WebSocket Event:**
+
 ```javascript
 socket.on('geofence:alert', (data) => {
   console.log('Geofence alert:', data.message);
@@ -383,6 +410,7 @@ socket.on('geofence:alert', (data) => {
 ### 7.1 Recurring Bookings
 
 **What's Expected:**
+
 - Recurring booking creation form
 - Pattern selector (Daily/Weekly/Monthly)
 - Day/date picker based on frequency
@@ -392,6 +420,7 @@ socket.on('geofence:alert', (data) => {
 **Endpoints:**
 
 #### Create Recurring Booking
+
 ```http
 POST /recurring-bookings
 Authorization: Bearer {access_token}
@@ -410,16 +439,19 @@ Content-Type: application/json
 ```
 
 #### List Recurring Bookings
+
 ```http
 GET /recurring-bookings
 ```
 
 #### Get Details (with generated bookings)
+
 ```http
 GET /recurring-bookings/:id
 ```
 
 #### Update
+
 ```http
 PUT /recurring-bookings/:id
 Content-Type: application/json
@@ -431,11 +463,13 @@ Content-Type: application/json
 ```
 
 #### Delete (Deactivate)
+
 ```http
 DELETE /recurring-bookings/:id
 ```
 
 **Recurrence Patterns:**
+
 - `DAILY` - Every day
 - `WEEKLY_MON_WED_FRI` - Specific days
 - `MONTHLY_1_15` - Specific dates
@@ -443,6 +477,7 @@ DELETE /recurring-bookings/:id
 ### 7.2 Availability Blocking
 
 **What's Expected:**
+
 - Calendar view with blocked times
 - Create block form (one-time or recurring)
 - List of blocks with delete option
@@ -451,6 +486,7 @@ DELETE /recurring-bookings/:id
 **Endpoints:**
 
 #### Create Block
+
 ```http
 POST /availability/block
 Authorization: Bearer {access_token}
@@ -466,11 +502,13 @@ Content-Type: application/json
 ```
 
 #### List Blocks
+
 ```http
 GET /availability
 ```
 
 #### Delete Block
+
 ```http
 DELETE /availability/:id
 ```
@@ -480,17 +518,18 @@ DELETE /availability/:id
 ## UI Component Suggestions
 
 ### Recurrence Pattern Selector
+
 ```tsx
 const RecurrenceSelector = () => {
   const [frequency, setFrequency] = useState('weekly');
   const [days, setDays] = useState([]);
-  
+
   const generatePattern = () => {
     if (frequency === 'daily') return 'DAILY';
     if (frequency === 'weekly') return `WEEKLY_${days.join('_')}`;
     if (frequency === 'monthly') return `MONTHLY_${days.join('_')}`;
   };
-  
+
   return (
     <div>
       <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
@@ -505,13 +544,14 @@ const RecurrenceSelector = () => {
 ```
 
 ### Rating Stars Component
+
 ```tsx
 const RatingStars = ({ category, value, onChange }) => {
   return (
     <div>
       <label>{category}</label>
-      {[1, 2, 3, 4, 5].map(star => (
-        <Star 
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
           key={star}
           filled={star <= value}
           onClick={() => onChange(star)}
@@ -532,10 +572,10 @@ const login = async (email, password) => {
   const response = await fetch('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   });
   const data = await response.json();
-  
+
   // Store tokens
   localStorage.setItem('access_token', data.access_token);
   localStorage.setItem('refresh_token', data.refresh_token);
@@ -547,10 +587,10 @@ const refreshToken = async () => {
   const response = await fetch('/auth/refresh', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken })
+    body: JSON.stringify({ refreshToken }),
   });
   const data = await response.json();
-  
+
   // Update tokens
   localStorage.setItem('access_token', data.access_token);
   localStorage.setItem('refresh_token', data.refresh_token);
@@ -572,6 +612,7 @@ All endpoints return standard error responses:
 ```
 
 Common status codes:
+
 - `400` - Bad Request (validation error)
 - `401` - Unauthorized (invalid/expired token)
 - `403` - Forbidden (insufficient permissions)
@@ -583,6 +624,7 @@ Common status codes:
 ## Testing Checklist
 
 ### Authentication
+
 - [ ] Login with email/password
 - [ ] Login with Google OAuth
 - [ ] Refresh token before expiry
@@ -591,6 +633,7 @@ Common status codes:
 - [ ] Email verification
 
 ### Bookings
+
 - [ ] Cancel booking with reason
 - [ ] View cancellation fee
 - [ ] Create recurring booking
@@ -599,23 +642,27 @@ Common status codes:
 - [ ] Delete recurring booking
 
 ### Reviews
+
 - [ ] Create review with 5 categories
 - [ ] Edit own review
 - [ ] Delete own review
 - [ ] Add response to review
 
 ### Location
+
 - [ ] Add/remove favorite nanny
 - [ ] View live location on map
 - [ ] Receive geofence alerts
 
 ### Availability
+
 - [ ] Create one-time block
 - [ ] Create recurring block
 - [ ] View blocks on calendar
 - [ ] Delete block
 
 ### Admin
+
 - [ ] View all users
 - [ ] Verify/ban users
 - [ ] View disputes
@@ -645,12 +692,14 @@ These features have backend implementations but may require additional work or h
 **Status:** Basic chat implemented, file uploads not yet supported
 
 **What's Expected:**
+
 - Real-time messaging between parent and nanny
 - WebSocket connection for live updates
 - Message history
 - Typing indicators
 
 **WebSocket Connection:**
+
 ```javascript
 const socket = io('http://localhost:4000/chat');
 
@@ -660,7 +709,7 @@ socket.emit('joinRoom', { bookingId: 'xxx' });
 // Send message
 socket.emit('sendMessage', {
   bookingId: 'xxx',
-  content: 'Hello!'
+  content: 'Hello!',
 });
 
 // Receive messages
@@ -676,12 +725,14 @@ socket.on('userTyping', (data) => {
 ```
 
 **REST Endpoints:**
+
 ```http
 GET /chat/:bookingId/messages
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -695,6 +746,7 @@ Authorization: Bearer {access_token}
 ```
 
 **Limitations:**
+
 - ❌ File/image uploads not yet implemented
 - ✅ Text messages work
 - ✅ Real-time updates via WebSocket
@@ -706,6 +758,7 @@ Authorization: Bearer {access_token}
 **Status:** Basic in-app notifications implemented, external channels (SMS/Email) not yet integrated
 
 **What's Expected:**
+
 - Notification list with unread count
 - Mark as read functionality
 - Real-time notification updates
@@ -714,12 +767,14 @@ Authorization: Bearer {access_token}
 **Endpoints:**
 
 #### Get Notifications
+
 ```http
 GET /notifications
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -735,18 +790,21 @@ Authorization: Bearer {access_token}
 ```
 
 #### Mark as Read
+
 ```http
 PUT /notifications/:id/read
 Authorization: Bearer {access_token}
 ```
 
 #### Mark All as Read
+
 ```http
 PUT /notifications/read-all
 Authorization: Bearer {access_token}
 ```
 
 **WebSocket for Real-time:**
+
 ```javascript
 const socket = io('http://localhost:4000');
 
@@ -757,6 +815,7 @@ socket.on('notification', (notification) => {
 ```
 
 **Limitations:**
+
 - ❌ SMS notifications not implemented (requires Twilio)
 - ❌ Email notifications not implemented (requires SendGrid/Resend)
 - ✅ In-app notifications work
@@ -769,6 +828,7 @@ socket.on('notification', (notification) => {
 **Status:** Core booking system implemented, some advanced features available
 
 **What's Expected:**
+
 - Create/view/update bookings
 - Job postings by parents
 - Nanny applications to jobs
@@ -777,6 +837,7 @@ socket.on('notification', (notification) => {
 **Endpoints:**
 
 #### Create Booking
+
 ```http
 POST /bookings
 Authorization: Bearer {access_token}
@@ -792,12 +853,14 @@ Content-Type: application/json
 ```
 
 #### Get Bookings
+
 ```http
 GET /bookings
 GET /bookings/:id
 ```
 
 #### Update Booking Status
+
 ```http
 PUT /bookings/:id/status
 Content-Type: application/json
@@ -808,6 +871,7 @@ Content-Type: application/json
 ```
 
 #### Job Postings
+
 ```http
 POST /jobs
 GET /jobs
@@ -817,12 +881,14 @@ DELETE /jobs/:id
 ```
 
 #### Apply to Job
+
 ```http
 POST /jobs/:id/apply
 Authorization: Bearer {access_token}
 ```
 
 **Available Features:**
+
 - ✅ Booking creation and management
 - ✅ Job postings
 - ✅ Applications to jobs
@@ -837,6 +903,7 @@ Authorization: Bearer {access_token}
 **Status:** Profile management implemented, image upload not yet integrated
 
 **What's Expected:**
+
 - View/edit user profile
 - Nanny-specific details (experience, skills, hourly rate)
 - Parent-specific details
@@ -845,12 +912,14 @@ Authorization: Bearer {access_token}
 **Endpoints:**
 
 #### Get Profile
+
 ```http
 GET /users/profile
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -865,12 +934,12 @@ Authorization: Bearer {access_token}
     "state": "NY",
     "zip_code": "10001",
     "lat": 40.7128,
-    "lng": -74.0060,
+    "lng": -74.006,
     "bio": "Experienced nanny..."
   },
   "nanny_details": {
     "experience_years": 5,
-    "hourly_rate": 25.00,
+    "hourly_rate": 25.0,
     "skills": ["First Aid", "Cooking", "Tutoring"],
     "certifications": ["CPR Certified"],
     "languages": ["English", "Spanish"]
@@ -879,6 +948,7 @@ Authorization: Bearer {access_token}
 ```
 
 #### Update Profile
+
 ```http
 PUT /users/profile
 Authorization: Bearer {access_token}
@@ -892,6 +962,7 @@ Content-Type: application/json
 ```
 
 #### Update Nanny Details
+
 ```http
 PUT /users/nanny-details
 Authorization: Bearer {access_token}
@@ -905,6 +976,7 @@ Content-Type: application/json
 ```
 
 **Limitations:**
+
 - ❌ Profile image upload not implemented (requires Cloudinary/S3)
 - ✅ All text fields work
 - ✅ Location (lat/lng) can be set
@@ -917,6 +989,7 @@ Content-Type: application/json
 **Status:** Fully implemented
 
 **What's Expected:**
+
 - View assigned service requests
 - Accept/reject assignments
 - Automatic timeout after deadline
@@ -924,12 +997,14 @@ Content-Type: application/json
 **Endpoints:**
 
 #### Get My Assignments
+
 ```http
 GET /assignments
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -949,12 +1024,14 @@ Authorization: Bearer {access_token}
 ```
 
 #### Accept Assignment
+
 ```http
 POST /assignments/:id/accept
 Authorization: Bearer {access_token}
 ```
 
 #### Reject Assignment
+
 ```http
 POST /assignments/:id/reject
 Authorization: Bearer {access_token}
@@ -966,6 +1043,7 @@ Content-Type: application/json
 ```
 
 **Features:**
+
 - ✅ Assignment creation via matching algorithm
 - ✅ Accept/reject functionality
 - ✅ Automatic timeout (15 minutes default)
@@ -978,6 +1056,7 @@ Content-Type: application/json
 ## Implementation Priority
 
 ### High Priority (Fully Functional)
+
 1. ✅ Authentication & Authorization
 2. ✅ Bookings & Cancellations
 3. ✅ Reviews & Ratings
@@ -987,12 +1066,14 @@ Content-Type: application/json
 7. ✅ Favorites & Location Tracking
 
 ### Medium Priority (Partially Implemented)
+
 1. ⚠️ Chat System (text only, no file uploads)
 2. ⚠️ Notifications (in-app only)
 3. ⚠️ User Profiles (no image upload)
 4. ✅ Assignments & Matching
 
 ### Low Priority (Not Yet Implemented)
+
 1. ❌ Payment Gateway Integration
 2. ❌ SMS/Email Notifications
 3. ❌ Profile Image Upload
@@ -1003,6 +1084,7 @@ Content-Type: application/json
 ## Quick Start Checklist
 
 ### Essential Features (Start Here)
+
 - [ ] Implement authentication (login, register, refresh token)
 - [ ] Create booking flow (create, view, cancel)
 - [ ] Build nanny browse/search page
@@ -1011,6 +1093,7 @@ Content-Type: application/json
 - [ ] Create user profile pages
 
 ### Advanced Features (After Essentials)
+
 - [ ] Implement recurring bookings
 - [ ] Add availability calendar for nannies
 - [ ] Build admin dashboard
@@ -1019,6 +1102,7 @@ Content-Type: application/json
 - [ ] Create review/rating interface
 
 ### Future Enhancements
+
 - [ ] Add payment gateway
 - [ ] Implement file uploads (chat, profiles)
 - [ ] Add SMS/email notifications
