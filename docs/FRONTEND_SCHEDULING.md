@@ -1,6 +1,7 @@
 # Frontend Integration Guide - Scheduling & Availability
 
 ## Overview
+
 This document provides complete integration details for the Recurring Bookings and Availability Blocking features.
 
 ## 🔄 Recurring Bookings
@@ -8,6 +9,7 @@ This document provides complete integration details for the Recurring Bookings a
 ### API Endpoints
 
 #### Create Recurring Booking
+
 ```http
 POST /recurring-bookings
 Authorization: Bearer {access_token}
@@ -27,6 +29,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -46,12 +49,14 @@ Content-Type: application/json
 ```
 
 #### List Recurring Bookings
+
 ```http
 GET /recurring-bookings
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -75,12 +80,14 @@ Authorization: Bearer {access_token}
 ```
 
 #### Get Recurring Booking Details
+
 ```http
 GET /recurring-bookings/:id
 Authorization: Bearer {access_token}
 ```
 
 **Response:** (includes generated bookings)
+
 ```json
 {
   "id": "uuid",
@@ -101,6 +108,7 @@ Authorization: Bearer {access_token}
 ```
 
 #### Update Recurring Booking
+
 ```http
 PUT /recurring-bookings/:id
 Authorization: Bearer {access_token}
@@ -114,6 +122,7 @@ Content-Type: application/json
 ```
 
 #### Delete (Deactivate) Recurring Booking
+
 ```http
 DELETE /recurring-bookings/:id
 Authorization: Bearer {access_token}
@@ -121,25 +130,26 @@ Authorization: Bearer {access_token}
 
 ### Recurrence Patterns
 
-| Pattern | Description | Days Generated |
-|---------|-------------|----------------|
-| `DAILY` | Every day | Mon-Sun |
-| `WEEKLY_MON` | Every Monday | Monday only |
+| Pattern              | Description   | Days Generated            |
+| -------------------- | ------------- | ------------------------- |
+| `DAILY`              | Every day     | Mon-Sun                   |
+| `WEEKLY_MON`         | Every Monday  | Monday only               |
 | `WEEKLY_MON_WED_FRI` | Mon, Wed, Fri | Monday, Wednesday, Friday |
-| `WEEKLY_TUE_THU` | Tue, Thu | Tuesday, Thursday |
-| `MONTHLY_1` | 1st of month | 1st day |
-| `MONTHLY_1_15` | 1st & 15th | 1st and 15th days |
+| `WEEKLY_TUE_THU`     | Tue, Thu      | Tuesday, Thursday         |
+| `MONTHLY_1`          | 1st of month  | 1st day                   |
+| `MONTHLY_1_15`       | 1st & 15th    | 1st and 15th days         |
 
 **Day Codes:** `SUN`, `MON`, `TUE`, `WED`, `THU`, `FRI`, `SAT`
 
 ### UI Implementation Suggestions
 
 #### Pattern Selector Component
+
 ```tsx
 const RecurrencePatternSelector = () => {
   const [frequency, setFrequency] = useState('weekly');
   const [selectedDays, setSelectedDays] = useState([]);
-  
+
   const generatePattern = () => {
     if (frequency === 'daily') return 'DAILY';
     if (frequency === 'weekly') {
@@ -149,7 +159,7 @@ const RecurrencePatternSelector = () => {
       return `MONTHLY_${selectedDays.join('_')}`;
     }
   };
-  
+
   return (
     <div>
       <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
@@ -157,16 +167,16 @@ const RecurrencePatternSelector = () => {
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
       </select>
-      
+
       {frequency === 'weekly' && (
-        <DaySelector days={['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']} 
-                     selected={selectedDays} 
+        <DaySelector days={['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']}
+                     selected={selectedDays}
                      onChange={setSelectedDays} />
       )}
-      
+
       {frequency === 'monthly' && (
-        <DateSelector dates={[1,2,3,...,31]} 
-                      selected={selectedDays} 
+        <DateSelector dates={[1,2,3,...,31]}
+                      selected={selectedDays}
                       onChange={setSelectedDays} />
       )}
     </div>
@@ -181,6 +191,7 @@ const RecurrencePatternSelector = () => {
 ### API Endpoints
 
 #### Create Availability Block
+
 ```http
 POST /availability/block
 Authorization: Bearer {access_token}
@@ -196,6 +207,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -210,12 +222,14 @@ Content-Type: application/json
 ```
 
 #### List Availability Blocks
+
 ```http
 GET /availability
 Authorization: Bearer {access_token}
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -230,6 +244,7 @@ Authorization: Bearer {access_token}
 ```
 
 #### Delete Availability Block
+
 ```http
 DELETE /availability/:id
 Authorization: Bearer {access_token}
@@ -238,20 +253,21 @@ Authorization: Bearer {access_token}
 ### UI Implementation Suggestions
 
 #### Calendar View with Blocked Times
+
 ```tsx
 const AvailabilityCalendar = ({ blocks }) => {
   const isBlocked = (date) => {
-    return blocks.some(block => {
+    return blocks.some((block) => {
       if (block.is_recurring) {
         return matchesPattern(date, block.recurrence_pattern);
       }
       return date >= block.start_time && date <= block.end_time;
     });
   };
-  
+
   return (
-    <Calendar 
-      tileClassName={({ date }) => isBlocked(date) ? 'blocked' : ''}
+    <Calendar
+      tileClassName={({ date }) => (isBlocked(date) ? 'blocked' : '')}
       tileDisabled={({ date }) => isBlocked(date)}
     />
   );
@@ -263,16 +279,19 @@ const AvailabilityCalendar = ({ blocks }) => {
 ## 🔔 Important Notes
 
 ### Auto-Generation Timing
+
 - Cron job runs **daily at midnight** (server time)
 - Bookings are generated **1 day in advance**
 - Example: On Dec 10, bookings for Dec 11 are created
 
 ### Matching Integration
+
 - Nannies with availability blocks are **automatically filtered out** during matching
 - Blocks are checked against request start/end times
 - Recurring blocks are evaluated for pattern match
 
 ### Best Practices
+
 1. **Validate dates**: Ensure `startDate` < `endDate`
 2. **Pattern validation**: Use provided day codes only
 3. **Time zones**: All times are stored in UTC
@@ -283,6 +302,7 @@ const AvailabilityCalendar = ({ blocks }) => {
 ## 📱 Example Flows
 
 ### Parent Creates Weekly Recurring Booking
+
 1. Parent selects nanny
 2. Chooses "Weekly" frequency
 3. Selects days: Monday, Wednesday, Friday
@@ -292,6 +312,7 @@ const AvailabilityCalendar = ({ blocks }) => {
 7. Display confirmation with next 3 upcoming dates
 
 ### Nanny Blocks Weekends
+
 1. Nanny navigates to availability settings
 2. Selects "Block time"
 3. Chooses "Recurring" option

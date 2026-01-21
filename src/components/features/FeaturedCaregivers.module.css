@@ -1,68 +1,68 @@
 .section {
-    padding: var(--space-16) var(--space-6);
-    background-color: white;
+  padding: var(--space-16) var(--space-6);
+  background-color: white;
 }
 
 .container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-bottom: var(--space-12);
-    gap: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-12);
+  gap: var(--space-4);
 }
 
 .title {
-    font-family: var(--font-display);
-    font-size: 32px;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-gray-900);
-    margin: 0;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-900);
+  margin: 0;
 }
 
 .subtitle {
-    font-size: 18px;
-    color: var(--color-gray-600);
-    max-width: 600px;
+  font-size: 18px;
+  color: var(--color-gray-600);
+  max-width: 600px;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
 }
 
 .viewAll {
-    margin-top: var(--space-12);
-    text-align: center;
+  margin-top: var(--space-12);
+  text-align: center;
 }
 
 @media (min-width: 640px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-    .header {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
-        align-items: flex-end;
-    }
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    align-items: flex-end;
+  }
 
-    .subtitle {
-        margin: 0;
-        text-align: left;
-    }
+  .subtitle {
+    margin: 0;
+    text-align: left;
+  }
 }

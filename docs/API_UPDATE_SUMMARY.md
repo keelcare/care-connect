@@ -3,15 +3,16 @@
 ## Date: 2025-11-20
 
 ### Overview
+
 Updated the frontend codebase to align with the latest backend API documentation, specifically the FRONTEND_INTEGRATION.md and API.md files.
 
 ### Key Changes
 
 #### 1. API Client Updates (`src/lib/api.ts`)
+
 - **Added** `GET /users/nannies` endpoint to fetch all caregivers
   - Returns: `User[]` with nanny role
   - Public endpoint, no authentication required
-  
 - **Added** `POST /users/upload-image` endpoint
   - Accepts: `{ userId: string, imageUrl: string }`
   - Returns: Updated `User` object
@@ -24,42 +25,44 @@ users: {
     nannies: () => fetchApi<User[]>('/users/nannies'),  // NEW
     update: (id: string, body: UpdateUserDto) => fetchApi<User>(`/users/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
     uploadImage: (userId: string, imageUrl: string) =>  // NEW
-        fetchApi<User>('/users/upload-image', { 
-            method: 'POST', 
-            body: JSON.stringify({ userId, imageUrl }) 
+        fetchApi<User>('/users/upload-image', {
+            method: 'POST',
+            body: JSON.stringify({ userId, imageUrl })
         }),
 }
 ```
 
 #### 2. Type Definition Fixes (`src/types/api.ts`)
+
 - **Fixed** `NearbyNanny` interface to match API response structure:
   - Changed `profiles` → `profile` (singular)
   - Removed `is_verified` field (not included in nearby search responses)
-  
+
 ```typescript
 // BEFORE
 export interface NearbyNanny {
-    id: string;
-    email: string;
-    role: 'nanny';
-    is_verified: boolean;  // ❌ Not in API response
-    profiles: UserProfile | null;  // ❌ Wrong field name
-    nanny_details: NannyDetails | null;
-    distance: number;
+  id: string;
+  email: string;
+  role: 'nanny';
+  is_verified: boolean; // ❌ Not in API response
+  profiles: UserProfile | null; // ❌ Wrong field name
+  nanny_details: NannyDetails | null;
+  distance: number;
 }
 
 // AFTER
 export interface NearbyNanny {
-    id: string;
-    email: string;
-    role: 'nanny';
-    profile: UserProfile | null;  // ✅ Correct field name
-    nanny_details: NannyDetails | null;
-    distance: number;
+  id: string;
+  email: string;
+  role: 'nanny';
+  profile: UserProfile | null; // ✅ Correct field name
+  nanny_details: NannyDetails | null;
+  distance: number;
 }
 ```
 
 #### 3. Search Page Updates (`src/app/search/page.tsx`)
+
 - Updated all references from `nanny.profiles` → `nanny.profile`
 - Updated mock data to match new type structure
 - Removed `is_verified` from mock `NearbyNanny` objects
@@ -79,6 +82,7 @@ export interface NearbyNanny {
 ### API Endpoints Reference
 
 #### Available Endpoints
+
 1. **Authentication**
    - `POST /auth/signup` - Register new user
    - `POST /auth/login` - Login with email/password
@@ -109,6 +113,7 @@ export interface NearbyNanny {
 ### Testing
 
 All changes have been tested:
+
 - ✅ Build successful (`npm run build`)
 - ✅ Linting passed (`npm run lint`)
 - ✅ Type checking passed
@@ -122,6 +127,7 @@ All changes have been tested:
 4. **Consider pagination** for large result sets
 
 ### Files Modified
+
 - `src/lib/api.ts` - Added new endpoints
 - `src/types/api.ts` - Fixed NearbyNanny interface
 - `src/app/search/page.tsx` - Updated to use correct field names

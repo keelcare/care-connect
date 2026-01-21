@@ -1,116 +1,116 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .header {
-    margin-bottom: var(--space-8);
+  margin-bottom: var(--space-8);
 }
 
 .title {
-    font-size: 2rem;
-    font-weight: var(--font-weight-bold);
-    color: hsl(var(--neutral-900));
-    margin-bottom: var(--space-2);
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: hsl(var(--neutral-900));
+  margin-bottom: var(--space-2);
 }
 
 .subtitle {
-    font-size: 1rem;
-    color: hsl(var(--neutral-600));
+  font-size: 1rem;
+  color: hsl(var(--neutral-600));
 }
 
 .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-6);
-    margin-bottom: var(--space-8);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .statCard {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid hsl(var(--neutral-200));
-    padding: var(--space-6);
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    transition: all var(--transition-base);
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid hsl(var(--neutral-200));
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: all var(--transition-base);
 }
 
 .statCard:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .statIcon {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .statInfo {
-    flex: 1;
+  flex: 1;
 }
 
 .statLabel {
-    font-size: 0.875rem;
-    color: hsl(var(--neutral-600));
-    margin-bottom: var(--space-1);
-    font-weight: var(--font-weight-medium);
+  font-size: 0.875rem;
+  color: hsl(var(--neutral-600));
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-weight-medium);
 }
 
 .statValue {
-    font-size: 2.25rem;
-    font-weight: var(--font-weight-bold);
-    color: hsl(var(--neutral-900));
-    line-height: 1;
+  font-size: 2.25rem;
+  font-weight: var(--font-weight-bold);
+  color: hsl(var(--neutral-900));
+  line-height: 1;
 }
 
 .quickActions {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid hsl(var(--neutral-200));
-    padding: var(--space-6);
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid hsl(var(--neutral-200));
+  padding: var(--space-6);
 }
 
 .sectionTitle {
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-semibold);
-    color: hsl(var(--neutral-900));
-    margin-bottom: var(--space-5);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--neutral-900));
+  margin-bottom: var(--space-5);
 }
 
 .actionGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
 }
 
 .loadingState,
 .errorState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-12) var(--space-6);
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
 }
 
 .errorState p {
-    color: hsl(var(--error-600));
-    margin-bottom: var(--space-4);
+  color: hsl(var(--error-600));
+  margin-bottom: var(--space-4);
 }
 
 @media (max-width: 640px) {
-    .title {
-        font-size: 1.5rem;
-    }
+  .title {
+    font-size: 1.5rem;
+  }
 
-    .statsGrid {
-        grid-template-columns: 1fr;
-    }
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
 }

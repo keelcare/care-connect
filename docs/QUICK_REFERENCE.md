@@ -37,19 +37,21 @@ const allNannies = await api.users.nannies();
 ## Important Type Differences
 
 ### Full User Object (from `/users/me`, `/users/:id`, `/users/nannies`)
+
 ```typescript
 {
-  profiles: UserProfile;  // ✅ plural
-  is_verified: boolean;   // ✅ included
+  profiles: UserProfile; // ✅ plural
+  is_verified: boolean; // ✅ included
 }
 ```
 
 ### NearbyNanny Object (from `/location/nannies/nearby`)
+
 ```typescript
 {
-  profile: UserProfile;   // ✅ singular
+  profile: UserProfile; // ✅ singular
   // is_verified not included
-  distance: number;       // ✅ extra field
+  distance: number; // ✅ extra field
 }
 ```
 
@@ -65,7 +67,7 @@ import { User, NearbyNanny } from '@/types/api';
 export default function SearchPage() {
     const [nannies, setNannies] = useState<User[]>([]);
     const [nearbyNannies, setNearbyNannies] = useState<NearbyNanny[]>([]);
-    
+
     // Option 1: Fetch all nannies (no location required)
     useEffect(() => {
         const fetchAll = async () => {
@@ -74,7 +76,7 @@ export default function SearchPage() {
         };
         fetchAll();
     }, []);
-    
+
     // Option 2: Fetch nearby nannies (requires coordinates)
     const searchNearby = async (lat: number, lng: number) => {
         const response = await api.location.nearbyNannies(lat, lng, 10);
@@ -82,7 +84,7 @@ export default function SearchPage() {
             setNearbyNannies(response.data);
         }
     };
-    
+
     // Render full User objects
     return (
         <div>
@@ -93,7 +95,7 @@ export default function SearchPage() {
                     {nanny.is_verified && <span>✓ Verified</span>}
                 </div>
             ))}
-            
+
             {/* OR render nearby results */}
             {nearbyNannies.map(nanny => (
                 <div key={nanny.id}>
@@ -112,15 +114,12 @@ export default function SearchPage() {
 ```typescript
 // Update user's profile image
 const updateProfileImage = async (userId: string, imageUrl: string) => {
-    const updatedUser = await api.users.uploadImage(userId, imageUrl);
-    console.log('Image updated:', updatedUser.profiles?.profile_image_url);
+  const updatedUser = await api.users.uploadImage(userId, imageUrl);
+  console.log('Image updated:', updatedUser.profiles?.profile_image_url);
 };
 
 // Example usage
-await updateProfileImage(
-    currentUser.id, 
-    'https://example.com/profile-pic.jpg'
-);
+await updateProfileImage(currentUser.id, 'https://example.com/profile-pic.jpg');
 ```
 
 ## Best Practices
@@ -134,24 +133,28 @@ await updateProfileImage(
 ## Common Pitfalls
 
 ❌ **Wrong:**
+
 ```typescript
 const nannies = await api.location.nearbyNannies(lat, lng);
 console.log(nannies.data[0].profiles.first_name); // profiles is undefined!
 ```
 
 ✅ **Correct:**
+
 ```typescript
 const response = await api.location.nearbyNannies(lat, lng);
 console.log(response.data[0].profile?.first_name); // profile (singular)
 ```
 
 ❌ **Wrong:**
+
 ```typescript
 const nannies = await api.users.nannies();
 console.log(nannies[0].profile.first_name); // profile is undefined!
 ```
 
 ✅ **Correct:**
+
 ```typescript
 const nannies = await api.users.nannies();
 console.log(nannies[0].profiles?.first_name); // profiles (plural)

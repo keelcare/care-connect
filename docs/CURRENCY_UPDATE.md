@@ -1,14 +1,17 @@
 # Currency Update: Dollar to Rupee
 
 ## Summary
+
 Changed all currency displays from US Dollars ($) to Indian Rupees (₹) across the frontend application.
 
 ## Files Modified
 
 ### 1. **PriceRangeSlider Component**
+
 **File:** `/src/components/ui/PriceRangeSlider.tsx`
 
 **Changes:**
+
 - Line 55: Display label `$minValue - $maxValue/hr` → `₹minValue - ₹maxValue/hr`
 - Line 114: Min value input prefix `$` → `₹`
 - Line 125: Max value input prefix `$` → `₹`
@@ -18,9 +21,11 @@ Changed all currency displays from US Dollars ($) to Indian Rupees (₹) across 
 ---
 
 ### 2. **ProfileCard Component**
+
 **File:** `/src/components/features/ProfileCard.tsx`
 
 **Changes:**
+
 - Line 73: Hourly rate display `${hourlyRate}` → `₹{hourlyRate}`
 
 **Impact:** All caregiver cards in search results and featured sections now show rupees
@@ -28,9 +33,11 @@ Changed all currency displays from US Dollars ($) to Indian Rupees (₹) across 
 ---
 
 ### 3. **Caregiver Profile Page**
+
 **File:** `/src/app/caregiver/[id]/page.tsx`
 
 **Changes:**
+
 - Line 147: Profile header rate `${nanny_details?.hourly_rate || 20}` → `₹{nanny_details?.hourly_rate || 20}`
 
 **Impact:** Individual caregiver profile pages now display rates in rupees
@@ -38,9 +45,11 @@ Changed all currency displays from US Dollars ($) to Indian Rupees (₹) across 
 ---
 
 ### 4. **Dashboard Profile Page**
+
 **File:** `/src/app/dashboard/profile/page.tsx`
 
 **Changes:**
+
 - Line 63: Stats display `${nanny_details?.hourly_rate || 0}` → `₹{nanny_details?.hourly_rate || 0}`
 
 **Impact:** User's own profile dashboard shows their rate in rupees
@@ -48,9 +57,11 @@ Changed all currency displays from US Dollars ($) to Indian Rupees (₹) across 
 ---
 
 ### 5. **Dashboard Settings Page**
+
 **File:** `/src/app/dashboard/settings/page.tsx`
 
 **Changes:**
+
 - Line 143: Input label `Hourly Rate ($)` → `Hourly Rate (₹)`
 
 **Impact:** Settings form for editing hourly rate now indicates rupees

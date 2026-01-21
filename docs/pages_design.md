@@ -138,7 +138,7 @@ Input: Floating pill bar at bottom.
 
 6. Booking Management
 
-12. Bookings List (/dashboard/bookings)
+7. Bookings List (/dashboard/bookings)
 
 Tabs: "Upcoming" | "Past" | "Cancelled".
 
@@ -166,7 +166,7 @@ Actions: "Cancel" is a ghost button (red text). "Start" is a solid Primary butto
 
 7. Service Requests (Parents)
 
-14. Requests List (/dashboard/requests)
+8. Requests List (/dashboard/requests)
 
 Grid: Masonry or uniform grid of request summaries.
 

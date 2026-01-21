@@ -20,7 +20,9 @@ The API supports both traditional email/password authentication and Google OAuth
 - **Token Source**: Obtained from `/auth/login` or `/auth/google/callback`
 
 ### Protected Endpoints
+
 The following endpoints require JWT authentication:
+
 - `GET /users/me`
 
 All other endpoints are currently public or handle authentication internally.
@@ -30,6 +32,7 @@ All other endpoints are currently public or handle authentication internally.
 ### Authentication
 
 #### POST /auth/signup
+
 Register a new user with email and password.
 
 - **Authentication**: Not required
@@ -55,7 +58,6 @@ Register a new user with email and password.
   }
   ```
   **Note**: Password hash and OAuth tokens are excluded from response for security.
-  
 - **Error Response** (400):
   ```json
   {
@@ -66,6 +68,7 @@ Register a new user with email and password.
   ```
 
 #### POST /auth/login
+
 Login with email and password to receive a JWT access token.
 
 - **Authentication**: Not required
@@ -97,6 +100,7 @@ Login with email and password to receive a JWT access token.
   ```
 
 #### GET /auth/google
+
 Initiate Google OAuth login flow.
 
 - **Authentication**: Not required
@@ -105,6 +109,7 @@ Initiate Google OAuth login flow.
 - **Configuration**: Requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` in environment variables
 
 #### GET /auth/google/callback
+
 Google OAuth callback endpoint (automatically called by Google).
 
 - **Authentication**: Handled by Google OAuth
@@ -127,6 +132,7 @@ Google OAuth callback endpoint (automatically called by Google).
 ### Users
 
 #### GET /users/me
+
 Retrieve the currently authenticated user's profile.
 
 - **Authentication**: Required (JWT)
@@ -168,6 +174,7 @@ Retrieve the currently authenticated user's profile.
   ```
 
 #### GET /users/nannies
+
 Retrieve all users with the role "nanny" (caregivers).
 
 - **Authentication**: Not required
@@ -211,12 +218,13 @@ Retrieve all users with the role "nanny" (caregivers).
     }
   ]
   ```
-  **Note**: 
+  **Note**:
   - Results are ordered by creation date (newest first)
   - Sensitive fields excluded: `password_hash`, `oauth_access_token`, `oauth_refresh_token`, `verification_token`, `reset_password_token`
   - This endpoint is useful for displaying all available caregivers on a search/browse page
 
 #### GET /users/:id
+
 Retrieve a specific user's profile by ID.
 
 - **Authentication**: Not required
@@ -226,6 +234,7 @@ Retrieve a specific user's profile by ID.
 - **Note**: Sensitive fields (password_hash, oauth tokens, verification tokens) are excluded
 
 #### PUT /users/:id
+
 Update a user's profile information.
 
 - **Authentication**: Not required (should be protected in production)
@@ -252,6 +261,7 @@ Update a user's profile information.
 - **Response**: Updated `User` object
 
 #### POST /users/upload-image
+
 Upload or update a profile image URL.
 
 - **Authentication**: Not required
@@ -270,13 +280,14 @@ Upload or update a profile image URL.
 All location endpoints use the Haversine formula for distance calculation and Google Maps Geocoding API for address resolution.
 
 #### POST /location/geocode
+
 Convert a physical address to geographic coordinates (latitude/longitude).
 
 - **Authentication**: Not required
 - **Request Body**:
   ```json
   {
-    "address": "string"  // e.g., "123 Main St, City, State, Country"
+    "address": "string" // e.g., "123 Main St, City, State, Country"
   }
   ```
 - **Response** (Success):
@@ -299,6 +310,7 @@ Convert a physical address to geographic coordinates (latitude/longitude).
 - **Note**: Requires valid `GOOGLE_MAPS_API_KEY` in environment variables
 
 #### GET /location/nannies/nearby
+
 Find nannies within a specified radius from given coordinates.
 
 - **Authentication**: Not required
@@ -308,6 +320,7 @@ Find nannies within a specified radius from given coordinates.
   - `radius` (number, optional): Radius in kilometers (default: 10)
 - **Example**: `/location/nannies/nearby?lat=12.9715987&lng=77.5945627&radius=15`
 - **Response**:
+
   ```json
   {
     "success": true,
@@ -354,13 +367,14 @@ Find nannies within a specified radius from given coordinates.
     ]
   }
   ```
-  
-  **Note**: 
+
+  **Note**:
   - Results are sorted by distance (closest first)
   - Only users with role "nanny" and valid lat/lng coordinates are included
   - Sensitive fields excluded: `password_hash`, `oauth_access_token`, `oauth_refresh_token`, `verification_token`, `reset_password_token`
 
 #### GET /location/jobs/nearby
+
 Find job postings within a specified radius from given coordinates.
 
 - **Authentication**: Not required
@@ -370,6 +384,7 @@ Find job postings within a specified radius from given coordinates.
   - `radius` (number, optional): Radius in kilometers (default: 10)
 - **Example**: `/location/jobs/nearby?lat=12.9715987&lng=77.5945627&radius=20`
 - **Response**:
+
   ```json
   {
     "success": true,
@@ -403,8 +418,8 @@ Find job postings within a specified radius from given coordinates.
     ]
   }
   ```
-  
-  **Note**: 
+
+  **Note**:
   - Results are sorted by distance (closest first)
   - Only jobs with valid location_lat/location_lng are included
   - Parent information included for contact purposes
@@ -413,20 +428,24 @@ Find job postings within a specified radius from given coordinates.
 ## Data Models
 
 ### User Roles
+
 - `parent`: Can post jobs, book nannies
 - `nanny`: Can apply to jobs, be booked by parents
 - `admin`: Administrative access (not fully implemented)
 
 ### Job Status
+
 - `open`: Job is available for applications
 - `closed`: Job is no longer available
 
 ### Application Status (Not yet implemented in API)
+
 - `applied`: Nanny has applied to job
 - `accepted`: Parent accepted the application
 - `rejected`: Parent rejected the application
 
 ### Booking Status (Not yet implemented in API)
+
 - `requested`: Booking requested by parent
 - `confirmed`: Nanny confirmed the booking
 - `cancelled`: Booking was cancelled
@@ -455,6 +474,7 @@ All error responses follow this standard format:
 ### Example Error Responses
 
 **Validation Error (400)**:
+
 ```json
 {
   "statusCode": 400,
@@ -467,6 +487,7 @@ All error responses follow this standard format:
 ```
 
 **Authentication Error (401)**:
+
 ```json
 {
   "statusCode": 401,
@@ -476,6 +497,7 @@ All error responses follow this standard format:
 ```
 
 **Not Found Error (404)**:
+
 ```json
 {
   "statusCode": 404,
@@ -491,6 +513,7 @@ Currently, no rate limiting is implemented. This should be added in production.
 ## CORS Configuration
 
 CORS is enabled for:
+
 - `http://localhost:3000` (Next.js frontend)
 - Credentials are supported
 
@@ -501,14 +524,17 @@ To add additional origins, update the CORS configuration in `src/main.ts`.
 The following features are planned but not yet available via API:
 
 ### Email Verification
+
 - `POST /auth/verify-email` - Verify email with token
 - `POST /auth/resend-verification` - Resend verification email
 
 ### Password Reset
+
 - `POST /auth/forgot-password` - Request password reset
 - `POST /auth/reset-password` - Reset password with token
 
 ### Applications
+
 - `POST /applications` - Apply to a job
 - `GET /applications/nanny/:nannyId` - Get nanny's applications
 - `GET /applications/job/:jobId` - Get job's applications
@@ -517,6 +543,7 @@ The following features are planned but not yet available via API:
 ### Bookings
 
 #### POST /bookings
+
 Create a new booking manually (Temporary endpoint for testing).
 
 - **Authentication**: Required (JWT)
@@ -542,42 +569,49 @@ Create a new booking manually (Temporary endpoint for testing).
   ```
 
 #### GET /bookings/active
+
 Get all active bookings (CONFIRMED or IN_PROGRESS) for the current user.
 
 - **Authentication**: Required (JWT)
 - **Response**: Array of `Booking` objects with job and profile details.
 
 #### GET /bookings/parent/me
+
 Get all bookings for the current parent user.
 
 - **Authentication**: Required (JWT - Parent role)
 - **Response**: Array of `Booking` objects.
 
 #### GET /bookings/nanny/me
+
 Get all bookings for the current nanny user.
 
 - **Authentication**: Required (JWT - Nanny role)
 - **Response**: Array of `Booking` objects.
 
 #### GET /bookings/:id
+
 Get details of a specific booking.
 
 - **Authentication**: Required (JWT - User must be part of booking)
 - **Response**: `Booking` object with full details.
 
 #### PUT /bookings/:id/start
+
 Mark a booking as IN_PROGRESS.
 
 - **Authentication**: Required (JWT - Nanny only)
 - **Response**: Updated `Booking` object.
 
 #### PUT /bookings/:id/complete
+
 Mark a booking as COMPLETED.
 
 - **Authentication**: Required (JWT - Nanny or Parent)
 - **Response**: Updated `Booking` object.
 
 #### PUT /bookings/:id/cancel
+
 Cancel a booking.
 
 - **Authentication**: Required (JWT - Nanny or Parent)
@@ -592,6 +626,7 @@ Cancel a booking.
 ### Messaging (Chat)
 
 #### POST /chat
+
 Create a new chat room manually.
 
 - **Authentication**: Required (JWT)
@@ -604,12 +639,14 @@ Create a new chat room manually.
 - **Response**: `Chat` object.
 
 #### GET /chat/booking/:bookingId
+
 Get the chat room associated with a booking.
 
 - **Authentication**: Required (JWT)
 - **Response**: `Chat` object with latest messages.
 
 #### GET /chat/:chatId/messages
+
 Get message history for a chat room with pagination.
 
 - **Authentication**: Required (JWT)
@@ -619,6 +656,7 @@ Get message history for a chat room with pagination.
 - **Response**: Array of `Message` objects.
 
 #### POST /chat/:chatId/message
+
 Send a message via HTTP (Alternative to WebSocket).
 
 - **Authentication**: Required (JWT)
@@ -634,6 +672,7 @@ Send a message via HTTP (Alternative to WebSocket).
 ### Reviews
 
 #### POST /reviews
+
 Create a review for a completed booking.
 
 - **Authentication**: Required (JWT)
@@ -648,12 +687,14 @@ Create a review for a completed booking.
 - **Response**: `Review` object.
 
 #### GET /reviews/user/:userId
+
 Get all reviews received by a specific user (parent or nanny).
 
 - **Authentication**: Not required
 - **Response**: Array of `Review` objects with reviewer details.
 
 #### GET /reviews/booking/:bookingId
+
 Get the review associated with a specific booking.
 
 - **Authentication**: Not required
@@ -662,6 +703,7 @@ Get the review associated with a specific booking.
 ### Notifications
 
 #### POST /notifications/send
+
 Manually trigger a notification (for testing/admin).
 
 - **Authentication**: Required (JWT)
@@ -681,18 +723,21 @@ Manually trigger a notification (for testing/admin).
 All admin endpoints require JWT authentication AND admin role.
 
 #### GET /admin/users
+
 Get all users in the system.
 
 - **Authentication**: Required (JWT - Admin only)
 - **Response**: Array of `User` objects with basic info.
 
 #### GET /admin/bookings
+
 Get all bookings in the system.
 
 - **Authentication**: Required (JWT - Admin only)
 - **Response**: Array of `Booking` objects with job and user details.
 
 #### GET /admin/stats
+
 Get system statistics.
 
 - **Authentication**: Required (JWT - Admin only)
@@ -706,18 +751,21 @@ Get system statistics.
   ```
 
 #### PUT /admin/users/:id/verify
+
 Verify a user account.
 
 - **Authentication**: Required (JWT - Admin only)
 - **Response**: Updated `User` object.
 
 #### PUT /admin/users/:id/ban
+
 Ban a user account.
 
 - **Authentication**: Required (JWT - Admin only)
 - **Response**: Updated `User` object.
 
 ### Payments
+
 - `POST /payments` - Process payment
 - `GET /payments/:bookingId` - Get payment for booking
 - `GET /payments/user/:userId` - Get user's payment history

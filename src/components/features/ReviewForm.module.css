@@ -1,111 +1,111 @@
 .form {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid hsl(var(--neutral-200));
-    padding: var(--space-6);
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid hsl(var(--neutral-200));
+  padding: var(--space-6);
 }
 
 .title {
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-semibold);
-    color: hsl(var(--neutral-900));
-    margin-bottom: var(--space-6);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--neutral-900));
+  margin-bottom: var(--space-6);
 }
 
 .ratingSection {
-    margin-bottom: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 .label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-medium);
-    color: hsl(var(--neutral-700));
-    margin-bottom: var(--space-3);
+  display: block;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: hsl(var(--neutral-700));
+  margin-bottom: var(--space-3);
 }
 
 .stars {
-    display: flex;
-    gap: var(--space-2);
+  display: flex;
+  gap: var(--space-2);
 }
 
 .starButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: var(--space-1);
-    transition: transform var(--transition-fast);
-    border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+  transition: transform var(--transition-fast);
+  border-radius: var(--radius-md);
 }
 
 .starButton:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .starButton:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
 }
 
 .commentSection {
-    margin-bottom: var(--space-6);
-    position: relative;
+  margin-bottom: var(--space-6);
+  position: relative;
 }
 
 .textarea {
-    width: 100%;
-    padding: var(--space-4);
-    border: 1px solid hsl(var(--neutral-300));
-    border-radius: var(--radius-lg);
-    font-size: 0.9375rem;
-    font-family: inherit;
-    resize: vertical;
-    min-height: 120px;
-    transition: border-color var(--transition-fast);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1px solid hsl(var(--neutral-300));
+  border-radius: var(--radius-lg);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color var(--transition-fast);
 }
 
 .textarea:focus {
-    outline: none;
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 3px hsl(var(--primary-50));
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary-50));
 }
 
 .textarea::placeholder {
-    color: hsl(var(--neutral-400));
+  color: hsl(var(--neutral-400));
 }
 
 .charCount {
-    position: absolute;
-    bottom: var(--space-3);
-    right: var(--space-4);
-    font-size: 0.75rem;
-    color: hsl(var(--neutral-500));
-    background: white;
-    padding: 0 var(--space-2);
+  position: absolute;
+  bottom: var(--space-3);
+  right: var(--space-4);
+  font-size: 0.75rem;
+  color: hsl(var(--neutral-500));
+  background: white;
+  padding: 0 var(--space-2);
 }
 
 .error {
-    padding: var(--space-4);
-    background: hsl(var(--error-50));
-    color: hsl(var(--error-700));
-    border-radius: var(--radius-lg);
-    font-size: 0.875rem;
-    margin-bottom: var(--space-4);
-    border: 1px solid hsl(var(--error-100));
+  padding: var(--space-4);
+  background: hsl(var(--error-50));
+  color: hsl(var(--error-700));
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+  border: 1px solid hsl(var(--error-100));
 }
 
 .actions {
-    display: flex;
-    gap: var(--space-3);
-    justify-content: flex-end;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
 }
 
 @media (max-width: 640px) {
-    .actions {
-        flex-direction: column-reverse;
-    }
+  .actions {
+    flex-direction: column-reverse;
+  }
 
-    .actions button {
-        width: 100%;
-    }
+  .actions button {
+    width: 100%;
+  }
 }

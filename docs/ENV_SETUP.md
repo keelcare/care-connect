@@ -4,24 +4,25 @@
 
 The backend uses the following environment variables. You don't need to set these for the frontend, but understanding them helps with debugging.
 
-| Variable | Description | Default/Example | Required |
-|----------|-------------|-----------------|----------|
-| `PORT` | Server port | `4000` | Yes |
-| `NODE_ENV` | Environment mode | `development` | Yes |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` | Yes |
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5433/careconnect` | Yes |
-| `POSTGRES_USER` | Database username | `project_user` | Yes |
-| `POSTGRES_PASSWORD` | Database password | `davanj123` | Yes |
-| `POSTGRES_DB` | Database name | `careconnect` | Yes |
-| `JWT_SECRET` | Secret key for signing JWT tokens | `your-secret-key-change-in-production` | Yes |
-| `GOOGLE_MAPS_API_KEY` | Google Maps Geocoding API key | `AIzaSy...` | Optional* |
-| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID | `123456789-abc.apps.googleusercontent.com` | Optional** |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret | `GOCSPX-...` | Optional** |
-| `GOOGLE_CALLBACK_URL` | OAuth callback URL | `http://localhost:4000/auth/google/callback` | Optional** |
+| Variable               | Description                       | Default/Example                                     | Required     |
+| ---------------------- | --------------------------------- | --------------------------------------------------- | ------------ |
+| `PORT`                 | Server port                       | `4000`                                              | Yes          |
+| `NODE_ENV`             | Environment mode                  | `development`                                       | Yes          |
+| `FRONTEND_URL`         | Frontend URL for CORS             | `http://localhost:3000`                             | Yes          |
+| `DATABASE_URL`         | PostgreSQL connection string      | `postgresql://user:pass@localhost:5433/careconnect` | Yes          |
+| `POSTGRES_USER`        | Database username                 | `project_user`                                      | Yes          |
+| `POSTGRES_PASSWORD`    | Database password                 | `davanj123`                                         | Yes          |
+| `POSTGRES_DB`          | Database name                     | `careconnect`                                       | Yes          |
+| `JWT_SECRET`           | Secret key for signing JWT tokens | `your-secret-key-change-in-production`              | Yes          |
+| `GOOGLE_MAPS_API_KEY`  | Google Maps Geocoding API key     | `AIzaSy...`                                         | Optional\*   |
+| `GOOGLE_CLIENT_ID`     | Google OAuth 2.0 Client ID        | `123456789-abc.apps.googleusercontent.com`          | Optional\*\* |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret    | `GOCSPX-...`                                        | Optional\*\* |
+| `GOOGLE_CALLBACK_URL`  | OAuth callback URL                | `http://localhost:4000/auth/google/callback`        | Optional\*\* |
 
 **Notes:**
-- *Required for geocoding features to work
-- **Required only if using Google OAuth authentication
+
+- \*Required for geocoding features to work
+- \*\*Required only if using Google OAuth authentication
 
 ## Frontend Environment Variables
 
@@ -39,10 +40,12 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key_here
 ## Google Maps Setup
 
 Both frontend and backend use Google Maps services.
+
 - **Backend**: Uses Geocoding API (server-side)
 - **Frontend**: Likely uses Maps JavaScript API and Places API
 
 Ensure your API key has the following APIs enabled:
+
 1. Geocoding API
 2. Maps JavaScript API
 3. Places API (New)
@@ -67,6 +70,7 @@ To enable Google OAuth authentication:
 ### 2. Configure Environment Variables
 
 Add to your `.env` file:
+
 ```bash
 GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-your-client-secret-here

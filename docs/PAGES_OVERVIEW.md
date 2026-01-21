@@ -7,9 +7,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Public Pages
 
 ### 1. **Home Page** (`/`)
+
 **Route:** `/`  
 **Purpose:** Landing page for the application  
 **Features:**
+
 - Hero section introducing the platform
 - "Trusted By" section showcasing credibility
 - Featured services overview
@@ -20,9 +22,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Authentication Pages
 
 ### 2. **Login Page** (`/auth/login`)
+
 **Route:** `/auth/login`  
 **Purpose:** User authentication  
 **Features:**
+
 - Email and password login form
 - Google OAuth integration
 - "Forgot password" link
@@ -30,9 +34,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Role-based redirection after login (parents → browse, nannies → dashboard)
 
 ### 3. **Signup Page** (`/auth/signup`)
+
 **Route:** `/auth/signup`  
 **Purpose:** New user registration  
 **Features:**
+
 - Role selection (Family/Parent or Caregiver/Nanny)
 - User information form (first name, last name, email, password)
 - Terms of service agreement checkbox
@@ -40,9 +46,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Redirect to login after successful registration
 
 ### 4. **Auth Callback Page** (`/auth/callback`)
+
 **Route:** `/auth/callback`  
 **Purpose:** OAuth callback handler  
 **Features:**
+
 - Processes OAuth tokens from Google authentication
 - Handles authentication errors
 - Redirects to appropriate page based on user role
@@ -53,9 +61,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Parent/Family Pages
 
 ### 5. **Browse Page** (`/browse`)
+
 **Route:** `/browse`  
 **Purpose:** Main landing page for parents after login  
 **Features:**
+
 - Personalized welcome message
 - Featured caregivers section
 - Nearby caregivers based on location
@@ -63,9 +73,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Profile cards with caregiver details
 
 ### 6. **Search Page** (`/search`)
+
 **Route:** `/search`  
 **Purpose:** Advanced caregiver search and filtering  
 **Features:**
+
 - Search bar for name, location, or skills
 - Filter sidebar (desktop) and modal (mobile)
 - Grid view of caregiver profiles
@@ -74,9 +86,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Option to load demo data if no results found
 
 ### 7. **Caregiver Profile Page** (`/caregiver/[id]`)
+
 **Route:** `/caregiver/[id]` (dynamic)  
 **Purpose:** Detailed view of individual caregiver  
 **Features:**
+
 - Profile header with photo and basic info
 - Hourly rate display
 - Stats: rating, experience, certifications
@@ -91,9 +105,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Dashboard Pages (Shared)
 
 ### 8. **Dashboard Overview** (`/dashboard`)
+
 **Route:** `/dashboard`  
 **Purpose:** Main dashboard for logged-in users  
 **Features:**
+
 - Personalized welcome message
 - Statistics cards (bookings, messages, hours, ratings)
 - Upcoming bookings list
@@ -101,9 +117,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Role-specific content
 
 ### 9. **Profile Page** (`/dashboard/profile`)
+
 **Route:** `/dashboard/profile`  
 **Purpose:** View own profile  
 **Features:**
+
 - Profile image display
 - Personal information
 - Role badge
@@ -113,9 +131,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Edit profile button
 
 ### 10. **Settings Page** (`/dashboard/settings`)
+
 **Route:** `/dashboard/settings`  
 **Purpose:** Edit user profile and account settings  
 **Features:**
+
 - Personal information form (name, phone, address, profile image)
 - For nannies: additional fields (hourly rate, experience, skills, bio)
 - Save/cancel actions
@@ -123,9 +143,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Form validation
 
 ### 11. **Messages Page** (`/dashboard/messages`)
+
 **Route:** `/dashboard/messages`  
 **Purpose:** Real-time chat with other users  
 **Features:**
+
 - Conversation list sidebar
 - Active chat window
 - Real-time messaging via WebSocket
@@ -140,9 +162,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Booking Management Pages
 
 ### 12. **Bookings List** (`/dashboard/bookings`)
+
 **Route:** `/dashboard/bookings`  
 **Purpose:** View all bookings  
 **Features:**
+
 - List of all bookings (upcoming and past)
 - Booking cards with date, time, and status
 - Status badges (confirmed, in progress, completed, cancelled)
@@ -152,9 +176,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Empty state with call-to-action
 
 ### 13. **Booking Details** (`/dashboard/bookings/[id]`)
+
 **Route:** `/dashboard/bookings/[id]` (dynamic)  
 **Purpose:** Detailed view of a single booking  
 **Features:**
+
 - Booking information (date, time, location, description)
 - Status badge
 - Other party information (parent or nanny)
@@ -168,9 +194,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Service Request Pages (Parents Only)
 
 ### 14. **Requests List** (`/dashboard/requests`)
+
 **Route:** `/dashboard/requests`  
 **Purpose:** View all service requests  
 **Features:**
+
 - Grid of service request cards
 - Status badges with color coding
 - Request details preview (date, time, location, children)
@@ -179,9 +207,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Click to view details
 
 ### 15. **Request Details** (`/dashboard/requests/[id]`)
+
 **Route:** `/dashboard/requests/[id]` (dynamic)  
 **Purpose:** Detailed view of a service request  
 **Features:**
+
 - Request status with icon
 - Service information (date, time, duration, children, location)
 - Special requirements display
@@ -191,9 +221,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Message nanny option (if accepted/in progress)
 
 ### 16. **Create Request** (`/dashboard/requests/create`)
+
 **Route:** `/dashboard/requests/create`  
 **Purpose:** Create new service request  
 **Features:**
+
 - Multi-section form:
   - Date & Time selection
   - Duration dropdown
@@ -210,18 +242,22 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Admin Pages
 
 ### 17. **Admin Dashboard** (`/admin`)
+
 **Route:** `/admin`  
 **Purpose:** Admin overview and statistics  
 **Features:**
+
 - Statistics cards (total users, total bookings, active bookings)
 - Quick action buttons
 - Access control (admin role only)
 - Navigation to user and booking management
 
 ### 18. **User Management** (`/admin/users`)
+
 **Route:** `/admin/users`  
 **Purpose:** Manage all users  
 **Features:**
+
 - User table with columns: name, email, role, verified status, join date
 - Role badges
 - Verification status icons
@@ -230,9 +266,11 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Back to dashboard navigation
 
 ### 19. **Booking Management** (`/admin/bookings`)
+
 **Route:** `/admin/bookings`  
 **Purpose:** Manage all bookings  
 **Features:**
+
 - Booking table with columns: job title, parent, nanny, start time, status
 - Status badges
 - "View Details" button for each booking
@@ -258,6 +296,7 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## User Flow Summary
 
 ### Parent/Family User Flow
+
 1. Home → Signup/Login → Browse
 2. Browse → Search → Caregiver Profile → Request Booking
 3. Dashboard → Requests → Create Request → Request Details
@@ -265,11 +304,13 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 5. Dashboard → Profile/Settings
 
 ### Nanny/Caregiver User Flow
+
 1. Home → Signup/Login → Dashboard
 2. Dashboard → Bookings → Booking Details → Messages
 3. Dashboard → Profile/Settings (including public profile view)
 
 ### Admin User Flow
+
 1. Login → Admin Dashboard
 2. Admin Dashboard → User Management / Booking Management
 
@@ -278,6 +319,7 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 ## Design Considerations
 
 ### Common UI Elements Across Pages
+
 - **Navigation:** Header with logo, navigation links, user menu
 - **Cards:** Consistent card design for profiles, bookings, requests
 - **Buttons:** Primary, secondary, outline, ghost variants
@@ -288,6 +330,7 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - **Empty States:** Helpful messages with call-to-action buttons
 
 ### Responsive Design
+
 - Mobile-first approach
 - Collapsible sidebars on mobile
 - Filter modals instead of sidebars on mobile
@@ -295,6 +338,7 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 - Touch-friendly buttons and interactions
 
 ### Color Coding
+
 - **Primary:** Brand color for main actions
 - **Success/Green:** Confirmed, completed, verified
 - **Warning/Yellow:** Pending states
@@ -317,5 +361,5 @@ This document provides a comprehensive list of all pages in the CareConnect appl
 
 ---
 
-*Document generated: 2025-11-22*  
-*For: CareConnect Design Team*
+_Document generated: 2025-11-22_  
+_For: CareConnect Design Team_

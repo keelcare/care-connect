@@ -75,13 +75,17 @@ npm run test:e2e
 ## Troubleshooting
 
 ### Database Connection Issues
+
 If you can't connect to the database, ensure the Docker container is running:
+
 ```bash
 docker ps
 ```
+
 You should see `care-connect-backend-db-1`.
 
 ### Port Conflicts
+
 - **Backend Port**: Default is 4000. If in use, update `PORT` in `.env`.
 - **Database Port**: Default is 5433. If in use, update `docker-compose.yml` and `.env`.
 - **Frontend Port**: Next.js uses 3000 by default.
