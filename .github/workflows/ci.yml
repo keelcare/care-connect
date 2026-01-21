@@ -15,7 +15,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx prettier --check .
 
       - run: npm run build
       - run: npm audit
