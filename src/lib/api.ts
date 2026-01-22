@@ -431,11 +431,9 @@ export const api = {
     chat: async (message: string) => {
       const response = await fetch(`${API_URL}/ai/chat`, {
         method: 'POST',
+        credentials: 'include', // Send HttpOnly cookies
         headers: {
           'Content-Type': 'application/json',
-          ...(typeof window !== 'undefined' && localStorage.getItem('token')
-            ? { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            : {}),
         },
         body: JSON.stringify({ message }),
       });
@@ -451,14 +449,11 @@ export const api = {
   },
   verification: {
     upload: (formData: FormData) => {
-      const token =
-        typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      // Use fetch with credentials to send HttpOnly cookies
       return fetch(`${API_URL}/verification/upload`, {
         method: 'POST',
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-          // Content-Type is intentionally omitted to let the browser set it with boundary
-        },
+        credentials: 'include', // CRITICAL: Send cookies with request
+        // Content-Type is intentionally omitted to let the browser set it with boundary
         body: formData,
       }).then(async (res) => {
         if (!res.ok) {

@@ -155,7 +155,7 @@ export default function DashboardPage() {
   const handleMessageBooking = async (booking: Booking) => {
     try {
       const chat = await api.chat.create({ bookingId: booking.id });
-      router.push(`/messages?chatId=${chat.id}`);
+      router.push(`/dashboard/messages?chatId=${chat.id}`);
     } catch (err) {
       console.error('Failed to start chat:', err);
     }
@@ -382,11 +382,10 @@ export default function DashboardPage() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span
-                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                booking.status === 'CONFIRMED'
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'CONFIRMED'
                                   ? 'bg-emerald-100 text-emerald-700'
                                   : 'bg-stone-100 text-stone-700'
-                              }`}
+                                }`}
                             >
                               {booking.status}
                             </span>

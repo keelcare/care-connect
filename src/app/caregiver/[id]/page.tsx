@@ -43,9 +43,9 @@ export default function CaregiverProfilePage() {
   const avgRating =
     reviews.length > 0
       ? (
-          reviews.reduce((acc, review) => acc + review.rating, 0) /
-          reviews.length
-        ).toFixed(1)
+        reviews.reduce((acc, review) => acc + review.rating, 0) /
+        reviews.length
+      ).toFixed(1)
       : 'New';
 
   useEffect(() => {
@@ -90,12 +90,12 @@ export default function CaregiverProfilePage() {
         participantId: caregiver.id,
       });
 
-      // Redirect to messages with this chat active
-      router.push(`/dashboard/messages?chatId=${chat.id}`);
+      // Redirect to messages with this chat active (PARENT route)
+      router.push(`/messages?chatId=${chat.id}`);
     } catch (err) {
       console.error('Failed to start chat:', err);
-      // Fallback to messages page if creation fails
-      router.push('/dashboard/messages');
+      // Fallback to messages page if creation fails (PARENT route)
+      router.push('/messages');
     } finally {
       setMessageLoading(false);
     }
@@ -261,8 +261,8 @@ export default function CaregiverProfilePage() {
                         {skill}
                       </span>
                     )) || (
-                      <span className="text-stone-500">No skills listed</span>
-                    )}
+                        <span className="text-stone-500">No skills listed</span>
+                      )}
                   </div>
                 </section>
               </div>
