@@ -90,15 +90,23 @@ export default function ParentBookingsPage() {
         // Fetch nanny details for bookings that don't have profile info
         const enrichedBookings = await Promise.all(
           bookingsData.map(async (booking) => {
+            const hasProfile = (b: Booking) => {
+              const p = b.nanny?.profiles;
+              if (!p) return false;
+              if (Array.isArray(p)) return p[0]?.first_name;
+              return (p as any).first_name || (p as any).full_name;
+            };
+
             // If nanny profile already exists, use it
-            if (booking.nanny?.profiles?.first_name) {
+            if (hasProfile(booking)) {
               return booking;
             }
 
             // Otherwise fetch the nanny details
-            if (booking.nanny_id) {
+            const nId = booking.nanny_id || (booking as any).nannyId;
+            if (nId) {
               try {
-                const nannyDetails = await api.users.get(booking.nanny_id);
+                const nannyDetails = await api.users.get(nId);
                 return {
                   ...booking,
                   nanny: nannyDetails,
@@ -118,11 +126,20 @@ export default function ParentBookingsPage() {
         // Enrich requests with nanny details if assigned
         const enrichedRequests = await Promise.all(
           requestsData.map(async (request) => {
-            if (request.nanny_id && !request.nanny) {
+            const hasProfile = (r: ServiceRequest) => {
+              const p = r.nanny?.profiles || (r.nanny as any)?.profile;
+              if (!p) return false;
+              if (Array.isArray(p)) return p[0]?.first_name;
+              return (p as any).first_name || (p as any).full_name;
+            };
+
+            // Fetch nanny details if nanny_id exists and we don't have profile info
+            const nId = request.nanny_id || (request as any).nannyId;
+            if (nId && !hasProfile(request)) {
               try {
-                const nannyDetails = await api.users.get(request.nanny_id);
+                const nannyDetails = await api.users.get(nId);
                 console.log(
-                  `Fetched details for nanny ${request.nanny_id}:`,
+                  `Fetched details for nanny ${nId} of request ${request.id}:`,
                   nannyDetails
                 );
                 return { ...request, nanny: nannyDetails };
@@ -140,8 +157,8 @@ export default function ParentBookingsPage() {
 
         setBookings(enrichedBookings);
         setRequests(enrichedRequests);
-        console.log('Fetched Requests:', enrichedRequests);
-        console.log('Fetched Bookings:', enrichedBookings);
+        console.log('Bookings Page - Loaded Requests:', enrichedRequests);
+        console.log('Bookings Page - Loaded Bookings:', enrichedBookings);
       }
     } catch (err) {
       console.error('Failed to fetch data:', err);
@@ -208,25 +225,35 @@ export default function ParentBookingsPage() {
   const getNannyName = (nanny?: User) => {
     if (!nanny) return 'Nanny';
 
-    let profile = nanny.profiles as any;
+    // Check multiple possible name sources
+    let profile = (nanny.profiles || (nanny as any).profile) as any;
 
-    // Handle if profiles is an array (common in some backend configurations)
     if (Array.isArray(profile)) {
       profile = profile[0];
     }
-    // Handle legacy/alternative field name
-    else if (!profile && (nanny as any).profile) {
-      profile = (nanny as any).profile;
+
+    if (profile) {
+      if (profile.first_name) {
+        return `${profile.first_name} ${profile.last_name || ''}`.trim();
+      }
+      if (profile.full_name) {
+        return profile.full_name;
+      }
     }
 
-    if (profile?.first_name) {
-      return `${profile.first_name} ${profile.last_name || ''}`.trim();
+    // Try directly on nanny object
+    if ((nanny as any).first_name) {
+      return `${(nanny as any).first_name} ${(nanny as any).last_name || ''}`.trim();
     }
-    return nanny.email || 'Nanny';
+    if ((nanny as any).full_name) {
+      return (nanny as any).full_name;
+    }
+
+    return nanny.email?.split('@')[0] || 'Nanny';
   };
 
-  const getOtherPartyName = (booking: Booking) => {
-    return getNannyName(booking.nanny);
+  const getOtherPartyName = (booking: Booking | ServiceRequest) => {
+    return (booking as any).nanny_name || getNannyName(booking.nanny);
   };
 
   const renderActionButtons = (booking: Booking) => {
@@ -504,14 +531,11 @@ export default function ParentBookingsPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">
-                            Care for {request.num_children} Child
-                            {request.num_children !== 1 ? 'ren' : ''}
+                            {getOtherPartyName(request)}
                           </h3>
                           <p className="text-stone-500 text-sm mb-1">
-                            Nanny Assigned:{' '}
-                            <span className="font-bold text-stone-900">
-                              {getNannyName(request.nanny)}
-                            </span>
+                            Care for {request.num_children} Child
+                            {request.num_children !== 1 ? 'ren' : ''}
                           </p>
                           <p className="text-stone-400 text-xs">
                             {new Date(
@@ -547,10 +571,10 @@ export default function ParentBookingsPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-stone-900">
-                            {booking.job?.title || 'Booking'}
+                            {getOtherPartyName(booking)}
                           </h3>
                           <p className="text-stone-500 text-sm mb-1">
-                            with {getOtherPartyName(booking)}
+                            {booking.job?.title || 'Care service'}
                           </p>
                           <p className="text-stone-400 text-xs">
                             {formatTime(booking.start_time)}

@@ -481,4 +481,29 @@ export const api = {
         body: JSON.stringify(body),
       }),
   },
+  payments: {
+    createOrder: (bookingId: string) =>
+      fetchApi<{
+        orderId: string;
+        amount: number;
+        currency: string;
+        key: string;
+      }>('/payments/create-order', {
+        method: 'POST',
+        body: JSON.stringify({ bookingId }),
+      }),
+    verify: (
+      razorpay_order_id: string,
+      razorpay_payment_id: string,
+      razorpay_signature: string
+    ) =>
+      fetchApi<{ success: boolean }>('/payments/verify', {
+        method: 'POST',
+        body: JSON.stringify({
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature,
+        }),
+      }),
+  },
 };
