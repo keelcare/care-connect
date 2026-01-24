@@ -102,7 +102,7 @@ function MessagesContent() {
               m.sender_id === message.sender_id &&
               Math.abs(
                 new Date(message.created_at).getTime() -
-                  new Date(m.created_at).getTime()
+                new Date(m.created_at).getTime()
               ) < 60000
           );
 
@@ -232,25 +232,40 @@ function MessagesContent() {
       const enhancedChats: ChatWithDetails[] = validChats.map((chat) => {
         const otherParty = chat.booking.nanny;
 
-        let otherPartyName = 'Unknown';
-        if (
-          otherParty?.profiles?.first_name &&
-          otherParty?.profiles?.last_name
-        ) {
-          otherPartyName = `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`;
-        } else if (otherParty?.profiles?.first_name) {
-          otherPartyName = otherParty.profiles.first_name;
-        } else if (otherParty?.email) {
-          otherPartyName = otherParty.email.split('@')[0];
+        let otherPartyName = (chat.booking as any).nanny_name || 'Unknown';
+
+        if (otherPartyName === 'Unknown') {
+          if (
+            otherParty?.profiles?.first_name &&
+            otherParty?.profiles?.last_name
+          ) {
+            otherPartyName = `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`;
+          } else if (otherParty?.profiles?.first_name) {
+            otherPartyName = otherParty.profiles.first_name;
+          } else if (otherParty?.email) {
+            otherPartyName = otherParty.email.split('@')[0];
+          }
         }
 
         const otherPartyImage = otherParty?.profiles?.profile_image_url || '';
+
+        // Create descriptive subtitle with booking details
+        let bookingDescription = 'Booking conversation';
+        if (chat.booking) {
+          const bookingDate = new Date(chat.booking.start_time).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          });
+          const serviceType = chat.booking.job?.title || 'Care service';
+          bookingDescription = `${serviceType} • ${bookingDate}`;
+        }
 
         return {
           ...chat,
           booking: chat.booking,
           otherPartyName,
           otherPartyImage,
+          lastMessage: bookingDescription, // Use this field for booking context
         };
       });
 
@@ -345,11 +360,10 @@ function MessagesContent() {
           {chats.map((chat) => (
             <div
               key={chat.id}
-              className={`p-4 flex items-center gap-3 cursor-pointer transition-colors hover:bg-stone-50 ${
-                activeChat?.id === chat.id
-                  ? 'bg-stone-100 border-r-2 border-stone-900'
-                  : ''
-              }`}
+              className={`p-4 flex items-center gap-3 cursor-pointer transition-colors hover:bg-stone-50 ${activeChat?.id === chat.id
+                ? 'bg-stone-100 border-r-2 border-stone-900'
+                : ''
+                }`}
               onClick={() => setActiveChat(chat)}
             >
               <div className="relative flex-shrink-0">
@@ -381,7 +395,7 @@ function MessagesContent() {
                   </span>
                 </div>
                 <p className="text-sm text-neutral-500 truncate">
-                  {chat.booking?.job?.title || 'Booking conversation'}
+                  {chat.lastMessage || 'Booking conversation'}
                 </p>
               </div>
             </div>
@@ -441,11 +455,10 @@ function MessagesContent() {
                         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[70%] px-5 py-3 rounded-2xl ${
-                            isMe
-                              ? 'bg-white border border-neutral-100 text-neutral-800 rounded-tr-none shadow-sm'
-                              : 'bg-white border border-neutral-100 text-neutral-800 rounded-tl-none shadow-sm'
-                          }`}
+                          className={`max-w-[70%] px-5 py-3 rounded-2xl ${isMe
+                            ? 'bg-white border border-neutral-100 text-neutral-800 rounded-tr-none shadow-sm'
+                            : 'bg-white border border-neutral-100 text-neutral-800 rounded-tl-none shadow-sm'
+                            }`}
                         >
                           <p className="text-sm">{msg.content}</p>
                         </div>

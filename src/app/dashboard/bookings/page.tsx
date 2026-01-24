@@ -229,6 +229,9 @@ export default function BookingsPage() {
   };
 
   const getOtherPartyName = (booking: Booking) => {
+    const flatName = (booking as any)[user?.role === 'nanny' ? 'parent_name' : 'nanny_name'];
+    if (flatName) return flatName;
+
     if (user?.role === 'nanny') {
       return booking.parent?.profiles?.first_name &&
         booking.parent?.profiles?.last_name
@@ -506,132 +509,132 @@ export default function BookingsPage() {
               </div>
             )
           ) : // Parent Requests View
-          requests.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-              <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-900">
-                <Plus size={32} />
+            requests.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-900">
+                  <Plus size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">
+                  No Requests Yet
+                </h3>
+                <p className="text-neutral-500 mb-6 max-w-md mx-auto">
+                  You haven't created any service requests yet.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-2">
-                No Requests Yet
-              </h3>
-              <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                You haven't created any service requests yet.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {requests.map((request) => (
-                <Link
-                  href={`/dashboard/requests/${request.id}`}
-                  key={request.id}
-                  className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden"
-                >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}
-                      >
-                        {request.status.replace('_', ' ')}
-                      </span>
-                      <span className="text-xs text-neutral-400 font-medium">
-                        {new Date(request.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg font-bold text-neutral-900 mb-4 group-hover:text-primary transition-colors">
-                      Care for {request.num_children} Child
-                      {request.num_children !== 1 ? 'ren' : ''}
-                    </h3>
-
-                    <div className="space-y-3 text-sm text-neutral-600">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                          <Calendar size={16} />
-                        </div>
-                        <span>
-                          {new Date(request.date).toLocaleDateString()}
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {requests.map((request) => (
+                  <Link
+                    href={`/dashboard/requests/${request.id}`}
+                    key={request.id}
+                    className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}
+                        >
+                          {request.status.replace('_', ' ')}
+                        </span>
+                        <span className="text-xs text-neutral-400 font-medium">
+                          {new Date(request.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                          <Clock size={16} />
+
+                      <h3 className="text-lg font-bold text-neutral-900 mb-4 group-hover:text-primary transition-colors">
+                        Care for {request.num_children} Child
+                        {request.num_children !== 1 ? 'ren' : ''}
+                      </h3>
+
+                      <div className="space-y-3 text-sm text-neutral-600">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                            <Calendar size={16} />
+                          </div>
+                          <span>
+                            {new Date(request.date).toLocaleDateString()}
+                          </span>
                         </div>
-                        <span>
-                          {request.start_time} ({request.duration_hours} hrs)
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                          <MapPin size={16} />
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                            <Clock size={16} />
+                          </div>
+                          <span>
+                            {request.start_time} ({request.duration_hours} hrs)
+                          </span>
                         </div>
-                        <span className="truncate">
-                          {request.location?.address || 'No location specified'}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
+                            <MapPin size={16} />
+                          </div>
+                          <span className="truncate">
+                            {request.location?.address || 'No location specified'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+                  </Link>
+                ))}
+              </div>
+            )}
         </div>
       ) : // Bookings List (Upcoming, Completed, Cancelled)
-      filteredBookings.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-          <p className="text-neutral-500 mb-6">
-            No {activeTab} bookings found.
-          </p>
-          <Button
-            onClick={() =>
+        filteredBookings.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
+            <p className="text-neutral-500 mb-6">
+              No {activeTab} bookings found.
+            </p>
+            <Button
+              onClick={() =>
               (window.location.href =
                 user?.role === 'nanny' ? '/dashboard' : '/search')
-            }
-            className="rounded-xl"
-          >
-            {user?.role === 'nanny' ? 'View Jobs' : 'Find Care'}
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredBookings.map((booking) => {
-            const { day, month } = formatDate(booking.start_time);
-            return (
-              <div
-                key={booking.id}
-                className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-2xl flex flex-col items-center justify-center text-stone-900">
-                    <span className="text-xs font-bold uppercase">{month}</span>
-                    <span className="text-xl font-bold">{day}</span>
+              }
+              className="rounded-xl"
+            >
+              {user?.role === 'nanny' ? 'View Jobs' : 'Find Care'}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredBookings.map((booking) => {
+              const { day, month } = formatDate(booking.start_time);
+              return (
+                <div
+                  key={booking.id}
+                  className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-2xl flex flex-col items-center justify-center text-stone-900">
+                      <span className="text-xs font-bold uppercase">{month}</span>
+                      <span className="text-xl font-bold">{day}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-neutral-900">
+                        {booking.job?.title || 'Booking'}
+                      </h3>
+                      <p className="text-neutral-500 text-sm mb-1">
+                        with {getOtherPartyName(booking)}
+                      </p>
+                      <p className="text-neutral-400 text-xs">
+                        {formatTime(booking.start_time)}
+                        {booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-neutral-900">
-                      {booking.job?.title || 'Booking'}
-                    </h3>
-                    <p className="text-neutral-500 text-sm mb-1">
-                      with {getOtherPartyName(booking)}
-                    </p>
-                    <p className="text-neutral-400 text-xs">
-                      {formatTime(booking.start_time)}
-                      {booking.end_time && ` - ${formatTime(booking.end_time)}`}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-neutral-100 pt-4 md:pt-0">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}
-                  >
-                    {booking.status.toLowerCase().replace('_', ' ')}
-                  </span>
-                  {renderActionButtons(booking)}
+                  <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-neutral-100 pt-4 md:pt-0">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}
+                    >
+                      {booking.status.toLowerCase().replace('_', ' ')}
+                    </span>
+                    {renderActionButtons(booking)}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
 
       {selectedBookingId && (
         <ReviewModal

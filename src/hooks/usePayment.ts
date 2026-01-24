@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { api } from '@/lib/api';
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -29,20 +30,10 @@ export const usePayment = () => {
     setLoading(true);
     try {
       // 1. Create Order
-      const response = await fetch('/api/payments/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, amount }),
-      });
-
-      const orderData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(orderData.message || 'Failed to create order');
-      }
+      const orderData = await api.payments.createOrder(bookingId);
 
       const options = {
-        key: orderData.keyId,
+        key: orderData.key, // Backend returns 'key', not 'keyId'
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'CareConnect',
@@ -51,22 +42,14 @@ export const usePayment = () => {
         handler: async (response: RazorpayResponse) => {
           // 3. Verify Payment
           try {
-            const verifyResponse = await fetch('/api/payments/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(response),
-            });
+            await api.payments.verify(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature
+            );
 
-            const verifyData = await verifyResponse.json();
-
-            if (verifyResponse.ok) {
-              addToast({ message: 'Payment Successful!', type: 'success' });
-              onSuccess();
-            } else {
-              throw new Error(
-                verifyData.message || 'Payment verification failed'
-              );
-            }
+            addToast({ message: 'Payment Successful!', type: 'success' });
+            onSuccess();
           } catch (verifyError: any) {
             console.error(verifyError);
             addToast({

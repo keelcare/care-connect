@@ -110,7 +110,7 @@ function MessagesContent() {
               m.sender_id === message.sender_id &&
               Math.abs(
                 new Date(message.created_at).getTime() -
-                  new Date(m.created_at).getTime()
+                new Date(m.created_at).getTime()
               ) < 60000
           );
 
@@ -208,8 +208,8 @@ function MessagesContent() {
             user?.role === 'nanny' ? booking.parent_id : booking.nanny_id;
           const targetProfile =
             user?.role === 'nanny'
-              ? booking.parent?.profiles
-              : booking.nanny?.profiles;
+              ? booking.parent?.profiles?.first_name
+              : booking.nanny?.profiles?.first_name;
 
           if (!targetProfile && targetId) {
             try {
@@ -243,8 +243,8 @@ function MessagesContent() {
               user?.role === 'nanny' ? booking.parent_id : booking.nanny_id;
             const targetProfile =
               user?.role === 'nanny'
-                ? booking.parent?.profiles
-                : booking.nanny?.profiles;
+                ? booking.parent?.profiles?.first_name
+                : booking.nanny?.profiles?.first_name;
 
             if (!targetProfile && targetId) {
               try {
@@ -284,19 +284,33 @@ function MessagesContent() {
           user?.role === 'nanny' ? chat.booking.parent : chat.booking.nanny;
 
         // Try multiple ways to get the name
-        let otherPartyName = 'Unknown';
-        if (
-          otherParty?.profiles?.first_name &&
-          otherParty?.profiles?.last_name
-        ) {
-          otherPartyName = `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`;
-        } else if (otherParty?.profiles?.first_name) {
-          otherPartyName = otherParty.profiles.first_name;
-        } else if (otherParty?.email) {
-          otherPartyName = otherParty.email.split('@')[0];
+        let otherPartyName = (chat.booking as any)[user?.role === 'nanny' ? 'parent_name' : 'nanny_name'] || 'Unknown';
+
+        if (otherPartyName === 'Unknown') {
+          if (
+            otherParty?.profiles?.first_name &&
+            otherParty?.profiles?.last_name
+          ) {
+            otherPartyName = `${otherParty.profiles.first_name} ${otherParty.profiles.last_name}`;
+          } else if (otherParty?.profiles?.first_name) {
+            otherPartyName = otherParty.profiles.first_name;
+          } else if (otherParty?.email) {
+            otherPartyName = otherParty.email.split('@')[0];
+          }
         }
 
         const otherPartyImage = otherParty?.profiles?.profile_image_url || '';
+
+        // Create descriptive subtitle with booking details
+        let bookingDescription = 'Booking conversation';
+        if (chat.booking) {
+          const bookingDate = new Date(chat.booking.start_time).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          });
+          const serviceType = chat.booking.job?.title || 'Care service';
+          bookingDescription = `${serviceType} • ${bookingDate}`;
+        }
 
         return {
           ...chat,
@@ -304,6 +318,7 @@ function MessagesContent() {
           otherParty: otherParty || undefined,
           otherPartyName,
           otherPartyImage,
+          lastMessage: bookingDescription, // Use this for subtitle context
         };
       });
 
