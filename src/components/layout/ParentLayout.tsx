@@ -40,7 +40,6 @@ export default function ParentLayout({
 
   return (
     <>
-      <Header />
       <div className="min-h-screen bg-stone-50">
         <ParentSidebar
           isCollapsed={isSidebarCollapsed}
