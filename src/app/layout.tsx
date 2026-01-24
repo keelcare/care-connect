@@ -16,10 +16,13 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
   // Don't show Header/Footer on auth pages (they have their own layout)
   // Don't show Header/Footer on dashboard pages (they have their own layout)
   // Don't show Header/Footer on parent pages (ParentLayout includes its own Footer)
-  const hideHeaderFooter =
+  const hideHeader =
     pathname?.startsWith('/auth') ||
     pathname?.startsWith('/dashboard') ||
-    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/admin');
+
+  const hideFooter =
+    hideHeader ||
     pathname?.startsWith('/browse') ||
     pathname?.startsWith('/search') ||
     pathname?.startsWith('/book-service') ||
@@ -37,10 +40,10 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
-            {!hideHeaderFooter && <Header />}
+            {!hideHeader && <Header />}
             <main
               style={{
-                minHeight: hideHeaderFooter
+                minHeight: hideHeader
                   ? '100vh'
                   : 'calc(100vh - 72px - 400px)',
               }}
@@ -48,7 +51,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
               {children}
             </main>
             {/* <Chatbot /> */}
-            {!hideHeaderFooter && <Footer />}
+            {!hideFooter && <Footer />}
           </SocketProvider>
         </AuthProvider>
       </ToastProvider>
