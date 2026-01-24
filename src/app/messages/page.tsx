@@ -159,7 +159,10 @@ function MessagesContent() {
       // Only fetch parent bookings
       if (user?.role !== 'parent') return;
 
-      const bookings = await api.bookings.getParentBookings();
+      const allBookings = await api.bookings.getParentBookings();
+      const bookings = allBookings.filter(
+        (b) => b.status !== 'requested' && b.status !== 'REQUESTED'
+      );
 
       if (bookings.length === 0) {
         setChats([]);

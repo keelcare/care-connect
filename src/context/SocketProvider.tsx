@@ -46,6 +46,9 @@ interface SocketContextType {
   offGeofenceAlert: (callback: (data: GeofenceAlertData) => void) => void;
   subscribeToGeofence: (bookingId: string) => void;
   unsubscribeFromGeofence: (bookingId: string) => void;
+  // General verification/system notifications
+  onNotification: (callback: (data: any) => void) => void;
+  offNotification: (callback: (data: any) => void) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -254,6 +257,16 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         offGeofenceAlert,
         subscribeToGeofence,
         unsubscribeFromGeofence,
+        onNotification: (callback: (data: any) => void) => {
+          if (socket) {
+            socket.on('notification', callback);
+          }
+        },
+        offNotification: (callback: (data: any) => void) => {
+          if (socket) {
+            socket.off('notification', callback);
+          }
+        },
       }}
     >
       {children}

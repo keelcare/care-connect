@@ -178,10 +178,14 @@ function MessagesContent() {
       console.log('Fetching chats for user:', user?.id, 'Role:', user?.role);
 
       // Get all bookings for nanny
-      const bookings =
+      const allBookings =
         user?.role === 'nanny'
           ? await api.bookings.getNannyBookings()
           : await api.bookings.getParentBookings();
+
+      const bookings = allBookings.filter(
+        (b) => b.status !== 'requested' && b.status !== 'REQUESTED'
+      );
 
       console.log('Bookings fetched:', bookings.length, bookings);
 

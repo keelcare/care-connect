@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePayment } from '@/hooks/usePayment';
+import { useSocket } from '@/context/SocketProvider';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 
@@ -33,6 +34,31 @@ export default function ParentBookingsPage() {
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
     null
   );
+
+  // Socket Integration
+  const { onNotification, offNotification } = useSocket();
+
+  useEffect(() => {
+    const handleNotification = (data: any) => {
+      console.log('Bookings Page - Received Notification:', data);
+
+      // Refresh data on specific notifications
+      if (
+        data.title === 'Nanny Matched!' ||
+        data.title === 'Nanny Cancelled - Re-matching' ||
+        data.title === 'No Matches Found'
+      ) {
+        console.log('Refreshing bookings due to notification...');
+        fetchData();
+      }
+    };
+
+    onNotification(handleNotification);
+
+    return () => {
+      offNotification(handleNotification);
+    };
+  }, [onNotification, offNotification]);
 
   // Load paid status from local storage
   useEffect(() => {
@@ -87,73 +113,55 @@ export default function ParentBookingsPage() {
           api.requests.getParentRequests(),
         ]);
 
-        // Fetch nanny details for bookings that don't have profile info
-        const enrichedBookings = await Promise.all(
-          bookingsData.map(async (booking) => {
-            const hasProfile = (b: Booking) => {
-              const p = b.nanny?.profiles;
-              if (!p) return false;
-              if (Array.isArray(p)) return p[0]?.first_name;
-              return (p as any).first_name || (p as any).full_name;
-            };
 
-            // If nanny profile already exists, use it
-            if (hasProfile(booking)) {
-              return booking;
-            }
 
-            // Otherwise fetch the nanny details
-            const nId = booking.nanny_id || (booking as any).nannyId;
-            if (nId) {
-              try {
-                const nannyDetails = await api.users.get(nId);
-                return {
-                  ...booking,
-                  nanny: nannyDetails,
-                };
-              } catch (err) {
-                console.error(
-                  `Failed to fetch nanny details for booking ${booking.id}:`,
-                  err
-                );
-                return booking;
-              }
-            }
-            return booking;
-          })
-        );
+        // Deduplicate Nanny IDs for both Bookings and Requests
+        const nannyIdsToFetch = new Set<string>();
 
-        // Enrich requests with nanny details if assigned
-        const enrichedRequests = await Promise.all(
-          requestsData.map(async (request) => {
-            const hasProfile = (r: ServiceRequest) => {
-              const p = r.nanny?.profiles || (r.nanny as any)?.profile;
-              if (!p) return false;
-              if (Array.isArray(p)) return p[0]?.first_name;
-              return (p as any).first_name || (p as any).full_name;
-            };
+        bookingsData.forEach((b) => {
+          const hasProfile = (b.nanny?.profiles as any)?.first_name || (b.nanny as any)?.profile;
+          const nId = b.nanny_id || (b as any).nannyId;
+          if (nId && !hasProfile) {
+            nannyIdsToFetch.add(nId);
+          }
+        });
 
-            // Fetch nanny details if nanny_id exists and we don't have profile info
-            const nId = request.nanny_id || (request as any).nannyId;
-            if (nId && !hasProfile(request)) {
-              try {
-                const nannyDetails = await api.users.get(nId);
-                console.log(
-                  `Fetched details for nanny ${nId} of request ${request.id}:`,
-                  nannyDetails
-                );
-                return { ...request, nanny: nannyDetails };
-              } catch (err) {
-                console.error(
-                  `Failed to fetch nanny details for request ${request.id}:`,
-                  err
-                );
-                return request;
-              }
-            }
-            return request;
-          })
-        );
+        requestsData.forEach((r) => {
+          const hasProfile = (r.nanny?.profiles as any)?.first_name || (r.nanny as any)?.profile;
+          const nId = r.nanny_id || (r as any).nannyId;
+          if (nId && !hasProfile) {
+            nannyIdsToFetch.add(nId);
+          }
+        });
+
+        const nannyMap = new Map<string, any>();
+        const uniqueNannyIds = Array.from(nannyIdsToFetch);
+
+        for (const nId of uniqueNannyIds) {
+          try {
+            const nannyDetails = await api.users.get(nId);
+            nannyMap.set(nId, nannyDetails);
+            await new Promise(resolve => setTimeout(resolve, 50)); // Rate limit niceness
+          } catch (err) {
+            console.error(`Failed to fetch nanny ${nId}:`, err);
+          }
+        }
+
+        const enrichedBookings = bookingsData.map(b => {
+          const nId = b.nanny_id || (b as any).nannyId;
+          if (nId && nannyMap.has(nId)) {
+            return { ...b, nanny: nannyMap.get(nId) };
+          }
+          return b;
+        });
+
+        const enrichedRequests = requestsData.map(r => {
+          const nId = r.nanny_id || (r as any).nannyId;
+          if (nId && nannyMap.has(nId)) {
+            return { ...r, nanny: nannyMap.get(nId) };
+          }
+          return r;
+        });
 
         setBookings(enrichedBookings);
         setRequests(enrichedRequests);
@@ -201,6 +209,9 @@ export default function ParentBookingsPage() {
         return 'bg-red-100 text-red-700';
       case 'PENDING':
         return 'bg-amber-50 text-amber-600';
+      case 'REQUESTED':
+      case 'requested':
+        return 'bg-blue-50 text-blue-600';
       default:
         return 'bg-stone-100 text-stone-700';
     }
@@ -253,6 +264,9 @@ export default function ParentBookingsPage() {
   };
 
   const getOtherPartyName = (booking: Booking | ServiceRequest) => {
+    if (booking.status === 'requested' || booking.status === 'REQUESTED') {
+      return 'Pending Assignment';
+    }
     return (booking as any).nanny_name || getNannyName(booking.nanny);
   };
 
@@ -263,7 +277,12 @@ export default function ParentBookingsPage() {
 
     const buttons = [];
 
-    if (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') {
+    if (
+      booking.status === 'CONFIRMED' ||
+      booking.status === 'IN_PROGRESS' ||
+      booking.status === 'requested' ||
+      booking.status === 'REQUESTED'
+    ) {
       buttons.push(
         <Button
           key="cancel"
@@ -324,7 +343,9 @@ export default function ParentBookingsPage() {
 
   const filteredBookings = bookings.filter((booking) => {
     if (activeTab === 'upcoming')
-      return ['CONFIRMED', 'IN_PROGRESS', 'PENDING'].includes(booking.status);
+      return ['CONFIRMED', 'IN_PROGRESS', 'PENDING', 'requested', 'REQUESTED'].includes(
+        booking.status
+      );
     if (activeTab === 'completed') return booking.status === 'COMPLETED';
     if (activeTab === 'cancelled') return booking.status === 'CANCELLED';
     return true;

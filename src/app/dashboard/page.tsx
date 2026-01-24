@@ -71,28 +71,39 @@ export default function DashboardPage() {
       ]);
 
       // Enrich bookings with parent details if not already populated
-      const enrichedBookings = await Promise.all(
-        bookingsData.map(async (booking) => {
-          // If parent profile info is already populated, return as-is
-          if (booking.parent?.profiles?.first_name) {
-            return booking;
-          }
-          // If we have a parent_id, fetch the parent details
-          if (booking.parent_id) {
-            try {
-              const parentDetails = await api.users.get(booking.parent_id);
-              return { ...booking, parent: parentDetails };
-            } catch (err) {
-              console.error(
-                `Failed to fetch parent details for booking ${booking.id}:`,
-                err
-              );
-              return booking;
-            }
-          }
-          return booking;
-        })
-      );
+      // Deduplicate parent IDs to fetch
+      const parentIdsToFetch = new Set<string>();
+      bookingsData.forEach((booking) => {
+        if (
+          booking.parent_id &&
+          !booking.parent?.profiles?.first_name &&
+          !booking.parent?.profiles?.full_name
+        ) {
+          parentIdsToFetch.add(booking.parent_id);
+        }
+      });
+
+      // Fetch parents sequentially/in batches to avoid rate limits
+      const parentMap = new Map<string, any>();
+      const parentIds = Array.from(parentIdsToFetch);
+
+      for (const parentId of parentIds) {
+        try {
+          const parentDetails = await api.users.get(parentId);
+          parentMap.set(parentId, parentDetails);
+          // Small delay between requests to be gentle on rate limiter
+          await new Promise(resolve => setTimeout(resolve, 50));
+        } catch (err) {
+          console.error(`Failed to fetch parent ${parentId}:`, err);
+        }
+      }
+
+      const enrichedBookings = bookingsData.map((booking) => {
+        if (booking.parent_id && parentMap.has(booking.parent_id)) {
+          return { ...booking, parent: parentMap.get(booking.parent_id) };
+        }
+        return booking;
+      });
 
       setBookings(enrichedBookings);
 
@@ -383,8 +394,8 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-2">
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'CONFIRMED'
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-stone-100 text-stone-700'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-stone-100 text-stone-700'
                                 }`}
                             >
                               {booking.status}
