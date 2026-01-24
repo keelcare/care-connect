@@ -16,8 +16,17 @@ import {
   Repeat,
   Heart,
   Star,
+  Copy,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ParentSidebarProps {
   isCollapsed?: boolean;
@@ -101,9 +110,35 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
             <p className="text-sm font-semibold text-stone-900 mb-1">
               Need help choosing?
             </p>
-            <button className="text-xs text-emerald-600 font-medium hover:underline">
-              Chat with an advisor
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-xs text-emerald-600 font-medium hover:underline outline-none">
+                Chat with an advisor
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-56 bg-white shadow-xl border-stone-200">
+                <DropdownMenuLabel>Choose email provider</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => window.open('https://mail.google.com/mail/?view=cm&fs=1&to=carecon.help@gmail.com&su=Need help choosing a caregiver', '_blank')}>
+                  Gmail
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open('https://outlook.office.com/mail/deeplink/compose?to=carecon.help@gmail.com&subject=Need help choosing a caregiver', '_blank')}>
+                  Outlook
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open('https://compose.mail.yahoo.com/?to=carecon.help@gmail.com&subject=Need help choosing a caregiver', '_blank')}>
+                  Yahoo Mail
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => {
+                    navigator.clipboard.writeText('carecon.help@gmail.com');
+                    // You might want to add a toast/alert here to notify user
+                  }}
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Copy email address</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       )}
