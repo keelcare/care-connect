@@ -47,7 +47,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
             >
               {children}
             </main>
-            <Chatbot />
+            {/* <Chatbot /> */}
             {!hideHeaderFooter && <Footer />}
           </SocketProvider>
         </AuthProvider>
