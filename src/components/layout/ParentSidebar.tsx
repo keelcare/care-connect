@@ -101,9 +101,12 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
             <p className="text-sm font-semibold text-stone-900 mb-1">
               Need help choosing?
             </p>
-            <button className="text-xs text-emerald-600 font-medium hover:underline">
+            <a 
+              href="mailto:support@careconnect.com?subject=Need help choosing a caregiver"
+              className="text-xs text-emerald-600 font-medium hover:underline"
+            >
               Chat with an advisor
-            </button>
+            </a>
           </div>
         </div>
       )}
