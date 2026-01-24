@@ -40,8 +40,9 @@ export default function ParentBookingsPage() {
     null
   );
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isBookingCancelModalOpen, setIsBookingCancelModalOpen] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
   const [cancelling, setCancelling] = useState(false);
-  const [confirming, setConfirming] = useState(false);
 
   // Payment Hook
   const { handlePayment, loading: paymentLoading } = usePayment();
@@ -185,19 +186,29 @@ export default function ParentBookingsPage() {
     });
   };
 
-  const handleCancelBooking = async (bookingId: string) => {
-    const reason = prompt('Please provide a reason for cancellation:');
-    if (!reason) return;
+  const handleCancelBooking = (booking: Booking) => {
+    setBookingToCancel(booking);
+    setIsBookingCancelModalOpen(true);
+  };
+
+  const confirmedCancelBooking = async (reason: string) => {
+    if (!bookingToCancel) return;
 
     try {
-      setActionLoading(bookingId);
-      const updated = await api.bookings.cancel(bookingId, { reason });
-      setBookings(bookings.map((b) => (b.id === bookingId ? updated : b)));
+      setActionLoading(bookingToCancel.id);
+      const updated = await api.bookings.cancel(bookingToCancel.id, { reason });
+      setBookings(bookings.map((b) => (b.id === bookingToCancel.id ? updated : b)));
+
+      // If it was a requested booking, it might also affect the requests list
+      // So let's just refresh data to stay safe and consistent
+      await fetchData();
     } catch (err) {
       console.error('Failed to cancel booking:', err);
       alert(err instanceof Error ? err.message : 'Failed to cancel booking');
     } finally {
       setActionLoading(null);
+      setIsBookingCancelModalOpen(false);
+      setBookingToCancel(null);
     }
   };
 
@@ -208,35 +219,12 @@ export default function ParentBookingsPage() {
       await api.requests.cancel(selectedRequestId, reason);
       await fetchData();
       setSelectedRequestId(null);
+      setIsCancelModalOpen(false);
     } catch (err) {
       console.error(err);
       alert('Failed to cancel request');
     } finally {
       setCancelling(false);
-    }
-  };
-
-  const handleConfirmRequest = async (request: ServiceRequest) => {
-    if (!request.nanny_id) return;
-    try {
-      setConfirming(true);
-      const bookingPayload = {
-        nannyId: request.nanny_id,
-        date: request.date,
-        startTime: request.start_time,
-        endTime: calculateEndTime(request.start_time, request.duration_hours),
-        numChildren: request.num_children,
-        jobId: request.id,
-      };
-      await api.bookings.create(bookingPayload);
-      await fetchData();
-      setActiveTab('upcoming');
-      setSelectedRequestId(null);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to confirm booking');
-    } finally {
-      setConfirming(false);
     }
   };
 
@@ -340,6 +328,15 @@ export default function ParentBookingsPage() {
                     <p className="text-stone-900 font-semibold">{request.location?.address || 'No location specified'}</p>
                   </div>
                 </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Duration</label>
+                    <p className="text-stone-900 font-semibold">{request.duration_hours} Hours</p>
+                  </div>
+                </div>
               </div>
 
               {request.special_requirements && (
@@ -374,41 +371,30 @@ export default function ParentBookingsPage() {
             <div className="bg-white rounded-2xl border border-stone-100 shadow-soft p-6 sticky top-24">
               <h2 className="text-md font-bold text-stone-900 mb-4 font-display">Actions</h2>
               <div className="space-y-3">
-                {request.status === 'ASSIGNED' && (
-                  <Button
-                    className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-100"
-                    onClick={() => handleConfirmRequest(request)}
-                    isLoading={confirming}
-                  >
-                    Confirm & Pay
-                  </Button>
-                )}
-
-                {request.status === 'PENDING' && (
+                {/* Single Cancel Button */}
+                {(['PENDING', 'ASSIGNED', 'REQUESTED', 'CONFIRMED'].includes(request.status.toUpperCase())) && (
                   <Button
                     variant="outline"
                     className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 rounded-xl"
-                    onClick={() => setIsCancelModalOpen(true)}
+                    onClick={() => {
+                      const associatedBooking = bookings.find(b => b.job_id === request.id);
+                      if (associatedBooking) {
+                        handleCancelBooking(associatedBooking);
+                      } else {
+                        setSelectedRequestId(request.id);
+                        setIsCancelModalOpen(true);
+                      }
+                    }}
+                    disabled={actionLoading === request.id || cancelling}
                     isLoading={cancelling}
                   >
-                    Cancel Request
+                    Cancel {['CONFIRMED', 'ASSIGNED'].includes(request.status.toUpperCase()) ? 'Booking' : 'Request'}
                   </Button>
                 )}
               </div>
             </div>
           </div>
         </div>
-
-        {isCancelModalOpen && (
-          <CancellationModal
-            isOpen={isCancelModalOpen}
-            onClose={() => setIsCancelModalOpen(false)}
-            onConfirm={handleCancelRequest}
-            type="request"
-            startTime={`${request.date}T${request.start_time}`}
-            title="Cancel Service Request"
-          />
-        )}
       </div>
     );
   };
@@ -446,12 +432,30 @@ export default function ParentBookingsPage() {
     };
   };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formatTime = (timeInput: string) => {
+    if (!timeInput) return '';
+    try {
+      // If full date string
+      if (timeInput.includes('T') || timeInput.includes('-')) {
+        const date = new Date(timeInput);
+        return date.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+      }
+      // If HH:MM format
+      const [hours, minutes] = timeInput.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch (e) {
+      return timeInput;
+    }
   };
 
   const getNannyName = (nanny?: User) => {
@@ -480,8 +484,8 @@ export default function ParentBookingsPage() {
           key="cancel"
           variant="outline"
           size="sm"
-          onClick={() => handleCancelBooking(booking.id)}
-          className="rounded-xl border-stone-200 hover:bg-stone-50 text-stone-700"
+          onClick={() => handleCancelBooking(booking)}
+          className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
         >
           Cancel
         </Button>
@@ -627,6 +631,27 @@ export default function ParentBookingsPage() {
                           <p className="text-stone-400 text-xs">{formatTime(request.start_time)} ({request.duration_hours} hrs)</p>
                         </div>
                       </div>
+
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const associatedBooking = bookings.find(b => b.job_id === request.id);
+                            if (associatedBooking) {
+                              handleCancelBooking(associatedBooking);
+                            } else {
+                              // We need to set selectedRequestId for handleCancelRequest to work
+                              setSelectedRequestId(request.id);
+                              setIsCancelModalOpen(true);
+                            }
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -681,6 +706,33 @@ export default function ParentBookingsPage() {
             bookingId={selectedBookingId}
             onSuccess={() => fetchData()}
           />
+        )}
+
+        {bookingToCancel && (
+          <CancellationModal
+            isOpen={isBookingCancelModalOpen}
+            onClose={() => setIsBookingCancelModalOpen(false)}
+            onConfirm={confirmedCancelBooking}
+            type="booking"
+            startTime={bookingToCancel.start_time}
+            title="Cancel Booking"
+          />
+        )}
+
+        {isCancelModalOpen && selectedRequestId && (
+          (() => {
+            const req = requests.find(r => r.id === selectedRequestId);
+            return req ? (
+              <CancellationModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                onConfirm={handleCancelRequest}
+                type="request"
+                startTime={`${req.date}T${req.start_time}`}
+                title="Cancel Service Request"
+              />
+            ) : null;
+          })()
         )}
       </div>
     </ParentLayout>

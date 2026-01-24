@@ -71,7 +71,6 @@ export default function DashboardPage() {
       ]);
 
       // Enrich bookings with parent details if not already populated
-      // Deduplicate parent IDs to fetch
       const parentIdsToFetch = new Set<string>();
       bookingsData.forEach((booking) => {
         if (
@@ -83,7 +82,6 @@ export default function DashboardPage() {
         }
       });
 
-      // Fetch parents sequentially/in batches to avoid rate limits
       const parentMap = new Map<string, any>();
       const parentIds = Array.from(parentIdsToFetch);
 
@@ -91,7 +89,6 @@ export default function DashboardPage() {
         try {
           const parentDetails = await api.users.get(parentId);
           parentMap.set(parentId, parentDetails);
-          // Small delay between requests to be gentle on rate limiter
           await new Promise(resolve => setTimeout(resolve, 50));
         } catch (err) {
           console.error(`Failed to fetch parent ${parentId}:`, err);
@@ -248,7 +245,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {statsDisplay.map((stat, index) => {
           const Icon = stat.icon;
-          // @ts-ignore - Adding href to stat object dynamically
+          // @ts-ignore
           const href = stat.href;
 
           const CardContent = () => (
