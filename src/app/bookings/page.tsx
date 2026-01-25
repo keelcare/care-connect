@@ -44,8 +44,8 @@ export default function ParentBookingsPage() {
   const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
   const [cancelling, setCancelling] = useState(false);
 
-  // Payment Hook
-  const { handlePayment, loading: paymentLoading } = usePayment();
+  // No longer needed here, moved to BookingActionButtons
+  // const { handlePayment, loading: paymentLoading } = usePayment();
   const [paidBookingIds, setPaidBookingIds] = useState<string[]>([]); // Simulate DB
 
   // Review Modal State
@@ -163,28 +163,7 @@ export default function ParentBookingsPage() {
     }
   }, [user]);
 
-  const handlePayNow = (booking: Booking) => {
-    let duration = 4;
-    if (booking.start_time && booking.end_time) {
-      const start = new Date(booking.start_time).getTime();
-      const end = new Date(booking.end_time).getTime();
-      duration = (end - start) / (1000 * 60 * 60);
-    }
-    const amount = Math.max(duration * 20, 50);
-
-    handlePayment({
-      bookingId: booking.id,
-      amount: amount,
-      onSuccess: () => {
-        const newPaid = [...paidBookingIds, booking.id];
-        setPaidBookingIds(newPaid);
-        localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
-      },
-      onError: (err) => {
-        console.error('Payment failed', err);
-      },
-    });
-  };
+  // handlePayNow moved to BookingActionButtons
 
   const handleCancelBooking = (booking: Booking) => {
     setBookingToCancel(booking);
@@ -475,8 +454,48 @@ export default function ParentBookingsPage() {
     return (booking as any).nanny_name || getNannyName(booking.nanny);
   };
 
-  const renderActionButtons = (booking: Booking) => {
+  const BookingActionButtons = ({
+    booking,
+    actionLoading,
+    paidBookingIds,
+    setPaidBookingIds,
+    handleCancelBooking,
+    handleOpenReview
+  }: {
+    booking: Booking;
+    actionLoading: string | null;
+    paidBookingIds: string[];
+    setPaidBookingIds: (ids: string[]) => void;
+    handleCancelBooking: (booking: Booking) => void;
+    handleOpenReview: (id: string) => void;
+  }) => {
+    const { handlePayment, loading: paymentLoading } = usePayment();
+
+    const handlePayNow = (booking: Booking) => {
+      let duration = 4;
+      if (booking.start_time && booking.end_time) {
+        const start = new Date(booking.start_time).getTime();
+        const end = new Date(booking.end_time).getTime();
+        duration = (end - start) / (1000 * 60 * 60);
+      }
+      const amount = Math.max(duration * 20, 50);
+
+      handlePayment({
+        bookingId: booking.id,
+        amount: amount,
+        onSuccess: () => {
+          const newPaid = [...paidBookingIds, booking.id];
+          setPaidBookingIds(newPaid);
+          localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
+        },
+        onError: (err) => {
+          console.error('Payment failed', err);
+        },
+      });
+    };
+
     if (actionLoading === booking.id) return <Spinner />;
+
     const buttons = [];
     if (['CONFIRMED', 'IN_PROGRESS', 'requested', 'REQUESTED'].includes(booking.status)) {
       buttons.push(
@@ -525,6 +544,7 @@ export default function ParentBookingsPage() {
         </Button>
       );
     }
+
     return buttons.length > 0 ? <div className="flex gap-2 items-center">{buttons}</div> : null;
   };
 
@@ -689,7 +709,14 @@ export default function ParentBookingsPage() {
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
                           {booking.status.toLowerCase().replace('_', ' ')}
                         </span>
-                        {renderActionButtons(booking)}
+                        <BookingActionButtons
+                          booking={booking}
+                          actionLoading={actionLoading}
+                          paidBookingIds={paidBookingIds}
+                          setPaidBookingIds={setPaidBookingIds}
+                          handleCancelBooking={handleCancelBooking}
+                          handleOpenReview={handleOpenReview}
+                        />
                       </div>
                     </div>
                   );
