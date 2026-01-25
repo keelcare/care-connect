@@ -688,7 +688,9 @@ export default function ParentBookingsPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-stone-900">{getOtherPartyName(booking)}</h3>
-                          <p className="text-stone-500 text-sm mb-1">{booking.job?.title || 'Care service'}</p>
+                          <p className="text-stone-500 text-sm mb-1">
+                            Care for {(booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1) !== 1 ? 'ren' : ''}
+                          </p>
                           <p className="text-stone-400 text-xs">{formatTime(booking.start_time)}{booking.end_time && ` - ${formatTime(booking.end_time)}`}</p>
                         </div>
                       </div>

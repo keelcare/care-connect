@@ -610,10 +610,10 @@ export default function BookingsPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-neutral-900">
-                        {booking.job?.title || 'Booking'}
+                        {getOtherPartyName(booking)}
                       </h3>
                       <p className="text-neutral-500 text-sm mb-1">
-                        with {getOtherPartyName(booking)}
+                        Care for {(booking as any).num_children || (booking.job as any)?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || 1) !== 1 ? 'ren' : ''}
                       </p>
                       <p className="text-neutral-400 text-xs">
                         {formatTime(booking.start_time)}
