@@ -47,7 +47,6 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
     { icon: Calendar, label: 'Your Bookings', href: '/bookings' },
     { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
     { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: Star, label: 'Reviews', href: '/parent/reviews' },
   ];
 
   return (
@@ -82,11 +81,10 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${
-                isActive
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${isActive
                   ? 'bg-emerald-600 text-white'
                   : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
-              } ${isCollapsed ? 'justify-center' : ''}`}
+                } ${isCollapsed ? 'justify-center' : ''}`}
               title={isCollapsed ? item.label : undefined}
             >
               <Icon
@@ -128,7 +126,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
                   Yahoo Mail
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => {
                     navigator.clipboard.writeText('carecon.help@gmail.com');
                     // You might want to add a toast/alert here to notify user
