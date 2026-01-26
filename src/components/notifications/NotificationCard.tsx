@@ -8,6 +8,10 @@ import {
   Star,
   Bell,
   ChevronRight,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  AlertTriangle,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/notificationHelpers';
 import { useRouter } from 'next/navigation';
@@ -25,20 +29,25 @@ const iconMap = {
   general: Bell,
 };
 
-const colorMap = {
-  booking: 'from-blue-400/20 to-purple-400/20',
-  message: 'from-green-400/20 to-teal-400/20',
-  review: 'from-yellow-400/20 to-orange-400/20',
-  assignment: 'from-pink-400/20 to-rose-400/20',
-  general: 'from-neutral-400/20 to-neutral-500/20',
+const typeIconMap = {
+  success: CheckCircle,
+  info: Info,
+  warning: AlertTriangle,
+  error: AlertCircle,
 };
 
-const iconColorMap = {
-  booking: 'text-blue-600',
-  message: 'text-green-600',
-  review: 'text-yellow-600',
-  assignment: 'text-pink-600',
-  general: 'text-neutral-600',
+const typeColorMap = {
+  success: 'from-green-400/20 to-emerald-400/20',
+  info: 'from-blue-400/20 to-indigo-400/20',
+  warning: 'from-yellow-400/20 to-orange-400/20',
+  error: 'from-red-400/20 to-rose-400/20',
+};
+
+const typeIconColorMap = {
+  success: 'text-green-600',
+  info: 'text-blue-600',
+  warning: 'text-yellow-600',
+  error: 'text-red-600',
 };
 
 export const NotificationCard: React.FC<NotificationCardProps> = ({
@@ -46,25 +55,35 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   onMarkAsRead,
 }) => {
   const router = useRouter();
-  const Icon = iconMap[notification.category];
-  const gradientClass = colorMap[notification.category];
-  const iconColorClass = iconColorMap[notification.category];
+
+  // Use type-based icon if priority, otherwise fallback to category-based or general bell
+  const Icon = typeIconMap[notification.type as keyof typeof typeIconMap] ||
+    iconMap[notification.category as keyof typeof iconMap] ||
+    Bell;
+
+  const gradientClass = typeColorMap[notification.type as keyof typeof typeColorMap] ||
+    'from-neutral-400/20 to-neutral-500/20';
+
+  const iconColorClass = typeIconColorMap[notification.type as keyof typeof typeIconColorMap] ||
+    'text-neutral-600';
 
   const handleClick = () => {
-    if (onMarkAsRead && !notification.isRead) {
+    if (onMarkAsRead && !notification.is_read) {
       onMarkAsRead(notification.id);
     }
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl);
+    // Handle navigation based on category or related_id
+    if (notification.category === 'message' && notification.related_id) {
+      router.push(`/messages/${notification.related_id}`);
+    } else if (notification.category === 'booking' && notification.related_id) {
+      router.push(`/bookings/${notification.related_id}`);
     }
   };
 
   return (
     <div
       onClick={handleClick}
-      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClass} backdrop-blur-sm border border-white/20 p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer ${
-        !notification.isRead ? 'ring-2 ring-primary/20' : ''
-      }`}
+      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClass} backdrop-blur-sm border border-white/20 p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer ${!notification.is_read ? 'ring-2 ring-primary/20' : ''
+        }`}
     >
       {/* Glassmorphic overlay */}
       <div className="absolute inset-0 bg-white/60 backdrop-blur-md -z-10"></div>
@@ -83,26 +102,19 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
             <h3 className="font-bold text-neutral-900 text-base leading-tight">
               {notification.title}
             </h3>
-            {!notification.isRead && (
+            {!notification.is_read && (
               <span className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-1.5"></span>
             )}
           </div>
 
           <p className="text-sm text-neutral-600 mb-2 line-clamp-2">
-            {notification.description}
+            {notification.message}
           </p>
 
           <div className="flex items-center justify-between">
             <span className="text-xs text-neutral-500 font-medium">
-              {formatRelativeTime(notification.timestamp)}
+              {formatRelativeTime(notification.created_at)}
             </span>
-
-            {notification.actionLabel && (
-              <span className="flex items-center gap-1 text-xs font-bold text-primary group-hover:gap-2 transition-all">
-                {notification.actionLabel}
-                <ChevronRight size={14} />
-              </span>
-            )}
           </div>
         </div>
       </div>

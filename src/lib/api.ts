@@ -388,9 +388,9 @@ export const api = {
   enhancedNotifications: {
     list: () => fetchApi<Notification[]>('/notifications'),
     markAsRead: (id: string) =>
-      fetchApi<Notification>(`/notifications/${id}/read`, { method: 'PUT' }),
+      fetchApi<Notification>(`/notifications/${id}/read`, { method: 'PATCH' }),
     markAllAsRead: () =>
-      fetchApi<void>('/notifications/read-all', { method: 'PUT' }),
+      fetchApi<void>('/notifications/read-all', { method: 'PATCH' }),
   },
   enhancedAdmin: {
     // Disputes

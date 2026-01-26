@@ -40,14 +40,14 @@ export function bookingToNotification(
 
   return {
     id: `booking-${booking.id}`,
-    category: 'booking',
+    user_id: userId,
     title,
-    description,
-    timestamp: booking.updated_at,
-    isRead: false,
-    actionUrl: `/bookings`,
-    actionLabel: 'View Booking',
-    relatedId: booking.id,
+    message: description,
+    type: 'info', // Default type for bookings
+    is_read: false,
+    created_at: booking.updated_at,
+    related_id: booking.id,
+    category: 'booking',
   };
 }
 
@@ -62,14 +62,14 @@ export function messageToNotification(
 
   return {
     id: `message-${message.id}`,
-    category: 'message',
+    user_id: '', // Not easily available here, but unified API will handle it
     title: 'New Message',
-    description: `${senderName}: ${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}`,
-    timestamp: message.created_at,
-    isRead: message.is_read,
-    actionUrl: `/messages`,
-    actionLabel: 'Reply',
-    relatedId: message.id,
+    message: `${senderName}: ${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}`,
+    type: 'info',
+    is_read: message.is_read,
+    created_at: message.created_at,
+    related_id: message.id,
+    category: 'message',
   };
 }
 
@@ -81,14 +81,14 @@ export function reviewToNotification(review: Review): Notification {
 
   return {
     id: `review-${review.id}`,
-    category: 'review',
+    user_id: review.reviewee_id,
     title: 'New Review',
-    description: `${reviewerName} left you a ${review.rating}-star review`,
-    timestamp: review.created_at,
-    isRead: false,
-    actionUrl: `/dashboard`,
-    actionLabel: 'View Review',
-    relatedId: review.id,
+    message: `${reviewerName} left you a ${review.rating}-star review`,
+    type: 'success',
+    is_read: false,
+    created_at: review.created_at,
+    related_id: review.id,
+    category: 'review',
   };
 }
 
@@ -133,7 +133,7 @@ export function groupNotificationsByDate(
   weekAgo.setDate(weekAgo.getDate() - 7);
 
   notifications.forEach((notification) => {
-    const notifDate = new Date(notification.timestamp);
+    const notifDate = new Date(notification.created_at);
     const notifDay = new Date(
       notifDate.getFullYear(),
       notifDate.getMonth(),
