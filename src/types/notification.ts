@@ -7,14 +7,14 @@ export type NotificationCategory =
 
 export interface Notification {
   id: string;
-  category: NotificationCategory;
+  user_id: string;
   title: string;
-  description: string;
-  timestamp: string;
-  isRead: boolean;
-  actionUrl?: string;
-  actionLabel?: string;
-  relatedId?: string; // booking_id, message_id, etc.
+  message: string;
+  type: 'success' | 'info' | 'warning' | 'error';
+  is_read: boolean;
+  created_at: string;
+  related_id?: string;
+  category?: string;
 }
 
 export interface NotificationGroup {

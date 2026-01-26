@@ -33,58 +33,8 @@ export default function NannyNotificationsPage() {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const allNotifications: Notification[] = [];
-
-      // Fetch nanny bookings and enrich with parent details
-      const bookings = await api.bookings.getNannyBookings();
-
-      // Enrich bookings with parent details if not already populated
-      const enrichedBookings = await Promise.all(
-        bookings.map(async (booking) => {
-          // If parent profile already exists, use it
-          if (booking.parent?.profiles?.first_name) {
-            return booking;
-          }
-          // Otherwise fetch the parent details
-          if (booking.parent_id) {
-            try {
-              const parentDetails = await api.users.get(booking.parent_id);
-              return { ...booking, parent: parentDetails };
-            } catch (err) {
-              console.error(
-                `Failed to fetch parent details for booking ${booking.id}:`,
-                err
-              );
-              return booking;
-            }
-          }
-          return booking;
-        })
-      );
-
-      const bookingNotifs = enrichedBookings
-        .filter((b) => b.status !== 'REQUESTED')
-        .map((b) => bookingToNotification(b, user!.id));
-      allNotifications.push(...bookingNotifs);
-
-      // Fetch reviews for the nanny
-      if (user?.id) {
-        try {
-          const reviews = await api.reviews.getByUser(user.id);
-          const reviewNotifs = reviews.map((r) => reviewToNotification(r));
-          allNotifications.push(...reviewNotifs);
-        } catch (error) {
-          console.log('No reviews found or error fetching reviews');
-        }
-      }
-
-      // Sort by timestamp (newest first)
-      allNotifications.sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-
-      setNotifications(allNotifications);
+      const data = await api.enhancedNotifications.list();
+      setNotifications(data);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {
@@ -92,14 +42,24 @@ export default function NannyNotificationsPage() {
     }
   };
 
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await api.enhancedNotifications.markAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+      );
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  const handleMarkAllAsRead = async () => {
+    try {
+      await api.enhancedNotifications.markAllAsRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
+    }
   };
 
   const filteredNotifications =
@@ -109,7 +69,7 @@ export default function NannyNotificationsPage() {
 
   const groupedNotifications = groupNotificationsByDate(filteredNotifications);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const filters: { label: string; value: FilterType }[] = [
     { label: 'All', value: 'all' },
@@ -164,11 +124,10 @@ export default function NannyNotificationsPage() {
           <button
             key={filter.value}
             onClick={() => setActiveFilter(filter.value)}
-            className={`px-4 py-2 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${
-              activeFilter === filter.value
-                ? 'bg-stone-900 text-white shadow-md'
-                : 'bg-white text-stone-600 hover:bg-stone-50 border border-stone-200'
-            }`}
+            className={`px-4 py-2 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
+              ? 'bg-stone-900 text-white shadow-md'
+              : 'bg-white text-stone-600 hover:bg-stone-50 border border-stone-200'
+              }`}
           >
             {filter.label}
           </button>

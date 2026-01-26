@@ -519,7 +519,9 @@ export interface Notification {
   user_id: string;
   title: string;
   message: string;
-  type: 'info' | 'warning' | 'success' | 'error';
+  type: 'success' | 'info' | 'warning' | 'error';
   is_read: boolean;
   created_at: string;
+  related_id?: string;
+  category?: string;
 }
