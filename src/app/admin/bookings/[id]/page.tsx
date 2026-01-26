@@ -236,6 +236,14 @@ export default function AdminBookingDetailsPage() {
         <Button
           variant="outline"
           size="sm"
+          onClick={() => router.push('/admin')}
+          className="rounded-xl"
+        >
+          ← Back to Dashboard
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => router.push('/admin/bookings')}
           className="rounded-xl"
         >
@@ -350,15 +358,15 @@ export default function AdminBookingDetailsPage() {
                 {(booking.status === 'CONFIRMED' ||
                   booking.status === 'IN_PROGRESS' ||
                   booking.status === 'REQUESTED') && (
-                  <Button
-                    variant="outline"
-                    className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                    onClick={handleCancelBooking}
-                  >
-                    <XCircle className="mr-2" size={18} />
-                    Cancel Booking
-                  </Button>
-                )}
+                    <Button
+                      variant="outline"
+                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                      onClick={handleCancelBooking}
+                    >
+                      <XCircle className="mr-2" size={18} />
+                      Cancel Booking
+                    </Button>
+                  )}
               </>
             )}
           </div>

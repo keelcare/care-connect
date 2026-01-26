@@ -99,6 +99,16 @@ export default function AdminReviewsPage() {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/admin')}
+              className="rounded-xl"
+            >
+              ← Back to Dashboard
+            </Button>
+          </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <Star className="w-6 h-6 text-amber-600" />
@@ -167,29 +177,29 @@ export default function AdminReviewsPage() {
                       review.rating_professionalism ||
                       review.rating_care_quality ||
                       review.rating_communication) && (
-                      <div className="flex flex-wrap gap-3 mb-3">
-                        {review.rating_punctuality && (
-                          <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
-                            Punctuality: {review.rating_punctuality}/5
-                          </div>
-                        )}
-                        {review.rating_professionalism && (
-                          <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
-                            Professionalism: {review.rating_professionalism}/5
-                          </div>
-                        )}
-                        {review.rating_care_quality && (
-                          <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
-                            Care Quality: {review.rating_care_quality}/5
-                          </div>
-                        )}
-                        {review.rating_communication && (
-                          <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
-                            Communication: {review.rating_communication}/5
-                          </div>
-                        )}
-                      </div>
-                    )}
+                        <div className="flex flex-wrap gap-3 mb-3">
+                          {review.rating_punctuality && (
+                            <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
+                              Punctuality: {review.rating_punctuality}/5
+                            </div>
+                          )}
+                          {review.rating_professionalism && (
+                            <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
+                              Professionalism: {review.rating_professionalism}/5
+                            </div>
+                          )}
+                          {review.rating_care_quality && (
+                            <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
+                              Care Quality: {review.rating_care_quality}/5
+                            </div>
+                          )}
+                          {review.rating_communication && (
+                            <div className="text-xs bg-stone-100 px-2 py-1 rounded-md">
+                              Communication: {review.rating_communication}/5
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                     <p className="text-stone-600 mb-4">
                       {review.comment || (

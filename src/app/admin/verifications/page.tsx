@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
 
 export default function AdminPendingVerificationsPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,9 +38,19 @@ export default function AdminPendingVerificationsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        Pending Identity Verifications
-      </h1>
+      <div className="mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push('/admin')}
+          className="rounded-xl mb-4"
+        >
+          ← Back to Dashboard
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Pending Identity Verifications
+        </h1>
+      </div>
 
       {users.length === 0 ? (
         <div className="bg-white rounded-[24px] shadow-sm p-8 text-center border border-neutral-100">
@@ -124,7 +137,7 @@ export default function AdminPendingVerificationsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {/* Assuming updated_at reflects submission time roughly, or use created_at */}
                     {user.updated_at &&
-                    !isNaN(new Date(user.updated_at).getTime())
+                      !isNaN(new Date(user.updated_at).getTime())
                       ? format(new Date(user.updated_at), 'MMM d, yyyy')
                       : 'N/A'}
                   </td>

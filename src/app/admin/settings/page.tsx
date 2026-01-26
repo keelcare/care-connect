@@ -156,6 +156,16 @@ export default function AdminSettingsPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/admin')}
+              className="rounded-xl"
+            >
+              ← Back to Dashboard
+            </Button>
+          </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-stone-200 rounded-xl flex items-center justify-center">
               <Settings className="w-6 h-6 text-stone-600" />

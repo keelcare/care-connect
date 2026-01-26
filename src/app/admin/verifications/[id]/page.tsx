@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api, API_URL } from '@/lib/api';
 import { User } from '@/types/api';
 import { useParams, useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 export default function VerificationDetailPage() {
   const { id } = useParams() as { id: string };
@@ -101,12 +102,22 @@ export default function VerificationDetailPage() {
           </h1>
           <p className="text-gray-500">Review documents for {user.email}</p>
         </div>
-        <button
-          onClick={() => router.back()}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          &larr; Back to List
-        </button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/admin')}
+            className="rounded-xl"
+          >
+            ← Back to Dashboard
+          </Button>
+          <button
+            onClick={() => router.back()}
+            className="text-gray-600 hover:text-gray-900 ml-4"
+          >
+            &larr; Back to List
+          </button>
+        </div>
       </div>
 
       <div className="bg-white shadow-soft rounded-[24px] overflow-hidden border border-neutral-100 mb-8">
