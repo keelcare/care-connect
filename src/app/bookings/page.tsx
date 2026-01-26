@@ -549,7 +549,17 @@ export default function ParentBookingsPage() {
   };
 
   const filteredBookings = bookings.filter((booking) => {
-    if (activeTab === 'upcoming') return ['CONFIRMED', 'IN_PROGRESS', 'PENDING', 'requested', 'REQUESTED'].includes(booking.status);
+    if (activeTab === 'upcoming') {
+      const isUpcomingStatus = ['CONFIRMED', 'IN_PROGRESS', 'PENDING', 'requested', 'REQUESTED'].includes(booking.status);
+      if (!isUpcomingStatus) return false;
+
+      // Avoid duplication with the "Assignment" cards shown above
+      const isAlreadyShownAsAssignment = requests.some(
+        (r) => r.id === booking.job_id && (r.status === 'assigned' || r.status === 'ASSIGNED')
+      );
+
+      return !isAlreadyShownAsAssignment;
+    }
     if (activeTab === 'completed') return booking.status === 'COMPLETED';
     if (activeTab === 'cancelled') return booking.status === 'CANCELLED';
     return true;
