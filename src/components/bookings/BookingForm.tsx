@@ -94,8 +94,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     return nextDays;
   }, [weekOffset]);
 
+  const formatLocalDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateSelect = (date: Date) => {
-    setFormData({ ...formData, date: date.toISOString().split('T')[0] });
+    setFormData({ ...formData, date: formatLocalDate(date) });
   };
 
   const handleTimeSelect = (time: string) => {
@@ -188,7 +195,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
           <div className="grid grid-cols-7 gap-2">
             {dates.map((date, index) => {
               const isSelected =
-                formData.date === date.toISOString().split('T')[0];
+                formData.date === formatLocalDate(date);
               const isToday = new Date().toDateString() === date.toDateString();
 
               return (
@@ -227,10 +234,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             const isSelected = formData.startTime === time;
 
             // Check if slot is in the past or within 15 mins
-            const selectedDate = new Date(formData.date);
-            const today = new Date();
-            const isToday =
-              selectedDate.toDateString() === today.toDateString();
+            let isToday = false;
+            
+            if (formData.date) {
+               // Reconstruct date from string to ensure local time midnight
+               const [y, m, d] = formData.date.split('-').map(Number);
+               // Note: Month is 0-indexed in Date constructor
+               const selectedDate = new Date(y, m - 1, d);
+               const today = new Date();
+               isToday = selectedDate.toDateString() === today.toDateString();
+            }
 
             if (isToday) {
               const [slotHours, slotMinutes] = time.split(':').map(Number);
