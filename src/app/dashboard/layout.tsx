@@ -17,10 +17,13 @@ import {
   Menu,
   X,
   ChevronDown,
+  MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
 import { Avatar } from '@/components/ui/avatar';
+import { LocationModal } from '@/components/features/LocationModal';
+import { usePreferences } from '@/hooks/usePreferences';
 
 export default function DashboardLayout({
   children,
@@ -44,9 +47,11 @@ export default function DashboardLayout({
   ];
 
   const { user, loading, logout } = useAuth();
+  const { preferences } = usePreferences();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -103,11 +108,10 @@ export default function DashboardLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 font-medium ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 font-medium ${isActive
                     ? 'bg-stone-100 text-stone-900'
                     : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                }`}
+                  }`}
               >
                 <Icon
                   size={20}
@@ -173,15 +177,28 @@ export default function DashboardLayout({
             {/* Notification Bell */}
             <Link
               href="/dashboard/notifications"
-              className={`relative p-2.5 rounded-xl transition-all ${
-                pathname === '/dashboard/notifications'
+              className={`relative p-2.5 rounded-xl transition-all ${pathname === '/dashboard/notifications'
                   ? 'bg-stone-100 text-stone-900'
                   : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
-              }`}
+                }`}
             >
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </Link>
+
+            {/* Location Selector */}
+            <div
+              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-stone-50 rounded-xl border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-100 transition-all cursor-pointer"
+              onClick={() => setIsLocationModalOpen(true)}
+            >
+              <MapPin size={16} className="text-stone-500" />
+              <span className="text-xs font-medium truncate max-w-[120px]">
+                {preferences.location?.address ||
+                  user?.profiles?.address ||
+                  'Set Location'}
+              </span>
+              <ChevronDown size={12} className="text-stone-400" />
+            </div>
 
             {/* Profile Dropdown */}
             <div className="relative" ref={profileDropdownRef}>
@@ -294,11 +311,10 @@ export default function DashboardLayout({
                       key={item.href}
                       href={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
-                        isActive
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${isActive
                           ? 'bg-stone-100 text-stone-900'
                           : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                      }`}
+                        }`}
                     >
                       <Icon
                         size={20}
@@ -335,6 +351,11 @@ export default function DashboardLayout({
         position="top"
         autoDismiss={true}
         autoDismissTimeout={15000}
+      />
+
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
       />
 
       {/* Mobile Bottom Nav Placeholder - In a real app this would be a separate component visible only on mobile */}

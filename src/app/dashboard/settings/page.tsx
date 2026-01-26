@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
+import { MapPin, Navigation } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { UpdateUserDto } from '@/types/api';
@@ -12,6 +13,7 @@ export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [updatingLocation, setUpdatingLocation] = useState(false);
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
     text: string;
@@ -61,6 +63,54 @@ export default function SettingsPage() {
           ? Number(value)
           : value,
     }));
+  };
+
+  const handleUpdateLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setUpdatingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          if (!user) return;
+          // Update user location
+          await api.users.update(user.id, {
+            lat: latitude,
+            lng: longitude,
+          });
+
+          // Wait for backend reverse geocoding to complete
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          // Fetch updated user data to get the address
+          const updatedUser = await api.users.me();
+
+          setFormData(prev => ({
+            ...prev,
+            address: updatedUser.profiles?.address || prev.address
+          }));
+
+          setMessage({ type: 'success', text: 'Location detected and updated!' });
+          // Refresh auth context user
+          await refreshUser();
+        } catch (error) {
+          console.error('Error updating location:', error);
+          setMessage({ type: 'error', text: 'Failed to detect location.' });
+        } finally {
+          setUpdatingLocation(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        alert('Unable to retrieve your location. Please allow location access.');
+        setUpdatingLocation(false);
+      }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,11 +167,10 @@ export default function SettingsPage() {
 
       {message && (
         <div
-          className={`p-4 rounded-xl border flex items-center gap-3 ${
-            message.type === 'success'
+          className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
               ? 'bg-green-50 border-green-100 text-green-700'
               : 'bg-red-50 border-red-100 text-red-700'
-          }`}
+            }`}
         >
           {message.text}
         </div>
@@ -156,14 +205,34 @@ export default function SettingsPage() {
                 className="rounded-xl"
               />
               <div className="md:col-span-2">
-                <Input
-                  label="Address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  helperText="This will be used to calculate distances for search results."
-                  className="rounded-xl"
-                />
+                <div className="flex items-end gap-4">
+                  <div className="flex-1">
+                    <Input
+                      label="Address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      helperText="This will be used to calculate distances for search results."
+                      className="rounded-xl"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleUpdateLocation}
+                    disabled={updatingLocation}
+                    className="mb-6 h-12 rounded-xl border-neutral-200 flex items-center gap-2 whitespace-nowrap"
+                  >
+                    {updatingLocation ? (
+                      '...'
+                    ) : (
+                      <>
+                        <Navigation size={16} />
+                        Get Location
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
               <div className="md:col-span-2">
                 <Input
