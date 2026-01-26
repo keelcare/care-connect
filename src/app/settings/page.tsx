@@ -63,6 +63,12 @@ export default function ParentSettingsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    
+    // Prevent negative values for numeric fields
+    if ((name === 'hourlyRate' || name === 'experienceYears') && Number(value) < 0) {
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]:

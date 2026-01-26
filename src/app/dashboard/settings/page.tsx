@@ -56,6 +56,12 @@ export default function SettingsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    
+    // Prevent negative values for numeric fields
+    if ((name === 'hourlyRate' || name === 'experienceYears') && Number(value) < 0) {
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -265,6 +271,7 @@ export default function SettingsPage() {
                   label="Years of Experience"
                   name="experienceYears"
                   type="number"
+                  min={0}
                   value={formData.experienceYears?.toString()}
                   onChange={handleChange}
                   className="rounded-xl"
