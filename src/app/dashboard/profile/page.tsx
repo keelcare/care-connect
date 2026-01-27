@@ -196,7 +196,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="text-center border-l border-stone-200">
                   <div className="text-2xl font-bold text-stone-900 mb-1">
-                    4.9
+                    {user.averageRating ? user.averageRating.toFixed(1) : 'New'}
                   </div>
                   <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                     Rating

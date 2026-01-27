@@ -435,8 +435,8 @@ export default function BrowsePage() {
                   <ProfileCard
                     key={nanny.id}
                     name={`${nanny.profiles?.first_name || 'Caregiver'} ${nanny.profiles?.last_name || ''}`}
-                    rating={4.8}
-                    reviewCount={12}
+                    rating={nanny.averageRating || 0}
+                    reviewCount={nanny.totalReviews || 0}
                     location={
                       nanny.profiles?.address || 'Location not specified'
                     }
@@ -444,7 +444,7 @@ export default function BrowsePage() {
                       nanny.nanny_details?.bio || 'No description available.'
                     }
                     hourlyRate={Number(nanny.nanny_details?.hourly_rate) || 20}
-                    experience={`${nanny.nanny_details?.experience_years || 0} years`}
+                    experience={`${Math.max(0, nanny.nanny_details?.experience_years || 0)} years`}
                     isVerified={nanny.is_verified}
                     distance={nanny.distance}
                     onViewProfile={() =>
