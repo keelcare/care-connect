@@ -165,16 +165,18 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                   </h3>
                 </div>
 
-                {/* Rating pill */}
+                  {/* Rating pill */}
                 <div className="flex items-center gap-3">
                   <div className="inline-flex items-center gap-1 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm">
-                    <Star size={12} className="text-amber-500 fill-amber-500" />
+                    <Star size={12} className={`text-amber-500 ${rating > 0 ? 'fill-amber-500' : ''}`} />
                     <span className="text-sm font-semibold text-stone-800">
-                      {rating}
+                      {rating > 0 ? rating.toFixed(1) : 'New'}
                     </span>
-                    <span className="text-xs text-stone-500">
-                      ({reviewCount})
-                    </span>
+                    {reviewCount > 0 && (
+                      <span className="text-xs text-stone-500">
+                        ({reviewCount})
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 text-xs text-stone-500">
                     <Clock size={11} />

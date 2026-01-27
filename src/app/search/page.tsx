@@ -620,12 +620,12 @@ export default function SearchPage() {
                         ? `${nanny.profiles.first_name} ${nanny.profiles.last_name}`
                         : 'Caregiver'
                     }
-                    rating={4.8}
-                    reviewCount={12}
+                    rating={nanny.averageRating || 0}
+                    reviewCount={nanny.totalReviews || 0}
                     location={nanny.profiles?.address || 'Location not set'}
                     description={nanny.nanny_details?.bio || 'No bio available'}
                     hourlyRate={Number(nanny.nanny_details?.hourly_rate) || 0}
-                    experience={`${nanny.nanny_details?.experience_years || 0} years`}
+                    experience={`${Math.max(0, nanny.nanny_details?.experience_years || 0)} years`}
                     isVerified={nanny.is_verified}
                     onViewProfile={() =>
                       (window.location.href = `/caregiver/${nanny.id}`)

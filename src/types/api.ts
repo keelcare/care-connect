@@ -14,6 +14,8 @@ export interface User {
   updated_at: string;
   profiles?: UserProfile;
   nanny_details?: NannyDetails;
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 export interface IdentityDocument {

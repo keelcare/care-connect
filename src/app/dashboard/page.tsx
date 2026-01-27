@@ -284,6 +284,30 @@ export default function DashboardPage() {
         })}
       </div>
 
+      {/* Profile Completion Warning for Nannies */}
+      {user?.role === 'nanny' &&
+        (!user.nanny_details?.hourly_rate ||
+          Number(user.nanny_details.hourly_rate) === 0 ||
+          !user.nanny_details.bio) && (
+          <div className="bg-amber-50 border border-amber-200 rounded-[24px] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-amber-900 mb-2">
+                Complete your profile to get booked!
+              </h3>
+              <p className="text-amber-700">
+                You currently have missing details (Hourly Rate, Bio, etc).
+                Families won't be able to find you until you complete your
+                profile.
+              </p>
+            </div>
+            <Link href="/nanny/onboarding">
+              <Button className="rounded-xl px-8 bg-amber-600 hover:bg-amber-700 text-white shadow-md whitespace-nowrap">
+                Complete Profile
+              </Button>
+            </Link>
+          </div>
+        )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Upcoming Bookings */}
         <div className="lg:col-span-2 space-y-6">
