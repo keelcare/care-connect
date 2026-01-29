@@ -9,10 +9,7 @@ import {
   Star,
   Clock,
   ShieldCheck,
-  Calendar,
   Award,
-  Repeat,
-  MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -37,7 +34,7 @@ export default function CaregiverProfilePage() {
     'about' | 'reviews' | 'availability'
   >('about');
 
-  const [messageLoading, setMessageLoading] = useState(false);
+
 
   // Calculate average rating
   const avgRating =
@@ -80,26 +77,7 @@ export default function CaregiverProfilePage() {
     }
   }, [searchParams, params.id, router]);
 
-  const handleMessage = async () => {
-    if (!user || !caregiver) return;
 
-    try {
-      setMessageLoading(true);
-      // Create or get existing chat
-      const chat = await api.chat.create({
-        participantId: caregiver.id,
-      });
-
-      // Redirect to messages with this chat active (PARENT route)
-      router.push(`/messages?chatId=${chat.id}`);
-    } catch (err) {
-      console.error('Failed to start chat:', err);
-      // Fallback to messages page if creation fails (PARENT route)
-      router.push('/messages');
-    } finally {
-      setMessageLoading(false);
-    }
-  };
 
   if (loading)
     return (
@@ -340,17 +318,7 @@ export default function CaregiverProfilePage() {
                   >
                     View Availability
                   </Button>
-                  <Button
-                    size="lg"
-                    className="w-full rounded-xl bg-white border-2 border-emerald-100 text-emerald-700 hover:bg-emerald-50 shadow-sm transition-all h-12 font-medium"
-                    onClick={handleMessage}
-                    disabled={messageLoading}
-                  >
-                    <MessageSquare size={18} className="mr-2" />
-                    {messageLoading
-                      ? 'Starting Chat...'
-                      : 'Chat with Caregiver'}
-                  </Button>
+
                   {/* Secondary Booking Action */}
                   <div className="pt-2 text-center">
                     <button
@@ -371,15 +339,7 @@ export default function CaregiverProfilePage() {
                       Sign up to Book
                     </Button>
                   </Link>
-                  <Link href="/auth/signup" className="w-full">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="w-full rounded-xl border-stone-200 hover:bg-stone-50 h-12 text-stone-700"
-                    >
-                      Sign up to Message
-                    </Button>
-                  </Link>
+
                   <p className="text-xs text-center text-stone-500 pt-2">
                     Already have an account?{' '}
                     <Link

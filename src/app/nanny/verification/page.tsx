@@ -6,11 +6,13 @@ import { User } from '@/types/api';
 import VerificationUploadForm from '@/components/verification/VerificationUploadForm';
 import VerificationStatus from '@/components/verification/VerificationStatus';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function NannyVerificationPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   const fetchUser = async () => {
     try {
@@ -99,7 +101,10 @@ export default function NannyVerificationPage() {
             </p>
             <div className="pt-4">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={async () => {
+                  await refreshUser();
+                  router.push('/dashboard');
+                }}
                 className="px-8 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium transition-colors shadow-lg shadow-emerald-200"
               >
                 Proceed to Dashboard
