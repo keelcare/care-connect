@@ -55,7 +55,7 @@ export default function BrowsePage() {
       name: 'Special Needs',
       icon: HandHeart,
       query: 'specialNeeds',
-      color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',
+      color: 'bg-primary-50 text-primary-900 hover:bg-primary-100',
       description: 'Trained care with extra patience',
       disabled: false,
     },
@@ -71,7 +71,7 @@ export default function BrowsePage() {
       name: 'Senior Care',
       icon: Heart,
       query: 'seniorCare',
-      color: 'bg-stone-50 text-stone-300',
+      color: 'bg-neutral-50 text-neutral-300',
       description: 'Coming soon',
       disabled: true,
     },
@@ -79,7 +79,7 @@ export default function BrowsePage() {
       name: 'Pet Care',
       icon: PawPrint,
       query: 'petCare',
-      color: 'bg-stone-50 text-stone-300',
+      color: 'bg-neutral-50 text-neutral-300',
       description: 'Coming soon',
       disabled: true,
     },
@@ -87,7 +87,7 @@ export default function BrowsePage() {
       name: 'Housekeeping',
       icon: Home,
       query: 'housekeeping',
-      color: 'bg-stone-50 text-stone-300',
+      color: 'bg-neutral-50 text-neutral-300',
       description: 'Coming soon',
       disabled: true,
     },
@@ -281,10 +281,10 @@ export default function BrowsePage() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-stone-900">
+                <h2 className="text-2xl font-heading font-semibold text-primary-900">
                   Browse by Category
                 </h2>
-                <p className="text-stone-500 mt-1">
+                <p className="text-neutral-600 mt-1">
                   Find care that fits your needs
                 </p>
               </div>
@@ -298,7 +298,7 @@ export default function BrowsePage() {
 
                 const content = (
                   <div
-                    className={`group bg-white p-6 rounded-2xl border ${isDisabled ? 'border-stone-100 opacity-60 cursor-not-allowed' : 'border-stone-100 hover:border-stone-200 hover:shadow-lg hover:shadow-stone-200/50 cursor-pointer'} transition-all duration-300 flex flex-col items-center gap-3 text-center h-full justify-center`}
+                    className={`group bg-white/95 backdrop-blur-sm p-6 rounded-2xl border ${isDisabled ? 'border-neutral-200 opacity-60 cursor-not-allowed' : 'border-neutral-200/60 hover:border-primary-900/20 hover:shadow-premium cursor-pointer'} transition-all duration-300 flex flex-col items-center gap-3 text-center h-full justify-center`}
                   >
                     <div
                       className={`w-14 h-14 rounded-xl ${category.color} flex items-center justify-center transition-transform duration-300 ${!isDisabled && 'group-hover:scale-110'}`}
@@ -306,11 +306,11 @@ export default function BrowsePage() {
                       <IconComponent className="w-7 h-7" />
                     </div>
                     <span
-                      className={`font-medium ${isDisabled ? 'text-stone-400' : 'text-stone-900'}`}
+                      className={`font-medium ${isDisabled ? 'text-neutral-400' : 'text-primary-900'}`}
                     >
                       {category.name}
                     </span>
-                    <span className="text-xs text-stone-500 px-2">
+                    <span className="text-xs text-neutral-600 px-2">
                       {category.description}
                     </span>
                   </div>
@@ -333,39 +333,39 @@ export default function BrowsePage() {
           </section>
 
           {/* Safety Promise Section - Visual Break */}
-          <section className="bg-white rounded-3xl p-8 md:p-12 border border-stone-100 shadow-xl shadow-stone-200/40 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          <section className="bg-white/95 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-neutral-200/60 shadow-premium-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-16">
               <div className="flex-1 space-y-4 text-center md:text-left">
-                <div className="inline-flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full text-emerald-700 text-sm font-medium">
+                <div className="inline-flex items-center gap-2 bg-accent/10 px-3 py-1 rounded-full text-accent text-sm font-medium">
                   <ShieldCheck className="w-4 h-4" />
                   <span>Our Safety Promise</span>
                 </div>
-                <h2 className="text-3xl font-bold text-stone-900">
+                <h2 className="text-3xl font-heading font-semibold text-primary-900">
                   We take safety seriously, so you don't have to worry.
                 </h2>
-                <p className="text-lg text-stone-600 leading-relaxed">
+                <p className="text-lg text-neutral-700 leading-relaxed">
                   Every caregiver on our platform goes through a rigorous
                   7-point background check, interview process, and ID
                   verification. We believe trust is earned, not given.
                 </p>
               </div>
               <div className="flex-shrink-0 grid grid-cols-2 gap-4">
-                <div className="bg-stone-50 p-4 rounded-2xl text-center">
+                <div className="bg-neutral-50 p-4 rounded-2xl text-center">
                   <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                    <ShieldCheck className="w-5 h-5 text-success-500" />
                   </div>
-                  <p className="font-semibold text-stone-900 text-sm">
+                  <p className="font-semibold text-primary-900 text-sm">
                     Background Checked
                   </p>
                 </div>
-                <div className="bg-stone-50 p-4 rounded-2xl text-center">
+                <div className="bg-neutral-50 p-4 rounded-2xl text-center">
                   <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                    <div className="w-5 h-5 rounded-full border-2 border-emerald-600 flex items-center justify-center text-[10px] font-bold text-emerald-600">
+                    <div className="w-5 h-5 rounded-full border-2 border-accent flex items-center justify-center text-[10px] font-bold text-accent">
                       ID
                     </div>
                   </div>
-                  <p className="font-semibold text-stone-900 text-sm">
+                  <p className="font-semibold text-primary-900 text-sm">
                     ID Verified
                   </p>
                 </div>
@@ -380,17 +380,17 @@ export default function BrowsePage() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-stone-900">
+                <h2 className="text-2xl font-heading font-semibold text-primary-900">
                   Nearby Caregivers
                 </h2>
-                <p className="text-stone-500 mt-1">Caregivers in your area</p>
+                <p className="text-neutral-600 mt-1">Caregivers in your area</p>
               </div>
 
               <div className="flex items-center gap-3">
                 <Link href="/search?sort=distance">
                   <Button
                     variant="ghost"
-                    className="text-stone-600 hover:text-stone-900 font-medium"
+                    className="text-neutral-700 hover:text-primary-900 font-medium"
                   >
                     See All
                     <ArrowRight className="w-4 h-4 ml-1" />
@@ -400,10 +400,10 @@ export default function BrowsePage() {
             </div>
 
             {loading ? (
-              <div className="flex items-center justify-center py-16 bg-white rounded-2xl border border-stone-100">
+              <div className="flex items-center justify-center py-16 bg-white/95 backdrop-blur-sm rounded-2xl border border-neutral-200/60">
                 <div className="text-center">
-                  <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-stone-500">Loading nearby caregivers...</p>
+                  <div className="w-8 h-8 border-4 border-primary-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-neutral-600">Loading nearby caregivers...</p>
                 </div>
               </div>
             ) : error ? (
@@ -411,19 +411,19 @@ export default function BrowsePage() {
                 <p>{error}</p>
               </div>
             ) : filteredNearbyNannies.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-stone-100">
-                <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-8 h-8 text-stone-400" />
+              <div className="text-center py-16 bg-white/95 backdrop-blur-sm rounded-2xl border border-neutral-200/60">
+                <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8 text-neutral-500" />
                 </div>
-                <h3 className="text-lg font-semibold text-stone-900 mb-2">
+                <h3 className="text-lg font-heading font-semibold text-primary-900 mb-2">
                   No caregivers found nearby
                 </h3>
-                <p className="text-stone-500 mb-6">
+                <p className="text-neutral-600 mb-6">
                   Try updating your location or browse all caregivers.
                 </p>
                 <div className="flex items-center justify-center gap-3">
                   <Link href="/search">
-                    <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button className="rounded-xl">
                       Browse All
                     </Button>
                   </Link>
@@ -461,7 +461,7 @@ export default function BrowsePage() {
         {/* Mobile FAB */}
         <div className="fixed bottom-6 right-6 md:hidden z-50">
           <Link href="/search">
-            <Button className="rounded-full w-14 h-14 shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white p-0 flex items-center justify-center">
+            <Button className="rounded-full w-14 h-14 shadow-xl p-0 flex items-center justify-center">
               <Search size={24} />
             </Button>
           </Link>

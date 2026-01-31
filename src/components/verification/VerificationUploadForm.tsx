@@ -140,7 +140,7 @@ export default function VerificationUploadForm({
               id="idType"
               value={idType}
               onChange={(e) => setIdType(e.target.value as IdType)}
-              className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow appearance-none"
+              className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow appearance-none"
             >
               <option value="AADHAR">Aadhar Card</option>
               <option value="PAN">PAN Card</option>
@@ -177,7 +177,7 @@ export default function VerificationUploadForm({
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
             placeholder="Enter your document ID number"
-            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow outline-none"
+            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow outline-none"
           />
         </div>
 
@@ -194,7 +194,7 @@ export default function VerificationUploadForm({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Enter your phone number"
-            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow outline-none"
+            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow outline-none"
           />
         </div>
 
@@ -211,7 +211,7 @@ export default function VerificationUploadForm({
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter your full residential address"
             rows={3}
-            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow outline-none resize-none"
+            className="block w-full px-4 py-3 rounded-xl border-stone-200 bg-stone-50 text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow outline-none resize-none"
           />
         </div>
 
@@ -223,7 +223,7 @@ export default function VerificationUploadForm({
           <label
             htmlFor="file-upload"
             className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer relative
-                            ${isDragging ? 'border-emerald-500 bg-emerald-50' : 'border-stone-300 hover:bg-stone-50'}`}
+                            ${isDragging ? 'border-primary-500 bg-primary-50' : 'border-stone-300 hover:bg-stone-50'}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -238,7 +238,7 @@ export default function VerificationUploadForm({
             />
             <div className="space-y-1 text-center">
               <svg
-                className={`mx-auto h-12 w-12 transition-colors ${isDragging ? 'text-emerald-500' : 'text-stone-400 group-hover:text-emerald-500'}`}
+                className={`mx-auto h-12 w-12 transition-colors ${isDragging ? 'text-primary-500' : 'text-stone-400 group-hover:text-primary-500'}`}
                 stroke="currentColor"
                 fill="none"
                 viewBox="0 0 48 48"
@@ -252,7 +252,7 @@ export default function VerificationUploadForm({
                 />
               </svg>
               <div className="flex text-sm text-stone-600 justify-center">
-                <span className="relative font-medium text-emerald-600 focus-within:outline-none">
+                <span className="relative font-medium text-primary-600 focus-within:outline-none">
                   Upload a file
                 </span>
                 <p className="pl-1">or drag and drop</p>
@@ -262,7 +262,7 @@ export default function VerificationUploadForm({
           </label>
 
           {file && (
-            <div className="flex items-center gap-2 p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium border border-emerald-100">
+            <div className="flex items-center gap-2 p-3 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium border border-primary-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -284,7 +284,7 @@ export default function VerificationUploadForm({
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-200"
+            className="w-full sm:w-auto px-8 py-3 bg-primary-900 text-white rounded-xl hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200"
           >
             {loading ? 'Submitting...' : 'Submit Verification'}
           </button>

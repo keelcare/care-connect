@@ -175,13 +175,13 @@ export default function AdminBookingsPage() {
       case 'CONFIRMED':
         return 'bg-emerald-100 text-emerald-700';
       case 'IN_PROGRESS':
-        return 'bg-stone-100 text-stone-700';
+        return 'bg-neutral-100 text-neutral-700';
       case 'COMPLETED':
         return 'bg-emerald-100 text-emerald-700';
       case 'CANCELLED':
         return 'bg-red-100 text-red-700';
       default:
-        return 'bg-stone-100 text-stone-700';
+        return 'bg-neutral-100 text-neutral-700';
     }
   };
 
@@ -213,7 +213,7 @@ export default function AdminBookingsPage() {
         >
           ← Back to Dashboard
         </Button>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
+        <h1 className="text-3xl font-bold text-primary-900 font-display">
           Booking Management
         </h1>
       </div>

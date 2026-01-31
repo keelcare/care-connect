@@ -53,16 +53,16 @@ const BLOCK_TYPES = [
     label: 'One-Time Block',
     description: 'Block a specific date or date range',
     icon: CalendarOff,
-    color: 'bg-orange-50 text-orange-600 border-orange-200',
-    activeColor: 'bg-orange-500 text-white border-orange-500',
+    color: 'bg-primary-50 text-primary-900 border-primary-200',
+    activeColor: 'bg-primary-900 text-white border-primary-900',
   },
   {
     id: 'recurring',
     label: 'Recurring Block',
     description: 'Block same time every week',
     icon: Repeat,
-    color: 'bg-purple-50 text-purple-600 border-purple-200',
-    activeColor: 'bg-purple-500 text-white border-purple-500',
+    color: 'bg-accent-50 text-accent-700 border-accent-200',
+    activeColor: 'bg-accent text-white border-accent',
   },
 ];
 
@@ -270,7 +270,7 @@ export default function AvailabilityPage() {
         </div>
         <Button
           onClick={openModal}
-          className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white"
         >
           <Plus size={18} className="mr-2" />
           Block Time
@@ -278,11 +278,11 @@ export default function AvailabilityPage() {
       </div>
 
       {/* Info Card */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-start gap-3">
-        <CheckCircle2 className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+      <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 flex items-start gap-3">
+        <CheckCircle2 className="w-5 h-5 text-primary-900 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-medium text-emerald-800">How it works</p>
-          <p className="text-sm text-emerald-700 mt-1">
+          <p className="text-sm font-medium text-primary-900">How it works</p>
+          <p className="text-sm text-primary-700 mt-1">
             Blocked times will automatically prevent parents from booking you
             during those periods. Use recurring blocks for regular
             unavailability like weekends.
@@ -293,7 +293,7 @@ export default function AvailabilityPage() {
       {/* Availability Blocks List */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
         </div>
       ) : blocks.length === 0 ? (
         <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
@@ -307,7 +307,7 @@ export default function AvailabilityPage() {
           </p>
           <Button
             onClick={() => setShowModal(true)}
-            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white"
           >
             <Plus size={18} className="mr-2" />
             Block Time
@@ -326,11 +326,10 @@ export default function AvailabilityPage() {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      block.is_recurring
-                        ? 'bg-purple-100 text-purple-600'
-                        : 'bg-orange-100 text-orange-600'
-                    }`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${block.is_recurring
+                      ? 'bg-purple-100 text-purple-600'
+                      : 'bg-orange-100 text-orange-600'
+                      }`}
                   >
                     {block.is_recurring ? (
                       <Repeat size={24} />
@@ -343,8 +342,8 @@ export default function AvailabilityPage() {
                       <h3 className="font-semibold text-stone-900">
                         {block.is_recurring
                           ? formatRecurrencePattern(
-                              block.recurrence_pattern || ''
-                            )
+                            block.recurrence_pattern || ''
+                          )
                           : start.date}
                       </h3>
                       {block.is_recurring && (
@@ -409,8 +408,8 @@ export default function AvailabilityPage() {
                     </button>
                   )}
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                      <CalendarOff className="w-5 h-5 text-emerald-600" />
+                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+                      <CalendarOff className="w-5 h-5 text-primary-900" />
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-stone-900">
@@ -438,11 +437,10 @@ export default function AvailabilityPage() {
                     <React.Fragment key={step}>
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                            currentStep >= step
-                              ? 'bg-emerald-600 text-white'
-                              : 'bg-stone-100 text-stone-400'
-                          }`}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${currentStep >= step
+                            ? 'bg-primary-900 text-white'
+                            : 'bg-stone-100 text-stone-400'
+                            }`}
                         >
                           {currentStep > step ? (
                             <CheckCircle2 size={16} />
@@ -451,22 +449,20 @@ export default function AvailabilityPage() {
                           )}
                         </div>
                         <span
-                          className={`hidden sm:block text-xs font-medium ${
-                            currentStep >= step
-                              ? 'text-stone-900'
-                              : 'text-stone-400'
-                          }`}
+                          className={`hidden sm:block text-xs font-medium ${currentStep >= step
+                            ? 'text-stone-900'
+                            : 'text-stone-400'
+                            }`}
                         >
                           {stepLabels[step - 1]}
                         </span>
                       </div>
                       {step < 3 && (
                         <div
-                          className={`flex-1 h-1 mx-2 rounded-full transition-all ${
-                            currentStep > step
-                              ? 'bg-emerald-600'
-                              : 'bg-stone-200'
-                          }`}
+                          className={`flex-1 h-1 mx-2 rounded-full transition-all ${currentStep > step
+                            ? 'bg-primary-900'
+                            : 'bg-stone-200'
+                            }`}
                         />
                       )}
                     </React.Fragment>
@@ -480,8 +476,8 @@ export default function AvailabilityPage() {
               {currentStep === 1 && (
                 <div className="p-6 md:p-8">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                      <Sparkles size={16} className="text-emerald-600" />
+                    <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                      <Sparkles size={16} className="text-primary-900" />
                     </div>
                     <h3 className="text-lg font-bold text-stone-900">
                       What type of block?
@@ -499,11 +495,10 @@ export default function AvailabilityPage() {
                           onClick={() =>
                             setFormData({ ...formData, blockType: type.id })
                           }
-                          className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-3 hover:scale-[1.02] flex-1 max-w-[220px] ${
-                            isSelected
-                              ? type.activeColor
-                              : `${type.color} hover:shadow-md`
-                          }`}
+                          className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-3 hover:scale-[1.02] flex-1 max-w-[220px] ${isSelected
+                            ? type.activeColor
+                            : `${type.color} hover:shadow-md`
+                            }`}
                         >
                           <Icon size={32} />
                           <div className="text-center">
@@ -552,10 +547,10 @@ export default function AvailabilityPage() {
                       {/* Starting From Date */}
                       <div>
                         <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
                             <CalendarDays
                               size={16}
-                              className="text-emerald-600"
+                              className="text-primary-900"
                             />
                           </div>
                           <h3 className="text-lg font-bold text-stone-900">
@@ -577,26 +572,25 @@ export default function AvailabilityPage() {
                                     startDate: dateStr,
                                   })
                                 }
-                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
-                                  isSelected
-                                    ? 'bg-emerald-600 text-white border-emerald-600'
-                                    : 'bg-white border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
-                                }`}
+                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
+                                  ? 'bg-primary-900 text-white border-primary-900'
+                                  : 'bg-white border-stone-200 hover:border-primary-300 hover:bg-primary-50'
+                                  }`}
                               >
                                 <span
-                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-emerald-100' : 'text-stone-500'}`}
+                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-primary-100' : 'text-stone-500'}`}
                                 >
                                   {date.toLocaleDateString('en-US', {
                                     weekday: 'short',
                                   })}
                                 </span>
                                 <span
-                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-emerald-600' : ''}`}
+                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-primary-900' : ''}`}
                                 >
                                   {date.getDate()}
                                 </span>
                                 <span
-                                  className={`text-xs ${isSelected ? 'text-emerald-100' : 'text-stone-400'}`}
+                                  className={`text-xs ${isSelected ? 'text-primary-100' : 'text-stone-400'}`}
                                 >
                                   {date.toLocaleDateString('en-US', {
                                     month: 'short',
@@ -635,26 +629,25 @@ export default function AvailabilityPage() {
                                     startDate: dateStr,
                                   })
                                 }
-                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
-                                  isSelected
-                                    ? 'bg-emerald-600 text-white border-emerald-600'
-                                    : 'bg-white border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
-                                }`}
+                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
+                                  ? 'bg-primary-900 text-white border-primary-900'
+                                  : 'bg-white border-stone-200 hover:border-primary-300 hover:bg-primary-50'
+                                  }`}
                               >
                                 <span
-                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-emerald-100' : 'text-stone-500'}`}
+                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-primary-100' : 'text-stone-500'}`}
                                 >
                                   {date.toLocaleDateString('en-US', {
                                     weekday: 'short',
                                   })}
                                 </span>
                                 <span
-                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-emerald-600' : ''}`}
+                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-primary-900' : ''}`}
                                 >
                                   {date.getDate()}
                                 </span>
                                 <span
-                                  className={`text-xs ${isSelected ? 'text-emerald-100' : 'text-stone-400'}`}
+                                  className={`text-xs ${isSelected ? 'text-primary-100' : 'text-stone-400'}`}
                                 >
                                   {date.toLocaleDateString('en-US', {
                                     month: 'short',
@@ -701,22 +694,20 @@ export default function AvailabilityPage() {
                                         endDate: isSelected ? '' : dateStr,
                                       })
                                     }
-                                    className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${
-                                      isSelected
-                                        ? 'bg-stone-700 text-white border-stone-700'
-                                        : isStartDate
-                                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                                          : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50'
-                                    }`}
+                                    className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
+                                      ? 'bg-stone-700 text-white border-stone-700'
+                                      : isStartDate
+                                        ? 'bg-primary-50 border-primary-300 text-primary-700'
+                                        : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50'
+                                      }`}
                                   >
                                     <span
-                                      className={`text-xs font-medium mb-1 ${
-                                        isSelected
-                                          ? 'text-stone-300'
-                                          : isStartDate
-                                            ? 'text-emerald-500'
-                                            : 'text-stone-500'
-                                      }`}
+                                      className={`text-xs font-medium mb-1 ${isSelected
+                                        ? 'text-stone-300'
+                                        : isStartDate
+                                          ? 'text-primary-500'
+                                          : 'text-stone-500'
+                                        }`}
                                     >
                                       {date.toLocaleDateString('en-US', {
                                         weekday: 'short',
@@ -726,13 +717,12 @@ export default function AvailabilityPage() {
                                       {date.getDate()}
                                     </span>
                                     <span
-                                      className={`text-xs ${
-                                        isSelected
-                                          ? 'text-stone-300'
-                                          : isStartDate
-                                            ? 'text-emerald-500'
-                                            : 'text-stone-400'
-                                      }`}
+                                      className={`text-xs ${isSelected
+                                        ? 'text-stone-300'
+                                        : isStartDate
+                                          ? 'text-primary-500'
+                                          : 'text-stone-400'
+                                        }`}
                                     >
                                       {date.toLocaleDateString('en-US', {
                                         month: 'short',
@@ -760,8 +750,8 @@ export default function AvailabilityPage() {
                   {/* Start Time Selection */}
                   <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                        <Clock size={16} className="text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                        <Clock size={16} className="text-primary-900" />
                       </div>
                       <h3 className="text-lg font-bold text-stone-900">
                         Start Time
@@ -778,11 +768,10 @@ export default function AvailabilityPage() {
                             onClick={() =>
                               setFormData({ ...formData, startTime: time })
                             }
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300 hover:bg-emerald-50'
-                            }`}
+                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
+                              ? 'bg-primary-900 text-white border-primary-900'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-primary-300 hover:bg-primary-50'
+                              }`}
                           >
                             {time}
                           </button>
@@ -817,13 +806,12 @@ export default function AvailabilityPage() {
                               setFormData({ ...formData, endTime: time })
                             }
                             disabled={isDisabled}
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isDisabled
-                                ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed'
-                                : isSelected
-                                  ? 'bg-stone-700 text-white border-stone-700'
-                                  : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400 hover:bg-stone-50'
-                            }`}
+                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isDisabled
+                              ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed'
+                              : isSelected
+                                ? 'bg-stone-700 text-white border-stone-700'
+                                : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400 hover:bg-stone-50'
+                              }`}
                           >
                             {time}
                           </button>
@@ -850,7 +838,7 @@ export default function AvailabilityPage() {
                         setFormData({ ...formData, reason: e.target.value })
                       }
                       placeholder="e.g., Personal appointment, Weekend off, Vacation"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none text-stone-700 placeholder:text-stone-400"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none text-stone-700 placeholder:text-stone-400"
                     />
                   </div>
 
@@ -862,11 +850,10 @@ export default function AvailabilityPage() {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            formData.blockType === 'recurring'
-                              ? 'bg-purple-100 text-purple-700'
-                              : 'bg-orange-100 text-orange-700'
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${formData.blockType === 'recurring'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-orange-100 text-orange-700'
+                            }`}
                         >
                           {formData.blockType === 'recurring'
                             ? 'Recurring'
@@ -889,7 +876,7 @@ export default function AvailabilityPage() {
                               ` - ${new Date(formData.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
                           </span>
                         )}
-                        <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
+                        <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-medium">
                           {formData.startTime} - {formData.endTime}
                         </span>
                       </div>
@@ -918,7 +905,7 @@ export default function AvailabilityPage() {
                         ? !canProceedToStep2
                         : !canProceedToStep3
                     }
-                    className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 rounded-xl bg-primary-900 hover:bg-primary-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Continue
                   </Button>
@@ -926,7 +913,7 @@ export default function AvailabilityPage() {
                   <Button
                     type="submit"
                     disabled={submitting || !canSubmit}
-                    className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 rounded-xl bg-primary-900 hover:bg-primary-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">

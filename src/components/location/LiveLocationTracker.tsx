@@ -109,9 +109,9 @@ export function LiveLocationTracker({
       const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLng / 2) *
-          Math.sin(dLng / 2);
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     },
@@ -121,11 +121,11 @@ export function LiveLocationTracker({
   const distanceToDestination =
     location && destinationLat && destinationLng
       ? calculateDistance(
-          location.lat,
-          location.lng,
-          destinationLat,
-          destinationLng
-        )
+        location.lat,
+        location.lng,
+        destinationLat,
+        destinationLng
+      )
       : null;
 
   if (!shouldTrack) {
@@ -135,17 +135,16 @@ export function LiveLocationTracker({
   return (
     <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 bg-gradient-to-r from-emerald-50 to-stone-50 border-b border-stone-100">
+      <div className="px-5 py-4 bg-gradient-to-r from-primary-50 to-stone-50 border-b border-stone-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                isConnected ? 'bg-emerald-100' : 'bg-stone-100'
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${isConnected ? 'bg-primary-100' : 'bg-stone-100'
+                }`}
             >
               <Navigation
                 size={20}
-                className={isConnected ? 'text-emerald-600' : 'text-stone-400'}
+                className={isConnected ? 'text-primary-600' : 'text-stone-400'}
               />
             </div>
             <div>
@@ -154,16 +153,14 @@ export function LiveLocationTracker({
             </div>
           </div>
           <div
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-              isConnected
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-stone-100 text-stone-500'
-            }`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${isConnected
+              ? 'bg-primary-100 text-primary-700'
+              : 'bg-stone-100 text-stone-500'
+              }`}
           >
             <span
-              className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'
-              }`}
+              className={`w-2 h-2 rounded-full ${isConnected ? 'bg-primary-500 animate-pulse' : 'bg-stone-400'
+                }`}
             />
             {isConnected ? 'Live' : 'Connecting...'}
           </div>
@@ -211,7 +208,7 @@ export function LiveLocationTracker({
         ) : (
           <>
             {/* Simple map visualization - in production, use Google Maps or Mapbox */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-stone-100">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-stone-100">
               {/* Map grid lines */}
               <div
                 className="absolute inset-0"
@@ -228,8 +225,8 @@ export function LiveLocationTracker({
                 style={{ top: '50%', left: '50%' }}
               >
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-emerald-400/20 rounded-full animate-ping" />
-                  <div className="relative w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="absolute -inset-4 bg-primary-400/20 rounded-full animate-ping" />
+                  <div className="relative w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center shadow-lg">
                     <MapPin size={18} className="text-white" />
                   </div>
                 </div>

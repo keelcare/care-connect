@@ -197,27 +197,27 @@ export default function RecurringBookingsPage() {
 
   return (
     <ParentLayout>
-      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-50 pb-20">
+      <div className="min-h-screen bg-neutral-50 pb-20">
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                    <Repeat className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+                    <Repeat className="w-5 h-5 text-primary-900" />
                   </div>
-                  <h1 className="text-3xl font-bold text-stone-900">
+                  <h1 className="text-3xl font-bold text-primary-900">
                     Recurring Bookings
                   </h1>
                 </div>
-                <p className="text-stone-500 mt-1">
+                <p className="text-neutral-500 mt-1">
                   Manage your scheduled recurring care
                 </p>
               </div>
               <Button
                 onClick={handleNewRecurringClick}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="rounded-xl bg-accent hover:bg-accent-600 text-white"
               >
                 <Plus size={18} className="mr-2" />
                 New Recurring
@@ -226,13 +226,13 @@ export default function RecurringBookingsPage() {
           </div>
 
           {/* Info Card */}
-          <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3 mb-8">
-            <CalendarDays className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+          <div className="bg-accent-50 border border-accent-100 rounded-2xl p-4 flex items-start gap-3 mb-8">
+            <CalendarDays className="w-5 h-5 text-accent-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-purple-800">
+              <p className="text-sm font-medium text-accent-900">
                 How recurring bookings work
               </p>
-              <p className="text-sm text-purple-700 mt-1">
+              <p className="text-sm text-accent-700 mt-1">
                 Recurring bookings automatically generate individual bookings
                 based on your schedule. Bookings are created 1 day in advance.
                 You can pause or cancel anytime.
@@ -243,12 +243,12 @@ export default function RecurringBookingsPage() {
           {/* Recurring Bookings List */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
             </div>
           ) : bookings.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
-              <Repeat className="w-12 h-12 text-stone-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-stone-900 mb-2">
+            <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center">
+              <Repeat className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-primary-900 mb-2">
                 No recurring bookings
               </h3>
               <p className="text-stone-500 mb-6">
@@ -257,7 +257,7 @@ export default function RecurringBookingsPage() {
               </p>
               <Button
                 onClick={handleNewRecurringClick}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="rounded-xl bg-accent hover:bg-accent-600 text-white"
               >
                 <Plus size={18} className="mr-2" />
                 Find a Caregiver
@@ -268,43 +268,41 @@ export default function RecurringBookingsPage() {
               {bookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className={`bg-white rounded-2xl border p-6 transition-all ${
-                    booking.is_active
-                      ? 'border-stone-200 hover:shadow-md'
-                      : 'border-stone-200 bg-stone-50 opacity-75'
-                  }`}
+                  className={`bg-white rounded-2xl border p-6 transition-all ${booking.is_active
+                    ? 'border-neutral-200 hover:shadow-md'
+                    : 'border-neutral-200 bg-neutral-50 opacity-75'
+                    }`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start gap-4">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                          booking.is_active
-                            ? 'bg-purple-100 text-purple-600'
-                            : 'bg-stone-200 text-stone-500'
-                        }`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${booking.is_active
+                          ? 'bg-primary-50 text-primary-700'
+                          : 'bg-neutral-200 text-neutral-500'
+                          }`}
                       >
                         <Repeat size={24} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-stone-900">
+                          <h3 className="font-semibold text-primary-900">
                             {formatRecurrencePattern(
                               booking.recurrence_pattern
                             )}
                           </h3>
                           {booking.is_active ? (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full bg-success-100 text-success-700 text-xs font-medium flex items-center gap-1">
                               <CheckCircle2 size={12} />
                               Active
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 text-xs font-medium flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full bg-neutral-200 text-neutral-600 text-xs font-medium flex items-center gap-1">
                               <XCircle size={12} />
                               Paused
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-1 mt-1 text-sm text-stone-500">
+                        <div className="flex items-center gap-1 mt-1 text-sm text-neutral-500">
                           <UserIcon size={14} />
                           <span>{getNannyName(booking)}</span>
                         </div>
@@ -319,11 +317,10 @@ export default function RecurringBookingsPage() {
                           handleToggleActive(booking.id, booking.is_active)
                         }
                         disabled={actionLoading === booking.id}
-                        className={`rounded-xl ${
-                          booking.is_active
-                            ? 'text-amber-600 hover:bg-amber-50'
-                            : 'text-emerald-600 hover:bg-emerald-50'
-                        }`}
+                        className={`rounded-xl ${booking.is_active
+                          ? 'text-accent hover:bg-accent-50'
+                          : 'text-neutral-600 hover:bg-neutral-100'
+                          }`}
                         title={booking.is_active ? 'Pause' : 'Resume'}
                       >
                         {actionLoading === booking.id ? (
@@ -347,39 +344,39 @@ export default function RecurringBookingsPage() {
                   </div>
 
                   {/* Details Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-stone-100">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-neutral-100">
                     <div>
-                      <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                      <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">
                         Start Time
                       </p>
-                      <p className="text-sm font-medium text-stone-900 flex items-center gap-1">
-                        <Clock size={14} className="text-stone-400" />
+                      <p className="text-sm font-medium text-neutral-900 flex items-center gap-1">
+                        <Clock size={14} className="text-neutral-400" />
                         {booking.start_time}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                      <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">
                         Duration
                       </p>
-                      <p className="text-sm font-medium text-stone-900">
+                      <p className="text-sm font-medium text-neutral-900">
                         {booking.duration_hours} hour
                         {booking.duration_hours > 1 ? 's' : ''}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                      <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">
                         Started
                       </p>
-                      <p className="text-sm font-medium text-stone-900 flex items-center gap-1">
-                        <Calendar size={14} className="text-stone-400" />
+                      <p className="text-sm font-medium text-neutral-900 flex items-center gap-1">
+                        <Calendar size={14} className="text-neutral-400" />
                         {formatDate(booking.start_date)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                      <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">
                         Ends
                       </p>
-                      <p className="text-sm font-medium text-stone-900">
+                      <p className="text-sm font-medium text-neutral-900">
                         {booking.end_date
                           ? formatDate(booking.end_date)
                           : 'No end date'}
@@ -388,11 +385,11 @@ export default function RecurringBookingsPage() {
                   </div>
 
                   {booking.special_requirements && (
-                    <div className="mt-4 pt-4 border-t border-stone-100">
-                      <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                    <div className="mt-4 pt-4 border-t border-neutral-100">
+                      <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">
                         Notes
                       </p>
-                      <p className="text-sm text-stone-600">
+                      <p className="text-sm text-neutral-600">
                         {booking.special_requirements}
                       </p>
                     </div>
@@ -409,18 +406,18 @@ export default function RecurringBookingsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-200">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
               <div>
-                <h2 className="text-xl font-bold text-stone-900">
+                <h2 className="text-xl font-bold text-primary-900">
                   Choose a Caregiver
                 </h2>
-                <p className="text-sm text-stone-500 mt-1">
+                <p className="text-sm text-neutral-500 mt-1">
                   Select from previous caregivers or browse new ones
                 </p>
               </div>
               <button
                 onClick={() => setShowNannyModal(false)}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -430,22 +427,22 @@ export default function RecurringBookingsPage() {
             <div className="p-6 overflow-y-auto max-h-[50vh]">
               {loadingNannies ? (
                 <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
                 </div>
               ) : previousNannies.length === 0 ? (
                 <div className="text-center py-8">
-                  <UserIcon className="w-12 h-12 text-stone-300 mx-auto mb-4" />
-                  <p className="text-stone-600 font-medium mb-2">
+                  <UserIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                  <p className="text-neutral-600 font-medium mb-2">
                     No previous caregivers
                   </p>
-                  <p className="text-stone-500 text-sm">
+                  <p className="text-neutral-500 text-sm">
                     You haven't booked with any caregivers yet. Browse to find
                     one.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-sm text-stone-500 mb-4">
+                  <p className="text-sm text-neutral-500 mb-4">
                     Your previous caregivers ({previousNannies.length})
                   </p>
                   {previousNannies.map((nanny) => {
@@ -460,10 +457,10 @@ export default function RecurringBookingsPage() {
                         key={nanny.id}
                         href={`/book/${nanny.id}?recurring=true`}
                         onClick={() => setShowNannyModal(false)}
-                        className="flex items-center gap-4 p-4 rounded-xl border border-stone-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all group"
+                        className="flex items-center gap-4 p-4 rounded-xl border border-neutral-200 hover:border-accent-300 hover:bg-accent-50/50 transition-all group"
                       >
                         {/* Avatar */}
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-100 to-stone-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent-100 to-neutral-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                           {profileImage ? (
                             <img
                               src={profileImage}
@@ -479,7 +476,7 @@ export default function RecurringBookingsPage() {
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors truncate">
+                          <h3 className="font-semibold text-primary-900 group-hover:text-accent-700 transition-colors truncate">
                             {name}
                           </h3>
                           <div className="flex items-center gap-3 mt-1 text-sm text-stone-500">
@@ -508,7 +505,7 @@ export default function RecurringBookingsPage() {
                         </div>
 
                         {/* Arrow */}
-                        <div className="text-stone-400 group-hover:text-emerald-600 transition-colors">
+                        <div className="text-neutral-400 group-hover:text-accent-600 transition-colors">
                           <svg
                             className="w-5 h-5"
                             fill="none"
@@ -531,9 +528,9 @@ export default function RecurringBookingsPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-stone-200 bg-stone-50">
+            <div className="p-6 border-t border-neutral-200 bg-neutral-50">
               <Link href="/browse" onClick={() => setShowNannyModal(false)}>
-                <Button className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Button className="w-full rounded-xl bg-accent hover:bg-accent-600 text-white">
                   <Search size={18} className="mr-2" />
                   Browse All Caregivers
                 </Button>

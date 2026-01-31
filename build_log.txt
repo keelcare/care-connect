@@ -1,0 +1,80 @@
+
+> frontend@0.1.0 build
+> next build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+▲ Next.js 16.1.3 (Turbopack)
+
+  Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+✓ Compiled successfully in 14.7s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+  Generating static pages using 7 workers (0/40) ...
+  Generating static pages using 7 workers (10/40) 
+  Generating static pages using 7 workers (20/40) 
+  Generating static pages using 7 workers (30/40) 
+✓ Generating static pages using 7 workers (40/40) in 279.7ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /admin
+├ ○ /admin/bookings
+├ ƒ /admin/bookings/[id]
+├ ○ /admin/disputes
+├ ○ /admin/notifications
+├ ○ /admin/reviews
+├ ○ /admin/settings
+├ ○ /admin/users
+├ ○ /admin/verifications
+├ ƒ /admin/verifications/[id]
+├ ○ /auth/callback
+├ ○ /auth/forgot-password
+├ ○ /auth/login
+├ ○ /auth/reset-password
+├ ○ /auth/signup
+├ ○ /auth/verify
+├ ƒ /book-recurring/[nannyId]
+├ ○ /book-service
+├ ƒ /book/[nannyId]
+├ ○ /bookings
+├ ○ /browse
+├ ƒ /caregiver/[id]
+├ ○ /dashboard
+├ ○ /dashboard/availability
+├ ○ /dashboard/bookings
+├ ƒ /dashboard/bookings/[id]
+├ ○ /dashboard/messages
+├ ○ /dashboard/notifications
+├ ○ /dashboard/profile
+├ ƒ /dashboard/requests/[id]
+├ ○ /dashboard/settings
+├ ○ /favorites
+├ ○ /how-it-works
+├ ○ /messages
+├ ○ /nanny/help
+├ ○ /nanny/onboarding
+├ ○ /nanny/reviews
+├ ○ /nanny/verification
+├ ○ /notifications
+├ ○ /recurring-bookings
+├ ○ /search
+└ ○ /settings
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

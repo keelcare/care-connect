@@ -31,9 +31,9 @@
 }
 
 .primary {
-  color: var(--color-primary-500);
+  color: var(--color-primary-900);
   border-color: var(--color-primary-100);
-  border-left-color: var(--color-primary-500);
+  border-left-color: var(--color-primary-900);
 }
 
 .white {

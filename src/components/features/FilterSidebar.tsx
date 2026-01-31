@@ -92,13 +92,13 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const activeFilterCount = activeServiceCount + (isPriceChanged ? 1 : 0);
 
   return (
-    <aside className="bg-white rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 p-6 space-y-6 h-full overflow-y-auto">
+    <aside className="bg-white rounded-2xl border border-neutral-200 shadow-lg shadow-neutral-200/50 p-6 space-y-6 h-full overflow-y-auto">
       {/* Header with Reset All */}
-      <div className="flex items-center justify-between pb-4 border-b border-stone-100">
+      <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
         <div>
-          <h2 className="font-bold text-lg text-stone-900">Filters</h2>
+          <h2 className="font-bold text-lg text-primary-900">Filters</h2>
           {activeFilterCount > 0 && (
-            <p className="text-xs text-stone-500 mt-1">
+            <p className="text-xs text-neutral-500 mt-1">
               {activeFilterCount} active{' '}
               {activeFilterCount === 1 ? 'filter' : 'filters'}
             </p>
@@ -106,7 +106,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
         {activeFilterCount > 0 && (
           <button
-            className="flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100"
+            className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-primary-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-neutral-100"
             onClick={resetAllFilters}
           >
             <RotateCcw size={14} />
@@ -116,12 +116,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* Service Type Section */}
-      <div className="bg-stone-50 rounded-xl p-4">
+      <div className="bg-neutral-50 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-stone-900 text-sm">Service Type</h3>
+          <h3 className="font-bold text-primary-900 text-sm">Service Type</h3>
           {activeServiceCount > 0 && (
             <button
-              className="text-xs font-medium text-stone-600 hover:text-stone-900 transition-colors"
+              className="text-xs font-medium text-neutral-600 hover:text-primary-900 transition-colors"
               onClick={clearServices}
             >
               Clear
@@ -163,10 +163,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* Hourly Rate Section */}
-      <div className="bg-stone-50 rounded-xl p-4">
+      <div className="bg-neutral-50 rounded-xl p-4">
         <div className="flex items-center gap-2 mb-4">
-          <DollarSign size={16} className="text-stone-700" />
-          <h3 className="font-bold text-stone-900 text-sm">Hourly Rate</h3>
+          <DollarSign size={16} className="text-neutral-700" />
+          <h3 className="font-bold text-primary-900 text-sm">Hourly Rate</h3>
         </div>
         <PriceRangeSlider
           min={0}

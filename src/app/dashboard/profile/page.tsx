@@ -19,12 +19,12 @@ export default function ProfilePage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 font-display">
+          <h1 className="text-3xl font-bold text-primary-900 font-display">
             My Profile
           </h1>
         </div>
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
         </div>
       </div>
     );
@@ -34,7 +34,7 @@ export default function ProfilePage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 font-display">
+          <h1 className="text-3xl font-bold text-primary-900 font-display">
             My Profile
           </h1>
         </div>
@@ -107,7 +107,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
+        <h1 className="text-3xl font-bold text-primary-900 font-display">
           My Profile
         </h1>
         <Link href="/dashboard/settings">
@@ -122,7 +122,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-stone-200 to-stone-100"></div>
+        <div className="h-32 bg-gradient-to-r from-primary-100 to-neutral-100"></div>
         <div className="px-8 pb-8 md:px-10 md:pb-10">
           <div className="relative flex flex-col md:flex-row gap-6 md:gap-8 -mt-12 mb-6">
             <div className="relative">
@@ -137,13 +137,13 @@ export default function ProfilePage() {
                 className="w-32 h-32"
                 ringColor="bg-white"
               />
-              <div className="absolute bottom-0 right-0 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
+              <div className="absolute bottom-0 right-0 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
                 {user.role}
               </div>
             </div>
 
             <div className="pt-2 md:pt-14 flex-1">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-2">
+              <h2 className="text-2xl font-bold text-primary-900 mb-2">
                 {profiles?.first_name} {profiles?.last_name}
               </h2>
               <div className="flex flex-wrap gap-4 text-sm text-neutral-600">
@@ -155,7 +155,7 @@ export default function ProfilePage() {
                     size="sm"
                     onClick={handleUpdateLocation}
                     disabled={updatingLocation}
-                    className="h-6 px-2 text-xs text-stone-700 hover:text-stone-900 hover:bg-stone-100 ml-2"
+                    className="h-6 px-2 text-xs text-neutral-700 hover:text-primary-900 hover:bg-neutral-100 ml-2"
                   >
                     {updatingLocation ? 'Updating...' : 'Use current location'}
                   </Button>
@@ -177,55 +177,55 @@ export default function ProfilePage() {
 
           {user.role === 'nanny' && (
             <div className="space-y-8">
-              <div className="grid grid-cols-3 gap-4 bg-stone-50 rounded-2xl p-6 border border-stone-100">
+              <div className="grid grid-cols-3 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-stone-900 mb-1">
+                  <div className="text-2xl font-bold text-primary-900 mb-1">
                     ₹{nanny_details?.hourly_rate || 0}
                   </div>
-                  <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
                     Hourly Rate
                   </div>
                 </div>
-                <div className="text-center border-l border-stone-200">
-                  <div className="text-2xl font-bold text-stone-900 mb-1">
+                <div className="text-center border-l border-neutral-200">
+                  <div className="text-2xl font-bold text-primary-900 mb-1">
                     {nanny_details?.experience_years || 0}
                   </div>
-                  <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
                     Years Exp.
                   </div>
                 </div>
-                <div className="text-center border-l border-stone-200">
-                  <div className="text-2xl font-bold text-stone-900 mb-1">
+                <div className="text-center border-l border-neutral-200">
+                  <div className="text-2xl font-bold text-primary-900 mb-1">
                     {user.averageRating ? user.averageRating.toFixed(1) : 'New'}
                   </div>
-                  <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
                     Rating
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-neutral-900">About</h3>
+                <h3 className="text-lg font-bold text-primary-900">About</h3>
                 <p className="text-neutral-600 leading-relaxed">
                   {nanny_details?.bio || 'No bio provided yet.'}
                 </p>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-neutral-900">Skills</h3>
+                <h3 className="text-lg font-bold text-primary-900">Skills</h3>
                 <div className="flex flex-wrap gap-2">
                   {nanny_details?.skills?.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1.5 bg-stone-100 text-stone-700 rounded-lg text-sm font-medium"
+                      className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium"
                     >
                       {skill}
                     </span>
                   )) || (
-                    <span className="text-stone-500 italic">
-                      No skills listed
-                    </span>
-                  )}
+                      <span className="text-neutral-500 italic">
+                        No skills listed
+                      </span>
+                    )}
                 </div>
               </div>
 

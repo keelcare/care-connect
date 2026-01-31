@@ -1,0 +1,29 @@
+<svg width="400" height="420" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="210" fill="#0D1B34" />
+  
+  <path 
+    d="M 91,20 
+       A 25,25 0 0 0 66,45 
+       L 66,155 
+       L 30,155 
+       A 72,72 0 0 0 91,195 
+       Z" 
+    fill="none" 
+    stroke="white" 
+    stroke-width="9" 
+    stroke-linejoin="miter"
+  />
+
+  <path 
+    d="M 109,20 
+       A 25,25 0 0 1 134,45 
+       L 134,155 
+       L 170,155 
+       A 72,72 0 0 1 109,195 
+       Z" 
+    fill="none" 
+    stroke="white" 
+    stroke-width="9" 
+    stroke-linejoin="miter"
+  />
+</svg>

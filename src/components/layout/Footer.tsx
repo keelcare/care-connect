@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4 group">
               <span className="text-2xl font-bold text-stone-900 font-display">
-                CareConnect
+                Keel
               </span>
             </Link>
             <p className="text-stone-600 leading-relaxed">
@@ -140,7 +140,7 @@ export const Footer: React.FC = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-stone-200">
           <p className="text-stone-500 text-sm mb-4 md:mb-0">
-            © {new Date().getFullYear()} CareConnect. All rights reserved.
+            © {new Date().getFullYear()} Keel. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a

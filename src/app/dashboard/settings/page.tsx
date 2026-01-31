@@ -56,7 +56,7 @@ export default function SettingsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    
+
     // Prevent negative values for numeric fields
     if ((name === 'hourlyRate' || name === 'experienceYears') && Number(value) < 0) {
       return;
@@ -154,7 +154,7 @@ export default function SettingsPage() {
           </h1>
         </div>
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
         </div>
       </div>
     );
@@ -163,7 +163,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
+        <h1 className="text-3xl font-bold text-primary-900 font-display">
           Account Settings
         </h1>
         <p className="text-neutral-500 mt-2 text-lg">
@@ -174,8 +174,8 @@ export default function SettingsPage() {
       {message && (
         <div
           className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
-              ? 'bg-green-50 border-green-100 text-green-700'
-              : 'bg-red-50 border-red-100 text-red-700'
+            ? 'bg-green-50 border-green-100 text-green-700'
+            : 'bg-red-50 border-red-100 text-red-700'
             }`}
         >
           {message.text}
@@ -300,7 +300,7 @@ export default function SettingsPage() {
                   </label>
                   <textarea
                     name="bio"
-                    className="w-full rounded-xl border-neutral-200 focus:border-primary focus:ring-primary min-h-[120px] p-3"
+                    className="w-full rounded-xl border-neutral-200 focus:border-primary-900 focus:ring-primary-900 min-h-[120px] p-3"
                     value={formData.bio}
                     onChange={handleChange}
                     placeholder="Tell parents about yourself..."

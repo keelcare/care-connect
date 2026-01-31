@@ -36,7 +36,7 @@ export const usePayment = () => {
         key: orderData.key, // Backend returns 'key', not 'keyId'
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'CareConnect',
+        name: 'Keel',
         description: 'Nanny Service Payment',
         order_id: orderData.orderId,
         handler: async (response: RazorpayResponse) => {

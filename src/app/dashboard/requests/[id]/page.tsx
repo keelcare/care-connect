@@ -120,7 +120,7 @@ export default function RequestDetailsPage() {
         };
       case 'ACCEPTED':
         return {
-          color: 'text-emerald-700 bg-emerald-100',
+          color: 'text-primary-700 bg-primary-100',
           icon: <CheckCircle size={20} />,
           text: 'Booking Confirmed',
         };

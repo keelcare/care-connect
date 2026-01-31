@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
             <div className="mb-10">
               <Link href="/" className="inline-block mb-8">
                 <span className="text-2xl font-bold text-stone-900 tracking-tight font-display">
-                  CareConnect
+                  Keel
                 </span>
               </Link>
               <h1 className="text-3xl font-bold text-neutral-900 mb-3 font-display">

@@ -52,8 +52,8 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             className={cn(
               'w-12 h-12 rounded-xl font-medium text-sm border-2 transition-all',
               isSelected
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300 hover:bg-emerald-50',
+                ? 'bg-primary-900 text-white border-primary-900'
+                : 'bg-white border-stone-200 text-stone-700 hover:border-primary-300 hover:bg-primary-50',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
           >

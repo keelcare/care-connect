@@ -478,12 +478,12 @@ function MessagesContent() {
             showBackButton={true}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center text-neutral-400 bg-stone-50/50">
+          <div className="flex-1 flex items-center justify-center text-neutral-400 bg-neutral-50/50">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
-                <MessageSquare size={24} className="text-stone-300" />
+              <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+                <MessageSquare size={24} className="text-neutral-300" />
               </div>
-              <p className="text-stone-500">
+              <p className="text-neutral-500">
                 Select a conversation to start messaging
               </p>
             </div>

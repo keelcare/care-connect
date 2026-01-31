@@ -138,7 +138,7 @@ export function ReviewActions({
                 value={editedComment}
                 onChange={(e) => setEditedComment(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 resize-none"
+                className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-400 resize-none"
               />
             </div>
 
@@ -160,7 +160,7 @@ export function ReviewActions({
                 onClick={handleEdit}
                 disabled={loading}
                 isLoading={loading}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
+                className="flex-1 bg-accent hover:bg-accent-600 text-white rounded-xl"
               >
                 Save Changes
               </Button>
@@ -251,7 +251,7 @@ export function ReviewActions({
                 onChange={(e) => setResponseText(e.target.value)}
                 placeholder="Thank you for your feedback..."
                 rows={4}
-                className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 resize-none"
+                className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-400 resize-none"
               />
             </div>
 
@@ -273,7 +273,7 @@ export function ReviewActions({
                 onClick={handleResponse}
                 disabled={loading || !responseText.trim()}
                 isLoading={loading}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
+                className="flex-1 bg-accent hover:bg-accent-600 text-white rounded-xl"
               >
                 Send Response
               </Button>
@@ -314,12 +314,12 @@ export function ReviewActions({
       {isReviewee && !review.response && (
         <button
           onClick={() => setIsResponding(true)}
-          className="p-2 hover:bg-emerald-50 rounded-lg transition-colors group"
+          className="p-2 hover:bg-accent-50 rounded-lg transition-colors group"
           title="Respond to review"
         >
           <MessageCircle
             size={16}
-            className="text-stone-400 group-hover:text-emerald-600"
+            className="text-stone-400 group-hover:text-accent"
           />
         </button>
       )}

@@ -144,11 +144,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   key={service.id}
                   type="button"
                   onClick={() => handleServiceSelect(service.id)}
-                  className={`flex flex-col items-center min-w-[100px] p-4 rounded-xl border-2 transition-all ${
-                    isSelected
+                  className={`flex flex-col items-center min-w-[100px] p-4 rounded-xl border-2 transition-all ${isSelected
                       ? 'border-stone-900 bg-stone-50'
                       : 'border-stone-100 hover:border-stone-300 bg-white'
-                  }`}
+                    }`}
                 >
                   <div
                     className={`w-12 h-12 rounded-full ${service.color} flex items-center justify-center mb-2`}
@@ -203,11 +202,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   key={index}
                   type="button"
                   onClick={() => handleDateSelect(date)}
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
-                    isSelected
-                      ? 'bg-emerald-600 shadow-md text-white'
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${isSelected
+                      ? 'bg-accent shadow-md text-white'
                       : 'hover:bg-white hover:shadow-sm text-stone-600'
-                  }`}
+                    }`}
                 >
                   <span className="text-xs font-medium mb-1 opacity-70">
                     {date.toLocaleDateString('en-US', { weekday: 'short' })}
@@ -235,14 +233,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
             // Check if slot is in the past or within 15 mins
             let isToday = false;
-            
+
             if (formData.date) {
-               // Reconstruct date from string to ensure local time midnight
-               const [y, m, d] = formData.date.split('-').map(Number);
-               // Note: Month is 0-indexed in Date constructor
-               const selectedDate = new Date(y, m - 1, d);
-               const today = new Date();
-               isToday = selectedDate.toDateString() === today.toDateString();
+              // Reconstruct date from string to ensure local time midnight
+              const [y, m, d] = formData.date.split('-').map(Number);
+              // Note: Month is 0-indexed in Date constructor
+              const selectedDate = new Date(y, m - 1, d);
+              const today = new Date();
+              isToday = selectedDate.toDateString() === today.toDateString();
             }
 
             if (isToday) {
@@ -262,11 +260,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 key={time}
                 type="button"
                 onClick={() => handleTimeSelect(time)}
-                className={`py-2 px-3 rounded-xl text-sm font-medium border transition-all ${
-                  isSelected
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                className={`py-2 px-3 rounded-xl text-sm font-medium border transition-all ${isSelected
+                    ? 'bg-accent text-white border-accent shadow-md'
                     : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400'
-                }`}
+                  }`}
               >
                 {time}
               </button>
@@ -355,7 +352,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             !formData.duration ||
             !formData.numChildren
           }
-          className="w-full h-12 text-lg rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
+          className="w-full h-12 text-lg rounded-xl bg-accent hover:bg-accent-600 text-white shadow-lg shadow-stone-300/50 disabled:opacity-50"
         >
           {loading ? 'Processing...' : 'Confirm Booking'}
         </Button>

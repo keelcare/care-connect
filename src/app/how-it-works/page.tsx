@@ -112,9 +112,9 @@ const ProfileCreationAnimation = () => (
       {/* Avatar Section */}
       <div className="flex items-center gap-4 mb-4 pb-4 border-b border-stone-100">
         <div className="relative">
-          <div className="avatar-ring absolute inset-0 rounded-full bg-emerald-200 scale-110"></div>
-          <Avatar size="lg" fallback="JD" ringColor="bg-emerald-200" />
-          <div className="check-badge absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+          <div className="avatar-ring absolute inset-0 rounded-full bg-accent-200 scale-110"></div>
+          <Avatar size="lg" fallback="JD" ringColor="bg-accent-200" />
+          <div className="check-badge absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center border-2 border-white shadow-md">
             <Check className="w-3 h-3 text-white" />
           </div>
         </div>
@@ -194,10 +194,10 @@ const BrowseSearchAnimation = () => (
       @keyframes searchPulse {
         0%,
         100% {
-          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+          box-shadow: 0 0 0 0 rgba(var(--accent), 0.4);
         }
         50% {
-          box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+          box-shadow: 0 0 0 8px rgba(var(--accent), 0);
         }
       }
       @keyframes heartBeat {
@@ -247,7 +247,7 @@ const BrowseSearchAnimation = () => (
           className="h-11 bg-white shadow-lg border-stone-100 rounded-xl text-sm"
           leftIcon={
             <div className="search-icon">
-              <Search size={18} className="text-emerald-500" />
+              <Search size={18} className="text-accent" />
             </div>
           }
           readOnly
@@ -387,13 +387,13 @@ const MessagingAnimation = () => (
       {/* Chat Header */}
       <div className="bg-stone-50 px-4 py-3 flex items-center justify-between border-b border-stone-100">
         <div className="flex items-center gap-3">
-          <Avatar size="sm" fallback="SP" ringColor="bg-emerald-200" />
+          <Avatar size="sm" fallback="SP" ringColor="bg-accent-200" />
           <div>
             <div className="text-sm font-semibold text-stone-800">
               Sneha Patel
             </div>
             <div className="flex items-center gap-1">
-              <span className="online-dot w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span className="online-dot w-2 h-2 rounded-full bg-accent"></span>
               <span className="text-xs text-stone-500">Online</span>
             </div>
           </div>
@@ -406,7 +406,7 @@ const MessagingAnimation = () => (
       {/* Messages */}
       <CardContent className="p-3 space-y-2 h-52 bg-white">
         <div className="msg-1 flex justify-end">
-          <div className="bg-emerald-500 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
+          <div className="bg-accent text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
             Hi! Are you available this Saturday?
           </div>
         </div>
@@ -416,7 +416,7 @@ const MessagingAnimation = () => (
           </div>
         </div>
         <div className="msg-3 flex justify-end">
-          <div className="bg-emerald-500 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
+          <div className="bg-accent text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm max-w-[85%]">
             Great! Can you come to Andheri West?
           </div>
         </div>
@@ -449,10 +449,10 @@ const BookPayAnimation = () => (
       @keyframes selectDate {
         0%,
         100% {
-          background-color: #10b981;
+          background-color: var(--accent);
         }
         50% {
-          background-color: #059669;
+          background-color: var(--accent-600);
           transform: scale(1.1);
         }
       }
@@ -507,10 +507,11 @@ const BookPayAnimation = () => (
       }
       .shimmer-btn {
         background: linear-gradient(
+        background: linear-gradient(
           90deg,
-          #10b981 0%,
-          #34d399 50%,
-          #10b981 100%
+          #3b82f6 0%,
+          #60a5fa 50%,
+          #3b82f6 100%
         );
         background-size: 200% 100%;
         animation: shimmer 2s ease-in-out infinite;
@@ -524,7 +525,7 @@ const BookPayAnimation = () => (
           <span className="font-semibold text-stone-800 text-sm">
             December 2024
           </span>
-          <Calendar className="w-4 h-4 text-emerald-500" />
+          <Calendar className="w-4 h-4 text-accent" />
         </div>
         <CardContent className="p-3">
           <div className="grid grid-cols-7 gap-1 text-center text-xs">
@@ -536,13 +537,12 @@ const BookPayAnimation = () => (
             {[...Array(31)].map((_, i) => (
               <div
                 key={i}
-                className={`py-1 rounded-md transition-all ${
-                  i === 14
-                    ? 'date-selected bg-emerald-500 text-white font-bold shadow-md'
-                    : i === 13 || i === 15
-                      ? 'bg-emerald-100 text-emerald-700 font-medium'
-                      : 'text-stone-600 hover:bg-stone-50'
-                }`}
+                className={`py-1 rounded-md transition-all ${i === 14
+                  ? 'date-selected bg-accent text-white font-bold shadow-md'
+                  : i === 13 || i === 15
+                    ? 'bg-accent-50 text-accent-700 font-medium'
+                    : 'text-stone-600 hover:bg-stone-50'
+                  }`}
               >
                 {i + 1}
               </div>
@@ -554,11 +554,11 @@ const BookPayAnimation = () => (
       {/* Confirmation Card */}
       <Card className="confirm-card p-0 border-stone-100 shadow-lg">
         <CardContent className="p-3 flex items-center gap-3">
-          <div className="checkmark-circle w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+          <div className="checkmark-circle w-11 h-11 rounded-full bg-accent-50 flex items-center justify-center shrink-0">
             <svg className="checkmark w-5 h-5" viewBox="0 0 24 24" fill="none">
               <path
                 d="M5 13l4 4L19 7"
-                stroke="#10b981"
+                stroke="var(--accent)"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -717,7 +717,7 @@ export default function HowItWorksPage() {
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-stone-100 px-4 py-2 rounded-full mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
             <span className="text-sm font-medium text-stone-600">
               Simple & Secure Process
             </span>
@@ -736,7 +736,7 @@ export default function HowItWorksPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/auth/signup">
-              <Button className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
+              <Button className="h-12 px-6 bg-primary-900 hover:bg-primary-800 text-white rounded-xl font-semibold group">
                 Get Started Free
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -781,7 +781,7 @@ export default function HowItWorksPage() {
                       <span className="text-6xl font-bold text-stone-200">
                         {step.step}
                       </span>
-                      <div className="w-14 h-14 rounded-xl bg-emerald-600 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center">
                         <IconComponent className="w-7 h-7 text-white" />
                       </div>
                     </div>
@@ -833,7 +833,7 @@ export default function HowItWorksPage() {
             </h2>
             <p className="text-stone-600 mt-4 max-w-2xl mx-auto">
               Join thousands of caregivers who have found rewarding work through
-              CareConnect.
+              Keel.
             </p>
           </div>
 
@@ -850,7 +850,7 @@ export default function HowItWorksPage() {
                     {String(index + 1).padStart(2, '0')}
                   </span>
 
-                  <div className="w-14 h-14 rounded-xl bg-stone-200 flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
+                  <div className="w-14 h-14 rounded-xl bg-stone-200 flex items-center justify-center mb-4 group-hover:bg-accent transition-colors duration-300">
                     <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <h3 className="text-xl font-bold text-stone-900 mb-2">
@@ -866,7 +866,7 @@ export default function HowItWorksPage() {
 
           <div className="text-center mt-12">
             <Link href="/auth/signup?role=caregiver">
-              <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
+              <Button className="h-12 px-8 bg-primary-900 hover:bg-primary-800 text-white rounded-xl font-semibold group">
                 Apply as Caregiver
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -896,7 +896,7 @@ export default function HowItWorksPage() {
 
               <p className="text-lg text-stone-400 leading-relaxed">
                 We've built multiple layers of protection to ensure that every
-                interaction on CareConnect is safe and secure for families and
+                interaction on Keel is safe and secure for families and
                 caregivers alike.
               </p>
 
@@ -946,9 +946,9 @@ export default function HowItWorksPage() {
           <div className="space-y-4">
             {[
               {
-                question: 'How much does CareConnect cost?',
+                question: 'How much does Keel cost?',
                 answer:
-                  'CareConnect is free to join and browse. You only pay when you book care. Our transparent pricing means no hidden fees.',
+                  'Keel is free to join and browse. You only pay when you book care. Our transparent pricing means no hidden fees.',
               },
               {
                 question: 'How are caregivers verified?',
@@ -992,12 +992,12 @@ export default function HowItWorksPage() {
                 Ready to get started?
               </h2>
               <p className="text-lg text-stone-600 mb-8">
-                Join thousands of families and caregivers who trust CareConnect.
+                Join thousands of families and caregivers who trust Keel.
                 It's free to sign up and takes less than 2 minutes.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/auth/signup">
-                  <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
+                  <Button className="h-12 px-8 bg-primary-900 hover:bg-primary-800 text-white rounded-xl font-semibold group">
                     Create Free Account
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>

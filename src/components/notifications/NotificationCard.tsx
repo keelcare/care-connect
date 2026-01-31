@@ -37,7 +37,7 @@ const typeIconMap = {
 };
 
 const typeColorMap = {
-  success: 'from-green-400/20 to-emerald-400/20',
+  success: 'from-green-400/20 to-green-500/20',
   info: 'from-blue-400/20 to-indigo-400/20',
   warning: 'from-yellow-400/20 to-orange-400/20',
   error: 'from-red-400/20 to-rose-400/20',
@@ -82,7 +82,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClass} backdrop-blur-sm border border-white/20 p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer ${!notification.is_read ? 'ring-2 ring-primary/20' : ''
+      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClass} backdrop-blur-sm border border-white/20 p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer ${!notification.is_read ? 'ring-2 ring-primary-900/20' : ''
         }`}
     >
       {/* Glassmorphic overlay */}
@@ -99,11 +99,11 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="font-bold text-neutral-900 text-base leading-tight">
+            <h3 className="font-bold text-primary-900 text-base leading-tight">
               {notification.title}
             </h3>
             {!notification.is_read && (
-              <span className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-1.5"></span>
+              <span className="flex-shrink-0 w-2 h-2 bg-primary-900 rounded-full mt-1.5"></span>
             )}
           </div>
 

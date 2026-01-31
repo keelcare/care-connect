@@ -83,10 +83,10 @@ export default function NannyNotificationsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900 font-display">
+          <h1 className="text-3xl font-bold text-primary-900 font-display">
             Notifications
           </h1>
-          <p className="text-stone-500 mt-1">
+          <p className="text-neutral-500 mt-1">
             Stay updated on your bookings, messages, and reviews
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function NannyNotificationsPage() {
           <Button
             onClick={handleMarkAllAsRead}
             variant="outline"
-            className="rounded-xl border-stone-200 hover:bg-stone-50 text-stone-700"
+            className="rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-700"
           >
             <CheckCircle2 size={16} className="mr-2" />
             Mark all as read
@@ -104,14 +104,14 @@ export default function NannyNotificationsPage() {
 
       {/* Info Card */}
       {unreadCount > 0 && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-start gap-3">
-          <Bell className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+        <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 flex items-start gap-3">
+          <Bell className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-emerald-800">
+            <p className="text-sm font-medium text-primary-800">
               You have {unreadCount} unread notification
               {unreadCount !== 1 ? 's' : ''}
             </p>
-            <p className="text-sm text-emerald-700 mt-1">
+            <p className="text-sm text-primary-700 mt-1">
               Click on a notification to view details or mark it as read.
             </p>
           </div>
@@ -125,8 +125,8 @@ export default function NannyNotificationsPage() {
             key={filter.value}
             onClick={() => setActiveFilter(filter.value)}
             className={`px-4 py-2 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
-              ? 'bg-stone-900 text-white shadow-md'
-              : 'bg-white text-stone-600 hover:bg-stone-50 border border-stone-200'
+              ? 'bg-primary-900 text-white shadow-md'
+              : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200'
               }`}
           >
             {filter.label}
@@ -137,18 +137,18 @@ export default function NannyNotificationsPage() {
       {/* Content */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 size={40} className="text-emerald-600 animate-spin mb-4" />
+          <Loader2 size={40} className="text-primary-600 animate-spin mb-4" />
           <p className="text-stone-500">Loading notifications...</p>
         </div>
       ) : groupedNotifications.length === 0 ? (
-        <div className="bg-white rounded-2xl p-12 text-center shadow-soft border border-stone-100">
-          <div className="w-20 h-20 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell size={32} className="text-stone-400" />
+        <div className="bg-white rounded-2xl p-12 text-center shadow-soft border border-neutral-100">
+          <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell size={32} className="text-neutral-400" />
           </div>
-          <h3 className="text-xl font-bold text-stone-900 mb-2">
+          <h3 className="text-xl font-bold text-primary-900 mb-2">
             No notifications yet
           </h3>
-          <p className="text-stone-500">
+          <p className="text-neutral-500">
             {activeFilter === 'all'
               ? "You're all caught up! New notifications will appear here."
               : `No ${activeFilter} notifications to show.`}
@@ -158,7 +158,7 @@ export default function NannyNotificationsPage() {
         <div className="space-y-8">
           {groupedNotifications.map((group) => (
             <div key={group.date}>
-              <h2 className="text-sm font-bold text-stone-500 uppercase tracking-wide mb-3 px-1">
+              <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wide mb-3 px-1">
                 {group.date}
               </h2>
               <div className="space-y-3">

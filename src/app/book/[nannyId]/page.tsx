@@ -123,7 +123,7 @@ export default function DirectBookingPage() {
           <h2 className="text-xl font-bold text-stone-900">Nanny not found</h2>
           <Button
             onClick={() => router.push('/browse')}
-            className="mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+            className="mt-4 bg-primary-900 hover:bg-primary-800 rounded-xl"
           >
             Browse Caregivers
           </Button>

@@ -211,8 +211,8 @@ export default function BookServicePage() {
             </Button>
 
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-xl bg-accent-100 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-accent-600" />
               </div>
               <h1 className="text-3xl font-bold text-stone-900">
                 Book a Service
@@ -255,20 +255,18 @@ export default function BookServicePage() {
                 <React.Fragment key={step}>
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
-                        currentStep >= step
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-stone-100 text-stone-400'
-                      }`}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${currentStep >= step
+                        ? 'bg-accent text-white'
+                        : 'bg-stone-100 text-stone-400'
+                        }`}
                     >
                       {currentStep > step ? <CheckCircle2 size={20} /> : step}
                     </div>
                     <span
-                      className={`hidden sm:block text-sm font-medium ${
-                        currentStep >= step
-                          ? 'text-stone-900'
-                          : 'text-stone-400'
-                      }`}
+                      className={`hidden sm:block text-sm font-medium ${currentStep >= step
+                        ? 'text-stone-900'
+                        : 'text-stone-400'
+                        }`}
                     >
                       {step === 1 && 'Service Type'}
                       {step === 2 && 'Date & Time'}
@@ -277,9 +275,8 @@ export default function BookServicePage() {
                   </div>
                   {step < 3 && (
                     <div
-                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${
-                        currentStep > step ? 'bg-emerald-600' : 'bg-stone-200'
-                      }`}
+                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${currentStep > step ? 'bg-accent' : 'bg-stone-200'
+                        }`}
                     />
                   )}
                 </React.Fragment>
@@ -294,8 +291,8 @@ export default function BookServicePage() {
               {currentStep === 1 && (
                 <div className="p-6 md:p-8">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                      <Sparkles size={16} className="text-emerald-600" />
+                    <div className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                      <Sparkles size={16} className="text-accent-600" />
                     </div>
                     <h2 className="text-xl font-bold text-stone-900">
                       What service do you need?
@@ -316,11 +313,10 @@ export default function BookServicePage() {
                               serviceType: service.id,
                             })
                           }
-                          className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-4 hover:scale-[1.02] min-w-[160px] md:min-w-[180px] ${
-                            isSelected
-                              ? service.activeColor
-                              : `${service.color} hover:shadow-md`
-                          }`}
+                          className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-4 hover:scale-[1.02] min-w-[160px] md:min-w-[180px] ${isSelected
+                            ? service.activeColor
+                            : `${service.color} hover:shadow-md`
+                            }`}
                         >
                           <Icon size={32} />
                           <span className="font-bold text-base">
@@ -339,8 +335,8 @@ export default function BookServicePage() {
                   {/* Date Selection */}
                   <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                        <Calendar size={16} className="text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                        <Calendar size={16} className="text-accent-600" />
                       </div>
                       <h2 className="text-xl font-bold text-stone-900">
                         Select a Date
@@ -358,26 +354,25 @@ export default function BookServicePage() {
                             onClick={() =>
                               setFormData({ ...formData, date: dateStr })
                             }
-                            className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
-                            }`}
+                            className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
+                              ? 'bg-accent text-white border-accent'
+                              : 'bg-white border-stone-200 hover:border-accent-300 hover:bg-accent-50'
+                              }`}
                           >
                             <span
-                              className={`text-xs font-medium mb-1 ${isSelected ? 'text-emerald-100' : 'text-stone-500'}`}
+                              className={`text-xs font-medium mb-1 ${isSelected ? 'text-accent-100' : 'text-stone-500'}`}
                             >
                               {date.toLocaleDateString('en-US', {
                                 weekday: 'short',
                               })}
                             </span>
                             <span
-                              className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-emerald-600' : ''}`}
+                              className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-accent-600' : ''}`}
                             >
                               {date.getDate()}
                             </span>
                             <span
-                              className={`text-xs ${isSelected ? 'text-emerald-100' : 'text-stone-400'}`}
+                              className={`text-xs ${isSelected ? 'text-accent-100' : 'text-stone-400'}`}
                             >
                               {date.toLocaleDateString('en-US', {
                                 month: 'short',
@@ -392,8 +387,8 @@ export default function BookServicePage() {
                   {/* Time Selection */}
                   <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                        <Clock size={16} className="text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                        <Clock size={16} className="text-accent-600" />
                       </div>
                       <h2 className="text-xl font-bold text-stone-900">
                         Select Start Time
@@ -431,11 +426,10 @@ export default function BookServicePage() {
                             onClick={() =>
                               setFormData({ ...formData, startTime: time })
                             }
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300 hover:bg-emerald-50'
-                            }`}
+                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
+                              ? 'bg-accent text-white border-accent'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-accent-300 hover:bg-accent-50'
+                              }`}
                           >
                             {time}
                           </button>
@@ -447,8 +441,8 @@ export default function BookServicePage() {
                   {/* Duration Selection */}
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                        <Clock size={16} className="text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                        <Clock size={16} className="text-accent-600" />
                       </div>
                       <h2 className="text-xl font-bold text-stone-900">
                         Duration
@@ -468,11 +462,10 @@ export default function BookServicePage() {
                                 duration: option.value,
                               })
                             }
-                            className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300 hover:bg-emerald-50'
-                            }`}
+                            className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
+                              ? 'bg-accent text-white border-accent'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-accent-300 hover:bg-accent-50'
+                              }`}
                           >
                             {option.label}
                           </button>
@@ -487,8 +480,8 @@ export default function BookServicePage() {
               {currentStep === 3 && (
                 <div className="p-6 md:p-8">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                      <FileText size={16} className="text-emerald-600" />
+                    <div className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                      <FileText size={16} className="text-accent-600" />
                     </div>
                     <h2 className="text-xl font-bold text-stone-900">
                       Additional Details
@@ -511,11 +504,10 @@ export default function BookServicePage() {
                             onClick={() =>
                               setFormData({ ...formData, numChildren: num })
                             }
-                            className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-300'
-                            }`}
+                            className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
+                              ? 'bg-accent text-white border-accent'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-accent-300'
+                              }`}
                           >
                             {num}
                           </button>
@@ -539,7 +531,7 @@ export default function BookServicePage() {
                         })
                       }
                       placeholder="Any specific needs, allergies, preferences, or instructions..."
-                      className="w-full h-32 px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none resize-none text-stone-900 placeholder:text-stone-400"
+                      className="w-full h-32 px-4 py-3 rounded-xl border border-stone-200 focus:border-accent-500 focus:ring-2 focus:ring-accent-100 focus:outline-none resize-none text-stone-900 placeholder:text-stone-400"
                     />
                   </div>
 
@@ -564,13 +556,13 @@ export default function BookServicePage() {
                         <span className="font-medium text-stone-900">
                           {formData.date
                             ? new Date(formData.date).toLocaleDateString(
-                                'en-US',
-                                {
-                                  weekday: 'long',
-                                  month: 'long',
-                                  day: 'numeric',
-                                }
-                              )
+                              'en-US',
+                              {
+                                weekday: 'long',
+                                month: 'long',
+                                day: 'numeric',
+                              }
+                            )
                             : '-'}
                         </span>
                       </div>
@@ -595,7 +587,7 @@ export default function BookServicePage() {
                         </span>
                       </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-stone-200 flex items-center gap-2 text-sm text-emerald-600">
+                    <div className="mt-4 pt-4 border-t border-stone-200 flex items-center gap-2 text-sm text-accent-600">
                       <MapPin size={16} />
                       <span>We'll match you with nearby caregivers</span>
                     </div>
@@ -636,7 +628,7 @@ export default function BookServicePage() {
                         ? !canProceedToStep2
                         : !canProceedToStep3
                     }
-                    className="rounded-xl px-6 bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                    className="rounded-xl px-6 bg-accent hover:bg-accent-600 text-white disabled:opacity-50"
                   >
                     Continue
                     <ChevronRight size={18} className="ml-1" />
@@ -645,7 +637,7 @@ export default function BookServicePage() {
                   <Button
                     type="submit"
                     disabled={loading || missingLocation}
-                    className="rounded-xl px-8 bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                    className="rounded-xl px-8 bg-accent hover:bg-accent-600 text-white disabled:opacity-50"
                   >
                     {loading ? (
                       <>

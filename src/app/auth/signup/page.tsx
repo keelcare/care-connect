@@ -68,7 +68,7 @@ function SignupContent() {
     family: {
       gradient: 'from-stone-50 via-white to-stone-100',
       accent: 'text-stone-900',
-      button: 'bg-emerald-600 hover:bg-emerald-700',
+      button: 'bg-accent hover:bg-accent-600',
       border: 'border-stone-900',
       bgSoft: 'bg-stone-50',
       title: (
@@ -101,15 +101,15 @@ function SignupContent() {
       ],
     },
     caregiver: {
-      gradient: 'from-emerald-50 via-white to-green-50',
-      accent: 'text-emerald-600',
-      button: 'bg-emerald-600 hover:bg-emerald-700',
-      border: 'border-emerald-600',
-      bgSoft: 'bg-emerald-50',
+      gradient: 'from-accent-50 via-white to-blue-50',
+      accent: 'text-accent-600',
+      button: 'bg-accent hover:bg-accent-600',
+      border: 'border-accent-600',
+      bgSoft: 'bg-accent-50',
       title: (
         <>
           Find Your Perfect <br />
-          <span className="text-emerald-600">Care Job</span>
+          <span className="text-accent-600">Care Job</span>
         </>
       ),
       description:
@@ -123,19 +123,19 @@ function SignupContent() {
         },
         {
           Icon: Briefcase,
-          color: 'text-emerald-500 fill-emerald-100',
+          color: 'text-accent-500 fill-accent-100',
           delay: '1s',
           pos: 'top-[20%] right-[15%]',
         },
         {
           Icon: Sparkles,
-          color: 'text-green-500 fill-green-100',
+          color: 'text-blue-500 fill-blue-100',
           delay: '2s',
           pos: 'bottom-[20%] left-[15%]',
         },
       ],
       testimonial: {
-        text: 'I love the flexibility CareConnect gives me. I found a wonderful family to work with in just a week.',
+        text: 'I love the flexibility Keel gives me. I found a wonderful family to work with in just a week.',
         author: 'Sarah M.',
         role: 'Nanny',
       },
@@ -381,11 +381,10 @@ function SignupContent() {
 
             <div className="grid grid-cols-2 gap-4">
               <div
-                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${
-                  role === 'family'
-                    ? `${themes.family.border} ${themes.family.bgSoft} ${themes.family.accent} shadow-sm scale-[1.02]`
-                    : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
-                }`}
+                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${role === 'family'
+                  ? `${themes.family.border} ${themes.family.bgSoft} ${themes.family.accent} shadow-sm scale-[1.02]`
+                  : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
+                  }`}
                 onClick={() => setRole('family')}
               >
                 <User
@@ -399,11 +398,10 @@ function SignupContent() {
                 <span className="font-bold text-sm">I need care</span>
               </div>
               <div
-                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${
-                  role === 'caregiver'
-                    ? `${themes.caregiver.border} ${themes.caregiver.bgSoft} ${themes.caregiver.accent} shadow-sm scale-[1.02]`
-                    : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
-                }`}
+                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${role === 'caregiver'
+                  ? `${themes.caregiver.border} ${themes.caregiver.bgSoft} ${themes.caregiver.accent} shadow-sm scale-[1.02]`
+                  : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
+                  }`}
                 onClick={() => setRole('caregiver')}
               >
                 <Heart

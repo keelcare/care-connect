@@ -30,7 +30,7 @@ export const TrustedBy: React.FC = () => {
       image:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80',
       quote:
-        "We've been using CareConnect for over a year now. Best decision we ever made.",
+        "We've been using Keel for over a year now. Best decision we ever made.",
       rating: 5,
     },
     {
