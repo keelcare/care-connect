@@ -130,7 +130,7 @@ export function LocationSender({
             setCurrentLocation({ lat: latitude, lng: longitude });
             sendLocationUpdate(latitude, longitude);
           },
-          () => {},
+          () => { },
           { enableHighAccuracy: true }
         );
       }
@@ -178,24 +178,22 @@ export function LocationSender({
     <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
       {/* Header */}
       <div
-        className={`px-5 py-4 border-b ${
-          isSharing
-            ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-100'
+        className={`px-5 py-4 border-b ${isSharing
+            ? 'bg-gradient-to-r from-primary-50 to-green-50 border-primary-100'
             : 'bg-stone-50 border-stone-100'
-        }`}
+          }`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                isSharing ? 'bg-emerald-100' : 'bg-stone-100'
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${isSharing ? 'bg-primary-100' : 'bg-stone-100'
+                }`}
             >
               <Navigation
                 size={20}
                 className={
                   isSharing
-                    ? 'text-emerald-600 animate-pulse'
+                    ? 'text-primary-600 animate-pulse'
                     : 'text-stone-400'
                 }
               />
@@ -211,9 +209,9 @@ export function LocationSender({
           </div>
 
           {isSharing && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-100 rounded-full">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-emerald-700">Live</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary-100 rounded-full">
+              <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-primary-700">Live</span>
             </div>
           )}
         </div>
@@ -240,11 +238,10 @@ export function LocationSender({
 
         <Button
           onClick={isSharing ? stopSharing : startSharing}
-          className={`w-full rounded-xl h-12 font-medium ${
-            isSharing
+          className={`w-full rounded-xl h-12 font-medium ${isSharing
               ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-          }`}
+              : 'bg-primary-900 hover:bg-primary-800 text-white'
+            }`}
           disabled={permissionDenied}
         >
           {isSharing ? (

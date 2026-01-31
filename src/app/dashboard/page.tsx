@@ -179,18 +179,18 @@ export default function DashboardPage() {
 
   const statsDisplay = [
     {
-      label: 'Total Bookings',
-      value: stats.totalBookings.toString(),
       icon: Calendar,
-      color: 'text-stone-900',
-      bg: 'bg-stone-100',
+      label: 'Total Bookings',
+      value: stats.totalBookings,
+      color: 'text-primary-900',
+      bg: 'bg-primary-50',
     },
     {
-      label: 'Unread Messages',
-      value: stats.unreadMessages.toString(),
       icon: MessageSquare,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
+      label: 'Unread Messages',
+      value: stats.unreadMessages,
+      color: 'text-accent',
+      bg: 'bg-accent/50',
     },
     {
       label: 'Hours of Care',
@@ -232,10 +232,10 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900 font-display">
+          <h1 className="text-3xl font-heading font-semibold text-primary-900">
             Dashboard Overview
           </h1>
-          <p className="text-stone-500 mt-1">
+          <p className="text-neutral-600 mt-1">
             Welcome back, {user?.profiles?.first_name || 'User'}! Here's what's
             happening today.
           </p>
@@ -250,14 +250,14 @@ export default function DashboardPage() {
 
           const CardContent = () => (
             <div
-              className={`bg-white p-6 rounded-[24px] border border-stone-100 shadow-soft hover:shadow-md transition-shadow ${href ? 'cursor-pointer' : ''}`}
+              className={`bg-white/95 backdrop-blur-sm p-6 rounded-[24px] border border-neutral-200/60 shadow-sm hover:shadow-premium transition-shadow ${href ? 'cursor-pointer' : ''}`}
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-stone-500">
+                  <p className="text-sm font-medium text-neutral-600">
                     {stat.label}
                   </p>
-                  <h3 className="text-2xl font-bold text-stone-900 mt-1">
+                  <h3 className="text-2xl font-bold text-primary-900 mt-1">
                     {stat.value}
                   </h3>
                 </div>
@@ -312,14 +312,14 @@ export default function DashboardPage() {
         {/* Upcoming Bookings */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-stone-900 font-display">
+            <h2 className="text-xl font-heading font-semibold text-primary-900">
               Upcoming Bookings
             </h2>
             <Link href="/dashboard/bookings">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                className="text-neutral-700 hover:text-primary-900 hover:bg-neutral-100"
               >
                 View All <ChevronRight size={16} className="ml-1" />
               </Button>
@@ -328,18 +328,18 @@ export default function DashboardPage() {
 
           {upcomingBookings.length === 0 ? (
             <div className="bg-white rounded-[24px] border border-stone-100 shadow-soft p-12 text-center">
-              <p className="text-stone-500">No upcoming bookings yet.</p>
+              <p className="text-neutral-600">No upcoming bookings yet.</p>
             </div>
           ) : (
             <>
               {/* Next Booking Card with Gradient Border */}
-              <div className="p-[2px] rounded-[26px] bg-gradient-to-r from-stone-900 to-stone-700 shadow-md">
+              <div className="p-[2px] rounded-[26px] bg-gradient-to-r from-navy to-navy-light shadow-premium">
                 <div className="bg-white rounded-[24px] p-6">
-                  <div className="flex items-center gap-2 mb-4 text-stone-900 font-bold text-sm uppercase tracking-wider">
+                  <div className="flex items-center gap-2 mb-4 text-primary-900 font-bold text-sm uppercase tracking-wider">
                     <Star size={14} fill="currentColor" /> Next Booking
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                    <div className="flex-shrink-0 w-20 h-20 bg-stone-100 rounded-2xl flex flex-col items-center justify-center text-stone-900">
+                    <div className="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-2xl flex flex-col items-center justify-center text-primary-900">
                       <span className="text-xs font-bold uppercase">
                         {formatDate(upcomingBookings[0].start_time).month}
                       </span>
@@ -348,16 +348,16 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-stone-900 mb-2">
+                      <h3 className="text-xl font-heading font-semibold text-primary-900 mb-2">
                         {upcomingBookings[0].job?.title || 'Booking'}
                       </h3>
-                      <p className="text-stone-500 text-sm mb-2">
+                      <p className="text-neutral-600 text-sm mb-2">
                         with{' '}
-                        <span className="font-medium text-stone-700">
+                        <span className="font-medium text-neutral-700">
                           {getParentName(upcomingBookings[0])}
                         </span>
                       </p>
-                      <div className="flex flex-wrap gap-4 text-stone-500 text-sm">
+                      <div className="flex flex-wrap gap-4 text-neutral-600 text-sm">
                         <div className="flex items-center gap-1">
                           <Clock size={16} />
                           {formatTime(upcomingBookings[0].start_time)}
@@ -365,7 +365,7 @@ export default function DashboardPage() {
                             ` - ${formatTime(upcomingBookings[0].end_time)}`}
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                          <div className="w-2 h-2 rounded-full bg-success-500"></div>
                           {upcomingBookings[0].status}
                         </div>
                       </div>
@@ -390,22 +390,22 @@ export default function DashboardPage() {
                       return (
                         <div
                           key={booking.id}
-                          className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-stone-50 transition-colors"
+                          className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-neutral-50 transition-colors"
                         >
-                          <div className="flex-shrink-0 w-14 h-14 bg-stone-50 rounded-xl flex flex-col items-center justify-center text-stone-600">
+                          <div className="flex-shrink-0 w-14 h-14 bg-neutral-50 rounded-xl flex flex-col items-center justify-center text-neutral-700">
                             <span className="text-[10px] font-bold uppercase">
                               {month}
                             </span>
                             <span className="text-lg font-bold">{day}</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-base font-bold text-stone-900 truncate">
+                            <h4 className="text-base font-heading font-semibold text-primary-900 truncate">
                               {booking.job?.title || 'Booking'}
                             </h4>
-                            <p className="text-stone-500 text-xs mb-1">
+                            <p className="text-neutral-600 text-xs mb-1">
                               with {getParentName(booking)}
                             </p>
-                            <p className="text-stone-500 flex items-center gap-2 mt-1 text-sm">
+                            <p className="text-neutral-600 flex items-center gap-2 mt-1 text-sm">
                               <Clock size={14} />
                               {formatTime(booking.start_time)}
                               {booking.end_time &&
@@ -415,8 +415,8 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-2">
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'CONFIRMED'
-                                ? 'bg-emerald-100 text-emerald-700'
-                                : 'bg-stone-100 text-stone-700'
+                                ? 'bg-success-50 text-success-700'
+                                : 'bg-neutral-100 text-neutral-700'
                                 }`}
                             >
                               {booking.status}
@@ -442,11 +442,11 @@ export default function DashboardPage() {
 
         {/* Recent Activity / Notifications Placeholder */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-stone-900 font-display">
+          <h2 className="text-xl font-heading font-semibold text-primary-900">
             Recent Activity
           </h2>
           <div className="bg-white rounded-[24px] border border-stone-100 shadow-soft p-6 space-y-6">
-            <p className="text-sm text-stone-500 text-center py-4">
+            <p className="text-sm text-neutral-600 text-center py-4">
               Activity feed coming soon
             </p>
           </div>

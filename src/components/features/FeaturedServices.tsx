@@ -72,19 +72,19 @@ export const FeaturedServices: React.FC = () => {
   };
 
   return (
-    <section className="py-24 px-6 bg-stone-50">
+    <section className="py-24 px-6 bg-neutral-50">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div>
-            <p className="text-sm font-semibold text-stone-400 uppercase tracking-widest mb-3">
+            <p className="text-sm font-semibold text-neutral-400 uppercase tracking-widest mb-3">
               Our Services
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 max-w-lg">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary-900 max-w-lg">
               Care for every need, all in one place
             </h2>
           </div>
-          <p className="text-stone-600 max-w-md">
+          <p className="text-neutral-600 max-w-md">
             Whether you need help with childcare, eldercare, or everyday tasks,
             we have verified professionals ready to assist.
           </p>
@@ -98,31 +98,31 @@ export const FeaturedServices: React.FC = () => {
               <div
                 key={index}
                 onClick={() => handleServiceClick(service.title)}
-                className="group relative bg-white rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-500 hover:-translate-y-1 border border-stone-100"
+                className="group relative bg-white rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-neutral-200/50 transition-all duration-500 hover:-translate-y-1 border border-neutral-100"
               >
                 {/* Card Content */}
                 <div className="p-6">
                   {/* Icon */}
-                  <div className="w-14 h-14 rounded-xl bg-stone-100 flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
-                    <IconComponent className="w-7 h-7 text-stone-600 group-hover:text-white transition-colors duration-300" />
+                  <div className="w-14 h-14 rounded-xl bg-neutral-100 flex items-center justify-center mb-4 group-hover:bg-primary-600 transition-colors duration-300">
+                    <IconComponent className="w-7 h-7 text-neutral-600 group-hover:text-white transition-colors duration-300" />
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-stone-900 mb-2 group-hover:text-stone-700 transition-colors">
+                  <h3 className="text-xl font-bold text-primary-900 mb-2 group-hover:text-primary-700 transition-colors">
                     {service.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-stone-500 text-sm mb-4 leading-relaxed">
+                  <p className="text-neutral-500 text-sm mb-4 leading-relaxed">
                     {service.description}
                   </p>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-stone-100">
-                    <span className="text-xs font-medium text-stone-400">
+                  <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
+                    <span className="text-xs font-medium text-neutral-400">
                       {service.count}
                     </span>
-                    <div className="flex items-center gap-1 text-sm font-semibold text-stone-900 group-hover:gap-2 transition-all">
+                    <div className="flex items-center gap-1 text-sm font-semibold text-primary-900 group-hover:gap-2 transition-all">
                       <span>Browse</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -130,7 +130,7 @@ export const FeaturedServices: React.FC = () => {
                 </div>
 
                 {/* Hover gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </div>
             );
           })}

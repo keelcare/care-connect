@@ -94,7 +94,7 @@ export default function FavoritesPage() {
                 favorites for quick access later.
               </p>
               <Link href="/browse">
-                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
+                <Button className="bg-primary-900 hover:bg-primary-800 text-white rounded-xl">
                   Browse Caregivers
                 </Button>
               </Link>
@@ -111,7 +111,7 @@ export default function FavoritesPage() {
                 // Handle both full_name and first_name/last_name formats
                 const fullName = nanny.profiles
                   ? nanny.profiles.full_name ||
-                    `${nanny.profiles.first_name || ''} ${nanny.profiles.last_name || ''}`.trim()
+                  `${nanny.profiles.first_name || ''} ${nanny.profiles.last_name || ''}`.trim()
                   : 'Caregiver';
                 const hourlyRate = nanny.nanny_details?.hourly_rate
                   ? parseFloat(nanny.nanny_details.hourly_rate)

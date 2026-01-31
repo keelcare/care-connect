@@ -183,7 +183,7 @@ export default function BookRecurringPage() {
     return (
       <ParentLayout>
         <div className="flex items-center justify-center min-h-screen bg-stone-50">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
       </ParentLayout>
     );
@@ -198,7 +198,7 @@ export default function BookRecurringPage() {
           </h2>
           <Button
             onClick={() => router.push('/browse')}
-            className="mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+            className="mt-4 bg-primary-900 hover:bg-primary-800 rounded-xl"
           >
             Browse Caregivers
           </Button>
@@ -272,20 +272,18 @@ export default function BookRecurringPage() {
                 <React.Fragment key={step}>
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
-                        currentStep >= step
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${currentStep >= step
                           ? 'bg-purple-600 text-white'
                           : 'bg-stone-100 text-stone-400'
-                      }`}
+                        }`}
                     >
                       {currentStep > step ? <CheckCircle2 size={20} /> : step}
                     </div>
                     <span
-                      className={`hidden sm:block text-sm font-medium ${
-                        currentStep >= step
+                      className={`hidden sm:block text-sm font-medium ${currentStep >= step
                           ? 'text-stone-900'
                           : 'text-stone-400'
-                      }`}
+                        }`}
                     >
                       {step === 1 && 'Schedule'}
                       {step === 2 && 'Date & Time'}
@@ -294,9 +292,8 @@ export default function BookRecurringPage() {
                   </div>
                   {step < 3 && (
                     <div
-                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${
-                        currentStep > step ? 'bg-purple-600' : 'bg-stone-200'
-                      }`}
+                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${currentStep > step ? 'bg-purple-600' : 'bg-stone-200'
+                        }`}
                     />
                   )}
                 </React.Fragment>
@@ -338,11 +335,10 @@ export default function BookRecurringPage() {
                                 selectedDays: [],
                               })
                             }
-                            className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all capitalize ${
-                              isSelected
+                            className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all capitalize ${isSelected
                                 ? 'bg-purple-600 text-white border-purple-600'
                                 : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
-                            }`}
+                              }`}
                           >
                             {freq}
                           </button>
@@ -385,21 +381,20 @@ export default function BookRecurringPage() {
                                 onClick={() => {
                                   const newDays = isSelected
                                     ? formData.selectedDays.filter(
-                                        (d) => d !== dateStr
-                                      )
+                                      (d) => d !== dateStr
+                                    )
                                     : [...formData.selectedDays, dateStr].sort(
-                                        (a, b) => parseInt(a) - parseInt(b)
-                                      );
+                                      (a, b) => parseInt(a) - parseInt(b)
+                                    );
                                   setFormData({
                                     ...formData,
                                     selectedDays: newDays,
                                   });
                                 }}
-                                className={`w-10 h-10 rounded-lg font-medium text-sm border transition-all ${
-                                  isSelected
+                                className={`w-10 h-10 rounded-lg font-medium text-sm border transition-all ${isSelected
                                     ? 'bg-purple-600 text-white border-purple-600'
                                     : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
-                                }`}
+                                  }`}
                               >
                                 {date}
                               </button>
@@ -501,11 +496,10 @@ export default function BookRecurringPage() {
                             onClick={() =>
                               setFormData({ ...formData, startTime: time })
                             }
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isSelected
+                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
                                 ? 'bg-purple-600 text-white border-purple-600'
                                 : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
-                            }`}
+                              }`}
                           >
                             {time}
                           </button>
@@ -538,11 +532,10 @@ export default function BookRecurringPage() {
                                 duration: option.value,
                               })
                             }
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                              isSelected
+                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
                                 ? 'bg-purple-600 text-white border-purple-600'
                                 : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
-                            }`}
+                              }`}
                           >
                             {option.label}
                           </button>
@@ -581,11 +574,10 @@ export default function BookRecurringPage() {
                             onClick={() =>
                               setFormData({ ...formData, numChildren: num })
                             }
-                            className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${
-                              isSelected
+                            className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
                                 ? 'bg-purple-600 text-white border-purple-600'
                                 : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
-                            }`}
+                              }`}
                           >
                             {num}
                           </button>
@@ -650,11 +642,11 @@ export default function BookRecurringPage() {
                           {formData.frequency === 'daily'
                             ? 'Daily'
                             : formatRecurrencePattern(
-                                generateRecurrencePattern(
-                                  formData.frequency,
-                                  formData.selectedDays
-                                )
-                              )}
+                              generateRecurrencePattern(
+                                formData.frequency,
+                                formData.selectedDays
+                              )
+                            )}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -662,13 +654,13 @@ export default function BookRecurringPage() {
                         <span className="font-medium text-stone-900">
                           {formData.startDate
                             ? new Date(formData.startDate).toLocaleDateString(
-                                'en-US',
-                                {
-                                  month: 'long',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                }
-                              )
+                              'en-US',
+                              {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              }
+                            )
                             : '-'}
                         </span>
                       </div>

@@ -28,7 +28,7 @@ export const CTASection: React.FC = () => {
                 Ready to find the perfect care for your family?
               </h2>
               <p className="text-stone-600 mb-8 text-lg">
-                Join over 50,000 families who trust CareConnect to find
+                Join over 50,000 families who trust Keel to find
                 verified, reliable caregivers.
               </p>
 
@@ -36,7 +36,7 @@ export const CTASection: React.FC = () => {
               <ul className="space-y-3 mb-8">
                 {benefits.map((benefit, index) => (
                   <li key={index} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 text-white" />
                     </div>
                     <span className="text-stone-700">{benefit}</span>
@@ -47,7 +47,7 @@ export const CTASection: React.FC = () => {
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/auth/signup">
-                  <Button className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold group">
+                  <Button className="h-12 px-8 bg-accent hover:bg-accent-600 text-white rounded-xl font-semibold group">
                     Create Free Account
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>

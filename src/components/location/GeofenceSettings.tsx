@@ -69,10 +69,10 @@ export function GeofenceSettings({
   return (
     <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 bg-gradient-to-r from-stone-50 to-emerald-50 border-b border-stone-100">
+      <div className="px-5 py-4 bg-gradient-to-r from-stone-50 to-primary-50 border-b border-stone-100">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-            <Shield size={20} className="text-emerald-600" />
+          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+            <Shield size={20} className="text-primary-600" />
           </div>
           <div>
             <h3 className="font-semibold text-stone-900">Geofence Settings</h3>
@@ -98,27 +98,24 @@ export function GeofenceSettings({
             <button
               key={preset.value}
               onClick={() => handleRadiusChange(preset.value)}
-              className={`p-3 rounded-xl border transition-all text-left ${
-                settings.radius === preset.value
-                  ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20'
+              className={`p-3 rounded-xl border transition-all text-left ${settings.radius === preset.value
+                  ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-500/20'
                   : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50'
-              }`}
+                }`}
             >
               <div
-                className={`text-lg font-bold ${
-                  settings.radius === preset.value
-                    ? 'text-emerald-700'
+                className={`text-lg font-bold ${settings.radius === preset.value
+                    ? 'text-primary-700'
                     : 'text-stone-900'
-                }`}
+                  }`}
               >
                 {preset.label}
               </div>
               <div
-                className={`text-xs ${
-                  settings.radius === preset.value
-                    ? 'text-emerald-600'
+                className={`text-xs ${settings.radius === preset.value
+                    ? 'text-primary-600'
                     : 'text-stone-500'
-                }`}
+                  }`}
               >
                 {preset.description}
               </div>
@@ -129,10 +126,10 @@ export function GeofenceSettings({
         {/* Visual Indicator */}
         <div className="mt-4 p-4 bg-stone-50 rounded-xl">
           <div className="flex items-center justify-center gap-2 text-sm text-stone-600">
-            <MapPin size={16} className="text-emerald-600" />
+            <MapPin size={16} className="text-primary-600" />
             <span>
               Alerts trigger when distance exceeds{' '}
-              <strong className="text-emerald-700">
+              <strong className="text-primary-700">
                 {settings.radius < 1
                   ? `${settings.radius * 1000}m`
                   : `${settings.radius}km`}
@@ -151,8 +148,8 @@ export function GeofenceSettings({
         {/* Enable Alerts */}
         <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-              <Bell size={16} className="text-emerald-600" />
+            <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+              <Bell size={16} className="text-primary-600" />
             </div>
             <div>
               <p className="font-medium text-stone-900">
@@ -165,14 +162,12 @@ export function GeofenceSettings({
           </div>
           <button
             onClick={() => handleToggle('enableAlerts')}
-            className={`relative w-12 h-7 rounded-full transition-colors ${
-              settings.enableAlerts ? 'bg-emerald-600' : 'bg-stone-300'
-            }`}
+            className={`relative w-12 h-7 rounded-full transition-colors ${settings.enableAlerts ? 'bg-primary-600' : 'bg-stone-300'
+              }`}
           >
             <div
-              className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
-                settings.enableAlerts ? 'translate-x-6' : 'translate-x-1'
-              }`}
+              className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${settings.enableAlerts ? 'translate-x-6' : 'translate-x-1'
+                }`}
             />
           </button>
         </div>
@@ -194,14 +189,12 @@ export function GeofenceSettings({
               </div>
               <button
                 onClick={() => handleToggle('alertOnExit')}
-                className={`relative w-12 h-7 rounded-full transition-colors ${
-                  settings.alertOnExit ? 'bg-emerald-600' : 'bg-stone-300'
-                }`}
+                className={`relative w-12 h-7 rounded-full transition-colors ${settings.alertOnExit ? 'bg-primary-600' : 'bg-stone-300'
+                  }`}
               >
                 <div
-                  className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
-                    settings.alertOnExit ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${settings.alertOnExit ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -209,8 +202,8 @@ export function GeofenceSettings({
             {/* Alert on Return */}
             <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl ml-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <MapPin size={16} className="text-emerald-600" />
+                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <MapPin size={16} className="text-primary-600" />
                 </div>
                 <div>
                   <p className="font-medium text-stone-900">Alert on Return</p>
@@ -221,14 +214,12 @@ export function GeofenceSettings({
               </div>
               <button
                 onClick={() => handleToggle('alertOnReturn')}
-                className={`relative w-12 h-7 rounded-full transition-colors ${
-                  settings.alertOnReturn ? 'bg-emerald-600' : 'bg-stone-300'
-                }`}
+                className={`relative w-12 h-7 rounded-full transition-colors ${settings.alertOnReturn ? 'bg-primary-600' : 'bg-stone-300'
+                  }`}
               >
                 <div
-                  className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
-                    settings.alertOnReturn ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${settings.alertOnReturn ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -242,7 +233,7 @@ export function GeofenceSettings({
           <Button
             onClick={handleSave}
             disabled={saving || isLoading}
-            className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700"
+            className="w-full rounded-xl bg-primary-900 hover:bg-primary-800"
           >
             {saving ? (
               <>

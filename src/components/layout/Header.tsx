@@ -67,7 +67,7 @@ export const Header: React.FC = () => {
           className="flex items-center gap-2 group"
         >
           <span className="text-2xl font-bold text-stone-900 tracking-tight font-display group-hover:opacity-80 transition-opacity">
-            CareConnect
+            Keel
           </span>
         </Link>
 
@@ -213,7 +213,7 @@ export const Header: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="rounded-xl px-6 shadow-md hover:shadow-lg transition-all bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Button className="rounded-xl px-6 shadow-md hover:shadow-lg transition-all bg-accent hover:bg-accent-600 text-white">
                   Sign Up
                 </Button>
               </Link>
@@ -314,7 +314,7 @@ export const Header: React.FC = () => {
                     href="/auth/signup"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Button className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button className="w-full rounded-xl bg-accent hover:bg-accent-600 text-white">
                       Sign Up
                     </Button>
                   </Link>

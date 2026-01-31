@@ -9,8 +9,8 @@ interface Props {
 export default function VerificationStatus({ status, rejectionReason }: Props) {
   if (status === 'verified') {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center max-w-2xl mx-auto">
-        <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-6 text-center max-w-2xl mx-auto">
+        <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-8 w-8"
@@ -26,17 +26,17 @@ export default function VerificationStatus({ status, rejectionReason }: Props) {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-emerald-900 mb-2">
+        <h2 className="text-2xl font-bold text-primary-900 mb-2">
           You are Verified!
         </h2>
-        <p className="text-emerald-700">
+        <p className="text-primary-700">
           Thank you for verifying your identity. You can now access all features
           of the platform.
         </p>
         <div className="mt-6">
           <Link
             href="/nanny/dashboard"
-            className="inline-block px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors"
+            className="inline-block px-6 py-2 bg-accent text-white rounded-md hover:bg-accent-600 transition-colors"
           >
             Go to Dashboard
           </Link>

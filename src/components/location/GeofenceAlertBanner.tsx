@@ -118,7 +118,7 @@ export function GeofenceAlertBanner({
             a.bookingId === data.bookingId &&
             Math.abs(
               new Date(a.timestamp).getTime() -
-                new Date(data.timestamp).getTime()
+              new Date(data.timestamp).getTime()
             ) < 5000
         );
         if (exists) return prev;
@@ -172,11 +172,11 @@ export function GeofenceAlertBanner({
         };
       case 'returned_geofence':
         return {
-          bg: 'bg-emerald-50',
-          border: 'border-emerald-200',
-          icon: 'text-emerald-600',
-          text: 'text-emerald-800',
-          subtext: 'text-emerald-600',
+          bg: 'bg-primary-50',
+          border: 'border-primary-200',
+          icon: 'text-primary-600',
+          text: 'text-primary-800',
+          subtext: 'text-primary-600',
         };
       case 'approaching':
         return {

@@ -75,11 +75,11 @@ export function ChatSidebar({
   });
 
   return (
-    <div className="h-full flex flex-col bg-white border-r border-stone-100">
+    <div className="h-full flex flex-col bg-white border-r border-neutral-200">
       {/* Header */}
-      <div className="p-4 border-b border-stone-100">
+      <div className="p-4 border-b border-neutral-200">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-stone-900">Messages</h2>
+          <h2 className="text-xl font-heading font-semibold text-primary-900">Messages</h2>
           <div className="flex items-center gap-2">
             {!isConnected && (
               <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
@@ -93,14 +93,14 @@ export function ChatSidebar({
         <div className="relative">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
           />
           <input
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all text-sm"
+            className="w-full pl-10 pr-4 py-2.5 bg-neutral-50 rounded-xl border-none focus:ring-2 focus:ring-navy/20 focus:bg-white transition-all text-sm"
           />
         </div>
       </div>
@@ -109,7 +109,7 @@ export function ChatSidebar({
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-navy" />
           </div>
         ) : filteredChats.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-stone-400 p-8">
@@ -137,11 +137,10 @@ export function ChatSidebar({
               <div
                 key={chat.id}
                 onClick={() => onSelectChat(chat)}
-                className={`px-4 py-3 flex items-center gap-3 cursor-pointer transition-all hover:bg-stone-50 ${
-                  isActive
-                    ? 'bg-emerald-50 border-l-2 border-emerald-600'
-                    : 'border-l-2 border-transparent'
-                }`}
+                className={`px-4 py-3 flex items-center gap-3 cursor-pointer transition-all hover:bg-stone-50 ${isActive
+                  ? 'bg-navy/10 border-l-2 border-navy'
+                  : 'border-l-2 border-transparent'
+                  }`}
               >
                 <div className="relative flex-shrink-0">
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-stone-100">
@@ -165,9 +164,8 @@ export function ChatSidebar({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`font-medium truncate ${
-                        isActive ? 'text-emerald-900' : 'text-stone-900'
-                      }`}
+                      className={`font-medium truncate ${isActive ? 'text-navy' : 'text-navy'
+                        }`}
                     >
                       {otherPartyName}
                     </span>
@@ -179,18 +177,17 @@ export function ChatSidebar({
                   </div>
                   <div className="flex items-center gap-2">
                     <p
-                      className={`text-sm truncate ${
-                        chat.unreadCount
-                          ? 'text-stone-700 font-medium'
-                          : 'text-stone-500'
-                      }`}
+                      className={`text-sm truncate ${chat.unreadCount
+                        ? 'text-stone-700 font-medium'
+                        : 'text-stone-500'
+                        }`}
                     >
                       {chat.lastMessage ||
                         chat.booking?.job?.title ||
                         'Booking conversation'}
                     </p>
                     {chat.unreadCount && chat.unreadCount > 0 && (
-                      <span className="flex-shrink-0 w-5 h-5 bg-emerald-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      <span className="flex-shrink-0 w-5 h-5 bg-sage text-white text-xs font-bold rounded-full flex items-center justify-center">
                         {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                       </span>
                     )}

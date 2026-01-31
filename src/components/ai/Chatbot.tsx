@@ -19,7 +19,7 @@ export function Chatbot() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Hi! I am your CareConnect assistant. How can I help you today?',
+      content: 'Hi! I am your Keel assistant. How can I help you today?',
     },
   ]);
   const [input, setInput] = useState('');
@@ -87,14 +87,14 @@ export function Chatbot() {
         )}
       >
         {/* Header */}
-        <div className="bg-emerald-600 p-4 flex items-center justify-between text-white">
+        <div className="bg-accent p-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
               <Sparkles size={16} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">CareConnect AI</h3>
-              <p className="text-xs text-emerald-100">Always here to help</p>
+              <h3 className="font-bold text-sm">Keel AI</h3>
+              <p className="text-xs text-accent-100">Always here to help</p>
             </div>
           </div>
           <button
@@ -113,7 +113,7 @@ export function Chatbot() {
               className={cn(
                 'max-w-[80%] rounded-2xl p-3 text-sm break-words',
                 msg.role === 'user'
-                  ? 'bg-emerald-600 text-white ml-auto rounded-br-none'
+                  ? 'bg-accent text-white ml-auto rounded-br-none'
                   : 'bg-white border border-neutral-200 text-neutral-800 mr-auto rounded-bl-none shadow-sm'
               )}
             >
@@ -135,7 +135,7 @@ export function Chatbot() {
                       ),
                       strong: ({ node, ...props }) => (
                         <strong
-                          className="font-semibold text-emerald-800"
+                          className="font-semibold text-accent-800"
                           {...props}
                         />
                       ),
@@ -178,7 +178,7 @@ export function Chatbot() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all"
+            className="flex-1 bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-600/20 focus:border-accent transition-all"
           />
           <Button
             type="submit"
@@ -198,7 +198,7 @@ export function Chatbot() {
           'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 pointer-events-auto flex items-center justify-center',
           isOpen
             ? 'bg-neutral-800 hover:bg-neutral-900 rotate-90'
-            : 'bg-emerald-600 hover:bg-emerald-700'
+            : 'bg-accent hover:bg-accent-600'
         )}
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}

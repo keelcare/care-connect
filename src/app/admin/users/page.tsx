@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
         >
           ← Back to Dashboard
         </Button>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
+        <h1 className="text-3xl font-bold text-primary-900 font-display">
           User Management
         </h1>
       </div>
@@ -173,13 +173,12 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                        u.role === 'admin'
+                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${u.role === 'admin'
                           ? 'bg-purple-100 text-purple-700'
                           : u.role === 'nanny'
-                            ? 'bg-stone-100 text-stone-700'
+                            ? 'bg-neutral-100 text-neutral-700'
                             : 'bg-emerald-100 text-emerald-700'
-                      }`}
+                        }`}
                     >
                       {u.role}
                     </span>

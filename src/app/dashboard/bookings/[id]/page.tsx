@@ -133,11 +133,11 @@ export default function BookingDetailsPage() {
   const getStatusClass = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-primary-100 text-primary-700';
       case 'IN_PROGRESS':
         return 'bg-stone-100 text-stone-700';
       case 'COMPLETED':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-primary-100 text-primary-700';
       case 'CANCELLED':
         return 'bg-red-100 text-red-700';
       default:
@@ -320,14 +320,14 @@ export default function BookingDetailsPage() {
 
                 {(booking.status === 'CONFIRMED' ||
                   booking.status === 'IN_PROGRESS') && (
-                  <Button
-                    variant="outline"
-                    className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                    onClick={() => setIsCancelModalOpen(true)}
-                  >
-                    Cancel Booking
-                  </Button>
-                )}
+                    <Button
+                      variant="outline"
+                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                      onClick={() => setIsCancelModalOpen(true)}
+                    >
+                      Cancel Booking
+                    </Button>
+                  )}
 
                 {booking.status === 'COMPLETED' && !review && (
                   <Button

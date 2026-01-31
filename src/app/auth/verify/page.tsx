@@ -146,7 +146,7 @@ function VerifyEmailContent() {
                 <CheckCircle className="w-16 h-16 text-emerald-600" />
               </div>
               <h2 className="text-2xl font-bold text-stone-800 mb-4">
-                Welcome to CareConnect
+                Welcome to Keel
               </h2>
               <p className="text-stone-600 max-w-xs mx-auto">
                 Your account is now verified. You can start using all features!

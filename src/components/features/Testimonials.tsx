@@ -6,7 +6,7 @@ export const Testimonials: React.FC = () => {
   const testimonials = [
     {
       quote:
-        'Finding a nanny for our twins was stressful until we found CareConnect. The background checks gave us peace of mind, and Sarah is amazing!',
+        'Finding a nanny for our twins was stressful until we found Keel. The background checks gave us peace of mind, and Sarah is amazing!',
       authorName: 'Jennifer M.',
       authorRole: 'Parent of Twins',
       authorImage:
@@ -37,7 +37,7 @@ export const Testimonials: React.FC = () => {
           <h2 className={styles.title}>Trusted by Families</h2>
           <p className={styles.subtitle}>
             Hear from families and caregivers who have found their perfect match
-            on CareConnect.
+            on Keel.
           </p>
         </div>
         <div className={styles.grid}>

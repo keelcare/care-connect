@@ -39,6 +39,8 @@ export default function ParentBookingsPage() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null
   );
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [fetchLoading, setFetchLoading] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isBookingCancelModalOpen, setIsBookingCancelModalOpen] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
@@ -162,6 +164,82 @@ export default function ParentBookingsPage() {
       fetchData();
     }
   }, [user]);
+
+  // Fetch missing request details if selectedRequestId is set but not in requests list
+  useEffect(() => {
+    const fetchDetail = async () => {
+      if (!selectedRequestId) {
+        setSelectedRequest(null);
+        return;
+      }
+
+      // 1. Try to find in existing requests
+      const fromRequests = requests.find(r => r.id === selectedRequestId);
+      if (fromRequests) {
+        setSelectedRequest(fromRequests);
+        return;
+      }
+
+      // 2. Try to find in bookings and check for job_id or associated job
+      const fromBookings = bookings.find(b => b.id === selectedRequestId || b.job_id === selectedRequestId);
+      if (fromBookings) {
+        // If it has a job property (enriched), we can use it
+        if (fromBookings.job) {
+          // Normalize Job to ServiceRequest-like
+          const normalized: any = {
+            ...fromBookings.job,
+            id: fromBookings.job.id,
+            num_children: (fromBookings as any).num_children || 1, // Fallback
+            children_ages: (fromBookings as any).children_ages || [],
+            location: { address: (fromBookings as any).location?.address || 'See job details' },
+            nanny: fromBookings.nanny,
+            status: fromBookings.status
+          };
+          setSelectedRequest(normalized);
+          return;
+        }
+      }
+
+      // 3. Last resort: Fetch from API
+      try {
+        setFetchLoading(true);
+        // Try fetching as a request first
+        try {
+          const data = await api.requests.get(selectedRequestId);
+          setSelectedRequest(data);
+        } catch (reqErr) {
+          // If that fails, try fetching as a booking
+          const booking = await api.bookings.get(selectedRequestId);
+          if (booking.job_id) {
+            const reqData = await api.requests.get(booking.job_id);
+            setSelectedRequest(reqData);
+          } else {
+            // Manual normalization from booking
+            setSelectedRequest({
+              id: booking.id,
+              date: booking.start_time.split('T')[0],
+              start_time: formatTime(booking.start_time),
+              duration_hours: 4, // Default
+              num_children: (booking as any).num_children || 1,
+              children_ages: (booking as any).children_ages || [],
+              status: booking.status as any,
+              location: { address: (booking as any).location?.address || 'See details' },
+              nanny: booking.nanny,
+              created_at: booking.created_at,
+              updated_at: booking.updated_at,
+              parent_id: booking.parent_id
+            } as any);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch details:', err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [selectedRequestId, requests, bookings]);
 
   // handlePayNow moved to BookingActionButtons
 
@@ -503,7 +581,10 @@ export default function ParentBookingsPage() {
           key="cancel"
           variant="outline"
           size="sm"
-          onClick={() => handleCancelBooking(booking)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCancelBooking(booking);
+          }}
           className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
         >
           Cancel
@@ -517,7 +598,10 @@ export default function ParentBookingsPage() {
           <Button
             key="pay"
             size="sm"
-            onClick={() => handlePayNow(booking)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePayNow(booking);
+            }}
             disabled={paymentLoading}
             className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
           >
@@ -526,7 +610,7 @@ export default function ParentBookingsPage() {
         );
       } else {
         buttons.push(
-          <div key="paid" className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium text-sm mr-2">
+          <div key="paid" className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium text-sm mr-2" onClick={(e) => e.stopPropagation()}>
             <Check size={14} />
             Paid
           </div>
@@ -536,7 +620,10 @@ export default function ParentBookingsPage() {
         <Button
           key="review"
           size="sm"
-          onClick={() => handleOpenReview(booking.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenReview(booking.id);
+          }}
           className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
           disabled={!isPaid}
         >
@@ -599,16 +686,12 @@ export default function ParentBookingsPage() {
           </div>
         ) : activeTab === 'requests' ? (
           <div className="space-y-6">
-            {selectedRequestId ? (
-              (() => {
-                const req = requests.find(r => r.id === selectedRequestId);
-                return req ? <RequestDetailsView request={req} /> : (
-                  <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50">
-                    <p className="text-stone-500 mb-4">Request not found.</p>
-                    <Button variant="outline" onClick={() => setSelectedRequestId(null)}>Back to list</Button>
-                  </div>
-                );
-              })()
+            {fetchLoading ? (
+              <div className="flex justify-center py-20">
+                <Spinner />
+              </div>
+            ) : selectedRequest ? (
+              <RequestDetailsView request={selectedRequest} />
             ) : (
               <div className="text-center py-20 bg-white rounded-3xl border border-stone-100 shadow-soft border-dashed">
                 <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-300">
@@ -688,16 +771,24 @@ export default function ParentBookingsPage() {
 
                 {filteredBookings.map((booking) => {
                   const { day, month } = formatDate(booking.start_time);
-                  const isRequested = booking.status === 'requested' || booking.status === 'REQUESTED';
                   return (
-                    <div key={booking.id} className="bg-white p-6 rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow">
+                    <div
+                      key={booking.id}
+                      className={`bg-white p-6 rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-all duration-300 ${activeTab === 'upcoming' ? 'cursor-pointer hover:border-emerald-200 group' : ''}`}
+                      onClick={() => {
+                        if (activeTab === 'upcoming') {
+                          setSelectedRequestId(booking.job_id || booking.id);
+                          setActiveTab('requests');
+                        }
+                      }}
+                    >
                       <div className="flex items-center gap-4 flex-1">
-                        <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-xl flex flex-col items-center justify-center text-stone-700">
+                        <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-xl flex flex-col items-center justify-center text-stone-700 group-hover:bg-emerald-50 group-hover:text-emerald-700 transition-colors">
                           <span className="text-xs font-bold uppercase">{month}</span>
                           <span className="text-xl font-bold">{day}</span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-stone-900">{getOtherPartyName(booking)}</h3>
+                          <h3 className={`text-lg font-bold text-stone-900 transition-colors ${activeTab === 'upcoming' ? 'group-hover:text-emerald-700' : ''}`}>{getOtherPartyName(booking)}</h3>
                           <p className="text-stone-500 text-sm mb-1">
                             Care for {(booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1) !== 1 ? 'ren' : ''}
                           </p>
@@ -705,19 +796,6 @@ export default function ParentBookingsPage() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-                        {isRequested && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl text-xs font-bold"
-                            onClick={() => {
-                              setSelectedRequestId(booking.job_id || booking.id);
-                              setActiveTab('requests');
-                            }}
-                          >
-                            View Request Details
-                          </Button>
-                        )}
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
                           {booking.status.toLowerCase().replace('_', ' ')}
                         </span>
@@ -760,7 +838,7 @@ export default function ParentBookingsPage() {
 
         {isCancelModalOpen && selectedRequestId && (
           (() => {
-            const req = requests.find(r => r.id === selectedRequestId);
+            const req = selectedRequest || requests.find(r => r.id === selectedRequestId);
             return req ? (
               <CancellationModal
                 isOpen={isCancelModalOpen}

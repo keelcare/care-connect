@@ -21,53 +21,23 @@ const PROTECTED_ROUTES = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  // Initialize response
+  const response = NextResponse.next();
+  // --- Auth Logic Removed (Cross-Domain Cookie Limitation) ---
+  // Since Frontend (Vercel) and Backend (Render) are on different domains,
+  // the Middleware (running on Vercel) CANNOT see the HttpOnly cookie set by Render.
+  // We rely on Client-Side AuthContext to protect routes.
 
-  // Get token from cookie (HttpOnly cookie set by backend)
-  const token = request.cookies.get('access_token')?.value;
-
-  let response: NextResponse;
-
-  // Default response: continue
-  response = NextResponse.next();
-
-  // If no token and trying to access protected route, redirect to login
-  if (!token && PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
-    response = NextResponse.redirect(new URL('/auth/login', request.url));
-  }
-  // If token exists, decode it to check user status
-  else if (token) {
-    try {
-      // Decode JWT to get user info
-      const payload = JSON.parse(
-        Buffer.from(token.split('.')[1], 'base64').toString()
-      );
-
-      const isActive = payload.is_active ?? true; // Default to true if not specified
-
-      // If user is banned (is_active === false)
-      if (isActive === false) {
-        // Redirect to help page for any other route (except allowed ones)
-        if (
-          !BANNED_USER_ALLOWED_ROUTES.some((route) =>
-            pathname.startsWith(route)
-          ) &&
-          pathname !== '/nanny/help'
-        ) {
-          response = NextResponse.redirect(new URL('/nanny/help', request.url));
-        }
-      }
-    } catch (error) {
-      console.error('Middleware: Failed to decode token', error);
-    }
-  }
 
   // --- Content Security Policy ---
   const cspHeader = `
         default-src 'self';
-        script-src 'self' 'unsafe-eval' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
-        font-src 'self' data:;
+        font-src 'self' data: https://fonts.gstatic.com;
+        connect-src 'self' http://localhost:4000 https://keel-backend.onrender.com https://api.razorpay.com wss://keel-backend.onrender.com ws://localhost:4000;
+        frame-src 'self' https://api.razorpay.com;
         object-src 'none';
         base-uri 'self';
         form-action 'self';

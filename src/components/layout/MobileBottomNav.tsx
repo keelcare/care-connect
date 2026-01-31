@@ -32,14 +32,13 @@ export const MobileBottomNav = () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? 'text-emerald-700'
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200 ${isActive
+                  ? 'text-accent-700'
                   : 'text-stone-400 hover:text-stone-600'
-              }`}
+                }`}
             >
               <div
-                className={`p-1 rounded-full transition-all ${isActive ? 'bg-emerald-100' : 'bg-transparent'}`}
+                className={`p-1 rounded-full transition-all ${isActive ? 'bg-accent-50' : 'bg-transparent'}`}
               >
                 <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
               </div>

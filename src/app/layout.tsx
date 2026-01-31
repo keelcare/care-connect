@@ -67,11 +67,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>CareConnect - Find Trusted Caregivers</title>
+        <title>Keel - Find Trusted Caregivers</title>
         <meta
           name="description"
           content="Connect with trusted caregivers for child care, senior care, pet care, and more."
         />
+        <link rel="icon" href="/logo.jpeg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

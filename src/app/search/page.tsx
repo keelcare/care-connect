@@ -437,9 +437,9 @@ export default function SearchPage() {
 
   return (
     <ParentLayout>
-      <div className="h-screen flex flex-col overflow-hidden bg-stone-50">
+      <div className="h-screen flex flex-col overflow-hidden bg-neutral-50">
         {/* Search Header */}
-        <div className="flex-none z-30 bg-white border-b border-stone-100">
+        <div className="flex-none z-30 bg-white border-b border-neutral-200">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">
             {/* Search Row */}
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
@@ -460,9 +460,9 @@ export default function SearchPage() {
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 flex items-center justify-center transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-neutral-200 hover:bg-neutral-300 flex items-center justify-center transition-colors"
                     >
-                      <X size={14} className="text-stone-600" />
+                      <X size={14} className="text-neutral-600" />
                     </button>
                   )}
                 </form>
@@ -473,11 +473,10 @@ export default function SearchPage() {
                 <Button
                   variant={isNearby ? 'default' : 'outline'}
                   onClick={() => setIsNearby(!isNearby)}
-                  className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${
-                    isNearby
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
-                  }`}
+                  className={`rounded-xl h-12 px-5 flex items-center gap-2 font-medium transition-all ${isNearby
+                    ? 'bg-primary-900 hover:bg-primary-800 text-white'
+                    : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
+                    }`}
                 >
                   <MapPin size={18} />
                   Nearby
@@ -486,16 +485,15 @@ export default function SearchPage() {
                 <Button
                   variant={isDesktopFilterOpen ? 'default' : 'outline'}
                   onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                  className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${
-                    isDesktopFilterOpen
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'bg-white hover:bg-stone-50 border-stone-200 text-stone-700'
-                  }`}
+                  className={`hidden lg:flex rounded-xl h-12 px-5 items-center gap-2 font-medium relative transition-all ${isDesktopFilterOpen
+                    ? 'bg-primary-600 hover:bg-primary-700 text-white'
+                    : 'bg-white hover:bg-neutral-50 border-neutral-200 text-neutral-700'
+                    }`}
                 >
                   <SlidersHorizontal size={18} />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {activeFilterCount}
                     </span>
                   )}
@@ -604,7 +602,7 @@ export default function SearchPage() {
                     });
                     setSearchQuery('');
                   }}
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-6"
+                  className="rounded-xl bg-primary-600 hover:bg-primary-700 text-white px-6"
                 >
                   Clear Filters
                 </Button>
@@ -645,7 +643,7 @@ export default function SearchPage() {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <button className="w-10 h-10 rounded-lg bg-emerald-600 text-white font-medium">
+                <button className="w-10 h-10 rounded-lg bg-primary-600 text-white font-medium">
                   1
                 </button>
                 <button className="p-2 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors">
@@ -672,7 +670,7 @@ export default function SearchPage() {
               </Button>
               <Button
                 onClick={() => setIsFilterOpen(false)}
-                className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="flex-1 rounded-xl bg-primary-600 hover:bg-primary-700 text-white"
               >
                 Apply Filters
               </Button>

@@ -133,11 +133,10 @@ export const CancellationModal: React.FC<CancellationModalProps> = ({
             {reasons.map((reason) => (
               <label
                 key={reason}
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                  selectedReason === reason
-                    ? 'border-emerald-500 bg-emerald-50'
+                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selectedReason === reason
+                    ? 'border-primary-500 bg-primary-50'
                     : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50'
-                }`}
+                  }`}
               >
                 <input
                   type="radio"
@@ -145,7 +144,7 @@ export const CancellationModal: React.FC<CancellationModalProps> = ({
                   value={reason}
                   checked={selectedReason === reason}
                   onChange={(e) => setSelectedReason(e.target.value)}
-                  className="w-4 h-4 text-emerald-600 border-stone-300 focus:ring-emerald-500"
+                  className="w-4 h-4 text-primary-600 border-stone-300 focus:ring-primary-500"
                 />
                 <span className="text-stone-700">{reason}</span>
               </label>
@@ -164,7 +163,7 @@ export const CancellationModal: React.FC<CancellationModalProps> = ({
               onChange={(e) => setCustomReason(e.target.value)}
               placeholder="Enter your reason..."
               rows={3}
-              className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-stone-700"
+              className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none text-stone-700"
             />
           </div>
         )}

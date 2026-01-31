@@ -96,7 +96,7 @@ function ResetPasswordForm() {
           <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
             <div className="w-full max-w-md mx-auto my-auto text-center">
               <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-8 h-8 text-emerald-600" />
+                <CheckCircle className="w-8 h-8 text-primary-600" />
               </div>
               <h1 className="text-3xl font-bold text-neutral-900 mb-3 font-display">
                 Password Reset!
@@ -106,7 +106,7 @@ function ResetPasswordForm() {
                 with your new password.
               </p>
               <Link href="/auth/login">
-                <Button className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white h-12 font-medium">
+                <Button className="w-full rounded-xl bg-primary-900 hover:bg-primary-800 text-white h-12 font-medium">
                   Sign in
                 </Button>
               </Link>
@@ -114,10 +114,10 @@ function ResetPasswordForm() {
           </div>
 
           {/* Right Side - Decorative */}
-          <div className="hidden lg:flex w-1/2 h-full bg-gradient-to-br from-emerald-50 to-stone-100 relative overflow-hidden items-center justify-center">
+          <div className="hidden lg:flex w-1/2 h-full bg-gradient-to-br from-primary-50 to-stone-100 relative overflow-hidden items-center justify-center">
             <div className="text-center p-12">
               <div className="w-32 h-32 bg-white/50 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <CheckCircle className="w-16 h-16 text-emerald-600" />
+                <CheckCircle className="w-16 h-16 text-primary-600" />
               </div>
               <h2 className="text-2xl font-bold text-stone-800 mb-4">
                 Success!
@@ -152,7 +152,7 @@ function ResetPasswordForm() {
             <div className="mb-10">
               <Link href="/" className="inline-block mb-8">
                 <span className="text-2xl font-bold text-stone-900 tracking-tight font-display">
-                  CareConnect
+                  Keel
                 </span>
               </Link>
               <h1 className="text-3xl font-bold text-neutral-900 mb-3 font-display">
@@ -191,15 +191,14 @@ function ResetPasswordForm() {
                     {[...Array(4)].map((_, i) => (
                       <div
                         key={i}
-                        className={`h-1 flex-1 rounded-full transition-colors ${
-                          password.length >= (i + 1) * 3
-                            ? password.length >= 12
-                              ? 'bg-emerald-500'
-                              : password.length >= 8
-                                ? 'bg-yellow-500'
-                                : 'bg-red-500'
-                            : 'bg-neutral-200'
-                        }`}
+                        className={`h-1 flex-1 rounded-full transition-colors ${password.length >= (i + 1) * 3
+                          ? password.length >= 12
+                            ? 'bg-primary-500'
+                            : password.length >= 8
+                              ? 'bg-yellow-500'
+                              : 'bg-red-500'
+                          : 'bg-neutral-200'
+                          }`}
                       />
                     ))}
                   </div>
@@ -224,7 +223,7 @@ function ResetPasswordForm() {
                 type="submit"
                 size="lg"
                 isLoading={isLoading}
-                className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white h-12 font-medium shadow-none transition-all"
+                className="w-full rounded-xl bg-primary-900 hover:bg-primary-800 text-white h-12 font-medium shadow-none transition-all"
               >
                 Reset password
               </Button>
@@ -233,7 +232,7 @@ function ResetPasswordForm() {
         </div>
 
         {/* Right Side - Decorative */}
-        <div className="hidden lg:flex w-1/2 h-full bg-gradient-to-br from-stone-100 to-emerald-50 relative overflow-hidden items-center justify-center">
+        <div className="hidden lg:flex w-1/2 h-full bg-gradient-to-br from-stone-100 to-primary-50 relative overflow-hidden items-center justify-center">
           <div className="text-center p-12">
             <div className="w-32 h-32 bg-white/50 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
               <Lock className="w-16 h-16 text-stone-600" />
@@ -256,7 +255,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="h-screen w-full flex items-center justify-center bg-neutral-50">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       }
     >

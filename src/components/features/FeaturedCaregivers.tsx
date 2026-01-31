@@ -115,7 +115,7 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({
         <Link href="/search" className="hidden lg:block">
           <Button
             variant="ghost"
-            className="text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+            className="text-neutral-600 hover:text-primary-900 hover:bg-neutral-100"
           >
             View All <ArrowRight size={16} className="ml-2" />
           </Button>

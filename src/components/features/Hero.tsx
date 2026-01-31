@@ -38,41 +38,41 @@ export const Hero: React.FC = () => {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a5f' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
       </div>
 
       {/* Gradient orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-stone-200/40 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-stone-300/30 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary-100/40 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent-100/30 rounded-full blur-3xl" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-0">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Content */}
           <div className="space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-stone-200">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-medium text-stone-600">
+            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-neutral-200">
+              <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
+              <span className="text-sm font-medium text-primary-900">
                 Trusted by 50,000+ families
               </span>
             </div>
 
             {/* Main Heading */}
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-heading-gray leading-[1.1]">
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-primary-900 leading-[1.1]">
                 Care you can
                 <span className="relative inline-block mx-3">
                   <span className="relative z-10">trust,</span>
-                  <span className="absolute bottom-2 left-0 w-full h-3 bg-amber-200/60 -rotate-1" />
+                  <span className="absolute bottom-2 left-0 w-full h-3 bg-accent/20 -rotate-1" />
                 </span>
                 <br />
                 for the people who
                 <br />
-                <span className="text-stone-500">matter most.</span>
+                <span className="text-neutral-500">matter most.</span>
               </h1>
-              <p className="text-lg text-stone-600 max-w-lg leading-relaxed">
+              <p className="text-lg text-neutral-700 max-w-lg leading-relaxed">
                 Connect with verified, background-checked caregivers in your
                 area. From childcare to senior care, we make finding trusted
                 help simple.
@@ -80,24 +80,24 @@ export const Hero: React.FC = () => {
             </div>
 
             {/* Search Box */}
-            <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50 p-2 border border-stone-200">
+            <div className="bg-white rounded-2xl shadow-xl shadow-primary-900/5 p-2 border border-neutral-200">
               <div className="flex flex-col md:flex-row gap-2 items-center">
                 {/* Service Type Dropdown */}
                 <div className="relative flex-1 w-full">
                   <button
                     onClick={() => setIsSelectOpen(!isSelectOpen)}
-                    className="w-full flex items-center justify-between gap-2 px-4 py-4 rounded-xl hover:bg-stone-50 transition-colors text-left"
+                    className="w-full flex items-center justify-between gap-2 px-4 py-4 rounded-xl hover:bg-neutral-50 transition-colors text-left"
                   >
                     <div>
-                      <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">
+                      <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider">
                         I'm looking for...
                       </p>
-                      <p className="text-stone-900 font-semibold">
+                      <p className="text-primary-900 font-semibold">
                         {serviceType}
                       </p>
                     </div>
                     <ChevronDown
-                      className={`w-5 h-5 text-stone-400 transition-transform ${isSelectOpen ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-neutral-500 transition-transform ${isSelectOpen ? 'rotate-180' : ''}`}
                     />
                   </button>
 
@@ -110,11 +110,10 @@ export const Hero: React.FC = () => {
                             setServiceType(option);
                             setIsSelectOpen(false);
                           }}
-                          className={`w-full px-4 py-3 text-left hover:bg-stone-50 transition-colors ${
-                            serviceType === option
-                              ? 'bg-stone-50 text-stone-900 font-medium'
-                              : 'text-stone-600'
-                          }`}
+                          className={`w-full px-4 py-3 text-left hover:bg-stone-50 transition-colors ${serviceType === option
+                            ? 'bg-neutral-50 text-navy font-medium'
+                            : 'text-neutral-700'
+                            }`}
                         >
                           {option}
                         </button>
@@ -126,7 +125,7 @@ export const Hero: React.FC = () => {
                 {/* Search Button */}
                 <Button
                   onClick={handleSearch}
-                  className="w-full md:w-auto h-auto py-4 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all group whitespace-nowrap"
+                  className="w-full md:w-auto h-auto py-4 px-8 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all group whitespace-nowrap"
                 >
                   SEARCH
                 </Button>
@@ -135,7 +134,7 @@ export const Hero: React.FC = () => {
                 <div className="px-4 whitespace-nowrap">
                   <button
                     onClick={() => router.push('/auth/signup?role=nanny')}
-                    className="text-sm font-bold text-emerald-700 hover:text-emerald-800 uppercase tracking-wide"
+                    className="text-sm font-bold text-navy hover:text-gold uppercase tracking-wide"
                   >
                     I'M A CAREGIVER
                   </button>
@@ -147,33 +146,33 @@ export const Hero: React.FC = () => {
             <div className="flex flex-wrap gap-6 pt-4">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-stone-700" />
+                  <Shield className="w-5 h-5 text-neutral-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-stone-900">
+                  <p className="text-sm font-semibold text-navy">
                     Verified
                   </p>
-                  <p className="text-xs text-stone-500">Background checked</p>
+                  <p className="text-xs text-neutral-600">Background checked</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
-                  <Star className="w-5 h-5 text-stone-700" />
+                  <Star className="w-5 h-5 text-neutral-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-stone-900">
+                  <p className="text-sm font-semibold text-navy">
                     4.9 Rating
                   </p>
-                  <p className="text-xs text-stone-500">From 10k+ reviews</p>
+                  <p className="text-xs text-neutral-600">From 10k+ reviews</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-stone-700" />
+                  <Users className="w-5 h-5 text-neutral-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-stone-900">15k+</p>
-                  <p className="text-xs text-stone-500">Active caregivers</p>
+                  <p className="text-sm font-semibold text-navy">15k+</p>
+                  <p className="text-xs text-neutral-600">Active caregivers</p>
                 </div>
               </div>
             </div>
@@ -199,14 +198,14 @@ export const Hero: React.FC = () => {
               {/* Floating card - Top Right */}
               <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-xl shadow-stone-200/50 border border-stone-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-emerald-600" />
+                  <div className="w-12 h-12 rounded-full bg-gold-soft flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-gold-dark" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-stone-900">
+                    <p className="text-sm font-bold text-navy">
                       100% Verified
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-neutral-600">
                       All caregivers checked
                     </p>
                   </div>
@@ -223,15 +222,14 @@ export const Hero: React.FC = () => {
                         className="w-8 h-8 rounded-full border-2 border-white overflow-hidden"
                       >
                         <Image
-                          src={`https://images.unsplash.com/photo-${
-                            i === 1
-                              ? '1438761681033-6461ffad8d80'
-                              : i === 2
-                                ? '1500648767791-00dcc994a43e'
-                                : i === 3
-                                  ? '1494790108377-be9c29b29330'
-                                  : '1507003211169-0a1dd7228f2d'
-                          }?w=100&h=100&fit=crop`}
+                          src={`https://images.unsplash.com/photo-${i === 1
+                            ? '1438761681033-6461ffad8d80'
+                            : i === 2
+                              ? '1500648767791-00dcc994a43e'
+                              : i === 3
+                                ? '1494790108377-be9c29b29330'
+                                : '1507003211169-0a1dd7228f2d'
+                            }?w=100&h=100&fit=crop`}
                           alt="User"
                           width={32}
                           height={32}
@@ -241,10 +239,10 @@ export const Hero: React.FC = () => {
                     ))}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-stone-900">
+                    <p className="text-sm font-bold text-navy">
                       Join 50k+
                     </p>
-                    <p className="text-xs text-stone-500">Happy families</p>
+                    <p className="text-xs text-neutral-600">Happy families</p>
                   </div>
                 </div>
               </div>

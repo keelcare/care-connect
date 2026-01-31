@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
+        <h1 className="text-3xl font-bold text-primary-900 font-display">
           Admin Dashboard
         </h1>
         <p className="text-neutral-500 mt-2 text-lg">
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-900">
+          <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center text-primary-900">
             <Users size={24} />
           </div>
           <div>
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
             <p className="text-sm font-medium text-neutral-500">
               Total Bookings
             </p>
-            <p className="text-2xl font-bold text-neutral-900">
+            <p className="text-2xl font-bold text-primary-900">
               {stats.totalBookings}
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
             <p className="text-sm font-medium text-neutral-500">
               Active Bookings
             </p>
-            <p className="text-2xl font-bold text-neutral-900">
+            <p className="text-2xl font-bold text-primary-900">
               {stats.activeBookings}
             </p>
           </div>
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-neutral-900">Quick Actions</h2>
+        <h2 className="text-xl font-bold text-primary-900">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Button
             className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all"
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
             Moderate Reviews
           </Button>
           <Button
-            className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-stone-50 text-stone-700 border border-stone-200 hover:bg-stone-100"
+            className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-neutral-50 text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
             onClick={() => router.push('/admin/settings')}
           >
             <Settings className="mr-3" size={24} />
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
       {/* Advanced Analytics Section */}
       {advancedStats && (
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-neutral-900">Analytics</h2>
+          <h2 className="text-xl font-bold text-primary-900">Analytics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-2xl border border-emerald-200">
               <div className="flex items-center gap-3 mb-2">

@@ -141,7 +141,7 @@ export function EnhancedReviewForm({
     Object.values(ratings)
       .filter((r) => r > 0)
       .reduce((a, b) => a + b, 0) /
-      Object.values(ratings).filter((r) => r > 0).length || 0;
+    Object.values(ratings).filter((r) => r > 0).length || 0;
 
   return (
     <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-lg">
@@ -215,7 +215,7 @@ export function EnhancedReviewForm({
             onChange={(e) => setComment(e.target.value)}
             placeholder="Share details about your experience..."
             rows={4}
-            className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 resize-none"
+            className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-400 resize-none"
           />
           <p className="text-xs text-stone-400 mt-1">
             {comment.length}/500 characters
@@ -244,7 +244,7 @@ export function EnhancedReviewForm({
             type="submit"
             disabled={isSubmitting || ratings.rating === 0}
             isLoading={isSubmitting}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
+            className="flex-1 bg-primary-900 hover:bg-primary-800 text-white rounded-xl"
           >
             Submit Review
           </Button>

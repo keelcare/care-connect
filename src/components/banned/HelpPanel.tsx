@@ -67,14 +67,14 @@ export function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
               {/* Option 1: Contact Support */}
               <a
                 href="mailto:support@careconnect.com?subject=Account%20Suspension%20Appeal"
-                className="block p-4 rounded-2xl border border-neutral-200 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group"
+                className="block p-4 rounded-2xl border border-neutral-200 hover:border-primary-200 hover:bg-primary-50/30 transition-all group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-neutral-100 text-neutral-600 rounded-xl group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                  <div className="p-3 bg-neutral-100 text-neutral-600 rounded-xl group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors">
                     <Mail size={24} />
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-neutral-900 group-hover:text-emerald-700">
+                    <div className="font-semibold text-neutral-900 group-hover:text-primary-700">
                       Contact Support
                     </div>
                     <div className="text-sm text-neutral-500">
@@ -83,7 +83,7 @@ export function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
                   </div>
                   <ExternalLink
                     size={16}
-                    className="text-neutral-300 group-hover:text-emerald-400"
+                    className="text-neutral-300 group-hover:text-primary-400"
                   />
                 </div>
               </a>
@@ -91,14 +91,14 @@ export function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
               {/* Option 2: Community Guidelines */}
               <a
                 href="#"
-                className="block p-4 rounded-2xl border border-neutral-200 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group"
+                className="block p-4 rounded-2xl border border-neutral-200 hover:border-primary-200 hover:bg-primary-50/30 transition-all group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-neutral-100 text-neutral-600 rounded-xl group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                  <div className="p-3 bg-neutral-100 text-neutral-600 rounded-xl group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors">
                     <FileText size={24} />
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-neutral-900 group-hover:text-emerald-700">
+                    <div className="font-semibold text-neutral-900 group-hover:text-primary-700">
                       Community Guidelines
                     </div>
                     <div className="text-sm text-neutral-500">
@@ -107,7 +107,7 @@ export function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
                   </div>
                   <ExternalLink
                     size={16}
-                    className="text-neutral-300 group-hover:text-emerald-400"
+                    className="text-neutral-300 group-hover:text-primary-400"
                   />
                 </div>
               </a>

@@ -63,7 +63,7 @@ export default function ParentSettingsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    
+
     // Prevent negative values for numeric fields
     if ((name === 'hourlyRate' || name === 'experienceYears') && Number(value) < 0) {
       return;
@@ -135,11 +135,10 @@ export default function ParentSettingsPage() {
 
         {message && (
           <div
-            className={`p-4 rounded-xl border flex items-center gap-3 ${
-              message.type === 'success'
-                ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
+            className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
+                ? 'bg-primary-50 border-primary-100 text-primary-700'
                 : 'bg-red-50 border-red-100 text-red-700'
-            }`}
+              }`}
           >
             {message.type === 'success' ? (
               <CheckCircle size={20} />
@@ -233,7 +232,7 @@ export default function ParentSettingsPage() {
               </Button>
               <Button
                 type="submit"
-                className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+                className="rounded-xl px-8 shadow-lg hover:shadow-xl transition-all bg-primary-900 hover:bg-primary-800 disabled:opacity-50"
                 disabled={saving}
               >
                 {saving ? 'Saving...' : 'Save Changes'}

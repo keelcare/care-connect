@@ -57,7 +57,7 @@ export default function LoginPage() {
             <div className="mb-10">
               <Link href="/" className="inline-block mb-8">
                 <span className="text-2xl font-bold text-stone-900 tracking-tight font-display">
-                  CareConnect
+                  Keel
                 </span>
               </Link>
               <h1 className="text-3xl font-bold text-neutral-900 mb-3 font-display">
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 type="submit"
                 size="lg"
                 isLoading={isLoading}
-                className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white h-12 font-medium shadow-none transition-all"
+                className="w-full rounded-xl bg-accent hover:bg-accent-600 text-white h-12 font-medium shadow-none transition-all"
               >
                 Sign in
               </Button>

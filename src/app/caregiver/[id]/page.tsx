@@ -136,7 +136,7 @@ export default function CaregiverProfilePage() {
             </h1>
             <div className="flex flex-wrap items-center gap-3">
               {caregiver.is_verified && (
-                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium flex items-center gap-1 border border-emerald-100">
+                <span className="px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-sm font-medium flex items-center gap-1 border border-primary-100">
                   <ShieldCheck size={14} />
                   Verified
                 </span>
@@ -190,7 +190,7 @@ export default function CaregiverProfilePage() {
             >
               About
               {activeTab === 'about' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
               )}
             </button>
             <button
@@ -199,7 +199,7 @@ export default function CaregiverProfilePage() {
             >
               Reviews
               {activeTab === 'reviews' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
               )}
             </button>
             <button
@@ -208,7 +208,7 @@ export default function CaregiverProfilePage() {
             >
               Availability
               {activeTab === 'availability' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
               )}
             </button>
           </div>
@@ -308,7 +308,7 @@ export default function CaregiverProfilePage() {
                 <>
                   <Button
                     size="lg"
-                    className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                    className="w-full rounded-xl bg-primary-900 hover:bg-primary-800 shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                     onClick={() => {
                       setActiveTab('availability');
                       document
@@ -334,7 +334,7 @@ export default function CaregiverProfilePage() {
                   <Link href="/auth/signup" className="w-full">
                     <Button
                       size="lg"
-                      className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
+                      className="w-full rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg hover:shadow-xl transition-all h-12 text-lg font-medium"
                     >
                       Sign up to Book
                     </Button>
