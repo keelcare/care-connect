@@ -64,10 +64,11 @@ export function middleware(request: NextRequest) {
   // --- Content Security Policy ---
   const cspHeader = `
         default-src 'self';
-        script-src 'self' 'unsafe-eval' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
-        font-src 'self' data:;
+        font-src 'self' data: https://fonts.gstatic.com;
+        connect-src 'self' http://localhost:4000 https://keel-backend.onrender.com;
         object-src 'none';
         base-uri 'self';
         form-action 'self';
