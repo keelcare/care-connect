@@ -21,45 +21,13 @@ const PROTECTED_ROUTES = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  // Initialize response
+  const response = NextResponse.next();
+  // --- Auth Logic Removed (Cross-Domain Cookie Limitation) ---
+  // Since Frontend (Vercel) and Backend (Render) are on different domains,
+  // the Middleware (running on Vercel) CANNOT see the HttpOnly cookie set by Render.
+  // We rely on Client-Side AuthContext to protect routes.
 
-  // Get token from cookie (HttpOnly cookie set by backend)
-  const token = request.cookies.get('access_token')?.value;
-
-  let response: NextResponse;
-
-  // Default response: continue
-  response = NextResponse.next();
-
-  // If no token and trying to access protected route, redirect to login
-  if (!token && PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
-    response = NextResponse.redirect(new URL('/auth/login', request.url));
-  }
-  // If token exists, decode it to check user status
-  else if (token) {
-    try {
-      // Decode JWT to get user info
-      const payload = JSON.parse(
-        Buffer.from(token.split('.')[1], 'base64').toString()
-      );
-
-      const isActive = payload.is_active ?? true; // Default to true if not specified
-
-      // If user is banned (is_active === false)
-      if (isActive === false) {
-        // Redirect to help page for any other route (except allowed ones)
-        if (
-          !BANNED_USER_ALLOWED_ROUTES.some((route) =>
-            pathname.startsWith(route)
-          ) &&
-          pathname !== '/nanny/help'
-        ) {
-          response = NextResponse.redirect(new URL('/nanny/help', request.url));
-        }
-      }
-    } catch (error) {
-      console.error('Middleware: Failed to decode token', error);
-    }
-  }
 
   // --- Content Security Policy ---
   const cspHeader = `
