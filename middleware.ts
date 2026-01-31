@@ -68,7 +68,7 @@ export function middleware(request: NextRequest) {
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
         font-src 'self' data: https://fonts.gstatic.com;
-        connect-src 'self' http://localhost:4000 https://keel-backend.onrender.com https://api.razorpay.com;
+        connect-src 'self' http://localhost:4000 https://keel-backend.onrender.com https://api.razorpay.com wss://keel-backend.onrender.com ws://localhost:4000;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
         base-uri 'self';
