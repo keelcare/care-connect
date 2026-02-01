@@ -27,6 +27,7 @@ export function middleware(request: NextRequest) {
   // Since Frontend (Vercel) and Backend (Render) are on different domains,
   // the Middleware (running on Vercel) CANNOT see the HttpOnly cookie set by Render.
   // We rely on Client-Side AuthContext to protect routes.
+  // Updated: 2026-02-01 - New backend URL configured
 
 
   // --- Content Security Policy ---
