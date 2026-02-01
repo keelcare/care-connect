@@ -27,6 +27,7 @@ export function middleware(request: NextRequest) {
   // Since Frontend (Vercel) and Backend (Render) are on different domains,
   // the Middleware (running on Vercel) CANNOT see the HttpOnly cookie set by Render.
   // We rely on Client-Side AuthContext to protect routes.
+  // Updated: 2026-02-01 - New backend URL configured
 
 
   // --- Content Security Policy ---
@@ -36,7 +37,7 @@ export function middleware(request: NextRequest) {
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
         font-src 'self' data: https://fonts.gstatic.com;
-        connect-src 'self' http://localhost:4000 https://keel-backend.onrender.com https://api.razorpay.com wss://keel-backend.onrender.com ws://localhost:4000;
+        connect-src 'self' http://localhost:4000 https://care-connect-backend-ok23.onrender.com https://api.razorpay.com https://nominatim.openstreetmap.org wss://care-connect-backend-ok23.onrender.com ws://localhost:4000;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
         base-uri 'self';
@@ -66,3 +67,4 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
+

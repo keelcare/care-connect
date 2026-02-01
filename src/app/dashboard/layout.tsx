@@ -35,7 +35,6 @@ export default function DashboardLayout({
   const navItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
     { icon: Bell, label: 'Notifications', href: '/dashboard/notifications' },
-    { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
     { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
     {
       icon: CalendarOff,

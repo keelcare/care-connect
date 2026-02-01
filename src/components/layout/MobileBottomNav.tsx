@@ -12,7 +12,6 @@ export const MobileBottomNav = () => {
     { icon: Compass, label: 'Find Care', href: '/find-care' },
     { icon: Search, label: 'Browse', href: '/browse' },
     { icon: Calendar, label: 'Bookings', href: '/bookings' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
     { icon: User, label: 'Profile', href: '/settings' },
   ];
 
@@ -33,8 +32,8 @@ export const MobileBottomNav = () => {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200 ${isActive
-                  ? 'text-accent-700'
-                  : 'text-stone-400 hover:text-stone-600'
+                ? 'text-accent-700'
+                : 'text-stone-400 hover:text-stone-600'
                 }`}
             >
               <div

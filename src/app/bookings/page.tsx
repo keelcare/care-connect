@@ -15,7 +15,9 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
+  MessageSquare,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
@@ -28,6 +30,7 @@ import { ReviewModal } from '@/components/reviews/ReviewModal';
 
 export default function ParentBookingsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -302,20 +305,26 @@ export default function ParentBookingsPage() {
       switch (status) {
         case 'PENDING':
           return {
-            color: 'text-amber-700 bg-amber-100',
-            icon: <Clock size={20} />,
+            color: 'text-amber-700 bg-amber-50 border border-amber-200',
+            icon: <Clock size={16} />,
             text: 'Pending Assignment',
           };
         case 'ASSIGNED':
           return {
-            color: 'text-emerald-700 bg-emerald-100',
-            icon: <CheckCircle size={20} />,
-            text: 'Nanny Assigned',
+            color: 'text-primary-700 bg-primary-50 border border-primary-200',
+            icon: <CheckCircle size={16} />,
+            text: 'Caregiver Assigned',
+          };
+        case 'CONFIRMED':
+          return {
+            color: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
+            icon: <CheckCircle size={16} />,
+            text: 'Booking Confirmed',
           };
         default:
           return {
-            color: 'text-stone-700 bg-stone-100',
-            icon: <AlertTriangle size={20} />,
+            color: 'text-slate-700 bg-slate-50 border border-slate-200',
+            icon: <AlertTriangle size={16} />,
             text: status,
           };
       }
@@ -328,17 +337,17 @@ export default function ParentBookingsPage() {
         <Button
           variant="ghost"
           onClick={() => setSelectedRequestId(null)}
-          className="pl-0 hover:bg-transparent hover:text-stone-900"
+          className="pl-0 hover:bg-transparent hover:text-primary-700 text-slate-500 mb-6 group transition-colors"
         >
-          <ChevronLeft size={20} className="mr-1" /> Back to Requests
+          <ChevronLeft size={20} className="mr-1 group-hover:-translate-x-1 transition-transform" /> Back to Requests
         </Button>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">Request Details</h1>
-            <p className="text-stone-500 mt-1 font-mono text-xs">ID: {request.id}</p>
+            <h1 className="text-3xl font-display font-bold text-primary-900">Request Details</h1>
+            <p className="text-slate-500 mt-1 font-mono text-xs uppercase tracking-wider">ID: {request.id}</p>
           </div>
-          <div className={`px-4 py-2 rounded-full flex items-center gap-2 font-medium ${statusInfo.color}`}>
+          <div className={`px-4 py-2 rounded-full flex items-center gap-2 font-medium text-sm shadow-sm ${statusInfo.color}`}>
             {statusInfo.icon}
             <span>{statusInfo.text}</span>
           </div>
@@ -346,87 +355,82 @@ export default function ParentBookingsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-2xl border border-stone-100 shadow-soft p-6 md:p-8">
-              <h2 className="text-lg font-bold text-stone-900 mb-6 font-display">Service Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+              <h2 className="text-lg font-bold text-primary-900 mb-6 font-display border-b border-slate-100 pb-4">Service Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
                     <Calendar size={20} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Date</label>
-                    <p className="text-stone-900 font-semibold">{new Date(request.date).toLocaleDateString()}</p>
+                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Date</label>
+                    <p className="text-primary-900 font-semibold text-lg">{new Date(request.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                   </div>
-                </div>
+                </div >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
                     <Clock size={20} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Time</label>
-                    <p className="text-stone-900 font-semibold">{request.start_time} ({request.duration_hours} hours)</p>
+                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Time</label>
+                    <p className="text-primary-900 font-semibold text-lg">{request.start_time} <span className="text-slate-400 text-sm font-normal">({request.duration_hours} hours)</span></p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
                     <Users size={20} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Children</label>
-                    <p className="text-stone-900 font-semibold">{request.num_children} (Ages: {request.children_ages.join(', ')})</p>
+                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Children</label>
+                    <p className="text-primary-900 font-semibold text-lg">{request.num_children} <span className="text-slate-400 text-sm font-normal">(Ages: {request.children_ages.join(', ')})</span></p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
                     <MapPin size={20} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Location</label>
-                    <p className="text-stone-900 font-semibold">{request.location?.address || 'No location specified'}</p>
+                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Location</label>
+                    <p className="text-primary-900 font-semibold text-lg">{request.location?.address || 'No location specified'}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-900 flex-shrink-0">
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">Duration</label>
-                    <p className="text-stone-900 font-semibold">{request.duration_hours} Hours</p>
-                  </div>
-                </div>
-              </div>
+              </div >
 
-              {request.special_requirements && (
-                <div className="mt-8 pt-8 border-t border-stone-100">
-                  <label className="block text-sm font-medium text-stone-500 mb-2">Special Requirements</label>
-                  <p className="text-stone-900 bg-stone-50 p-4 rounded-xl">{request.special_requirements}</p>
-                </div>
-              )}
-            </div>
+              {
+                request.special_requirements && (
+                  <div className="mt-8 pt-8 border-t border-slate-100">
+                    <label className="block text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Special Requirements</label>
+                    <p className="text-slate-700 bg-slate-50 p-5 rounded-xl border border-slate-100 leading-relaxed">{request.special_requirements}</p>
+                  </div>
+                )
+              }
+            </div >
 
-            {request.nanny && (
-              <div className="space-y-4">
-                <h2 className="text-lg font-bold text-stone-900 font-display">Assigned Caregiver</h2>
-                <ProfileCard
-                  name={getNannyName(request.nanny)}
-                  rating={4.9}
-                  reviewCount={12}
-                  location={(request.nanny as any).profiles?.address || ''}
-                  description={(request.nanny as any).nanny_details?.bio || ''}
-                  hourlyRate={Number((request.nanny as any).nanny_details?.hourly_rate) || 0}
-                  experience={`${(request.nanny as any).nanny_details?.experience_years} years`}
-                  isVerified={request.nanny.is_verified}
-                  onViewProfile={() => (window.location.href = `/caregiver/${request.nanny?.id}`)}
-                  onBook={() => { }}
-                  hideBookButton={true}
-                />
-              </div>
-            )}
-          </div>
+            {
+              request.nanny && (
+                <div className="space-y-4">
+                  <h2 className="text-lg font-bold text-primary-900 font-display">Assigned Caregiver</h2>
+                  <ProfileCard
+                    name={getNannyName(request.nanny)}
+                    rating={4.9}
+                    reviewCount={12}
+                    location={(request.nanny as any).profiles?.address || ''}
+                    description={(request.nanny as any).nanny_details?.bio || ''}
+                    hourlyRate={Number((request.nanny as any).nanny_details?.hourly_rate) || 0}
+                    experience={`${(request.nanny as any).nanny_details?.experience_years} years`}
+                    isVerified={request.nanny.is_verified}
+                    onViewProfile={() => (window.location.href = `/caregiver/${request.nanny?.id}`)}
+                    onBook={() => { }}
+                    hideBookButton={true}
+                  />
+                </div>
+              )
+            }
+          </div >
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-stone-100 shadow-soft p-6 sticky top-24">
-              <h2 className="text-md font-bold text-stone-900 mb-4 font-display">Actions</h2>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-24">
+              <h2 className="text-md font-bold text-primary-900 mb-4 font-display uppercase tracking-wider text-sm">Actions</h2>
               <div className="space-y-3">
                 {/* Single Cancel Button */}
                 {(['PENDING', 'ASSIGNED', 'REQUESTED', 'CONFIRMED'].includes(request.status.toUpperCase())) && (
@@ -464,20 +468,20 @@ export default function ParentBookingsPage() {
   const getStatusBadgeStyles = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
       case 'IN_PROGRESS':
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100 text-amber-800 border border-amber-200';
       case 'COMPLETED':
-        return 'bg-stone-100 text-stone-700';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-700';
+        return 'bg-red-50 text-red-700 border border-red-100';
       case 'PENDING':
-        return 'bg-amber-50 text-amber-600';
+        return 'bg-amber-50 text-amber-700 border border-amber-200';
       case 'REQUESTED':
       case 'requested':
-        return 'bg-blue-50 text-blue-600';
+        return 'bg-accent-50 text-accent-700 border border-accent-200';
       default:
-        return 'bg-stone-100 text-stone-700';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
     }
   };
 
@@ -576,6 +580,23 @@ export default function ParentBookingsPage() {
 
     const buttons = [];
     if (['CONFIRMED', 'IN_PROGRESS', 'requested', 'REQUESTED'].includes(booking.status)) {
+      if (['CONFIRMED', 'IN_PROGRESS'].includes(booking.status)) {
+        buttons.push(
+          <Button
+            key="chat"
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/messages?booking=${booking.id}`);
+            }}
+            className="rounded-xl border-accent-100 text-accent-600 hover:bg-accent-50 hover:text-accent-700 hover:border-accent-200"
+          >
+            <MessageSquare size={14} className="mr-1" />
+            Chat
+          </Button>
+        );
+      }
       buttons.push(
         <Button
           key="cancel"
@@ -603,7 +624,7 @@ export default function ParentBookingsPage() {
               handlePayNow(booking);
             }}
             disabled={paymentLoading}
-            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm"
           >
             {paymentLoading ? 'Processing...' : 'Pay Now'}
           </Button>
@@ -657,20 +678,20 @@ export default function ParentBookingsPage() {
       <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-stone-900">My Bookings</h1>
-            <p className="text-stone-500 mt-1">Manage your appointments and requests</p>
+            <h1 className="text-4xl font-bold font-display text-primary-900">My Bookings</h1>
+            <p className="text-slate-500 mt-2 text-lg">Manage your appointments and requests</p>
           </div>
         </div>
 
-        <div className="flex border-b border-stone-200 overflow-x-auto">
+        <div className="flex border-b border-slate-200 overflow-x-auto">
           {['requests', 'upcoming', 'completed', 'cancelled'].map((tab) => (
             <button
               key={tab}
-              className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap capitalize ${activeTab === tab ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
+              className={`px-6 py-4 font-medium text-sm transition-all relative whitespace-nowrap capitalize ${activeTab === tab ? 'text-primary-900 font-bold' : 'text-slate-500 hover:text-primary-700'}`}
               onClick={() => setActiveTab(tab as any)}
             >
               {tab}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full"></div>}
+              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-900 rounded-t-full"></div>}
             </button>
           ))}
         </div>
@@ -682,7 +703,7 @@ export default function ParentBookingsPage() {
         ) : error ? (
           <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchData} className="bg-emerald-600 hover:bg-emerald-700">Retry</Button>
+            <Button onClick={fetchData} className="bg-primary-900 hover:bg-primary-800">Retry</Button>
           </div>
         ) : activeTab === 'requests' ? (
           <div className="space-y-6">
@@ -693,13 +714,13 @@ export default function ParentBookingsPage() {
             ) : selectedRequest ? (
               <RequestDetailsView request={selectedRequest} />
             ) : (
-              <div className="text-center py-20 bg-white rounded-3xl border border-stone-100 shadow-soft border-dashed">
-                <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-300">
+              <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm border-dashed">
+                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
                   <Calendar size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-stone-900 mb-2">No Request Selected</h3>
-                <p className="text-stone-500 max-w-sm mx-auto">
-                  Select a booking from the **Upcoming** tab to view its full request and assignment details here.
+                <h3 className="text-xl font-bold text-primary-900 mb-2 font-display">No Request Selected</h3>
+                <p className="text-slate-500 max-w-sm mx-auto">
+                  Select a booking from the <span className="font-semibold text-primary-700">Upcoming</span> tab to view its full request and assignment details here.
                 </p>
               </div>
             )}
@@ -711,9 +732,9 @@ export default function ParentBookingsPage() {
 
             if (!hasItems) {
               return (
-                <div className="text-center py-16 bg-white rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50">
-                  <p className="text-stone-500 mb-6">No {activeTab} bookings found.</p>
-                  <Button onClick={() => (window.location.href = '/search')} className="rounded-xl bg-emerald-600 hover:bg-emerald-700">Find Care</Button>
+                <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                  <p className="text-slate-500 mb-6 text-lg">No {activeTab} bookings found.</p>
+                  <Button onClick={() => (window.location.href = '/search')} className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-6 h-auto text-lg">Find Care</Button>
                 </div>
               );
             }
@@ -729,19 +750,23 @@ export default function ParentBookingsPage() {
                       setActiveTab('requests');
                     }}
                   >
-                    <div className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-xl shadow-emerald-100/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-shadow relative overflow-hidden">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-xl flex flex-col items-center justify-center text-emerald-700">
-                          <span className="text-xs font-bold uppercase">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
-                          <span className="text-xl font-bold">{new Date(request.date).getDate()}</span>
+                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden group-hover:translate-x-1">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-500 rounded-l-2xl"></div>
+                      <div className="flex items-center gap-6 flex-1 ml-2">
+                        <div className="flex-shrink-0 w-20 h-20 bg-accent-50 rounded-2xl flex flex-col items-center justify-center text-accent-700 shadow-inner">
+                          <span className="text-xs font-bold uppercase tracking-wider">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
+                          <span className="text-2xl font-bold font-display">{new Date(request.date).getDate()}</span>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">{getOtherPartyName(request)}</h3>
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-tight">Assignment</span>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="text-xl font-bold text-primary-900 group-hover:text-accent-600 transition-colors">{getOtherPartyName(request)}</h3>
+                            <span className="px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-700 text-[10px] font-bold uppercase tracking-wider border border-accent-200">Assignment</span>
                           </div>
-                          <p className="text-stone-500 text-sm mb-1">Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}</p>
-                          <p className="text-stone-400 text-xs">{formatTime(request.start_time)} ({request.duration_hours} hrs)</p>
+                          <p className="text-slate-600 text-sm mb-1 font-medium">Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}</p>
+                          <p className="text-slate-400 text-xs flex items-center gap-1">
+                            <Clock size={12} />
+                            {formatTime(request.start_time)} ({request.duration_hours} hrs)
+                          </p>
                         </div>
                       </div>
 
@@ -749,7 +774,7 @@ export default function ParentBookingsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          className="rounded-xl border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             const associatedBooking = bookings.find(b => b.job_id === request.id);
@@ -774,7 +799,7 @@ export default function ParentBookingsPage() {
                   return (
                     <div
                       key={booking.id}
-                      className={`bg-white p-6 rounded-2xl border border-stone-100 shadow-xl shadow-stone-200/50 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-2xl transition-all duration-300 ${activeTab === 'upcoming' ? 'cursor-pointer hover:border-emerald-200 group' : ''}`}
+                      className={`bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 ${activeTab === 'upcoming' ? 'cursor-pointer hover:border-primary-100 group hover:translate-x-1' : ''}`}
                       onClick={() => {
                         if (activeTab === 'upcoming') {
                           setSelectedRequestId(booking.job_id || booking.id);
@@ -782,21 +807,24 @@ export default function ParentBookingsPage() {
                         }
                       }}
                     >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="flex-shrink-0 w-16 h-16 bg-stone-100 rounded-xl flex flex-col items-center justify-center text-stone-700 group-hover:bg-emerald-50 group-hover:text-emerald-700 transition-colors">
-                          <span className="text-xs font-bold uppercase">{month}</span>
-                          <span className="text-xl font-bold">{day}</span>
+                      <div className="flex items-center gap-6 flex-1">
+                        <div className={`flex-shrink-0 w-20 h-20 rounded-2xl flex flex-col items-center justify-center transition-colors shadow-inner ${activeTab === 'upcoming' ? 'bg-primary-50 text-primary-900' : 'bg-slate-50 text-slate-500'}`}>
+                          <span className="text-xs font-bold uppercase tracking-wider">{month}</span>
+                          <span className="text-2xl font-bold font-display">{day}</span>
                         </div>
                         <div>
-                          <h3 className={`text-lg font-bold text-stone-900 transition-colors ${activeTab === 'upcoming' ? 'group-hover:text-emerald-700' : ''}`}>{getOtherPartyName(booking)}</h3>
-                          <p className="text-stone-500 text-sm mb-1">
+                          <h3 className={`text-xl font-bold text-primary-900 transition-colors ${activeTab === 'upcoming' ? 'group-hover:text-primary-700' : ''}`}>{getOtherPartyName(booking)}</h3>
+                          <p className="text-slate-600 text-sm mb-1 font-medium">
                             Care for {(booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1) !== 1 ? 'ren' : ''}
                           </p>
-                          <p className="text-stone-400 text-xs">{formatTime(booking.start_time)}{booking.end_time && ` - ${formatTime(booking.end_time)}`}</p>
+                          <p className="text-slate-400 text-xs flex items-center gap-1">
+                            <Clock size={12} />
+                            {formatTime(booking.start_time)}{booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}>
+                      <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusBadgeStyles(booking.status)}`}>
                           {booking.status.toLowerCase().replace('_', ' ')}
                         </span>
                         <BookingActionButtons
