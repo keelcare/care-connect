@@ -15,7 +15,9 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
+  MessageSquare,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
@@ -28,6 +30,7 @@ import { ReviewModal } from '@/components/reviews/ReviewModal';
 
 export default function ParentBookingsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -577,6 +580,23 @@ export default function ParentBookingsPage() {
 
     const buttons = [];
     if (['CONFIRMED', 'IN_PROGRESS', 'requested', 'REQUESTED'].includes(booking.status)) {
+      if (['CONFIRMED', 'IN_PROGRESS'].includes(booking.status)) {
+        buttons.push(
+          <Button
+            key="chat"
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/messages?booking=${booking.id}`);
+            }}
+            className="rounded-xl border-accent-100 text-accent-600 hover:bg-accent-50 hover:text-accent-700 hover:border-accent-200"
+          >
+            <MessageSquare size={14} className="mr-1" />
+            Chat
+          </Button>
+        );
+      }
       buttons.push(
         <Button
           key="cancel"

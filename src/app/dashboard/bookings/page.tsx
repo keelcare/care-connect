@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Booking, ServiceRequest } from '@/types/api';
-import { Plus, Calendar, Clock, MapPin } from 'lucide-react';
+import { Plus, Calendar, Clock, MapPin, MessageSquare } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import styles from './page.module.css';
@@ -14,6 +15,7 @@ import { ReviewModal } from '@/components/reviews/ReviewModal';
 
 export default function BookingsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [assignments, setAssignments] = useState<any[]>([]);
@@ -251,6 +253,20 @@ export default function BookingsPage() {
     }
 
     const buttons = [];
+    if (['CONFIRMED', 'IN_PROGRESS'].includes(booking.status)) {
+      buttons.push(
+        <Button
+          key="chat"
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`/dashboard/messages?booking=${booking.id}`)}
+          className="rounded-xl border-accent-100 text-accent-700 hover:bg-accent-50"
+        >
+          <MessageSquare size={16} className="mr-1" />
+          Chat
+        </Button>
+      );
+    }
 
     if (booking.status === 'CONFIRMED' && user?.role === 'nanny') {
       buttons.push(

@@ -74,8 +74,13 @@ function MessagesContent() {
       if (chat) {
         setActiveChat(chat);
       }
+    } else if (searchParams.get('chatId') && chats.length > 0) {
+      const chat = chats.find((c) => c.id === searchParams.get('chatId'));
+      if (chat) {
+        setActiveChat(chat);
+      }
     }
-  }, [bookingIdParam, chats]);
+  }, [bookingIdParam, searchParams, chats]);
 
   useEffect(() => {
     if (activeChat) {

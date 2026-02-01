@@ -163,7 +163,7 @@ export default function DashboardPage() {
   const handleMessageBooking = async (booking: Booking) => {
     try {
       const chat = await api.chat.create({ bookingId: booking.id });
-      router.push(`/dashboard/messages?chatId=${chat.id}`);
+      router.push(`/dashboard/messages?booking=${booking.id}`);
     } catch (err) {
       console.error('Failed to start chat:', err);
     }
