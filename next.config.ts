@@ -67,6 +67,15 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
+
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BACKEND_URL || 'https://care-connect-backend-ok23.onrender.com'}/:path*`,
+      },
+    ];
   },
 };
 
