@@ -28,8 +28,16 @@ function CallbackContent() {
       }
 
       try {
+        // Check for token from backend (Token Exchange Flow)
+        const token = searchParams.get('token');
+        
+        if (token) {
+          console.log('Exchanging token for session...');
+          await api.auth.setSession(token);
+        }
+
         // With cookie-based auth, we just fetch the user.
-        // The cookies are already set by the backend redirect.
+        // The cookies are already set by the backend (via setSession or redirect)
         console.log('Fetching user data for callback...');
         const user = await api.users.me();
 
@@ -38,8 +46,6 @@ function CallbackContent() {
         // AuthContext login will handle the redirect
       } catch (err) {
         console.error('Failed to verify session during callback:', err);
-        // Fallback: Check if there's a token in URL (legacy support or odd flow)
-        // But generally we should redirect to login if me() fails
         router.push('/auth/login?error=auth_failed');
       }
     };

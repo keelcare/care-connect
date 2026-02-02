@@ -199,6 +199,12 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ token, newPassword }),
       }),
+    // Exchange a temporary token for a session (cookies)
+    setSession: (token: string) =>
+      fetchApi<User>('/auth/session', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      }),
   },
   users: {
     me: () => fetchApi<User>('/users/me'),
