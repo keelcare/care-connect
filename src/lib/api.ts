@@ -37,6 +37,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
 
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
+        credentials: 'include', // Ensure cookies are sent (important for cross-site requests)
         headers,
     });
 
