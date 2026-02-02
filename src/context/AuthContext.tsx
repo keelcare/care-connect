@@ -8,7 +8,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { api, setTokenRefresher } from '@/lib/api';
 import { User } from '@/types/api';
 
@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   // With cookie-based auth, we rely on the API 401 response to trigger logout.
   // We register a simple refresher that just calls the refresh endpoint (cookies handled automatically)
@@ -86,12 +87,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initial Auth Check
   useEffect(() => {
+    // Skip auth check on callback page to prevent race conditions
+    // (Callback page handles the session exchange and login manually)
+    if (pathname?.startsWith('/auth/callback')) {
+        setLoading(false); 
+        return;
+    }
     checkAuth();
-  }, [checkAuth]);
+  }, [checkAuth, pathname]);
 
   const login = async (userData: User) => {
     // Standard login: user data provided, set immediately
     setUser(userData);
+    setLoading(false);
     console.log('Logged in user:', userData);
 
     // Check if user is banned - redirect to help page
