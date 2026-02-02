@@ -154,7 +154,10 @@ export async function fetchApi<T>(
 
       // If refresh failed or no refresher, logout is handled by the consumer (AuthContext) redirects
       // or we can redirect here
-      if (window.location.pathname !== '/auth/login') {
+      if (
+        window.location.pathname !== '/auth/login' &&
+        !window.location.pathname.startsWith('/auth/')
+      ) {
         window.location.href = '/auth/login';
       }
       throw new Error('Session expired');
