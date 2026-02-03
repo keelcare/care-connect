@@ -71,11 +71,13 @@ export default function CaregiverProfilePage() {
     fetchCaregiver();
   }, [params.id]);
 
+  /*
   useEffect(() => {
     if (searchParams.get('book') === 'true') {
       router.push(`/book/${params.id}`);
     }
   }, [searchParams, params.id, router]);
+  */
 
 
 
@@ -319,7 +321,7 @@ export default function CaregiverProfilePage() {
                     View Availability
                   </Button>
 
-                  {/* Secondary Booking Action */}
+                  {/* Secondary Booking Action - Commented Out
                   <div className="pt-2 text-center">
                     <button
                       onClick={() => router.push(`/book/${caregiver.id}`)}
@@ -328,6 +330,7 @@ export default function CaregiverProfilePage() {
                       Skip to booking form
                     </button>
                   </div>
+                  */}
                 </>
               ) : (
                 <>

@@ -139,7 +139,7 @@ export default function FavoritesPage() {
                     onViewProfile={() =>
                       router.push(`/caregiver/${favorite.nanny_id}`)
                     }
-                    onBook={() => router.push(`/book/${favorite.nanny_id}`)}
+                  // onBook={() => router.push(`/book/${favorite.nanny_id}`)}
                   />
                 );
               })}

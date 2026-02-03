@@ -450,7 +450,7 @@ export default function BrowsePage() {
                     onViewProfile={() =>
                       (window.location.href = `/caregiver/${nanny.id}`)
                     }
-                    onBook={() => (window.location.href = `/book/${nanny.id}`)}
+                  // onBook={() => (window.location.href = `/book/${nanny.id}`)}
                   />
                 ))}
               </div>

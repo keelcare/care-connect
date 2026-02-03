@@ -453,11 +453,17 @@ export default function RecurringBookingsPage() {
                     const profileImage = nanny.profiles?.profile_image_url;
 
                     return (
+                      /*
                       <Link
                         key={nanny.id}
                         href={`/book/${nanny.id}?recurring=true`}
                         onClick={() => setShowNannyModal(false)}
                         className="flex items-center gap-4 p-4 rounded-xl border border-neutral-200 hover:border-accent-300 hover:bg-accent-50/50 transition-all group"
+                      >
+                      */
+                      <div
+                        key={nanny.id}
+                        className="flex items-center gap-4 p-4 rounded-xl border border-neutral-200 hover:border-accent-300 hover:bg-accent-50/50 transition-all group cursor-not-allowed opacity-75"
                       >
                         {/* Avatar */}
                         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent-100 to-neutral-100 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -520,7 +526,7 @@ export default function RecurringBookingsPage() {
                             />
                           </svg>
                         </div>
-                      </Link>
+                      </div>
                     );
                   })}
                 </div>

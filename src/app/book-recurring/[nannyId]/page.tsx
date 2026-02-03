@@ -59,7 +59,8 @@ const TIME_SLOTS = [
   '21:00',
 ];
 
-export default function BookRecurringPage() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function LegacyBookRecurringPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -273,16 +274,16 @@ export default function BookRecurringPage() {
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${currentStep >= step
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-stone-100 text-stone-400'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-stone-100 text-stone-400'
                         }`}
                     >
                       {currentStep > step ? <CheckCircle2 size={20} /> : step}
                     </div>
                     <span
                       className={`hidden sm:block text-sm font-medium ${currentStep >= step
-                          ? 'text-stone-900'
-                          : 'text-stone-400'
+                        ? 'text-stone-900'
+                        : 'text-stone-400'
                         }`}
                     >
                       {step === 1 && 'Schedule'}
@@ -336,8 +337,8 @@ export default function BookRecurringPage() {
                               })
                             }
                             className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all capitalize ${isSelected
-                                ? 'bg-purple-600 text-white border-purple-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
                               }`}
                           >
                             {freq}
@@ -392,8 +393,8 @@ export default function BookRecurringPage() {
                                   });
                                 }}
                                 className={`w-10 h-10 rounded-lg font-medium text-sm border transition-all ${isSelected
-                                    ? 'bg-purple-600 text-white border-purple-600'
-                                    : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
+                                  ? 'bg-purple-600 text-white border-purple-600'
+                                  : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
                                   }`}
                               >
                                 {date}
@@ -497,8 +498,8 @@ export default function BookRecurringPage() {
                               setFormData({ ...formData, startTime: time })
                             }
                             className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                ? 'bg-purple-600 text-white border-purple-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
                               }`}
                           >
                             {time}
@@ -533,8 +534,8 @@ export default function BookRecurringPage() {
                               })
                             }
                             className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                ? 'bg-purple-600 text-white border-purple-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300 hover:bg-purple-50'
                               }`}
                           >
                             {option.label}
@@ -575,8 +576,8 @@ export default function BookRecurringPage() {
                               setFormData({ ...formData, numChildren: num })
                             }
                             className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                ? 'bg-purple-600 text-white border-purple-600'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white border-stone-200 text-stone-700 hover:border-purple-300'
                               }`}
                           >
                             {num}
@@ -777,7 +778,26 @@ export default function BookRecurringPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div >
+      </div >
+    </ParentLayout>
+  );
+}
+
+export default function BookRecurringPage() {
+  return (
+    <ParentLayout>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] bg-stone-50 px-4 text-center">
+        <h2 className="text-2xl font-bold text-stone-900 mb-2">Recurring Booking Disabled</h2>
+        <p className="text-stone-500 mb-8 max-w-md">
+          Direct recurring booking is currently unavailable. Please use our matching service to find the best caregiver for your needs.
+        </p>
+        <Button
+          onClick={() => window.location.href = '/book-service'}
+          className="bg-primary-900 hover:bg-primary-800 rounded-xl px-8"
+        >
+          Book a Service
+        </Button>
       </div>
     </ParentLayout>
   );

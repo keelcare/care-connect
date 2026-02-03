@@ -628,7 +628,7 @@ export default function SearchPage() {
                     onViewProfile={() =>
                       (window.location.href = `/caregiver/${nanny.id}`)
                     }
-                    onBook={() => router.push(`/book/${nanny.id}`)}
+                  // onBook={() => router.push(`/book/${nanny.id}`)}
                   />
                 ))}
               </div>

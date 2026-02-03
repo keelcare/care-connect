@@ -24,7 +24,7 @@ export interface ProfileCardProps {
   isVerified?: boolean;
   distance?: number; // Distance in kilometers
   onViewProfile?: () => void;
-  onBook?: () => void;
+  // onBook?: () => void;
   compact?: boolean; // Compact mode for smaller cards
   hideBookButton?: boolean;
 }
@@ -106,7 +106,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   isVerified,
   distance,
   onViewProfile,
-  onBook,
+  // onBook,
   compact = false,
   hideBookButton = false,
 }) => {
