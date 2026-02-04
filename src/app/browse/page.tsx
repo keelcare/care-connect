@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { User } from '@/types/api';
 import { ProfileCard } from '@/components/features/ProfileCard';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -274,6 +275,7 @@ export default function BrowsePage() {
   );
 
   return (
+    <ProtectedRoute allowedRoles={['parent']}>
     <ParentLayout>
       <div className="min-h-screen bg-warm-white pb-20 md:pb-8">
         <main className="max-w-7xl mx-auto px-4 md:px-6 space-y-20 pt-8">
@@ -467,6 +469,8 @@ export default function BrowsePage() {
           </Link>
         </div>
       </div>
+
     </ParentLayout>
+    </ProtectedRoute>
   );
 }

@@ -55,7 +55,8 @@ export function setTokenRefresher(refresher: () => Promise<boolean>) {
 export async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {},
-  skipRefresh = false
+  skipRefresh = false,
+  skipRedirect = false
 ): Promise<T> {
   // With Cookie-based auth, we MUST send credentials
   const fetchOptions: RequestInit = {
@@ -106,7 +107,8 @@ export async function fetchApi<T>(
             ...options,
             _retryCount: retryCount + 1,
           } as any,
-          skipRefresh
+          skipRefresh,
+          skipRedirect
         );
       }
     }
@@ -155,6 +157,7 @@ export async function fetchApi<T>(
       // If refresh failed or no refresher, logout is handled by the consumer (AuthContext) redirects
       // or we can redirect here
       if (
+        !skipRedirect &&
         window.location.pathname !== '/auth/login' &&
         !window.location.pathname.startsWith('/auth/')
       ) {
@@ -167,6 +170,8 @@ export async function fetchApi<T>(
 
   return data;
 }
+
+
 
 export const api = {
   auth: {

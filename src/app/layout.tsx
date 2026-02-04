@@ -7,8 +7,28 @@ import { ToastProvider } from '@/components/ui/ToastProvider';
 import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketProvider';
 import { Chatbot } from '@/components/ai/Chatbot';
+import { Fraunces, Lora, Cormorant_Garamond } from 'next/font/google';
 import 'lineicons/dist/lineicons.css';
 import './globals.css';
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-lora',
+  display: 'swap',
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,7 +39,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const hideHeader =
     pathname?.startsWith('/auth') ||
     pathname?.startsWith('/dashboard') ||
-    pathname?.startsWith('/admin');
+    pathname?.startsWith('/admin') ||
+    pathname === '/';
 
   const hideFooter =
     hideHeader ||
@@ -36,7 +57,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/favorites');
 
   return (
-    <body>
+    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-gray-50 text-gray-900`}>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
@@ -73,16 +94,6 @@ export default function RootLayout({
           content="Connect with trusted caregivers for child care, senior care, pet care, and more."
         />
         <link rel="icon" href="/logo.jpeg" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Manrope:wght@200..800&family=Outfit:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>

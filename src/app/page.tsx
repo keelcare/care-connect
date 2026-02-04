@@ -1,10 +1,6 @@
 'use client';
 
-import { Hero } from '@/components/features/Hero';
-import { FeaturedServices } from '@/components/features/FeaturedServices';
-import { TrustedBy } from '@/components/features/TrustedBy';
-import { HowItWorks } from '@/components/features/HowItWorks';
-import { CTASection } from '@/components/features/CTASection';
+import { LandingPage } from '@/components/landing-new/LandingPage';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -49,11 +45,7 @@ export default function Home() {
   return (
     <>
       {showSplash && <SplashLoader onFinish={handleSplashFinish} />}
-      <Hero />
-      <TrustedBy />
-      <FeaturedServices />
-      <HowItWorks />
-      <CTASection />
+      <LandingPage />
     </>
   );
 }

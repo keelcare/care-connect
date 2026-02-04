@@ -9,7 +9,7 @@ import React, {
   useRef,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { api, setTokenRefresher } from '@/lib/api';
+import { api, setTokenRefresher, fetchApi } from '@/lib/api';
 import { User } from '@/types/api';
 
 
@@ -65,8 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = useCallback(async () => {
     try {
       console.log('AuthContext: Verifying session...');
+      
+      // If user explicitly logged out, skip check to prevent "zombie" cookie login
+      if (typeof window !== 'undefined' && localStorage.getItem('is_logged_out')) {
+         console.log('AuthContext: User explicitly logged out, skipping session check.');
+         setUser(null);
+         return;
+      }
+
       // Just call /users/me. If we have valid cookies, it returns the user.
-      const userData = await api.users.me();
+      const userData = await fetchApi<User>('/users/me', {}, false, true);
       console.log('AuthContext: User verified', userData.email);
 
       // Handle Ban Check
@@ -78,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(userData);
     } catch (error: any) {
-      console.error('AuthContext: Auth check failed / No session');
+      console.log('AuthContext: No active session / Guest mode');
       setUser(null);
     } finally {
       setLoading(false);
@@ -97,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [checkAuth, pathname]);
 
   const login = async (userData: User) => {
+    if (typeof window !== 'undefined') localStorage.removeItem('is_logged_out');
     // Standard login: user data provided, set immediately
     setUser(userData);
     setLoading(false);
@@ -124,9 +133,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await api.auth.logout();
     } catch (error) {
       console.error('Logout failed silently', error);
+    } finally {
+      if (typeof window !== 'undefined') localStorage.setItem('is_logged_out', 'true');
+      // ALWAYS cleanup client state
+      setUser(null);
+      router.push('/auth/login');
     }
-    setUser(null);
-    router.push('/auth/login');
   };
 
   const refreshUser = async () => {

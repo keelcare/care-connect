@@ -122,15 +122,33 @@ const config: Config = {
           DEFAULT: '#ffffff',
           foreground: '#212529',
         },
+        
+        // Wellness Theme Tokens (Redesign)
+          navy: '#0F172A',    // Keel Brand Blue (Dark Navy)
+          terracotta: '#E08E79',
+          mustard: '#EEDC82',
+          text: '#2D2A26',    // Soft Black
+
+        childcare: {
+          primary: '#1F6F5B',    // Primary Green
+          mint: '#E5F1EC',       // Mint Background
+          lavender: '#C9C6E5',   // Lavender
+          mustard: '#F1B92B',    // Mustard
+          coral: '#D85A4F',      // Coral
+          teal: '#184C4A',       // Deep Teal
+          neutral: '#F4F4F4',    // Neutral Background
+          text: '#1F1F1F',
+        },
       },
 
       // Typography
       fontFamily: {
-        display: ['Playfair Display', 'serif'],
-        heading: ['DM Sans', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        display: ['var(--font-fraunces)', 'serif'],
+        heading: ['var(--font-fraunces)', 'serif'],
+        body: ['var(--font-lora)', 'sans-serif'],
+        sans: ['var(--font-lora)', 'sans-serif'],
+        serif: ['var(--font-fraunces)', 'serif'],
+        cormorant: ['var(--font-cormorant)', 'serif'],
       },
 
       // Shadows - Clean & Subtle
@@ -174,6 +192,10 @@ const config: Config = {
           '0%': { transform: 'translateY(-10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -181,6 +203,7 @@ const config: Config = {
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-up': 'slide-up 0.3s ease-out',
         'slide-down': 'slide-down 0.3s ease-out',
+        float: 'float 6s ease-in-out infinite',
       },
     },
   },
