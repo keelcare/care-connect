@@ -284,7 +284,7 @@ export default function RequestDetailsPage() {
                 onViewProfile={() =>
                   router.push(`/caregiver/${assignedNanny.id}`)
                 }
-                onBook={() => router.push(`/book/${assignedNanny.id}`)}
+              // onBook={() => router.push(`/book/${assignedNanny.id}`)}
               />
             </div>
           )}

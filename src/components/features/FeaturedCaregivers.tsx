@@ -185,7 +185,7 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({
                   onViewProfile={() =>
                     router.push(`/caregiver/${caregiver.id}`)
                   }
-                  onBook={() => router.push(`/book/${caregiver.id}`)}
+                // onBook={() => router.push(`/book/${caregiver.id}`)}
                 />
               </div>
             ))}

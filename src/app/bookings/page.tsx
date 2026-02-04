@@ -420,7 +420,7 @@ export default function ParentBookingsPage() {
                     experience={`${(request.nanny as any).nanny_details?.experience_years} years`}
                     isVerified={request.nanny.is_verified}
                     onViewProfile={() => (window.location.href = `/caregiver/${request.nanny?.id}`)}
-                    onBook={() => { }}
+                    // onBook={() => { }}
                     hideBookButton={true}
                   />
                 </div>

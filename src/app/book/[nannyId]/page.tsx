@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { Button } from '@/components/ui/button';
 
+/*
 export default function DirectBookingPage() {
   const params = useParams();
   const router = useRouter();
@@ -142,6 +143,26 @@ export default function DirectBookingPage() {
         loading={submitting}
         title={`Book ${nanny.profiles?.first_name}`}
       />
+    </ParentLayout>
+  );
+}
+*/
+
+export default function DirectBookingPage() {
+  return (
+    <ParentLayout>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] bg-stone-50 px-4 text-center">
+        <h2 className="text-2xl font-bold text-stone-900 mb-2">Direct Booking Disabled</h2>
+        <p className="text-stone-500 mb-8 max-w-md">
+          Direct booking is currently unavailable. Please use our matching service to find the best caregiver for your needs.
+        </p>
+        <Button
+          onClick={() => window.location.href = '/book-service'}
+          className="bg-primary-900 hover:bg-primary-800 rounded-xl px-8"
+        >
+          Book a Service
+        </Button>
+      </div>
     </ParentLayout>
   );
 }
