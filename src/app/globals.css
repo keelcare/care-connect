@@ -5,115 +5,154 @@
 @layer base {
   :root {
     /* =========================================
-       CareConnect Blue & White Design System
-       Based on Logo: Deep Navy Blue + Crisp White
+       Keel Childcare - Warm Earthy PANTONE Design System
+       Inspired by: PANTONE Warm Sand, Terracotta, Sage, Cream
+       Premium, trustworthy, nurturing aesthetic
        ========================================= */
 
-    /* Background & Foreground */
-    --background: 210 17% 98%;
-    /* #f8f9fa Light gray-blue */
-    --foreground: 210 11% 15%;
-    /* #212529 Dark blue-gray */
+    /* Background & Foreground - Warm Cream Base */
+    --background: 40 33% 96%;
+    /* Warm cream #F7F4F0 */
+    --foreground: 24 10% 20%;
+    /* Deep warm brown #37322D */
 
-    /* Primary - Deep Navy Blue (from logo #1e3a5f) */
-    --primary: 210 52% 25%;
-    /* #1e3a5f */
-    --primary-foreground: 0 0% 100%;
-    /* #ffffff */
-    --primary-50: 210 40% 97%;
-    --primary-100: 210 40% 91%;
-    --primary-600: 210 40% 40%;
-    --primary-700: 210 45% 31%;
-    --primary-800: 210 50% 23%;
-    --primary-900: 210 52% 25%;
+    /* Primary - Sage Green (PANTONE 16-0110 Sage Green) */
+    --primary: 145 25% 36%;
+    /* #4A6C5B Muted sage */
+    --primary-foreground: 40 33% 96%;
+    /* Warm cream */
+    --primary-50: 145 25% 96%;
+    /* #F4F7F5 */
+    --primary-100: 145 25% 90%;
+    /* #E3EBE6 */
+    --primary-200: 145 25% 80%;
+    /* #C4D5CA */
+    --primary-600: 145 25% 30%;
+    /* #3D5A4B */
+    --primary-700: 145 28% 26%;
+    /* #334D40 */
+    --primary-800: 145 30% 22%;
+    /* #2A4035 */
+    --primary-900: 145 32% 18%;
+    /* #22352B */
 
-    /* Secondary - Clean Gray */
-    --secondary: 210 6% 54%;
-    /* #868e96 */
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - Terracotta (PANTONE 16-1526 Terra Cotta) */
+    --secondary: 16 45% 55%;
+    /* #B87356 Warm terracotta */
+    --secondary-foreground: 40 33% 96%;
+    /* Warm cream */
+    --secondary-50: 20 50% 96%;
+    /* #FBF6F4 */
+    --secondary-100: 18 48% 90%;
+    /* #F5E6DF */
+    --secondary-200: 17 45% 80%;
+    /* #E5C8B9 */
 
-    /* Accent - Bright Blue for CTAs */
-    --accent: 217 91% 60%;
-    /* #3b82f6 */
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Warm Ochre/Gold (PANTONE 15-1142 Honey Gold) */
+    --accent: 38 55% 52%;
+    /* #C19A4E Rich gold */
+    --accent-foreground: 24 10% 20%;
+    /* Deep brown */
 
-    /* Muted - Light Gray */
-    --muted: 210 17% 95%;
-    /* #f1f3f5 */
-    --muted-foreground: 210 11% 29%;
-    /* #495057 */
+    /* Muted - Warm Stone */
+    --muted: 35 20% 92%;
+    /* #EFEBE6 Warm stone */
+    --muted-foreground: 24 15% 40%;
+    /* #6B5D52 Warm gray-brown */
 
-    /* Neutral Grays - Clean & Minimal */
-    --neutral-50: 210 17% 98%;
-    --neutral-100: 210 17% 95%;
-    --neutral-200: 210 16% 93%;
-    --neutral-300: 210 14% 89%;
-    --neutral-400: 210 11% 82%;
-    --neutral-500: 210 7% 70%;
-    --neutral-600: 210 6% 54%;
-    --neutral-700: 210 11% 29%;
-    --neutral-800: 210 11% 21%;
-    --neutral-900: 210 11% 15%;
+    /* Neutral Warm Tones - Earthy Palette */
+    --neutral-50: 40 33% 97%;
+    /* #F9F7F4 */
+    --neutral-100: 38 25% 94%;
+    /* #F3EFEA */
+    --neutral-200: 36 20% 89%;
+    /* #E8E2DA */
+    --neutral-300: 34 18% 82%;
+    /* #D9D1C6 */
+    --neutral-400: 30 15% 70%;
+    /* #BDB1A2 */
+    --neutral-500: 28 12% 55%;
+    /* #958778 */
+    --neutral-600: 26 15% 42%;
+    /* #7A6A5A */
+    --neutral-700: 24 18% 32%;
+    /* #5E4F42 */
+    --neutral-800: 22 20% 24%;
+    /* #493C31 */
+    --neutral-900: 20 22% 18%;
+    /* #392E25 */
 
-    /* Success */
-    --success-50: 152 76% 90%;
-    --success-100: 152 69% 82%;
-    --success-500: 152 69% 46%;
-    --success-600: 152 76% 36%;
-    --success-700: 152 86% 28%;
+    /* Success - Soft Sage */
+    --success-50: 145 30% 94%;
+    --success-100: 145 28% 85%;
+    --success-500: 145 30% 42%;
+    --success-600: 145 32% 36%;
+    --success-700: 145 35% 28%;
 
-    /* Warning */
-    --warning-50: 48 100% 88%;
-    --warning-100: 48 96% 76%;
-    --warning-500: 38 92% 50%;
-    --warning-600: 32 95% 44%;
-    --warning-700: 26 90% 37%;
+    /* Warning - Warm Amber */
+    --warning-50: 42 80% 92%;
+    --warning-100: 40 75% 82%;
+    --warning-500: 38 70% 50%;
+    --warning-600: 35 75% 44%;
+    --warning-700: 32 70% 38%;
 
-    /* Error */
-    --error-50: 0 86% 93%;
-    --error-100: 0 93% 88%;
-    --error-500: 0 72% 59%;
-    --error-600: 0 74% 52%;
-    --error-700: 0 70% 45%;
+    /* Error - Muted Rose */
+    --error-50: 8 60% 94%;
+    --error-100: 6 55% 88%;
+    --error-500: 4 50% 55%;
+    --error-600: 2 55% 48%;
+    --error-700: 0 50% 42%;
 
-    /* Border & Input */
-    --border: 210 16% 93%;
-    /* #e9ecef */
-    --input: 210 17% 95%;
-    /* #f1f3f5 */
-    --ring: 210 52% 25%;
-    /* #1e3a5f */
+    /* Border & Input - Warm tones */
+    --border: 36 20% 87%;
+    /* Warm border #E4DDD3 */
+    --input: 38 25% 94%;
+    /* Warm input bg #F3EFEA */
+    --ring: 145 25% 36%;
+    /* Sage ring */
 
-    /* Card */
-    --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    /* Card - Soft Warm White */
+    --card: 40 40% 99%;
+    /* #FDFCFA */
+    --card-foreground: 24 10% 20%;
 
     /* Popover */
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover: 40 40% 99%;
+    --popover-foreground: 24 10% 20%;
 
     /* Destructive */
-    --destructive: 0 72% 59%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 4 50% 55%;
+    --destructive-foreground: 40 33% 96%;
 
-    /* Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.625rem;
-    --radius-lg: 0.875rem;
-    --radius-xl: 1.25rem;
-    --radius-2xl: 1.75rem;
+    /* Radius - Softer, more organic */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+    --radius-3xl: 2.5rem;
     --radius-full: 9999px;
 
-    /* Typography */
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-heading: 'DM Sans', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    /* Typography - Elegant & Warm */
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-heading: 'Lora', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
     --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+
+    /* Custom Earthy Colors for Direct Use */
+    --sage: 145 25% 36%;
+    --sage-light: 145 25% 90%;
+    --terracotta: 16 45% 55%;
+    --terracotta-light: 18 48% 90%;
+    --ochre: 38 55% 52%;
+    --cream: 40 33% 96%;
+    --warm-brown: 24 10% 20%;
+    --stone: 35 20% 92%;
   }
 
   /* Base Styles */
@@ -160,12 +199,12 @@
 
 @layer components {
 
-  /* ===== GLASSMORPHISM CARD ===== */
+  /* ===== WARM EARTHY CARD STYLES ===== */
   .glass-card {
-    background-color: rgb(255 255 255 / 0.95);
+    background-color: hsl(var(--card));
     backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--neutral-200) / 0.6);
-    box-shadow: var(--shadow-premium);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 24px rgba(55, 50, 45, 0.06);
     border-radius: var(--radius-2xl);
   }
 
@@ -174,86 +213,170 @@
   }
 
   .glass-card-hover:hover {
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 12px 40px rgba(55, 50, 45, 0.1);
     transform: translateY(-2px);
   }
 
-  /* ===== PREMIUM BUTTON STYLES ===== */
+  /* Earthy card variant */
+  .earthy-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 2px 16px rgba(55, 50, 45, 0.04);
+    transition: all 300ms ease;
+  }
+
+  .earthy-card:hover {
+    box-shadow: 0 8px 32px rgba(55, 50, 45, 0.08);
+    border-color: hsl(var(--neutral-300));
+  }
+
+  /* ===== PREMIUM BUTTON STYLES - EARTHY ===== */
   .btn-primary {
-    background-color: hsl(var(--primary-900));
-    color: white;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
+    background-color: hsl(var(--sage));
+    color: hsl(var(--cream));
+    font-weight: 500;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 8px rgba(74, 108, 91, 0.2);
     transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.01em;
   }
 
   .btn-primary:hover {
-    background-color: hsl(var(--primary-800));
-    box-shadow: var(--shadow-lg);
+    background-color: hsl(var(--primary-700));
+    box-shadow: 0 4px 16px rgba(74, 108, 91, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background-color: hsl(var(--terracotta));
+    color: hsl(var(--cream));
+    font-weight: 500;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 8px rgba(184, 115, 86, 0.2);
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-secondary:hover {
+    background-color: hsl(16 50% 48%);
+    box-shadow: 0 4px 16px rgba(184, 115, 86, 0.25);
+    transform: translateY(-1px);
   }
 
   .btn-accent {
-    background-color: hsl(var(--accent));
-    color: white;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
+    background-color: hsl(var(--ochre));
+    color: hsl(var(--warm-brown));
+    font-weight: 500;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 8px rgba(193, 154, 78, 0.2);
     transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-accent:hover {
-    background-color: hsl(var(--accent) / 0.9);
-    box-shadow: var(--shadow-lg);
+    background-color: hsl(38 60% 46%);
+    box-shadow: 0 4px 16px rgba(193, 154, 78, 0.25);
+    transform: translateY(-1px);
   }
 
   .btn-outline {
-    border: 2px solid hsl(var(--primary-900));
-    color: hsl(var(--primary-900));
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-xl);
+    border: 1.5px solid hsl(var(--sage));
+    color: hsl(var(--sage));
+    font-weight: 500;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    background-color: transparent;
     transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-outline:hover {
-    background-color: hsl(var(--primary-900));
-    color: white;
+    background-color: hsl(var(--sage));
+    color: hsl(var(--cream));
   }
 
-  /* ===== TEXT STYLES ===== */
+  /* Ghost button for subtle actions */
+  .btn-ghost {
+    background-color: transparent;
+    color: hsl(var(--neutral-600));
+    font-weight: 500;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-ghost:hover {
+    background-color: hsl(var(--stone));
+    color: hsl(var(--warm-brown));
+  }
+
+  /* ===== TEXT STYLES - WARM ELEGANT ===== */
   .text-heading {
     font-family: var(--font-heading);
-    color: hsl(var(--primary-900));
-    font-weight: 600;
+    color: hsl(var(--warm-brown));
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
 
   .text-display {
     font-family: var(--font-display);
-    color: hsl(var(--primary-900));
-    font-weight: 700;
+    color: hsl(var(--warm-brown));
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 
   .text-body {
     font-family: var(--font-body);
-    color: hsl(var(--neutral-700));
+    color: hsl(var(--neutral-600));
+    line-height: 1.6;
   }
 
-  /* ===== GRADIENT BACKGROUNDS ===== */
-  .bg-gradient-primary {
-    background-image: linear-gradient(to bottom right, hsl(var(--primary-900)), hsl(var(--primary-700)));
+  .text-sage {
+    color: hsl(var(--sage));
   }
 
-  .bg-gradient-accent {
-    background-image: linear-gradient(to bottom right, hsl(var(--accent)), hsl(var(--accent) / 0.8));
+  .text-terracotta {
+    color: hsl(var(--terracotta));
+  }
+
+  .text-ochre {
+    color: hsl(var(--ochre));
+  }
+
+  /* ===== BACKGROUND COLORS - EARTHY ===== */
+  .bg-sage {
+    background-color: hsl(var(--sage));
+  }
+
+  .bg-sage-light {
+    background-color: hsl(var(--sage-light));
+  }
+
+  .bg-terracotta {
+    background-color: hsl(var(--terracotta));
+  }
+
+  .bg-terracotta-light {
+    background-color: hsl(var(--terracotta-light));
+  }
+
+  .bg-ochre {
+    background-color: hsl(var(--ochre));
+  }
+
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+
+  .bg-stone {
+    background-color: hsl(var(--stone));
   }
 
   /* ===== FOCUS STATES ===== */
   .focus-ring:focus {
     outline: none;
-    box-shadow: 0 0 0 2px white, 0 0 0 4px hsl(var(--primary-900));
+    box-shadow: 0 0 0 2px hsl(var(--cream)), 0 0 0 4px hsl(var(--sage));
   }
 
   /* ===== ANIMATIONS ===== */
@@ -281,15 +404,21 @@
     }
   }
 
-  @keyframes pulse-glow {
-
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba(30, 58, 95, 0.4);
+  @keyframes gentle-float {
+    0%, 100% {
+      transform: translateY(0);
     }
-
     50% {
-      box-shadow: 0 0 0 10px rgba(30, 58, 95, 0);
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes pulse-warm {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(74, 108, 91, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 12px rgba(74, 108, 91, 0);
     }
   }
 
@@ -301,8 +430,12 @@
     animation: slide-up 0.6s ease-out;
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s infinite;
+  .animate-gentle-float {
+    animation: gentle-float 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-warm {
+    animation: pulse-warm 2.5s ease-in-out infinite;
   }
 }
 
@@ -317,18 +450,31 @@
     @apply px-4 md:px-6 lg:px-8;
   }
 
-  /* ===== SHADOW UTILITIES ===== */
+  /* ===== SHADOW UTILITIES - WARM ===== */
   .shadow-soft {
-    box-shadow: 0 1px 3px 0 rgba(30, 58, 95, 0.1), 0 1px 2px -1px rgba(30, 58, 95, 0.1);
+    box-shadow: 0 1px 3px 0 rgba(55, 50, 45, 0.06), 0 1px 2px -1px rgba(55, 50, 45, 0.04);
+  }
+
+  .shadow-warm {
+    box-shadow: 0 4px 16px rgba(55, 50, 45, 0.08);
   }
 
   .shadow-premium {
-    box-shadow: 0 8px 32px rgba(30, 58, 95, 0.12);
+    box-shadow: 0 8px 32px rgba(55, 50, 45, 0.1);
+  }
+
+  .shadow-elevated {
+    box-shadow: 0 16px 48px rgba(55, 50, 45, 0.12);
   }
 
   /* ===== BACKDROP BLUR ===== */
   .backdrop-glass {
     @apply backdrop-blur-lg backdrop-saturate-150;
+  }
+
+  .backdrop-warm {
+    background-color: rgba(247, 244, 240, 0.85);
+    backdrop-filter: blur(20px);
   }
 
   /* ===== TRUNCATE UTILITIES ===== */
@@ -344,5 +490,14 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* ===== EARTHY DECORATIVE ===== */
+  .border-warm {
+    border-color: hsl(var(--border));
+  }
+
+  .divide-warm > * + * {
+    border-color: hsl(var(--border));
   }
 }

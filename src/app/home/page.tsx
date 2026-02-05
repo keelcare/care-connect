@@ -1,20 +1,17 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-    Calendar,
-    Clock,
-    Heart,
-    TrendingUp,
     ArrowRight,
     Baby,
     GraduationCap,
     HeartPulse,
-    Sparkles,
-    ArrowUpRight,
+    Shield,
+    Clock,
+    Star,
+    ChevronRight,
 } from 'lucide-react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { useAuth } from '@/context/AuthContext';
@@ -22,218 +19,212 @@ import Image from 'next/image';
 
 export default function HomePage() {
     const { user } = useAuth();
-    const router = useRouter();
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const { scrollY } = useScroll();
-    const y1 = useTransform(scrollY, [0, 500], [0, -100]);
-    const y2 = useTransform(scrollY, [0, 500], [0, -50]);
-    const physicsY1 = useSpring(y1, { stiffness: 100, damping: 20 });
-    const physicsY2 = useSpring(y2, { stiffness: 100, damping: 20 });
-
-    const quickActions = [
-        {
-            title: 'Book a Service',
-            description: 'Find the perfect caregiver',
-            icon: Calendar,
-            href: '/book-service',
-            color: 'bg-[#1F6F5B]',
-            lightBg: 'bg-[#E5F1EC]',
-            textColor: 'text-[#1F6F5B]',
-        },
-        {
-            title: 'My Bookings',
-            description: 'View your appointments',
-            icon: Clock,
-            href: '/bookings',
-            color: 'bg-[#F1B92B]',
-            lightBg: 'bg-[#FEF7E6]',
-            textColor: 'text-[#F1B92B]',
-        },
-        {
-            title: 'Browse Services',
-            description: 'Explore all our services',
-            icon: Heart,
-            href: '/services',
-            color: 'bg-[#E08E79]',
-            lightBg: 'bg-[#FDF3F1]',
-            textColor: 'text-[#E08E79]',
-        },
-    ];
 
     const services = [
         {
             name: 'Child Care',
             icon: Baby,
-            color: 'bg-[#1F6F5B]',
-            description: 'Verified nannies and babysitters',
+            description: 'Verified nannies and babysitters for your little ones',
             image: '/babysitter_playing.png',
+            color: 'bg-[#4A6C5B]',
+            lightBg: 'bg-[#F4F7F5]',
+            textColor: 'text-[#4A6C5B]',
         },
         {
             name: 'Shadow Teacher',
             icon: GraduationCap,
-            color: 'bg-[#F1B92B]',
-            description: 'Educational support specialists',
+            description: 'Educational support specialists for unique learning needs',
             image: '/ShadowTeacher.png',
+            color: 'bg-[#C19A4E]',
+            lightBg: 'bg-[#FBF6F0]',
+            textColor: 'text-[#C19A4E]',
         },
         {
             name: 'Senior Care',
             icon: HeartPulse,
-            color: 'bg-[#E08E79]',
-            description: 'Compassionate elderly care',
+            description: 'Compassionate care and companionship for elders',
             image: '/mother_child_caring.png',
+            color: 'bg-[#B87356]',
+            lightBg: 'bg-[#FBF6F4]',
+            textColor: 'text-[#B87356]',
         },
+    ];
+
+    const stats = [
+        { value: '100%', label: 'Verified Professionals', icon: Shield },
+        { value: '50K+', label: 'Happy Families', icon: Star },
+        { value: '24/7', label: 'Support Available', icon: Clock },
     ];
 
     return (
         <ParentLayout>
-            <div ref={containerRef} className="space-y-16">
-                {/* Welcome Section with Parallax */}
-                <motion.div
+            <div className="space-y-20">
+                {/* Hero Section - Warm & Inviting */}
+                <motion.section
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                     className="relative"
                 >
-                    <div className="bg-[#E08E79] rounded-[40px] p-8 md:p-12 relative overflow-hidden min-h-[400px] flex items-center">
-                        {/* Decorative blobs with parallax */}
-                        <motion.div
-                            style={{ y: physicsY1 }}
-                            className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"
-                        />
-                        <motion.div
-                            style={{ y: physicsY2 }}
-                            className="absolute bottom-0 left-0 w-96 h-96 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-10"
-                        />
-
-                        {/* Floating illustration */}
-                        <motion.div
-                            style={{ y: physicsY1 }}
-                            className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block"
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
-                        >
-                            <div className="relative w-64 h-64 rounded-[40px] overflow-hidden shadow-2xl border-4 border-white/30">
-                                <Image
-                                    src="/image1.png"
-                                    alt="Family care"
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                        </motion.div>
-
-                        <div className="relative z-10 max-w-2xl">
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="flex items-center gap-2 mb-4"
-                            >
-                                <Sparkles className="w-6 h-6 text-white" />
-                                <span className="text-white font-semibold text-sm tracking-wide">Welcome back</span>
-                            </motion.div>
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="text-4xl md:text-6xl font-bold text-white mb-4 font-display leading-tight"
-                            >
-                                Hello, {user?.profiles?.first_name || 'there'}! 👋
-                            </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="text-xl text-white/90 mb-8 font-body leading-relaxed max-w-lg"
-                            >
-                                Find trusted caregivers and book services for your family's needs.
-                            </motion.p>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                            >
-                                <Link
-                                    href="/book-service"
-                                    className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#E08E79] px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl group"
+                    <div className="bg-[#F4F7F5] rounded-[2.5rem] overflow-hidden">
+                        <div className="flex flex-col lg:flex-row">
+                            {/* Left Content */}
+                            <div className="flex-1 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                    className="text-[#4A6C5B] font-medium text-sm tracking-wide uppercase mb-4"
                                 >
-                                    Book a Service
-                                    <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                </Link>
+                                    Welcome back{user?.profiles?.first_name ? `, ${user.profiles.first_name}` : ''}
+                                </motion.p>
+                                <motion.h1
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="text-4xl md:text-5xl lg:text-6xl font-display font-normal text-[#37322D] mb-6 leading-tight tracking-tight"
+                                >
+                                    Find trusted care
+                                    <br />
+                                    <span className="text-[#4A6C5B]">for your family</span>
+                                </motion.h1>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="text-[#6B5D52] text-lg leading-relaxed mb-8 max-w-md"
+                                >
+                                    Connect with verified caregivers who bring expertise, warmth, and dedication to your home.
+                                </motion.p>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.4 }}
+                                    className="flex flex-col sm:flex-row items-start gap-4"
+                                >
+                                    <Link
+                                        href="/book-service"
+                                        className="inline-flex items-center gap-3 bg-[#4A6C5B] hover:bg-[#3D5A4B] text-white px-8 py-4 rounded-full font-medium text-base transition-all shadow-lg hover:shadow-xl group"
+                                    >
+                                        Book a Service
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
+                                    <Link
+                                        href="/services"
+                                        className="inline-flex items-center gap-2 text-[#6B5D52] hover:text-[#37322D] font-medium transition-colors group"
+                                    >
+                                        Learn more
+                                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                    </Link>
+                                </motion.div>
+                            </div>
+
+                            {/* Right Image */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.3, duration: 0.6 }}
+                                className="lg:w-[45%] relative min-h-[300px] lg:min-h-[500px]"
+                            >
+                                <div className="absolute inset-0 lg:inset-4 lg:rounded-[2rem] overflow-hidden">
+                                    <Image
+                                        src="/image1.png"
+                                        alt="Family care"
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                </div>
                             </motion.div>
                         </div>
                     </div>
-                </motion.div>
+                </motion.section>
 
-                {/* Quick Actions */}
-                <div>
-                    <motion.h2
+                {/* Quick Actions - Clean & Elegant */}
+                <section>
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-8 font-display"
+                        className="flex items-center justify-between mb-10"
                     >
-                        Quick Actions
-                    </motion.h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {quickActions.map((action, index) => {
-                            const Icon = action.icon;
-                            return (
-                                <motion.div
-                                    key={action.title}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                >
-                                    <Link href={action.href} className="block group">
-                                        <div className={`${action.lightBg} rounded-[30px] p-8 hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-gray-200 h-full`}>
-                                            <motion.div
-                                                whileHover={{ scale: 1.1, rotate: 5 }}
-                                                transition={{ type: 'spring', stiffness: 300 }}
-                                                className={`w-16 h-16 ${action.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg`}
-                                            >
-                                                <Icon className="w-8 h-8 text-white" />
-                                            </motion.div>
-                                            <h3 className={`text-2xl font-bold ${action.textColor} mb-2 font-display`}>
-                                                {action.title}
-                                            </h3>
-                                            <p className="text-gray-600 font-body mb-4">
-                                                {action.description}
-                                            </p>
-                                            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 group-hover:text-gray-700 transition-colors">
-                                                <span>Get started</span>
-                                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </div>
+                        <h2 className="text-3xl md:text-4xl font-display font-normal text-[#37322D] tracking-tight">
+                            Quick Actions
+                        </h2>
+                    </motion.div>
 
-                {/* Our Services with Images */}
-                <div>
-                    <div className="flex items-center justify-between mb-8">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-3xl md:text-4xl font-bold text-[#0F172A] font-display"
-                        >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            {
+                                title: 'Book a Service',
+                                description: 'Find the perfect caregiver for your needs',
+                                href: '/book-service',
+                                color: 'bg-[#4A6C5B]',
+                                lightBg: 'bg-[#F4F7F5]',
+                                textColor: 'text-[#4A6C5B]',
+                            },
+                            {
+                                title: 'My Bookings',
+                                description: 'View and manage your appointments',
+                                href: '/bookings',
+                                color: 'bg-[#C19A4E]',
+                                lightBg: 'bg-[#FBF6F0]',
+                                textColor: 'text-[#C19A4E]',
+                            },
+                            {
+                                title: 'Browse Services',
+                                description: 'Explore all available care options',
+                                href: '/services',
+                                color: 'bg-[#B87356]',
+                                lightBg: 'bg-[#FBF6F4]',
+                                textColor: 'text-[#B87356]',
+                            },
+                        ].map((action, index) => (
+                            <motion.div
+                                key={action.title}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                            >
+                                <Link href={action.href} className="block group h-full">
+                                    <div className={`${action.lightBg} rounded-[1.75rem] p-8 h-full border border-transparent hover:border-[#E4DDD3] hover:shadow-lg transition-all duration-300`}>
+                                        <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mb-6`}>
+                                            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-0.5 transition-transform" />
+                                        </div>
+                                        <h3 className={`text-xl font-medium ${action.textColor} mb-2`}>
+                                            {action.title}
+                                        </h3>
+                                        <p className="text-[#6B5D52] text-sm leading-relaxed">
+                                            {action.description}
+                                        </p>
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Our Services - Premium Cards */}
+                <section>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="flex items-center justify-between mb-10"
+                    >
+                        <h2 className="text-3xl md:text-4xl font-display font-normal text-[#37322D] tracking-tight">
                             Our Services
-                        </motion.h2>
+                        </h2>
                         <Link
                             href="/services"
-                            className="text-[#1F6F5B] hover:text-[#1a5f4f] font-semibold text-sm flex items-center gap-1 transition-colors group"
+                            className="text-[#4A6C5B] hover:text-[#3D5A4B] font-medium text-sm flex items-center gap-1 transition-colors group"
                         >
                             View all
-                            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
-                    </div>
+                    </motion.div>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {services.map((service, index) => {
                             const Icon = service.icon;
@@ -244,70 +235,91 @@ export default function HomePage() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    whileHover={{ y: -8 }}
-                                    className="bg-white rounded-[30px] overflow-hidden border-2 border-gray-100 hover:border-gray-200 hover:shadow-2xl transition-all group"
+                                    className="group"
                                 >
-                                    <div className="relative h-48 overflow-hidden">
-                                        <Image
-                                            src={service.image}
-                                            alt={service.name}
-                                            fill
-                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                        />
-                                    </div>
-                                    <div className="p-6">
-                                        <div className={`w-12 h-12 ${service.color} rounded-xl flex items-center justify-center mb-4`}>
-                                            <Icon className="w-6 h-6 text-white" />
+                                    <div className="bg-white rounded-[1.75rem] overflow-hidden border border-[#E4DDD3] hover:border-[#D9D1C6] hover:shadow-xl transition-all duration-300">
+                                        <div className="relative h-52 overflow-hidden">
+                                            <Image
+                                                src={service.image}
+                                                alt={service.name}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                         </div>
-                                        <h3 className="text-xl font-bold text-[#0F172A] mb-2 font-display">
-                                            {service.name}
-                                        </h3>
-                                        <p className="text-gray-600 text-sm font-body">
-                                            {service.description}
-                                        </p>
+                                        <div className="p-6">
+                                            <div className={`w-11 h-11 ${service.color} rounded-xl flex items-center justify-center mb-4 -mt-12 relative z-10 shadow-lg`}>
+                                                <Icon className="w-5 h-5 text-white" />
+                                            </div>
+                                            <h3 className="text-xl font-medium text-[#37322D] mb-2">
+                                                {service.name}
+                                            </h3>
+                                            <p className="text-[#6B5D52] text-sm leading-relaxed">
+                                                {service.description}
+                                            </p>
+                                        </div>
                                     </div>
                                 </motion.div>
                             );
                         })}
                     </div>
-                </div>
+                </section>
 
-                {/* Stats/Info Section */}
-                <motion.div
+                {/* Stats Section - Clean & Minimal */}
+                <motion.section
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="bg-white rounded-[40px] p-12 border-2 border-gray-100 shadow-lg"
+                    className="bg-white rounded-[2rem] p-10 md:p-14 border border-[#E4DDD3]"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        {[
-                            { icon: TrendingUp, value: '100%', label: 'Verified Professionals', color: 'bg-[#E5F1EC]', iconColor: 'text-[#1F6F5B]' },
-                            { icon: Heart, value: '50K+', label: 'Happy Families', color: 'bg-[#FEF7E6]', iconColor: 'text-[#F1B92B]' },
-                            { icon: Clock, value: '24/7', label: 'Support Available', color: 'bg-[#FDF3F1]', iconColor: 'text-[#E08E79]' },
-                        ].map((stat, index) => {
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
+                        {stats.map((stat, index) => {
                             const Icon = stat.icon;
                             return (
                                 <motion.div
                                     key={stat.label}
-                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
                                     className="text-center"
                                 >
-                                    <div className={`w-20 h-20 ${stat.color} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                                        <Icon className={`w-10 h-10 ${stat.iconColor}`} />
+                                    <div className="w-14 h-14 bg-[#F4F7F5] rounded-full flex items-center justify-center mx-auto mb-5">
+                                        <Icon className="w-6 h-6 text-[#4A6C5B]" />
                                     </div>
-                                    <h3 className="text-4xl font-bold text-[#0F172A] mb-3 font-display">
+                                    <h3 className="text-4xl font-display font-normal text-[#37322D] mb-2 tracking-tight">
                                         {stat.value}
                                     </h3>
-                                    <p className="text-gray-600 font-body">{stat.label}</p>
+                                    <p className="text-[#6B5D52] text-sm">{stat.label}</p>
                                 </motion.div>
                             );
                         })}
                     </div>
-                </motion.div>
+                </motion.section>
+
+                {/* CTA Section */}
+                <motion.section
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="bg-[#4A6C5B] rounded-[2rem] p-10 md:p-14 text-center"
+                >
+                    <h2 className="text-3xl md:text-4xl font-display font-normal text-white mb-4 tracking-tight">
+                        Ready to find the perfect caregiver?
+                    </h2>
+                    <p className="text-[#C4D5CA] text-lg mb-8 max-w-xl mx-auto">
+                        Browse our verified professionals and book your first service today.
+                    </p>
+                    <Link
+                        href="/book-service"
+                        className="inline-flex items-center gap-3 bg-white hover:bg-[#F7F4F0] text-[#4A6C5B] px-8 py-4 rounded-full font-medium transition-all shadow-lg hover:shadow-xl group"
+                    >
+                        Get Started
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.section>
             </div>
         </ParentLayout>
     );

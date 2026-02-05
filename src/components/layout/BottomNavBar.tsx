@@ -25,7 +25,7 @@ export default function BottomNavBar() {
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 lg:hidden z-40 pb-safe">
-            <div className="bg-white/80 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl">
+            <div className="bg-white/95 backdrop-blur-xl border-t border-[#E4DDD3] shadow-lg">
                 <div className="max-w-md mx-auto px-4 py-2">
                     <div className="flex items-center justify-around">
                         {NAV_ITEMS.map((item) => {
@@ -40,19 +40,19 @@ export default function BottomNavBar() {
                                 >
                                     <div className="relative">
                                         <Icon
-                                            className={`w-6 h-6 transition-colors ${active ? 'text-[#1F6F5B]' : 'text-gray-400'
+                                            className={`w-6 h-6 transition-colors ${active ? 'text-[#4A6C5B]' : 'text-[#958778]'
                                                 }`}
                                         />
                                         {active && (
                                             <motion.div
                                                 layoutId="activeBottomTab"
-                                                className="absolute -inset-2 bg-[#E5F1EC] rounded-full -z-10"
+                                                className="absolute -inset-2 bg-[#F4F7F5] rounded-full -z-10"
                                                 transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
                                     </div>
                                     <span
-                                        className={`text-xs font-medium transition-colors ${active ? 'text-[#1F6F5B]' : 'text-gray-500'
+                                        className={`text-xs font-medium transition-colors ${active ? 'text-[#4A6C5B]' : 'text-[#958778]'
                                             }`}
                                     >
                                         {item.label}
