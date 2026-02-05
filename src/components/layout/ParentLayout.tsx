@@ -24,8 +24,8 @@ export default function ParentLayout({
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F4F0]">
-        <div className="w-8 h-8 border-4 border-[#4A6C5B] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F5F3FF] to-[#FFF9F5]">
+        <div className="w-8 h-8 border-4 border-[#8B7FDB] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function ParentLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F4F0]">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F3FF] to-[#FFF9F5]">
       {/* Universal Navbar */}
       <UniversalNavbar />
 

@@ -1,377 +1,610 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  Baby,
-  GraduationCap,
-  HeartPulse,
-  Shield,
-  Clock,
-  Star,
-  ChevronRight,
-  Sparkles,
-} from 'lucide-react';
-import ParentLayout from '@/components/layout/ParentLayout';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
+import ParentLayout from '@/components/layout/ParentLayout';
+import { 
+  Search, 
+  Shield, 
+  Heart, 
+  Star,
+  CheckCircle,
+  ArrowRight,
+  Users,
+  Clock,
+  Sparkles,
+  Eye
+} from 'lucide-react';
 
-// Stagger animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
+// Animated counter with skeleton loading
+function AnimatedCounter({ 
+  end, 
+  duration = 2000, 
+  suffix = '' 
+}: { 
+  end: number; 
+  duration?: number; 
+  suffix?: string;
+}) {
+  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1], // ease-out-expo
-    },
-  },
-};
+  useEffect(() => {
+    if (!isInView) return;
+    
+    const loadTimeout = setTimeout(() => setIsLoading(false), 300);
+    
+    const startTime = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(end * easeOut));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    const animTimeout = setTimeout(animate, 400);
+    return () => {
+      clearTimeout(loadTimeout);
+      clearTimeout(animTimeout);
+    };
+  }, [isInView, end, duration]);
+
+  if (isLoading && isInView) {
+    return <span ref={ref} className="skeleton inline-block w-16 h-10 md:w-20 md:h-12" />;
+  }
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {count.toLocaleString()}{suffix}
+    </span>
+  );
+}
+
+// Magnetic button with spring physics
+function MagneticButton({ 
+  children, 
+  className = '',
+  href
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  href: string;
+}) {
+  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const x = (e.clientX - centerX) * 0.15;
+    const y = (e.clientY - centerY) * 0.15;
+    setPosition({ x, y });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setPosition({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <motion.a
+      ref={buttonRef}
+      href={href}
+      className={className}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: 'spring', stiffness: 350, damping: 15 }}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
+// Specialty constellation visualization
+function SpecialtyConstellation() {
+  const specialties = [
+    { name: 'Autism Support', x: 50, y: 20, color: '252 70% 85%', connections: [1, 2, 4] },
+    { name: 'ADHD Care', x: 20, y: 40, color: '190 60% 82%', connections: [0, 2, 3] },
+    { name: 'Developmental', x: 80, y: 40, color: '340 65% 85%', connections: [0, 1, 5] },
+    { name: 'Speech Therapy', x: 10, y: 65, color: '45 80% 85%', connections: [1, 4] },
+    { name: 'Sensory Processing', x: 50, y: 55, color: '165 55% 82%', connections: [0, 3, 5, 6] },
+    { name: 'Physical Therapy', x: 90, y: 65, color: '25 75% 85%', connections: [2, 4] },
+    { name: 'Behavioral Support', x: 50, y: 85, color: '280 60% 85%', connections: [4] },
+  ];
+
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: '-50px' });
+
+  return (
+    <div ref={containerRef} className="relative w-full h-[350px] md:h-[450px]">
+      <svg className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
+        {/* Connection lines */}
+        {specialties.map((specialty, i) =>
+          specialty.connections.map((connIndex) => {
+            if (connIndex <= i) return null;
+            return (
+              <motion.line
+                key={`${i}-${connIndex}`}
+                x1={`${specialty.x}%`}
+                y1={`${specialty.y}%`}
+                x2={`${specialties[connIndex].x}%`}
+                y2={`${specialties[connIndex].y}%`}
+                className={`transition-all duration-300 ${
+                  hoveredIndex === i || hoveredIndex === connIndex
+                    ? 'stroke-[#8B7FDB]/40'
+                    : 'stroke-neutral-200'
+                }`}
+                strokeWidth={hoveredIndex === i || hoveredIndex === connIndex ? 2 : 1}
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
+              />
+            );
+          })
+        )}
+      </svg>
+      
+      {/* Specialty nodes */}
+      {specialties.map((specialty, i) => (
+        <motion.div
+          key={specialty.name}
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+          style={{ left: `${specialty.x}%`, top: `${specialty.y}%` }}
+          onMouseEnter={() => setHoveredIndex(i)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={isInView ? { scale: 1, opacity: 1 } : {}}
+          transition={{ 
+            type: 'spring', 
+            stiffness: 300, 
+            damping: 20, 
+            delay: 0.2 + i * 0.08 
+          }}
+          whileHover={{ scale: 1.1 }}
+        >
+          <div
+            className={`relative flex items-center justify-center w-[72px] h-[72px] md:w-[90px] md:h-[90px] rounded-full transition-shadow duration-300 ${
+              hoveredIndex === i ? 'shadow-elevated' : 'shadow-soft'
+            }`}
+            style={{ backgroundColor: `hsl(${specialty.color})` }}
+          >
+            {/* Glow effect on hover */}
+            <motion.div 
+              className="absolute inset-0 rounded-full blur-xl"
+              style={{ backgroundColor: `hsl(${specialty.color})` }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: hoveredIndex === i ? 0.5 : 0 }}
+              transition={{ duration: 0.3 }}
+            />
+            <span className="relative text-[10px] md:text-xs font-medium text-center px-2 text-neutral-700 leading-tight">
+              {specialty.name}
+            </span>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// Floating trust pill
+function TrustPill({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      className="frosted-pill px-4 py-2.5 flex items-center gap-2"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: delay + 0.6, duration: 0.5 }}
+    >
+      <motion.div
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay }}
+      >
+        <CheckCircle className="w-4 h-4 text-[#8B7FDB]" />
+      </motion.div>
+      <span className="text-sm font-medium text-neutral-700">{children}</span>
+    </motion.div>
+  );
+}
+
+// Sensory mode toggle
+function SensoryModeToggle() {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('sensory-friendly-mode');
+    if (saved === 'true') {
+      setEnabled(true);
+      document.documentElement.classList.add('sensory-friendly');
+    }
+  }, []);
+
+  const toggle = () => {
+    const newValue = !enabled;
+    setEnabled(newValue);
+    localStorage.setItem('sensory-friendly-mode', String(newValue));
+    if (newValue) {
+      document.documentElement.classList.add('sensory-friendly');
+    } else {
+      document.documentElement.classList.remove('sensory-friendly');
+    }
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      className={`fixed top-24 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+        enabled 
+          ? 'bg-[#8B7FDB] text-white shadow-lg' 
+          : 'bg-white/80 backdrop-blur-sm text-neutral-600 border border-neutral-200 hover:border-[#8B7FDB]/30'
+      }`}
+      aria-label="Toggle sensory-friendly mode"
+    >
+      <Eye className="w-4 h-4" />
+      <span className="hidden sm:inline">Sensory Mode</span>
+    </button>
+  );
+}
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start']
+  });
+  
+  const heroImageY = useTransform(scrollYProgress, [0, 1], [0, 80]);
 
-  const services = [
+  const steps = [
     {
-      name: 'Child Care',
-      icon: Baby,
-      description: 'Verified nannies and babysitters for your little ones',
-      image: '/babysitter_playing.png',
-      color: 'bg-[#4A6C5B]',
-      lightBg: 'bg-[#F4F7F5]',
-      textColor: 'text-[#4A6C5B]',
+      number: '01',
+      title: 'Search & Discover',
+      description: 'Browse our network of certified specialists trained in various special needs care approaches.',
+      icon: Search,
+      span: 'md:col-span-2',
     },
     {
-      name: 'Shadow Teacher',
-      icon: GraduationCap,
-      description: 'Educational support specialists for unique learning needs',
-      image: '/ShadowTeacher.png',
-      color: 'bg-[#C19A4E]',
-      lightBg: 'bg-[#FBF6F0]',
-      textColor: 'text-[#C19A4E]',
+      number: '02',
+      title: 'Review & Connect',
+      description: 'Read verified reviews and message providers directly.',
+      icon: Users,
+      span: 'md:col-span-1',
     },
     {
-      name: 'Senior Care',
-      icon: HeartPulse,
-      description: 'Compassionate care and companionship for elders',
-      image: '/mother_child_caring.png',
-      color: 'bg-[#B87356]',
-      lightBg: 'bg-[#FBF6F4]',
-      textColor: 'text-[#B87356]',
+      number: '03',
+      title: 'Book with Confidence',
+      description: 'Schedule care with our secure booking system and flexible payment options.',
+      icon: Shield,
+      span: 'md:col-span-2',
+    },
+  ];
+
+  const testimonials = [
+    {
+      quote: "Finding specialized care for my son with autism was always a challenge. Keel connected us with an amazing caregiver who truly understands his needs.",
+      author: "Sarah M.",
+      role: "Parent of 8-year-old",
+      rating: 5,
+    },
+    {
+      quote: "The peace of mind knowing our daughter is with trained professionals is priceless. The booking process is seamless.",
+      author: "David & Lisa K.",
+      role: "Parents of 5-year-old",
+      rating: 5,
+    },
+    {
+      quote: "As a parent of a child with ADHD, I appreciate that Keel verifies all their providers' specialized training.",
+      author: "Michael R.",
+      role: "Parent of 10-year-old",
+      rating: 5,
     },
   ];
 
   const stats = [
-    { value: '100%', label: 'Verified Professionals', icon: Shield },
-    { value: '50K+', label: 'Happy Families', icon: Star },
-    { value: '24/7', label: 'Support Available', icon: Clock },
-  ];
-
-  const quickActions = [
-    {
-      title: 'Book a Service',
-      description: 'Find the perfect caregiver for your needs',
-      href: '/book-service',
-      color: 'bg-[#4A6C5B]',
-      lightBg: 'bg-[#F4F7F5]',
-      textColor: 'text-[#4A6C5B]',
-    },
-    {
-      title: 'My Bookings',
-      description: 'View and manage your appointments',
-      href: '/bookings',
-      color: 'bg-[#C19A4E]',
-      lightBg: 'bg-[#FBF6F0]',
-      textColor: 'text-[#C19A4E]',
-    },
-    {
-      title: 'Browse Services',
-      description: 'Explore all available care options',
-      href: '/services',
-      color: 'bg-[#B87356]',
-      lightBg: 'bg-[#FBF6F4]',
-      textColor: 'text-[#B87356]',
-    },
+    { value: 500, suffix: '+', label: 'Certified Specialists' },
+    { value: 98, suffix: '%', label: 'Parent Satisfaction' },
+    { value: 15000, suffix: '+', label: 'Care Hours Provided' },
+    { value: 50, suffix: '+', label: 'Specializations' },
   ];
 
   return (
     <ParentLayout>
-      <div className="space-y-24">
-        {/* Hero Section - Warm & Inviting with Fluid Typography */}
-        <motion.section
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="relative"
-        >
-          <div className="bg-[#F4F7F5] rounded-[2.5rem] overflow-hidden relative">
-            {/* Subtle noise texture */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-              }} 
-            />
-            
-            <div className="flex flex-col lg:flex-row relative z-10">
-              {/* Left Content */}
-              <div className="flex-1 p-8 md:p-12 lg:p-16 xl:p-20 flex flex-col justify-center">
-                <motion.div 
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full w-fit mb-6 border border-[#4A6C5B]/10"
-                >
-                  <Sparkles className="w-4 h-4 text-[#4A6C5B]" />
-                  <span className="text-[#4A6C5B] font-medium text-sm">
-                    Welcome back{user?.profiles?.first_name ? `, ${user.profiles.first_name}` : ''}
-                  </span>
-                </motion.div>
-                
-                <motion.h1
-                  variants={itemVariants}
-                  className="fluid-5xl font-display font-normal text-[#37322D] mb-6 tracking-tight text-balance"
-                >
-                  Find trusted care
-                  <br />
-                  <span className="text-[#4A6C5B]">for your family</span>
-                </motion.h1>
-                
-                <motion.p
-                  variants={itemVariants}
-                  className="fluid-lg text-[#6B5D52] leading-relaxed mb-10 max-w-md"
-                >
-                  Connect with verified caregivers who bring expertise, warmth, and dedication to your home.
-                </motion.p>
-                
-                <motion.div
-                  variants={itemVariants}
-                  className="flex flex-col sm:flex-row items-start gap-4"
-                >
-                  <Link
-                    href="/book-service"
-                    className="inline-flex items-center gap-3 bg-[#4A6C5B] hover:bg-[#3D5A4B] text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_4px_16px_rgba(74,108,91,0.25)] hover:shadow-[0_8px_24px_rgba(74,108,91,0.3)] hover:-translate-y-0.5 group"
-                  >
-                    Book a Service
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Link>
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center gap-2 text-[#6B5D52] hover:text-[#37322D] font-medium transition-colors duration-300 py-4 group"
-                  >
-                    Learn more
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
-                  </Link>
-                </motion.div>
-              </div>
-
-              {/* Right Image with parallax-like effect */}
-              <motion.div
-                variants={itemVariants}
-                className="lg:w-[48%] relative min-h-[320px] lg:min-h-[540px]"
+      <SensoryModeToggle />
+      
+      {/* Hero Section */}
+      <section 
+        ref={heroRef}
+        className="relative min-h-[90vh] flex items-center bg-hero-gradient noise-overlay overflow-hidden"
+      >
+        <div className="container-wide py-16 md:py-24">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Hero Content */}
+            <div className="space-y-8">
+              <motion.h1 
+                className="fluid-5xl font-heading optical-margin text-balance"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="absolute inset-0 lg:inset-6 lg:rounded-[2rem] overflow-hidden">
-                  <Image
-                    src="/image1.png"
-                    alt="Family care"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#F4F7F5]/20 to-transparent lg:hidden" />
-                </div>
+                Finding the Perfect Care for Your{' '}
+                <span className="gradient-text">Unique Child</span>
+              </motion.h1>
+              
+              <motion.p 
+                className="fluid-lg text-neutral-600 max-w-xl leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+              >
+                Connect with certified specialists who understand and celebrate 
+                your child&apos;s individual needs. Trusted by thousands of families.
+              </motion.p>
+
+              {/* Dual CTA */}
+              <motion.div 
+                className="flex flex-wrap gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                <MagneticButton 
+                  href="/book-service" 
+                  className="btn-primary"
+                >
+                  Find Care Providers
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </MagneticButton>
+                <Link 
+                  href="/auth/caregiver-signup" 
+                  className="btn-secondary"
+                >
+                  Become a Provider
+                </Link>
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div 
+                className="flex flex-wrap gap-3 pt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <TrustPill delay={0}>500+ Certified Specialists</TrustPill>
+                <TrustPill delay={0.15}>Special Needs Trained</TrustPill>
+                <TrustPill delay={0.3}>Background Verified</TrustPill>
               </motion.div>
             </div>
-          </div>
-        </motion.section>
 
-        {/* Quick Actions - Staggered Animation */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-        >
-          <motion.div variants={itemVariants} className="flex items-center justify-between mb-10">
-            <h2 className="fluid-3xl font-display font-normal text-[#37322D] tracking-tight">
-              Quick Actions
+            {/* Hero Image */}
+            <motion.div 
+              className="relative"
+              style={{ y: heroImageY }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-float">
+                <Image
+                  src="/image1.png"
+                  alt="Warm caregiver interaction with child"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
+              </div>
+              
+              {/* Floating stat card */}
+              <motion.div 
+                className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 glass-card p-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[#F5F3FF] flex items-center justify-center">
+                      <Heart className="w-6 h-6 text-[#8B7FDB]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold text-neutral-800">98%</p>
+                      <p className="text-sm text-neutral-500">Happy Families</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="section-padding bg-white relative">
+        <div className="container-wide">
+          <motion.div 
+            className="text-center max-w-2xl mx-auto mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#8B7FDB] font-medium fluid-sm uppercase tracking-wider">
+              How It Works
+            </span>
+            <h2 className="fluid-4xl mt-4 text-balance">
+              Your Journey to Trusted Care
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {quickActions.map((action, index) => (
+          {/* Bento Grid */}
+          <div className="grid md:grid-cols-5 gap-6">
+            {steps.map((step, index) => (
               <motion.div
-                key={action.title}
-                variants={itemVariants}
-                custom={index}
+                key={step.number}
+                className={`bento-card p-8 ${step.span}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <Link href={action.href} className="block group h-full">
-                  <div className={`${action.lightBg} rounded-[1.75rem] p-8 h-full border border-transparent hover:border-[#D9D1C6] transition-all duration-400 hover:shadow-[0_10px_40px_rgba(55,50,45,0.08)] hover:-translate-y-1`}
-                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                  >
-                    <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mb-6 shadow-md group-hover:scale-105 transition-transform duration-300`}
-                      style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-                    >
-                      <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-0.5 transition-transform duration-300" />
-                    </div>
-                    <h3 className={`fluid-xl font-medium ${action.textColor} mb-2`}>
-                      {action.title}
-                    </h3>
-                    <p className="text-[#6B5D52] fluid-sm leading-relaxed">
-                      {action.description}
-                    </p>
+                <div className="flex items-start justify-between mb-6">
+                  <div className="w-14 h-14 rounded-2xl bg-[#F5F3FF] flex items-center justify-center icon-glow">
+                    <step.icon className="w-7 h-7 text-[#8B7FDB]" />
                   </div>
-                </Link>
+                  <motion.span 
+                    className="fluid-3xl font-light text-neutral-200"
+                    initial={{ fontWeight: 300 }}
+                    whileInView={{ fontWeight: 500 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
+                  >
+                    {step.number}
+                  </motion.span>
+                </div>
+                <h3 className="fluid-xl font-medium mb-3 text-neutral-800">{step.title}</h3>
+                <p className="text-neutral-600 fluid-base leading-relaxed">{step.description}</p>
               </motion.div>
             ))}
           </div>
-        </motion.section>
+        </div>
+      </section>
 
-        {/* Our Services - Premium Cards with Layered Elevation */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-        >
-          <motion.div variants={itemVariants} className="flex items-center justify-between mb-10">
-            <h2 className="fluid-3xl font-display font-normal text-[#37322D] tracking-tight">
-              Our Services
+      {/* Specialty Showcase */}
+      <section className="section-padding bg-section-alt noise-overlay">
+        <div className="container-wide">
+          <motion.div 
+            className="text-center max-w-2xl mx-auto mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#7FC7D9] font-medium fluid-sm uppercase tracking-wider">
+              Our Expertise
+            </span>
+            <h2 className="fluid-4xl mt-4 text-balance">
+              Specialized Care for Every Need
             </h2>
-            <Link
-              href="/services"
-              className="text-[#4A6C5B] hover:text-[#3D5A4B] font-medium fluid-sm flex items-center gap-1 transition-colors duration-300 group"
-            >
-              View all
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
-            </Link>
+            <p className="text-neutral-600 fluid-lg mt-4 leading-relaxed">
+              Our providers are trained across a constellation of specializations 
+              to support your child&apos;s unique journey.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {services.map((service, index) => {
-              const Icon = service.icon;
-              return (
-                <motion.div
-                  key={service.name}
-                  variants={itemVariants}
-                  custom={index}
-                  className="group"
-                >
-                  <div className="bg-white rounded-[1.75rem] overflow-hidden border border-[#E4DDD3] transition-all duration-400 hover:border-[#D9D1C6] hover:shadow-[0_20px_50px_rgba(55,50,45,0.1)] hover:-translate-y-1"
-                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                  >
-                    <div className="relative h-56 overflow-hidden">
-                      <Image
-                        src={service.image}
-                        alt={service.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent" />
-                    </div>
-                    <div className="p-7">
-                      <div className={`w-12 h-12 ${service.color} rounded-xl flex items-center justify-center mb-5 -mt-12 relative z-10 shadow-lg group-hover:scale-105 transition-transform duration-300`}
-                        style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-                      >
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="fluid-xl font-medium text-[#37322D] mb-2">
-                        {service.name}
-                      </h3>
-                      <p className="text-[#6B5D52] fluid-sm leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.section>
+          <SpecialtyConstellation />
+        </div>
+      </section>
 
-        {/* Stats Section - Clean & Minimal with Frosted Glass */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-        >
-          <motion.div
-            variants={itemVariants}
-            className="bg-white/80 backdrop-blur-sm rounded-[2rem] p-10 md:p-14 border border-[#E4DDD3] shadow-[0_4px_24px_rgba(55,50,45,0.04)]"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
-              {stats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div
-                    key={stat.label}
-                    variants={itemVariants}
-                    custom={index}
-                    className="text-center"
-                  >
-                    <div className="w-14 h-14 bg-[#F4F7F5] rounded-full flex items-center justify-center mx-auto mb-5">
-                      <Icon className="w-6 h-6 text-[#4A6C5B]" />
-                    </div>
-                    <h3 className="fluid-4xl font-display font-normal text-[#37322D] mb-2 tracking-tight">
-                      {stat.value}
-                    </h3>
-                    <p className="text-[#6B5D52] fluid-sm">{stat.label}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
-        </motion.section>
-
-        {/* CTA Section - Premium with Layered Shadows */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-        >
-          <motion.div
-            variants={itemVariants}
-            className="bg-[#4A6C5B] rounded-[2rem] p-10 md:p-16 text-center relative overflow-hidden"
-          >
-            {/* Subtle texture overlay */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-              }}
-            />
-            
-            <div className="relative z-10">
-              <h2 className="fluid-3xl font-display font-normal text-white mb-5 tracking-tight text-balance">
-                Ready to find the perfect caregiver?
-              </h2>
-              <p className="fluid-lg text-[#C4D5CA] mb-10 max-w-xl mx-auto">
-                Browse our verified professionals and book your first service today.
-              </p>
-              <Link
-                href="/book-service"
-                className="inline-flex items-center gap-3 bg-white hover:bg-[#FDFCFA] text-[#4A6C5B] px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group"
+      {/* Stats & Trust Section */}
+      <section className="section-padding bg-white">
+        <div className="container-wide">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                Get Started
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                <p className="fluid-4xl font-semibold gradient-text">
+                  <AnimatedCounter end={stat.value} suffix={stat.suffix} />
+                </p>
+                <p className="text-neutral-600 fluid-base mt-2">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Testimonials */}
+          <motion.div 
+            className="text-center max-w-2xl mx-auto mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#8B7FDB] font-medium fluid-sm uppercase tracking-wider">
+              Testimonials
+            </span>
+            <h2 className="fluid-3xl mt-4">Trusted by Families</h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.author}
+                className="glass-card p-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: index * 0.15, duration: 0.5 }}
+              >
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-neutral-700 fluid-base mb-6 leading-relaxed">
+                  &quot;{testimonial.quote}&quot;
+                </p>
+                <div>
+                  <p className="font-medium text-neutral-800">{testimonial.author}</p>
+                  <p className="text-neutral-500 fluid-sm">{testimonial.role}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section-padding bg-hero-gradient noise-overlay">
+        <div className="container-narrow text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+          >
+            <Sparkles className="w-12 h-12 text-[#8B7FDB] mx-auto mb-6" />
+            <h2 className="fluid-4xl text-balance mb-6">
+              Ready to Find the <span className="gradient-text">Perfect Care</span>?
+            </h2>
+            <p className="text-neutral-600 fluid-lg max-w-xl mx-auto mb-10 leading-relaxed">
+              Join thousands of families who have found trusted, specialized 
+              care for their children through Keel.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <MagneticButton 
+                href="/book-service" 
+                className="btn-primary"
+              >
+                Get Started Today
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </MagneticButton>
+              <Link href="/how-it-works" className="btn-secondary">
+                Learn More
               </Link>
             </div>
           </motion.div>
-        </motion.section>
-      </div>
+        </div>
+      </section>
     </ParentLayout>
   );
 }
