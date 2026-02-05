@@ -2,11 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Header } from '@/components/layout/Header';
-import { ParentSidebar } from '@/components/layout/ParentSidebar';
-import { Footer } from '@/components/layout/Footer';
-import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { useAuth } from '@/context/AuthContext';
+import UniversalNavbar from '@/components/layout/UniversalNavbar';
+import BottomNavBar from '@/components/layout/BottomNavBar';
 
 export default function ParentLayout({
   children,
@@ -15,7 +13,6 @@ export default function ParentLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
 
   // Redirect nannies to dashboard
   React.useEffect(() => {
@@ -27,8 +24,8 @@ export default function ParentLayout({
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50">
-        <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+        <div className="w-8 h-8 border-4 border-[#1F6F5B] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -39,22 +36,19 @@ export default function ParentLayout({
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-stone-50">
-        <ParentSidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        />
+    <div className="min-h-screen bg-[#F8F9FA]">
+      {/* Universal Navbar */}
+      <UniversalNavbar />
 
-        {/* Main Content Area with Footer */}
-        <div
-          className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}`}
-        >
-          <main className="flex-1 pb-8">{children}</main>
-          <Footer />
+      {/* Main Content Area */}
+      <main className="pt-24 pb-24 lg:pb-8 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto">
+          {children}
         </div>
-      </div>
-      <MobileBottomNav />
-    </>
+      </main>
+
+      {/* Bottom Navigation (Mobile Only) */}
+      <BottomNavBar />
+    </div>
   );
 }

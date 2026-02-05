@@ -40,7 +40,20 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/auth') ||
     pathname?.startsWith('/dashboard') ||
     pathname?.startsWith('/admin') ||
-    pathname === '/';
+    pathname === '/' ||
+    pathname?.startsWith('/welcome') ||
+    pathname?.startsWith('/about') ||
+    pathname?.startsWith('/how-it-works') ||
+    pathname?.startsWith('/home') ||
+    pathname?.startsWith('/services') ||
+    pathname?.startsWith('/contact') ||
+    pathname?.startsWith('/book-service') ||
+    pathname?.startsWith('/bookings') ||
+    pathname?.startsWith('/messages') ||
+    pathname?.startsWith('/settings') ||
+    pathname?.startsWith('/notifications') ||
+    pathname?.startsWith('/caregiver') ||
+    pathname?.startsWith('/book');
 
   const hideFooter =
     hideHeader ||

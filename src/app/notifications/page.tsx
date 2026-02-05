@@ -7,15 +7,11 @@ import { api } from '@/lib/api';
 import { Notification, NotificationCategory } from '@/types/notification';
 import { NotificationCard } from '@/components/notifications/NotificationCard';
 import {
-  bookingToNotification,
-  reviewToNotification,
   groupNotificationsByDate,
 } from '@/lib/notificationHelpers';
-import { ChevronLeft, Bell, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Header } from '@/components/layout/Header';
-import { ParentSidebar } from '@/components/layout/ParentSidebar';
-import { Footer } from '@/components/layout/Footer';
+import { Bell, Loader2, CheckCheck } from 'lucide-react';
+import ParentLayout from '@/components/layout/ParentLayout';
+import { motion } from 'framer-motion';
 
 type FilterType = 'all' | NotificationCategory;
 
@@ -25,7 +21,6 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -80,95 +75,94 @@ export default function NotificationsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <ParentSidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-      />
-
-      {/* Main Content Area with Footer */}
-      <div
-        className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}
-      >
-        <main className="flex-1 pb-8">
-          <div className="min-h-screen bg-neutral-50 pb-20">
-            <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
-              {/* Filters & Actions */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                  {filters.map((filter) => (
-                    <button
-                      key={filter.value}
-                      onClick={() => setActiveFilter(filter.value)}
-                      className={`px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
-                        ? 'bg-primary text-black shadow-md'
-                        : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200'
-                        }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleMarkAllAsRead}
-                  disabled={notifications.every((n) => n.is_read)}
-                  className="text-neutral-500 hover:text-primary whitespace-nowrap"
-                >
-                  Mark all as read
-                </Button>
-              </div>
-
-              {/* Content */}
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2
-                    size={40}
-                    className="text-primary animate-spin mb-4"
-                  />
-                  <p className="text-neutral-500">Loading notifications...</p>
-                </div>
-              ) : groupedNotifications.length === 0 ? (
-                <div className="bg-white rounded-[32px] p-12 text-center shadow-sm border border-neutral-100">
-                  <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Bell size={32} className="text-neutral-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-neutral-900 mb-2">
-                    No notifications yet
-                  </h3>
-                  <p className="text-neutral-600">
-                    {activeFilter === 'all'
-                      ? "You're all caught up! New notifications will appear here."
-                      : `No ${activeFilter} notifications to show.`}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-8">
-                  {groupedNotifications.map((group) => (
-                    <div key={group.date}>
-                      <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wide mb-3 px-1">
-                        {group.date}
-                      </h2>
-                      <div className="space-y-3">
-                        {group.notifications.map((notification) => (
-                          <NotificationCard
-                            key={notification.id}
-                            notification={notification}
-                            onMarkAsRead={handleMarkAsRead}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+    <ParentLayout>
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] font-display">
+              Notifications
+            </h1>
+            <p className="text-gray-600 mt-1 font-body">
+              Stay updated with your bookings and messages
+            </p>
           </div>
-        </main>
-        <Footer />
+
+          <button
+            onClick={handleMarkAllAsRead}
+            disabled={notifications.every((n) => n.is_read)}
+            className="flex items-center gap-2 text-[#1F6F5B] hover:text-[#1a5f4f] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <CheckCheck className="w-5 h-5" />
+            Mark all as read
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {filters.map((filter) => (
+            <button
+              key={filter.value}
+              onClick={() => setActiveFilter(filter.value)}
+              className={`px-5 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
+                  ? 'bg-[#1F6F5B] text-white shadow-lg shadow-[#1F6F5B]/20'
+                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-[#1F6F5B] animate-spin mb-4" />
+            <p className="text-gray-500 font-body">Loading notifications...</p>
+          </div>
+        ) : groupedNotifications.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-[32px] p-12 text-center shadow-sm border border-gray-100"
+          >
+            <div className="w-20 h-20 bg-[#E5F1EC] rounded-full flex items-center justify-center mx-auto mb-6">
+              <Bell className="w-10 h-10 text-[#1F6F5B]" />
+            </div>
+            <h3 className="text-xl font-bold text-[#0F172A] mb-2 font-display">
+              No notifications yet
+            </h3>
+            <p className="text-gray-600 font-body">
+              {activeFilter === 'all'
+                ? "You're all caught up! New notifications will appear here."
+                : `No ${activeFilter} notifications to show.`}
+            </p>
+          </motion.div>
+        ) : (
+          <div className="space-y-8">
+            {groupedNotifications.map((group) => (
+              <motion.div
+                key={group.date}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 px-2">
+                  {group.date}
+                </h2>
+                <div className="space-y-4">
+                  {group.notifications.map((notification) => (
+                    <NotificationCard
+                      key={notification.id}
+                      notification={notification}
+                      onMarkAsRead={handleMarkAsRead}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </ParentLayout>
   );
 }

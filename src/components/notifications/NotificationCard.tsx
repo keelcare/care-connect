@@ -7,14 +7,17 @@ import {
   MessageSquare,
   Star,
   Bell,
-  ChevronRight,
   CheckCircle,
   AlertCircle,
   Info,
   AlertTriangle,
+  GraduationCap,
+  Baby,
+  Heart
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/notificationHelpers';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -29,25 +32,31 @@ const iconMap = {
   general: Bell,
 };
 
-const typeIconMap = {
-  success: CheckCircle,
-  info: Info,
-  warning: AlertTriangle,
-  error: AlertCircle,
-};
-
-const typeColorMap = {
-  success: 'from-green-400/20 to-green-500/20',
-  info: 'from-blue-400/20 to-indigo-400/20',
-  warning: 'from-yellow-400/20 to-orange-400/20',
-  error: 'from-red-400/20 to-rose-400/20',
-};
-
-const typeIconColorMap = {
-  success: 'text-green-600',
-  info: 'text-blue-600',
-  warning: 'text-yellow-600',
-  error: 'text-red-600',
+const typeStyles = {
+  success: {
+    bg: 'bg-[#E5F1EC]', // Mint
+    text: 'text-[#1F6F5B]', // Green
+    border: 'border-[#1F6F5B]/20',
+    icon: CheckCircle
+  },
+  info: {
+    bg: 'bg-white',
+    text: 'text-[#0F172A]', // Navy
+    border: 'border-gray-200',
+    icon: Info
+  },
+  warning: {
+    bg: 'bg-[#FEF7E6]', // Yellow tint
+    text: 'text-[#F1B92B]', // Mustard
+    border: 'border-[#F1B92B]/20',
+    icon: AlertTriangle
+  },
+  error: {
+    bg: 'bg-[#FDF3F1]', // Terracotta tint
+    text: 'text-[#E08E79]', // Terracotta
+    border: 'border-[#E08E79]/20',
+    icon: AlertCircle
+  },
 };
 
 export const NotificationCard: React.FC<NotificationCardProps> = ({
@@ -56,16 +65,9 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
 }) => {
   const router = useRouter();
 
-  // Use type-based icon if priority, otherwise fallback to category-based or general bell
-  const Icon = typeIconMap[notification.type as keyof typeof typeIconMap] ||
-    iconMap[notification.category as keyof typeof iconMap] ||
-    Bell;
-
-  const gradientClass = typeColorMap[notification.type as keyof typeof typeColorMap] ||
-    'from-neutral-400/20 to-neutral-500/20';
-
-  const iconColorClass = typeIconColorMap[notification.type as keyof typeof typeIconColorMap] ||
-    'text-neutral-600';
+  // Determine styles based on type or category
+  const style = typeStyles[notification.type as keyof typeof typeStyles] || typeStyles.info;
+  const CategoryIcon = iconMap[notification.category as keyof typeof iconMap] || Bell;
 
   const handleClick = () => {
     if (onMarkAsRead && !notification.is_read) {
@@ -80,44 +82,44 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2, scale: 1.01 }}
       onClick={handleClick}
-      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClass} backdrop-blur-sm border border-white/20 p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer ${!notification.is_read ? 'ring-2 ring-primary-900/20' : ''
+      className={`relative rounded-[24px] p-5 border-2 transition-all duration-300 cursor-pointer ${notification.is_read
+          ? 'bg-white border-gray-100'
+          : `${style.bg} ${style.border} shadow-md`
         }`}
     >
-      {/* Glassmorphic overlay */}
-      <div className="absolute inset-0 bg-white/60 backdrop-blur-md -z-10"></div>
-
       <div className="flex items-start gap-4">
         {/* Icon */}
-        <div
-          className={`flex-shrink-0 w-12 h-12 rounded-full bg-white/80 flex items-center justify-center ${iconColorClass} shadow-sm`}
-        >
-          <Icon size={22} />
+        <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center ${notification.is_read ? 'bg-gray-100 text-gray-400' : `${style.text} bg-white`}`}>
+          <CategoryIcon size={24} />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="font-bold text-primary-900 text-base leading-tight">
+            <h3 className={`font-bold font-display text-lg ${notification.is_read ? 'text-gray-700' : 'text-[#0F172A]'}`}>
               {notification.title}
             </h3>
             {!notification.is_read && (
-              <span className="flex-shrink-0 w-2 h-2 bg-primary-900 rounded-full mt-1.5"></span>
+              <span className="flex-shrink-0 w-2.5 h-2.5 bg-[#E08E79] rounded-full mt-2 animate-pulse" />
             )}
           </div>
 
-          <p className="text-sm text-neutral-600 mb-2 line-clamp-2">
+          <p className={`${notification.is_read ? 'text-gray-500' : 'text-gray-600'} mb-3 font-body leading-relaxed`}>
             {notification.message}
           </p>
 
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-500 font-medium">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
               {formatRelativeTime(notification.created_at)}
             </span>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -45,7 +45,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-[#0D1B34] transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-[#E08E79] transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
     >
       <div className="relative flex flex-col items-center">
@@ -56,14 +56,14 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
             <path
               d={PATH_LEFT}
               fill="none"
-              stroke="rgba(255,255,255,0.1)"
+              stroke="rgba(255,255,255,0.2)"
               strokeWidth="9"
               className="opacity-30"
             />
             <path
               d={PATH_RIGHT}
               fill="none"
-              stroke="rgba(255,255,255,0.1)"
+              stroke="rgba(255,255,255,0.2)"
               strokeWidth="9"
               className="opacity-30"
             />
@@ -113,7 +113,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
           <h1 className="text-5xl font-display font-bold text-white tracking-tight">
             Keel
           </h1>
-          <p className="text-blue-200 font-medium tracking-wide">
+          <p className="text-[#1F6F5B] font-medium tracking-wide">
             The backbone of Care
           </p>
         </div>
@@ -124,7 +124,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
             className="h-full rounded-full transition-all ease-linear"
             style={{
               width: startAnimation ? '100%' : '0%',
-              backgroundColor: 'white',
+              backgroundColor: '#1F6F5B',
               transitionDuration: '2500ms',
             }}
           />

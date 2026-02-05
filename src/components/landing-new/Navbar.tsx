@@ -24,7 +24,7 @@ export const Navbar = () => {
           <Link href="/how-it-works" className="text-sm font-bold font-body text-[#0F172A]/70 hover:text-[#0F172A] transition-colors">
             How it Works
           </Link>
-          <Link href="/search" className="text-sm font-bold font-body text-[#0F172A]/70 hover:text-[#0F172A] transition-colors">
+          <Link href="/book-service" className="text-sm font-bold font-body text-[#0F172A]/70 hover:text-[#0F172A] transition-colors">
             Find Care
           </Link>
         </div>
@@ -41,7 +41,7 @@ export const Navbar = () => {
               </button>
             </Link>
           </div>
-          
+
           <button className="md:hidden text-[#0F172A]" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -50,7 +50,7 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           className="md:hidden mt-4 bg-white rounded-3xl p-6 border border-gray-100 flex flex-col gap-4 shadow-2xl max-w-sm mx-auto"

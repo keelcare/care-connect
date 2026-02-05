@@ -79,6 +79,11 @@ export interface Job {
   updated_at: string;
 }
 
+// Service Types
+export type ServiceType = 'CHILD_CARE' | 'SHADOW_TEACHER' | 'SENIOR_CARE' | 'PET_CARE' | 'HOUSEKEEPING' | 'SPECIAL_NEEDS';
+
+export type SubscriptionPlanType = 'ONE_TIME' | 'MONTHLY' | 'SIX_MONTH' | 'YEARLY';
+
 // Authentication DTOs
 export interface SignupDto {
   email: string;
@@ -204,6 +209,7 @@ export interface ServiceRequest {
   parent_id: string;
   nanny_id?: string;
   status: RequestStatus;
+  service_type?: ServiceType;
   date: string;
   start_time: string;
   end_time?: string;
@@ -216,6 +222,12 @@ export interface ServiceRequest {
     lat: number;
     lng: number;
   };
+  // Shadow Teacher subscription fields
+  plan_type?: SubscriptionPlanType;
+  plan_duration_months?: number;
+  monthly_rate?: number;
+  discount_percentage?: number;
+  total_plan_amount?: number;
   total_amount?: number;
   cancellation_reason?: string;
   created_at: string;
@@ -225,6 +237,7 @@ export interface ServiceRequest {
 }
 
 export interface CreateServiceRequestDto {
+  service_type?: ServiceType;
   date: string;
   start_time: string;
   duration_hours: number;
@@ -233,6 +246,11 @@ export interface CreateServiceRequestDto {
   special_requirements?: string;
   max_hourly_rate?: number;
   required_skills?: string[];
+  // Shadow Teacher subscription fields
+  plan_type?: SubscriptionPlanType;
+  plan_duration_months?: number;
+  monthly_rate?: number;
+  discount_percentage?: number;
   location?: {
     address: string;
     lat: number;

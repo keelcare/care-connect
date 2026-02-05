@@ -1,36 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import {
     Mail,
     Phone,
     MapPin,
     Send,
-    MessageCircle,
+    MessageSquare,
     Clock,
     CheckCircle,
-    ArrowLeft,
+    Sparkles,
+    ArrowUpRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import ParentLayout from '@/components/layout/ParentLayout';
+import Image from 'next/image';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         subject: '',
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollY } = useScroll();
+    const y1 = useTransform(scrollY, [0, 500], [0, -100]);
+    const y2 = useTransform(scrollY, [0, 500], [0, -50]);
+    const physicsY1 = useSpring(y1, { stiffness: 100, damping: 20 });
+    const physicsY2 = useSpring(y2, { stiffness: 100, damping: 20 });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Simulate form submission
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         setIsSubmitting(false);
         setIsSubmitted(true);
@@ -38,7 +47,13 @@ export default function ContactPage() {
         // Reset form after 3 seconds
         setTimeout(() => {
             setIsSubmitted(false);
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                subject: '',
+                message: '',
+            });
         }, 3000);
     };
 
@@ -46,291 +61,308 @@ export default function ContactPage() {
         {
             icon: Mail,
             title: 'Email Us',
-            details: 'support@keel.care',
-            description: 'We typically respond within 24 hours',
+            value: 'support@keelcare.com',
+            description: 'We will respond within 24 hours',
+            color: 'bg-[#1F6F5B]',
+            lightBg: 'bg-[#E5F1EC]',
         },
         {
             icon: Phone,
             title: 'Call Us',
-            details: '+1 (555) 123-4567',
-            description: 'Mon-Fri from 9am to 6pm EST',
+            value: '+91 98765 43210',
+            description: 'Mon-Fri, 9AM-6PM IST',
+            color: 'bg-[#F1B92B]',
+            lightBg: 'bg-[#FEF7E6]',
         },
         {
             icon: MapPin,
             title: 'Visit Us',
-            details: '123 Care Street, Suite 100',
-            description: 'San Francisco, CA 94102',
-        },
-    ];
-
-    const faqs = [
-        {
-            question: 'How quickly can I find a caregiver?',
-            answer:
-                'Most families find a suitable caregiver within 48 hours of posting their needs.',
-        },
-        {
-            question: 'Are all caregivers background checked?',
-            answer:
-                'Yes, every caregiver undergoes a comprehensive background check and identity verification.',
-        },
-        {
-            question: 'What are your payment terms?',
-            answer:
-                'We offer flexible payment options including hourly rates and package deals. Payment is processed securely through our platform.',
+            value: 'Mumbai, India',
+            description: 'Serving families nationwide',
+            color: 'bg-[#E08E79]',
+            lightBg: 'bg-[#FDF3F1]',
         },
     ];
 
     return (
-        <div className="min-h-screen bg-stone-50">
-            {/* Hero Section */}
-            <section className="relative pt-32 pb-20 px-6 bg-white overflow-hidden">
-                {/* Background elements */}
-                <div className="absolute top-20 right-0 w-96 h-96 bg-stone-100 rounded-full blur-3xl opacity-50" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 bg-stone-200/30 rounded-full blur-3xl" />
+        <ParentLayout>
+            <div ref={containerRef} className="space-y-16">
+                {/* Header with Parallax Background */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center max-w-4xl mx-auto relative"
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-6"
+                    >
+                        <Sparkles className="w-4 h-4 text-[#1F6F5B]" />
+                        <span className="text-sm font-semibold text-[#0F172A]">We're Here to Help</span>
+                    </motion.div>
 
-                <div className="relative z-10 max-w-7xl mx-auto">
-                    <div className="max-w-3xl mx-auto text-center space-y-6">
-                        <Link
-                            href="/"
-                            className="inline-flex items-center text-sm text-stone-500 hover:text-stone-900 transition-colors mb-4 group"
-                        >
-                            <ArrowLeft
-                                size={16}
-                                className="mr-2 group-hover:-translate-x-1 transition-transform"
-                            />
-                            Back to Home
-                        </Link>
+                    <h1 className="text-5xl md:text-7xl font-bold text-[#0F172A] mb-6 font-display leading-tight">
+                        Get in Touch
+                    </h1>
+                    <p className="text-xl md:text-2xl text-gray-600 font-body leading-relaxed">
+                        Have questions? We're here to help. Reach out to us and we'll get back to you as soon as possible.
+                    </p>
+                </motion.div>
 
-                        <div className="inline-flex items-center gap-2 bg-stone-100 px-4 py-2 rounded-full">
-                            <MessageCircle className="w-4 h-4 text-stone-600" />
-                            <span className="text-sm font-medium text-stone-600">
-                                Get in Touch
-                            </span>
+                {/* Contact Info Cards */}
+                <div className="grid md:grid-cols-3 gap-6">
+                    {contactInfo.map((info, index) => {
+                        const Icon = info.icon;
+                        return (
+                            <motion.div
+                                key={info.title}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                whileHover={{ y: -8 }}
+                                className={`${info.lightBg} rounded-[30px] p-8 text-center hover:shadow-2xl transition-all border-2 border-transparent hover:border-gray-200`}
+                            >
+                                <motion.div
+                                    whileHover={{ scale: 1.1, rotate: 5 }}
+                                    transition={{ type: 'spring', stiffness: 300 }}
+                                    className={`w-16 h-16 ${info.color} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}
+                                >
+                                    <Icon className="w-8 h-8 text-white" />
+                                </motion.div>
+                                <h3 className="text-xl font-bold text-[#0F172A] mb-2 font-display">
+                                    {info.title}
+                                </h3>
+                                <p className="text-2xl font-semibold text-gray-900 mb-2">
+                                    {info.value}
+                                </p>
+                                <p className="text-sm text-gray-600 font-body">
+                                    {info.description}
+                                </p>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+
+                {/* Contact Form & Info */}
+                <div className="grid md:grid-cols-5 gap-12 items-start">
+                    {/* Form */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="md:col-span-3 bg-white rounded-[40px] p-8 md:p-12 border-2 border-gray-100 shadow-lg"
+                    >
+                        <div className="flex items-center gap-3 mb-8">
+                            <MessageSquare className="w-7 h-7 text-[#1F6F5B]" />
+                            <h2 className="text-3xl font-bold text-[#0F172A] font-display">
+                                Send us a message
+                            </h2>
                         </div>
 
-                        <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-stone-900 leading-[1.1]">
-                            We're here to
-                            <span className="relative inline-block mx-2">
-                                <span className="relative z-10">help</span>
-                                <span className="absolute bottom-1 left-0 w-full h-3 bg-accent/30 -rotate-1" />
-                            </span>
-                        </h1>
-
-                        <p className="text-lg text-stone-600 leading-relaxed max-w-2xl mx-auto">
-                            Have a question or need assistance? Our team is ready to support
-                            you. Reach out and we'll get back to you as soon as possible.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Contact Info Cards */}
-            <section className="py-16 px-6 bg-stone-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {contactInfo.map((info, index) => {
-                            const IconComponent = info.icon;
-                            return (
-                                <div
-                                    key={index}
-                                    className="bg-white rounded-2xl p-6 border border-stone-100 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 hover:-translate-y-1"
+                        {isSubmitted ? (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="text-center py-16"
+                            >
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                                    className="w-24 h-24 bg-[#E5F1EC] rounded-full flex items-center justify-center mx-auto mb-6"
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mb-4">
-                                        <IconComponent className="w-6 h-6 text-stone-600" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-stone-900 mb-1">
-                                        {info.title}
-                                    </h3>
-                                    <p className="text-stone-900 font-medium mb-1">
-                                        {info.details}
-                                    </p>
-                                    <p className="text-sm text-stone-500">{info.description}</p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* Contact Form Section */}
-            <section className="py-24 px-6 bg-white">
-                <div className="max-w-4xl mx-auto">
-                    <div className="grid lg:grid-cols-5 gap-12">
-                        {/* Form */}
-                        <div className="lg:col-span-3">
-                            <div className="mb-8">
-                                <h2 className="text-3xl font-bold text-stone-900 mb-2">
-                                    Send us a message
-                                </h2>
-                                <p className="text-stone-600">
-                                    Fill out the form below and we'll get back to you within 24
-                                    hours.
+                                    <CheckCircle className="w-12 h-12 text-[#1F6F5B]" />
+                                </motion.div>
+                                <h3 className="text-3xl font-bold text-[#0F172A] mb-3 font-display">
+                                    Message Sent!
+                                </h3>
+                                <p className="text-lg text-gray-600 font-body">
+                                    We'll get back to you within 24 hours.
                                 </p>
-                            </div>
-
-                            {isSubmitted ? (
-                                <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center animate-fade-in">
-                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <CheckCircle className="w-8 h-8 text-green-600" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-green-900 mb-2">
-                                        Message sent successfully!
-                                    </h3>
-                                    <p className="text-green-700">
-                                        We've received your message and will respond shortly.
-                                    </p>
-                                </div>
-                            ) : (
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    <Input
-                                        label="Your Name"
-                                        placeholder="John Doe"
-                                        value={formData.name}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, name: e.target.value })
-                                        }
-                                        required
-                                        className="bg-stone-50 border-stone-200 focus:bg-white transition-all"
-                                    />
-
-                                    <Input
-                                        label="Email Address"
-                                        type="email"
-                                        placeholder="john@example.com"
-                                        value={formData.email}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, email: e.target.value })
-                                        }
-                                        required
-                                        className="bg-stone-50 border-stone-200 focus:bg-white transition-all"
-                                    />
-
-                                    <Input
-                                        label="Subject"
-                                        placeholder="How can we help?"
-                                        value={formData.subject}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, subject: e.target.value })
-                                        }
-                                        required
-                                        className="bg-stone-50 border-stone-200 focus:bg-white transition-all"
-                                    />
-
+                            </motion.div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-2">
-                                            Message
+                                        <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
+                                            Your Name
                                         </label>
-                                        <textarea
-                                            rows={6}
-                                            placeholder="Tell us more about your inquiry..."
-                                            value={formData.message}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, message: e.target.value })
-                                            }
+                                        <input
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             required
-                                            className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-900 focus:bg-white transition-all resize-none"
+                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                            placeholder="John Doe"
                                         />
                                     </div>
 
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full h-12 bg-primary-900 hover:bg-primary-800 text-white rounded-xl font-semibold group"
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            required
+                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                            placeholder="john@example.com"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
+                                        Phone Number
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                        placeholder="+91 98765 43210"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
+                                        Subject
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.subject}
+                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                        required
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                        placeholder="How can we help?"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
+                                        Message
+                                    </label>
+                                    <textarea
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        required
+                                        rows={6}
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all resize-none text-lg"
+                                        placeholder="Tell us more about your inquiry..."
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-[#1F6F5B] hover:bg-[#1a5f4f] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Sending...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Send Message
+                                            <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        )}
+                    </motion.div>
+
+                    {/* Sidebar with Image */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="md:col-span-2 space-y-6"
+                    >
+                        {/* Illustration */}
+                        <div className="relative h-64 rounded-[30px] overflow-hidden shadow-2xl">
+                            <Image
+                                src="/image2.png"
+                                alt="Contact us"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+
+                        {/* Business Hours */}
+                        <div className="bg-[#E08E79] rounded-[30px] p-8 text-white relative overflow-hidden">
+                            <motion.div style={{ y: physicsY1 }} className="absolute top-0 right-0 w-48 h-48 bg-white/20 rounded-full mix-blend-overlay filter blur-3xl" />
+                            <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-48 h-48 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+
+                            <Clock className="w-10 h-10 text-white mb-4" />
+                            <h3 className="text-2xl font-bold mb-4 font-display">
+                                Quick Response Time
+                            </h3>
+                            <p className="text-white/90 mb-6 font-body leading-relaxed">
+                                Our support team typically responds within 24 hours during business days.
+                            </p>
+                            <div className="space-y-3">
+                                {[
+                                    { day: 'Monday - Friday', time: '9AM - 6PM IST' },
+                                    { day: 'Saturday', time: '10AM - 4PM IST' },
+                                    { day: 'Sunday', time: 'Closed' },
+                                ].map((schedule, index) => (
+                                    <motion.div
+                                        key={schedule.day}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="flex items-center gap-3"
                                     >
-                                        {isSubmitting ? (
-                                            'Sending...'
-                                        ) : (
-                                            <>
-                                                Send Message
-                                                <Send className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                            </>
-                                        )}
-                                    </Button>
-                                </form>
-                            )}
-                        </div>
-
-                        {/* Sidebar */}
-                        <div className="lg:col-span-2 space-y-8">
-                            {/* Office Hours */}
-                            <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
-                                        <Clock className="w-5 h-5 text-stone-600" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-stone-900">
-                                        Office Hours
-                                    </h3>
-                                </div>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-stone-600">Monday - Friday</span>
-                                        <span className="font-medium text-stone-900">
-                                            9am - 6pm
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-stone-600">Saturday</span>
-                                        <span className="font-medium text-stone-900">
-                                            10am - 4pm
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-stone-600">Sunday</span>
-                                        <span className="font-medium text-stone-900">Closed</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Quick FAQs */}
-                            <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                                <h3 className="text-lg font-bold text-stone-900 mb-4">
-                                    Quick Answers
-                                </h3>
-                                <div className="space-y-4">
-                                    {faqs.map((faq, index) => (
-                                        <div key={index}>
-                                            <p className="font-medium text-stone-900 text-sm mb-1">
-                                                {faq.question}
-                                            </p>
-                                            <p className="text-xs text-stone-600">{faq.answer}</p>
-                                        </div>
-                                    ))}
-                                </div>
+                                        <div className="w-2 h-2 bg-[#F1B92B] rounded-full" />
+                                        <span className="text-gray-300 flex-1">{schedule.day}</span>
+                                        <span className="text-white font-semibold">{schedule.time}</span>
+                                    </motion.div>
+                                ))}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* CTA Section */}
-            <section className="py-24 px-6 bg-stone-900">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        Ready to find trusted care?
-                    </h2>
-                    <p className="text-lg text-stone-400 mb-8 max-w-2xl mx-auto">
-                        Join thousands of families who have found reliable caregivers
-                        through Keel.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup">
-                            <Button className="h-12 px-8 bg-white hover:bg-stone-100 text-stone-900 rounded-xl font-semibold">
-                                Get Started Free
-                            </Button>
-                        </Link>
-                        <Link href="/browse">
-                            <Button
-                                variant="outline"
-                                className="h-12 px-8 border-stone-600 text-white hover:bg-stone-800 rounded-xl font-semibold"
-                            >
-                                Browse Caregivers
-                            </Button>
-                        </Link>
-                    </div>
+                        {/* FAQ */}
+                        <div className="bg-[#E5F1EC] rounded-[30px] p-8">
+                            <h3 className="text-xl font-bold text-[#0F172A] mb-6 font-display">
+                                Quick Answers
+                            </h3>
+                            <div className="space-y-5">
+                                {[
+                                    { q: 'How do I book a service?', a: 'Simply click "Book a Service" and select your preferred service type, date, and time.' },
+                                    { q: 'Are all caregivers verified?', a: 'Yes, all our caregivers undergo thorough background checks and verification.' },
+                                    { q: 'Can I cancel a booking?', a: 'Yes, you can cancel up to 24 hours before your scheduled appointment.' },
+                                ].map((faq, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: index * 0.1 }}
+                                    >
+                                        <h4 className="font-semibold text-[#0F172A] mb-2 flex items-start gap-2">
+                                            <ArrowUpRight className="w-4 h-4 text-[#1F6F5B] flex-shrink-0 mt-1" />
+                                            {faq.q}
+                                        </h4>
+                                        <p className="text-gray-600 text-sm font-body pl-6">
+                                            {faq.a}
+                                        </p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </ParentLayout>
     );
 }
