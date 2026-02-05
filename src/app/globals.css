@@ -153,6 +153,38 @@
     --cream: 40 33% 96%;
     --warm-brown: 24 10% 20%;
     --stone: 35 20% 92%;
+
+    /* ===== FLUID TYPOGRAPHY SYSTEM ===== */
+    /* Base: 16px mobile → 18px desktop, scale ratio 1.25 → 1.333 */
+    --fluid-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    --fluid-sm: clamp(0.875rem, 0.85rem + 0.125vw, 0.9375rem);
+    --fluid-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+    --fluid-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+    --fluid-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+    --fluid-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+    --fluid-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.25rem);
+    --fluid-5xl: clamp(2.75rem, 2rem + 3.75vw, 4.5rem);
+
+    /* ===== GOLDEN RATIO SPACING SYSTEM ===== */
+    /* Base 8px × 1.618 multiplier */
+    --space-xs: 0.5rem;     /* 8px */
+    --space-sm: 1rem;       /* 16px */
+    --space-md: 1.5rem;     /* 24px */
+    --space-lg: 2.5rem;     /* 40px */
+    --space-xl: 4rem;       /* 64px */
+    --space-2xl: 6.5rem;    /* 104px */
+
+    /* ===== LAYERED ELEVATION SYSTEM ===== */
+    --elevation-1: 0 1px 2px rgba(55, 50, 45, 0.04);
+    --elevation-2: 0 2px 4px rgba(55, 50, 45, 0.04), 0 1px 2px rgba(55, 50, 45, 0.03);
+    --elevation-3: 0 4px 6px rgba(55, 50, 45, 0.04), 0 2px 4px rgba(55, 50, 45, 0.03);
+    --elevation-4: 0 10px 15px rgba(55, 50, 45, 0.04), 0 4px 6px rgba(55, 50, 45, 0.03);
+    --elevation-5: 0 20px 25px rgba(55, 50, 45, 0.04), 0 8px 10px rgba(55, 50, 45, 0.03);
+
+    /* ===== ANIMATION CURVES ===== */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Base Styles */
@@ -199,36 +231,103 @@
 
 @layer components {
 
+  /* ===== FLUID TYPOGRAPHY CLASSES ===== */
+  .fluid-base {
+    font-size: var(--fluid-base);
+    line-height: 1.6;
+  }
+
+  .fluid-sm {
+    font-size: var(--fluid-sm);
+    line-height: 1.6;
+  }
+
+  .fluid-lg {
+    font-size: var(--fluid-lg);
+    line-height: 1.5;
+  }
+
+  .fluid-xl {
+    font-size: var(--fluid-xl);
+    line-height: 1.4;
+  }
+
+  .fluid-2xl {
+    font-size: var(--fluid-2xl);
+    line-height: 1.3;
+  }
+
+  .fluid-3xl {
+    font-size: var(--fluid-3xl);
+    line-height: 1.2;
+  }
+
+  .fluid-4xl {
+    font-size: var(--fluid-4xl);
+    line-height: 1.15;
+  }
+
+  .fluid-5xl {
+    font-size: var(--fluid-5xl);
+    line-height: 1.1;
+  }
+
   /* ===== WARM EARTHY CARD STYLES ===== */
   .glass-card {
     background-color: hsl(var(--card));
     backdrop-filter: blur(16px);
     border: 1px solid hsl(var(--border));
-    box-shadow: 0 4px 24px rgba(55, 50, 45, 0.06);
+    box-shadow: var(--elevation-2);
     border-radius: var(--radius-2xl);
   }
 
   .glass-card-hover {
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 300ms var(--ease-out-expo);
   }
 
   .glass-card-hover:hover {
-    box-shadow: 0 12px 40px rgba(55, 50, 45, 0.1);
+    box-shadow: var(--elevation-4);
     transform: translateY(-2px);
   }
 
-  /* Earthy card variant */
+  /* Earthy card variant with layered elevation */
   .earthy-card {
     background-color: hsl(var(--card));
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius-2xl);
-    box-shadow: 0 2px 16px rgba(55, 50, 45, 0.04);
-    transition: all 300ms ease;
+    box-shadow: var(--elevation-1);
+    transition: all 300ms var(--ease-out-expo);
   }
 
   .earthy-card:hover {
-    box-shadow: 0 8px 32px rgba(55, 50, 45, 0.08);
+    box-shadow: var(--elevation-4);
     border-color: hsl(var(--neutral-300));
+    transform: translateY(-2px);
+  }
+
+  /* Frosted Glass Card */
+  .frosted-card {
+    background: rgba(253, 252, 250, 0.75);
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-2xl);
+    box-shadow: 
+      var(--elevation-2),
+      inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+
+  /* Premium elevated card */
+  .premium-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--elevation-3);
+    transition: all 400ms var(--ease-out-expo);
+  }
+
+  .premium-card:hover {
+    box-shadow: var(--elevation-5);
+    transform: translateY(-4px);
   }
 
   /* ===== PREMIUM BUTTON STYLES - EARTHY ===== */
@@ -422,12 +521,32 @@
     }
   }
 
+  /* Shimmer loading animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Scale snap animation for scroll snap */
+  @keyframes scale-snap {
+    from {
+      transform: scale(0.98);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
   .animate-fade-in {
-    animation: fade-in 0.5s ease-out;
+    animation: fade-in 0.5s var(--ease-out-expo);
   }
 
   .animate-slide-up {
-    animation: slide-up 0.6s ease-out;
+    animation: slide-up 0.6s var(--ease-out-expo);
   }
 
   .animate-gentle-float {
@@ -436,6 +555,40 @@
 
   .animate-pulse-warm {
     animation: pulse-warm 2.5s ease-in-out infinite;
+  }
+
+  /* Shimmer skeleton loading effect */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--neutral-100)) 25%,
+      hsl(var(--neutral-200)) 50%,
+      hsl(var(--neutral-100)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-md);
+  }
+
+  /* Staggered animation delays for children */
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+
+  /* Subtle noise texture overlay */
+  .noise-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
 }
 
