@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import UniversalNavbar from '@/components/layout/UniversalNavbar';
+import { PremiumNavbar } from '@/components/layout/Navbar/PremiumNavbar';
 import BottomNavBar from '@/components/layout/BottomNavBar';
 
 export default function ParentLayout({
@@ -37,8 +37,8 @@ export default function ParentLayout({
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      {/* Universal Navbar */}
-      <UniversalNavbar />
+      {/* Premium Navbar */}
+      <PremiumNavbar />
 
       {/* Main Content Area */}
       <main className="pt-24 pb-24 lg:pb-8 px-4 md:px-6">

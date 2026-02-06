@@ -79,12 +79,25 @@ export default function DashboardLayout({
     }
   };
 
+  // Redirect parents to /home if they try to access /dashboard
+  useEffect(() => {
+    if (!loading && user && user.role !== 'nanny' && user.role !== 'admin') {
+      router.push('/home');
+    }
+  }, [user, loading, router]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-primary-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
+  }
+
+  // Strict Guard: Prevent rendering for non-nanny/non-admin users
+  // This prevents the "flash" of dashboard content before the useEffect redirect kicks in
+  if (!loading && user && user.role !== 'nanny' && user.role !== 'admin') {
+      return null; 
   }
 
   return (

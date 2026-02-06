@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
                 ? '/dashboard'
                 : user.role === 'admin'
                   ? '/admin'
-                  : '/browse'
+                  : '/home'
           }
           className="flex items-center gap-2 group"
         >
@@ -169,7 +169,7 @@ export const Header: React.FC = () => {
                             ? '/dashboard'
                             : user.role === 'admin'
                               ? '/admin'
-                              : '/browse'
+                              : '/home'
                         }
                         className="flex items-center gap-2 px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors"
                         onClick={() => setIsProfileOpen(false)}
@@ -283,7 +283,7 @@ export const Header: React.FC = () => {
                         ? '/dashboard'
                         : user.role === 'admin'
                           ? '/admin'
-                          : '/browse'
+                          : '/home'
                     }
                     className="block px-4 py-3 rounded-xl hover:bg-stone-50 text-stone-600 font-medium"
                     onClick={() => setIsMenuOpen(false)}

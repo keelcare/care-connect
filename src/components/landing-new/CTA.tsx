@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const CTA = () => {
   return (
-    <section className="py-24 px-6">
+    <section className="h-screen flex items-center justify-center px-6">
       <div className="max-w-7xl mx-auto">
         <div className="bg-[#0F172A] rounded-[60px] p-12 lg:p-24 relative overflow-hidden text-center">
           {/* Background decorations */}

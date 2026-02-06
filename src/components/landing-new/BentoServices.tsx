@@ -31,7 +31,7 @@ const services = [
 
 export const BentoServices = () => {
   return (
-    <section className="py-24 px-6 bg-white relative overflow-hidden">
+    <section className="h-screen flex items-center justify-center px-6 bg-white relative overflow-hidden">
         {/* Background blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E08E79] rounded-full mix-blend-multiply filter blur-[120px] opacity-10 translate-x-1/2 -z-10" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />

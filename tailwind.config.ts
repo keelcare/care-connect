@@ -139,6 +139,20 @@ const config: Config = {
           neutral: '#F4F4F4',    // Neutral Background
           text: '#1F1F1F',
         },
+        dashboard: {
+          bg: '#F3F2EF',
+          accent: {
+            start: '#0B0F2A',
+            end: '#1A2146',
+          },
+          sage: '#A9C1B3',
+          success: '#6AAE8A',
+          card: 'rgba(255, 255, 255, 0.6)',
+          text: {
+            primary: '#1B1B1B',
+            secondary: '#6B7280',
+          },
+        },
       },
 
       // Typography

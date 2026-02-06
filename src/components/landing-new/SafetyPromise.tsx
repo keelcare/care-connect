@@ -26,7 +26,7 @@ export const SafetyPromise = () => {
   return (
     <section 
       ref={containerRef} 
-      className="py-24 md:py-32 px-6 bg-[#FAF9F6] relative overflow-hidden" 
+      className="h-screen flex items-center justify-center px-6 bg-[#FAF9F6] relative overflow-hidden" 
     >
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">

@@ -168,54 +168,135 @@ export default function LoginPage() {
         </motion.div>
       </div>
 
-      {/* Right Side - Visual */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#0F172A] via-[#1e3a5f] to-[#0F172A] relative overflow-hidden items-center justify-center">
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#E08E79] rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 translate-y-1/2" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#F1B92B] rounded-full mix-blend-multiply filter blur-3xl opacity-10" />
+      {/* Right Side - Animation */}
+      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-screen bg-[#F0FDF4] overflow-hidden items-center justify-center">
+        <style jsx>{`
+          @keyframes sway {
+            0%,
+            100% {
+              transform: rotate(-3deg);
+            }
+            50% {
+              transform: rotate(3deg);
+            }
+          }
+          @keyframes bloom {
+            0%,
+            100% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.05);
+            }
+          }
+          @keyframes pulse-soft {
+            0%,
+            100% {
+              opacity: 0.6;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.8;
+              transform: scale(1.1);
+            }
+          }
+          .flower-container {
+            transform-origin: bottom center;
+            animation: sway 8s ease-in-out infinite;
+          }
+          .flower-head {
+            transform-origin: 200px 250px;
+            animation: bloom 5s ease-in-out infinite;
+          }
+          .glow {
+            animation: pulse-soft 4s ease-in-out infinite;
+          }
+        `}</style>
 
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative z-10 text-center px-12 max-w-lg"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <h2 className="text-5xl font-bold text-white mb-6 font-display leading-tight">
-              Welcome to <br />
-              <span className="text-[#F1B92B]">Keel Care</span>
-            </h2>
-            <p className="text-xl text-gray-300 font-body leading-relaxed">
-              Your trusted platform for finding verified caregivers and professionals for your family's needs.
-            </p>
-          </motion.div>
+        <div className="relative w-[500px] h-[500px] flex items-center justify-center">
+          {/* Background Glow */}
+          <div className="absolute inset-0 bg-teal-100 rounded-full blur-3xl opacity-40 glow"></div>
 
-          {/* Floating Cards */}
-          <div className="mt-12 grid grid-cols-3 gap-4">
-            {[
-              { icon: '👶', label: 'Child Care' },
-              { icon: '📚', label: 'Education' },
-              { icon: '❤️', label: 'Senior Care' },
-            ].map((item, index) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20"
-              >
-                <div className="text-3xl mb-2">{item.icon}</div>
-                <div className="text-sm text-white font-medium">{item.label}</div>
-              </motion.div>
-            ))}
+          {/* Flower Animation */}
+          <div className="relative w-full h-full flex items-center justify-center flower-container">
+            <svg
+              width="400"
+              height="500"
+              viewBox="0 0 400 500"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Stem */}
+              <path
+                d="M200 500 C200 400 220 350 200 250"
+                stroke="#5EEAD4"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+              {/* Leaves */}
+              <path
+                d="M200 400 Q140 380 120 320 Q180 340 200 380"
+                fill="#99F6E4"
+                className="opacity-90"
+              />
+              <path
+                d="M200 320 Q260 300 280 240 Q220 260 200 300"
+                fill="#99F6E4"
+                className="opacity-90"
+              />
+
+              {/* Flower Head Group */}
+              <g className="flower-head">
+                {/* Petals */}
+                <circle
+                  cx="200"
+                  cy="190"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+                <circle
+                  cx="200"
+                  cy="310"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+                <circle
+                  cx="148"
+                  cy="220"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+                <circle
+                  cx="252"
+                  cy="220"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+                <circle
+                  cx="148"
+                  cy="280"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+                <circle
+                  cx="252"
+                  cy="280"
+                  r="35"
+                  fill="#FDBA74"
+                  className="opacity-90"
+                />
+
+                {/* Center */}
+                <circle cx="200" cy="250" r="45" fill="#FFEDD5" />
+              </g>
+            </svg>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
