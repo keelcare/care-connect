@@ -89,12 +89,26 @@ function VerifyEmailContent() {
                     Go to Sign in
                   </Button>
                 </Link>
-                <p className="text-sm text-neutral-400">
+                <div className="text-sm text-neutral-400">
                   Didn&apos;t receive the email?{' '}
-                  <button className="text-emerald-600 hover:text-emerald-700 font-medium">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+                        // Since we don't have the email here easily without a token, 
+                        // this button usually works after a signup attempt or from a login failure.
+                        // For now, let's assume we can't resend without knowing WHO to resend to.
+                        // But if we want to be proactive, we could ask the user for their email.
+                        alert('Please try signing in. If your email is not verified, you will have an option to resend there.');
+                      } catch (err) {
+                        alert('Failed to resend verification email');
+                      }
+                    }}
+                    className="text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
                     Resend verification email
                   </button>
-                </p>
+                </div>
               </div>
             </div>
           </div>

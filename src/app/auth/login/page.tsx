@@ -31,8 +31,8 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const redirectUri = `${window.location.origin}/auth/callback`;
-    window.location.href = `${apiUrl}/auth/google?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    const origin = window.location.origin;
+    window.location.href = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}`;
   };
 
   return (

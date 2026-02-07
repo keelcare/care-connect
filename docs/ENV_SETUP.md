@@ -1,93 +1,57 @@
-# Environment Configuration
+# Environment Switching Configuration Guide
 
-## Backend Environment Variables
+This guide explains how to configure Google OAuth and environment variables to support multiple environments (Local, DEV, and Production) seamlessly.
 
-The backend uses the following environment variables. You don't need to set these for the frontend, but understanding them helps with debugging.
+## 1. Google Cloud Console Setup
 
-| Variable               | Description                       | Default/Example                                     | Required     |
-| ---------------------- | --------------------------------- | --------------------------------------------------- | ------------ |
-| `PORT`                 | Server port                       | `4000`                                              | Yes          |
-| `NODE_ENV`             | Environment mode                  | `development`                                       | Yes          |
-| `FRONTEND_URL`         | Frontend URL for CORS             | `http://localhost:3000`                             | Yes          |
-| `DATABASE_URL`         | PostgreSQL connection string      | `postgresql://user:pass@localhost:5433/careconnect` | Yes          |
-| `POSTGRES_USER`        | Database username                 | `project_user`                                      | Yes          |
-| `POSTGRES_PASSWORD`    | Database password                 | `davanj123`                                         | Yes          |
-| `POSTGRES_DB`          | Database name                     | `careconnect`                                       | Yes          |
-| `JWT_SECRET`           | Secret key for signing JWT tokens | `your-secret-key-change-in-production`              | Yes          |
-| `GOOGLE_MAPS_API_KEY`  | Google Maps Geocoding API key     | `AIzaSy...`                                         | Optional\*   |
-| `GOOGLE_CLIENT_ID`     | Google OAuth 2.0 Client ID        | `123456789-abc.apps.googleusercontent.com`          | Optional\*\* |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret    | `GOCSPX-...`                                        | Optional\*\* |
-| `GOOGLE_CALLBACK_URL`  | OAuth callback URL                | `http://localhost:4000/auth/google/callback`        | Optional\*\* |
+To support multiple backends and frontends, you must configure your **OAuth 2.0 Client IDs** in the [Google Cloud Console](https://console.cloud.google.com/).
 
-**Notes:**
+### Authorized JavaScript Origins
+Add all frontend URLs that will initiate the login:
+- `http://localhost:3000`
+- `https://keelcare.netlify.app`
+- `https://your-production-frontend.com`
 
-- \*Required for geocoding features to work
-- \*\*Required only if using Google OAuth authentication
+### Authorized Redirect URIs
+Add the callback URLs for **each backend environment**:
+- `http://localhost:4000/auth/google/callback` (Local Backend)
+- `https://care-connect-backend-production.up.railway.app/auth/google/callback` (DEV Backend)
+- `https://your-production-backend.com/auth/google/callback` (Production Backend)
 
-## Frontend Environment Variables
+## 2. Environment Variables (.env)
 
-These are the variables you'll need in your Next.js application (`.env.local`).
+### Frontend (`CareConnect/.env.local`)
+To switch backends, simply change `NEXT_PUBLIC_API_URL`.
 
 ```bash
-# Base URL for API requests
+# To use Local Backend
 NEXT_PUBLIC_API_URL=http://localhost:4000
 
-# Google Maps API Key (for frontend maps/places autocomplete)
-# Note: This should be restricted to your domain in Google Cloud Console
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key_here
+# To use DEV Backend (Hosted)
+NEXT_PUBLIC_API_URL=https://care-connect-backend-production.up.railway.app
 ```
 
-## Google Maps Setup
-
-Both frontend and backend use Google Maps services.
-
-- **Backend**: Uses Geocoding API (server-side)
-- **Frontend**: Likely uses Maps JavaScript API and Places API
-
-Ensure your API key has the following APIs enabled:
-
-1. Geocoding API
-2. Maps JavaScript API
-3. Places API (New)
-
-## Google OAuth Setup
-
-To enable Google OAuth authentication:
-
-### 1. Create OAuth 2.0 Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Navigate to **APIs & Services** > **Credentials**
-4. Click **Create Credentials** > **OAuth 2.0 Client ID**
-5. Configure OAuth consent screen if prompted
-6. Select **Web application** as application type
-7. Add authorized redirect URIs:
-   - `http://localhost:4000/auth/google/callback` (development)
-   - `https://yourdomain.com/auth/google/callback` (production)
-8. Copy the **Client ID** and **Client Secret**
-
-### 2. Configure Environment Variables
-
-Add to your `.env` file:
+### Backend (`care-connect-backend/.env`)
+The backend now supports dynamic redirection, but `FRONTEND_URL` is still the default fallback.
 
 ```bash
-GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=GOCSPX-your-client-secret-here
+# Local Backend
+FRONTEND_URL=http://localhost:3000
 GOOGLE_CALLBACK_URL=http://localhost:4000/auth/google/callback
+
+# DEV Backend (Hosted)
+FRONTEND_URL=https://keelcare.netlify.app
+GOOGLE_CALLBACK_URL=https://care-connect-backend-production.up.railway.app/auth/google/callback
 ```
 
-### 3. Test OAuth Flow
+## 3. How it Works
+1. **Initiation**: The Frontend sends its current `origin` (e.g., `localhost:3000`) to the Backend's `/auth/google` endpoint or as a header in AJAX requests.
+2. **State/Context Capturing**: The Backend captures this `origin`. For Google, it's stored in `state`. For standard flows (forgot password, signup), it's captured from the `Origin` or `Referer` headers.
+3. **Execution**:
+   - **Google**: Google redirects back to the *Backend*, which then uses the stored `origin` to redirect back to the correct *Frontend*.
+   - **Emails**: Links for Password Reset and Email Verification use the captured `origin` as the base URL.
+4. **Session Security**: The Backend dynamically sets cookie security options:
+   - If the origin is `HTTPS`, cookies are set with `SameSite=None; Secure; Partitioned`.
+   - This allows a local backend (`HTTP`) to work with a hosted frontend (`HTTPS`) seamlessly.
+5. **CORS**: The Backend's `main.ts` and Socket.io gateways allow requests from any of the registered frontend origins.
 
-1. Navigate to `http://localhost:4000/auth/google`
-2. Sign in with your Google account
-3. You should be redirected to the callback URL with an access token
-
-## Security Best Practices
-
-- **Never commit `.env` file** to version control
-- **Use different secrets** for development and production
-- **Rotate JWT_SECRET** regularly in production
-- **Restrict Google Maps API key** by HTTP referrer or IP address
-- **Enable only required Google APIs** to minimize security risks
-- **Use HTTPS** in production for all API endpoints

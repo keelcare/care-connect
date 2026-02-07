@@ -545,8 +545,8 @@ function SignupContent() {
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
                 const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-                const redirectUri = `${window.location.origin}/auth/callback`;
-                window.location.href = `${apiUrl}/auth/google?role=${backendRole}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+                const origin = window.location.origin;
+                window.location.href = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}`;
               }}
               type="button"
               className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-full bg-white hover:bg-neutral-50 transition-colors text-neutral-700 font-medium h-12"
