@@ -52,7 +52,7 @@ export const CTASection: React.FC = () => {
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link href="/browse">
+                <Link href="/parent-dashboard">
                   <Button
                     variant="outline"
                     className="h-12 px-8 border-stone-300 text-stone-700 hover:bg-stone-50 rounded-xl font-semibold"
