@@ -12,7 +12,7 @@ export default function Home() {
     if (!loading) {
       if (user) {
         if (user.role === 'parent') {
-          router.push('/home');
+          router.push('/parent-dashboard');
         } else if (user.role === 'nanny') {
           router.push('/dashboard');
         } else if (user.role === 'admin') {

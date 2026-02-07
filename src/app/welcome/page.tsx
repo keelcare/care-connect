@@ -15,7 +15,7 @@ export default function WelcomePage() {
     React.useEffect(() => {
         if (!loading && user) {
             if (user.role === 'parent') {
-                router.push('/home');
+                router.push('/parent-dashboard');
             } else if (user.role === 'nanny') {
                 router.push('/dashboard');
             } else if (user.role === 'admin') {

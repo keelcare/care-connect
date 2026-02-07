@@ -20,7 +20,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 
 const NAV_ITEMS = [
-    { href: '/home', label: 'Home', icon: Home },
+    { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'My Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book a Service', icon: Sparkles },
     { href: '/contact', label: 'Contact Us', icon: Phone },
@@ -39,8 +39,8 @@ export default function UniversalNavbar() {
     };
 
     const isActive = (href: string) => {
-        if (href === '/home') {
-            return pathname === '/home';
+        if (href === '/parent-dashboard') {
+            return pathname === '/parent-dashboard';
         }
         return pathname?.startsWith(href);
     };

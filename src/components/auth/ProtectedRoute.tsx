@@ -22,7 +22,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     } else if (!loading && user && allowedRoles && !allowedRoles.includes(user.role)) {
       // Role-based protection: redirect to appropriate dashboard if role doesn't match
       if (user.role === 'nanny') router.push('/dashboard');
-      else if (user.role === 'parent') router.push('/browse');
+      else if (user.role === 'parent') router.push('/parent-dashboard');
       else if (user.role === 'admin') router.push('/admin');
       else router.push('/'); 
     }
