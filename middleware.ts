@@ -31,13 +31,16 @@ export function middleware(request: NextRequest) {
 
 
   // --- Content Security Policy ---
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const wsUrl = apiUrl.replace(/^http/, 'ws');
+
   const cspHeader = `
         default-src 'self';
         script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
         font-src 'self' data: https://fonts.gstatic.com;
-        connect-src 'self' http://localhost:4000 https://care-connect-backend-ok23.onrender.com https://api.razorpay.com https://nominatim.openstreetmap.org wss://care-connect-backend-ok23.onrender.com ws://localhost:4000;
+        connect-src 'self' ${apiUrl} ${wsUrl} https://api.razorpay.com https://nominatim.openstreetmap.org;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
         base-uri 'self';
