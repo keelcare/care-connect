@@ -10,18 +10,24 @@ import { Spinner } from '@/components/ui/Spinner';
 import styles from './page.module.css';
 
 // Extended booking type to handle Prisma relation names from backend
-interface AdminBooking extends Booking {
+interface AdminBooking extends Omit<Booking, 'users_bookings_nanny_idTousers' | 'users_bookings_parent_idTousers'> {
   // Prisma relation names from backend
   jobs?: { title?: string; description?: string };
-  users_bookings_parent_idTousers?: {
-    id: string;
-    email: string;
-    profiles?: { first_name?: string | null; last_name?: string | null };
-  };
   users_bookings_nanny_idTousers?: {
     id: string;
     email: string;
-    profiles?: { first_name?: string | null; last_name?: string | null };
+    profiles?: {
+      first_name?: string | null;
+      last_name?: string | null;
+    }
+  };
+  users_bookings_parent_idTousers?: {
+    id: string;
+    email: string;
+    profiles?: {
+      first_name?: string | null;
+      last_name?: string | null;
+    }
   };
 }
 

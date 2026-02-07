@@ -284,6 +284,7 @@ export interface Booking {
   job?: Job;
   parent?: User;
   nanny?: User;
+  users_bookings_nanny_idTousers?: User;
 }
 
 export interface CreateBookingDto {
