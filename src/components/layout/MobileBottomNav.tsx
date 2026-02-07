@@ -10,7 +10,7 @@ export const MobileBottomNav = () => {
 
   const navItems = [
     { icon: Compass, label: 'Find Care', href: '/find-care' },
-    { icon: Search, label: 'Browse', href: '/browse' },
+    { icon: Compass, label: 'Home', href: '/parent-dashboard' },
     { icon: Calendar, label: 'Bookings', href: '/bookings' },
     { icon: User, label: 'Profile', href: '/settings' },
   ];

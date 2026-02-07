@@ -281,7 +281,7 @@ export default function DashboardPage() {
                     {upcomingBookings.length === 0 ? (
                         <div className="col-span-full bg-white rounded-[32px] p-12 text-center border border-wellness-beige">
                             <p className="text-wellness-text/50">No upcoming bookings. Time to relax!</p>
-                            <Link href="/browse">
+                            <Link href="/dashboard">
                                 <Button className="mt-4 rounded-full bg-wellness-navy text-white hover:bg-wellness-navy/90">Book Care</Button>
                             </Link>
                         </div>

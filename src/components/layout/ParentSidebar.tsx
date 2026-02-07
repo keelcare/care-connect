@@ -41,7 +41,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
   const { user } = useAuth();
 
   const navItems = [
-    { icon: Search, label: 'Browse', href: '/browse' },
+    { icon: Home, label: 'Home', href: '/parent-dashboard' },
     { icon: Heart, label: 'Saved Caregivers', href: '/favorites' },
     { icon: Sparkles, label: 'Book a Service', href: '/book-service' },
     { icon: Calendar, label: 'Your Bookings', href: '/bookings' },

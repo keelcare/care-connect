@@ -93,7 +93,7 @@ export default function FavoritesPage() {
                 Start browsing caregivers and tap the heart icon to save your
                 favorites for quick access later.
               </p>
-              <Link href="/browse">
+              <Link href="/parent-dashboard">
                 <Button className="bg-primary-900 hover:bg-primary-800 text-white rounded-xl">
                   Browse Caregivers
                 </Button>

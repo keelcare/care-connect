@@ -535,7 +535,7 @@ export default function RecurringBookingsPage() {
 
             {/* Modal Footer */}
             <div className="p-6 border-t border-neutral-200 bg-neutral-50">
-              <Link href="/browse" onClick={() => setShowNannyModal(false)}>
+              <Link href="/parent-dashboard" onClick={() => setShowNannyModal(false)}>
                 <Button className="w-full rounded-xl bg-accent hover:bg-accent-600 text-white">
                   <Search size={18} className="mr-2" />
                   Browse All Caregivers
