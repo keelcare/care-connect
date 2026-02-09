@@ -10,14 +10,16 @@ interface SessionCardProps {
     session?: Booking | null;
     onMessage?: () => void;
     onViewDetails?: () => void;
+    userRole?: 'parent' | 'nanny';
 }
 
 export function SessionCard({
     session,
     onMessage,
-    onViewDetails
+    onViewDetails,
+    userRole = 'parent'
 }: SessionCardProps) {
-    // Empty State (No Active Session) - Matching user's reference image
+    // Empty State
     if (!session) {
         return (
             <div className="bg-white rounded-[32px] p-10 md:p-12 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center min-h-[400px]">
@@ -26,38 +28,41 @@ export function SessionCard({
                 </div>
                 
                 <h3 className="text-3xl font-display font-medium text-dashboard-text-primary mb-4">
-                    No session active right now
+                    {userRole === 'nanny' ? 'No session active' : 'No session active right now'}
                 </h3>
                 
                 <p className="text-dashboard-text-secondary/80 text-lg max-w-md mb-10 leading-relaxed">
-                    Take a moment to relax or plan ahead. Your care team is ready when you are.
+                    {userRole === 'nanny' 
+                        ? 'You have no confirmed sessions happening right now.' 
+                        : 'You have no confirmed sessions happening right now.'}
                 </p>
 
-                <div className="flex items-center gap-4">
-                    <Link href="/book-service">
-                        <Button className="h-12 px-6 bg-dashboard-navy hover:bg-dashboard-navy/90 text-black rounded-xl font-medium flex items-center gap-2 transition-all shadow-lg shadow-dashboard-navy/20">
-                            <Search className="w-4 h-4" />
-                            Book a Service
-                        </Button>
-                    </Link>
-                    
-                    <Link href="/dashboard/bookings">
-                        <Button variant="outline" className="h-12 px-6 border-gray-200 text-dashboard-text-primary hover:bg-gray-50 rounded-xl font-medium flex items-center gap-2 transition-all">
-                            <Calendar className="w-4 h-4" />
-                            View Schedule
-                        </Button>
-                    </Link>
-                </div>
+             
             </div>
         );
     }
 
     // Active Session State
-    const caregiverName = session.nanny?.profiles?.first_name 
-        ? `${session.nanny.profiles.first_name} ${session.nanny.profiles.last_name || ''}`
-        : 'Caregiver';
-    const caregiverRole = 'Nanny'; // TODO: fetch from details if available
-    const caregiverImage = session.nanny?.profiles?.profile_image_url;
+    let displayName = 'User';
+    let displayRole = 'User';
+    let displayImage = '/placeholder-avatar.png';
+
+    if (userRole === 'nanny') {
+        // Show Parent Details
+        displayName = session.parent?.profiles?.first_name 
+            ? `${session.parent.profiles.first_name} ${session.parent.profiles.last_name || ''}`.trim()
+            : 'Parent';
+        displayRole = 'Parent';
+        // Use a generic placeholder for parent if no image (or add parent image field if available)
+        displayImage = session.parent?.profiles?.profile_image_url || '/placeholder-avatar.png';
+    } else {
+        // Show Nanny Details (Default)
+        displayName = session.nanny?.profiles?.first_name 
+            ? `${session.nanny.profiles.first_name} ${session.nanny.profiles.last_name || ''}`.trim()
+            : 'Caregiver';
+        displayRole = 'Nanny';
+        displayImage = session.nanny?.profiles?.profile_image_url || '/placeholder-avatar.png';
+    }
     
     // Simple time formatting
     const formatTime = (timeStr: string) => {
@@ -93,8 +98,8 @@ export function SessionCard({
                     <div className="w-24 h-24 rounded-full p-1 bg-white border border-gray-100 shadow-sm relative">
                          <div className="w-full h-full rounded-full overflow-hidden relative">
                             <Image
-                                src={caregiverImage || '/placeholder-avatar.png'}
-                                alt={caregiverName}
+                                src={displayImage}
+                                alt={displayName}
                                 fill
                                 className="object-cover"
                             />
@@ -108,12 +113,14 @@ export function SessionCard({
 
                 <div className="flex-1 space-y-4">
                     <div>
-                        <h3 className="text-3xl font-display font-medium text-dashboard-text-primary mb-1">{caregiverName}</h3>
+                        <h3 className="text-3xl font-display font-medium text-dashboard-text-primary mb-1">{displayName}</h3>
                         <div className="flex items-center gap-2 text-dashboard-text-secondary/80 font-medium">
                             <div className="w-4 h-4 rounded bg-dashboard-sage/20 flex items-center justify-center">
-                                <span className="text-[10px] text-dashboard-sage">🎓</span>
+                                <span className="text-[10px] text-dashboard-sage">
+                                    {userRole === 'nanny' ? '🏠' : '🎓'}
+                                </span>
                             </div>
-                            <span>{caregiverRole}</span>
+                            <span>{displayRole}</span>
                         </div>
                     </div>
 
@@ -122,10 +129,6 @@ export function SessionCard({
                             <Clock className="w-4 h-4 text-dashboard-sage" />
                             {startTime} — {endTime}
                         </div>
-                        {/* <div className="bg-white/80 px-4 py-2 rounded-xl border border-gray-100 flex items-center gap-2 text-sm font-medium text-dashboard-text-primary">
-                            <span className="text-dashboard-sage">⏳</span>
-                             Session
-                        </div> */}
                     </div>
                 </div>
             </div>
@@ -139,7 +142,7 @@ export function SessionCard({
                         Message
                     </Button>
                 </Link>
-                <Link href={`/dashboard/bookings/${session.id}`} className="block">
+                <Link href={userRole === 'nanny' ? `/dashboard/schedule` : `/bookings/${session.id}`} className="block">
                     <Button 
                         variant="ghost" 
                         className="h-12 px-8 rounded-2xl bg-white border border-gray-200 text-dashboard-text-primary hover:bg-gray-50 text-sm font-semibold transition-all hover:scale-[1.02]"

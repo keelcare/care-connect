@@ -1,30 +1,28 @@
-
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Calendar, Sparkles, Phone, Menu, X, LogOut, User, Settings } from 'lucide-react';
+import { LayoutDashboard, Calendar, CalendarCheck, Users, User, Menu, X, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { LogoPill } from './LogoPill';
 import { NavItem } from './NavItem';
 import { NotificationButton } from './NotificationButton';
 import { ProfileChip } from './ProfileChip';
-import { LocationSelector } from './LocationSelector';
 
 const NAV_ITEMS = [
-    { href: '/parent-dashboard', label: 'Home', icon: Home },
-    { href: '/bookings', label: 'My Bookings', icon: Calendar },
-    { href: '/book-service', label: 'Book a Service', icon: Sparkles },
-    { href: '/contact', label: 'Contact', icon: Phone },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/bookings', label: 'Bookings', icon: Calendar },
+    { href: '/dashboard/availability', label: 'Availability', icon: CalendarCheck },
+    { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 
-export function PremiumNavbar() {
+export function NannyNavbar() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const isActive = (href: string) => {
-        if (href === '/parent-dashboard') return pathname === '/parent-dashboard';
+        if (href === '/dashboard') return pathname === '/dashboard';
         return pathname?.startsWith(href);
     };
 
@@ -55,7 +53,7 @@ export function PremiumNavbar() {
 
                     {/* Right: Actions */}
                     <div className="flex items-center gap-3">
-                        <LocationSelector />
+                        {/* Nannies might not need LocationSelector, keeping it aligned with user request for "same navbar" minus irrelevant features */}
                         <NotificationButton />
                         
                         <div className="hidden md:block relative">

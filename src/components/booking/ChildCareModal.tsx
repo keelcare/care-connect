@@ -90,7 +90,6 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
         try {
             const payload = {
-                service_type: 'CHILD_CARE' as const,
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
@@ -126,24 +125,50 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
         return date.toDateString() === today.toDateString();
     };
 
+
+    // Animation Variants
+    const overlayVars = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 },
+        exit: { opacity: 0, transition: { duration: 0.3 } }
+    };
+
+    const modalVars = {
+        hidden: { scale: 0.95, opacity: 0, y: 10 },
+        visible: { 
+            scale: 1, 
+            opacity: 1, 
+            y: 0, 
+            transition: { type: 'spring', damping: 25, stiffness: 300 } 
+        },
+        exit: { 
+            scale: 0.95, 
+            opacity: 0, 
+            y: 10, 
+            transition: { duration: 0.2 } 
+        }
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            variants={overlayVars}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
             onClick={onClose}
         >
             <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                variants={modalVars}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-[40px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                className="bg-white rounded-[32px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative overflow-hidden"
             >
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-[#1F6F5B] to-[#1a5f4f] text-white p-8 rounded-t-[40px] z-10">
+                {/* Header */}
+                <div className="sticky top-0 bg-gradient-to-r from-[#1F6F5B] to-[#1a5f4f] text-white p-8 z-10">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-3xl font-bold font-display mb-2">Child Care Booking</h2>

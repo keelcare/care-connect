@@ -24,6 +24,7 @@ import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
 import { Avatar } from '@/components/ui/avatar';
 import { LocationModal } from '@/components/features/LocationModal';
 import { usePreferences } from '@/hooks/usePreferences';
+import { NannyNavbar } from '@/components/layout/Navbar/NannyNavbar'; // Import Nanny Navbar
 
 export default function DashboardLayout({
   children,
@@ -100,6 +101,27 @@ export default function DashboardLayout({
       return null; 
   }
 
+  // --- NEW LOGIC: If Nanny, render special layout without sidebar ---
+  if (user?.role === 'nanny') {
+      return (
+          <div className="min-h-screen bg-neutral-50">
+              <NannyNavbar />
+              <main className="pt-24 min-h-screen">
+                  <div className="max-w-7xl mx-auto p-4 md:p-8">
+                      {children}
+                  </div>
+              </main>
+              
+               <GeofenceAlertBanner
+                position="top" // Or customized position
+                autoDismiss={true}
+                autoDismissTimeout={15000}
+              />
+          </div>
+      );
+  }
+
+  // --- EXISTING LAYOUT FOR ADMIN (or generic fallback) ---
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Sidebar */}

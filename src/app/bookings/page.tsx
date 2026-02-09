@@ -734,7 +734,7 @@ export default function ParentBookingsPage() {
               return (
                 <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
                   <p className="text-slate-500 mb-6 text-lg">No {activeTab} bookings found.</p>
-                  <Button onClick={() => (window.location.href = '/search')} className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-6 h-auto text-lg">Find Care</Button>
+                  <Button onClick={() => (window.location.href = '/book-service')} className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-6 h-auto text-lg">Find Care</Button>
                 </div>
               );
             }

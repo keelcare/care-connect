@@ -85,7 +85,6 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
             const requirements = `Pet Type: ${formData.petType}. ${formData.specialInstructions}`;
 
             const payload = {
-                service_type: 'PET_CARE' as const,
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),

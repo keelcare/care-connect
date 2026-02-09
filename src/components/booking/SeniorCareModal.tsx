@@ -87,7 +87,6 @@ export default function SeniorCareModal({ onClose }: SeniorCareModalProps) {
             ].filter(Boolean).join('. ');
 
             const payload = {
-                service_type: 'SENIOR_CARE' as const,
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
@@ -111,23 +110,48 @@ export default function SeniorCareModal({ onClose }: SeniorCareModalProps) {
     const formatDate = (date: Date) => date.toISOString().split('T')[0];
     const isToday = (date: Date) => date.toDateString() === new Date().toDateString();
 
+
+    // Animation Variants
+    const overlayVars = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 },
+        exit: { opacity: 0, transition: { duration: 0.3 } }
+    };
+
+    const modalVars = {
+        hidden: { scale: 0.95, opacity: 0, y: 10 },
+        visible: { 
+            scale: 1, 
+            opacity: 1, 
+            y: 0, 
+            transition: { type: 'spring', damping: 25, stiffness: 300 } 
+        },
+        exit: { 
+            scale: 0.95, 
+            opacity: 0, 
+            y: 10, 
+            transition: { duration: 0.2 } 
+        }
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            variants={overlayVars}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
             onClick={onClose}
         >
             <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                variants={modalVars}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-[40px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                className="bg-white rounded-[32px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative overflow-hidden"
             >
-                <div className="sticky top-0 bg-gradient-to-r from-[#E08E79] to-[#d17d6a] text-white p-8 rounded-t-[40px] z-10">
+                <div className="sticky top-0 bg-gradient-to-r from-[#E08E79] to-[#d17d6a] text-white p-8 z-10">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-3xl font-bold font-display mb-2">Senior Care Booking</h2>

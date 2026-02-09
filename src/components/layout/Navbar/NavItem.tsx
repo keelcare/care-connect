@@ -10,11 +10,12 @@ interface NavItemProps {
     label: string;
     isActive: boolean;
     icon?: LucideIcon;
+    className?: string;
 }
 
-export function NavItem({ href, label, isActive, icon: Icon }: NavItemProps) {
+export function NavItem({ href, label, isActive, icon: Icon, className }: NavItemProps) {
     return (
-        <Link href={href} className="relative z-0 group focus:outline-none">
+        <Link href={href} className={cn("relative z-0 group focus:outline-none", className)}>
             {isActive && (
                 <motion.div
                     layoutId="navbar-active-pill"

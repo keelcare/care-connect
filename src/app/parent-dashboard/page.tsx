@@ -11,10 +11,19 @@ import { Spinner } from '@/components/ui/Spinner';
 export default function HomePage() {
     const { user, loading: authLoading } = useAuth();
     const [bookingCount, setBookingCount] = useState<number | null>(null);
+    const [dashboardData, setDashboardData] = useState<{
+        activeSession: any | null;
+        upcomingBookings: any[];
+        notifications: any[];
+    }>({
+        activeSession: null,
+        upcomingBookings: [],
+        notifications: []
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const checkUserStatus = async () => {
+        const fetchDashboardData = async () => {
             if (authLoading) return;
             
             if (!user) {
@@ -23,19 +32,59 @@ export default function HomePage() {
             }
 
             try {
-                // Fetch bookings to determine if user is new or returning
-                const bookings = await api.bookings.getParentBookings();
-                setBookingCount(bookings.length);
+                // Fetch all data in parallel for better performance
+                const [activeResponse, allBookings, notifs] = await Promise.all([
+                    api.bookings.getActive(),
+                    api.bookings.getParentBookings(),
+                    api.enhancedNotifications.list().catch(() => []) // Gracefully handle notification errors
+                ]);
+
+                // Determine booking count for new/returning user logic
+                setBookingCount(allBookings.length);
+
+                // Process active session
+                let currentActive = null;
+                if (activeResponse && activeResponse.length > 0) {
+                    const inProgressBooking = activeResponse.find((b: any) => b.status === 'IN_PROGRESS');
+                    if (inProgressBooking) {
+                        currentActive = inProgressBooking;
+                        // Map nanny details if needed
+                        if (!currentActive.nanny && currentActive.users_bookings_nanny_idTousers) {
+                            currentActive.nanny = currentActive.users_bookings_nanny_idTousers;
+                        }
+                    }
+                }
+
+                // Process upcoming bookings
+                const upcoming = allBookings
+                    .filter(b =>
+                        (b.status === 'CONFIRMED' || b.status === 'REQUESTED') &&
+                        b.id !== currentActive?.id
+                    )
+                    .sort((a, b) => new Date((a as any).date || a.created_at).getTime() - new Date((b as any).date || b.created_at).getTime())
+                    .slice(0, 3)
+                    .map((b: any) => {
+                        if (!b.nanny && b.users_bookings_nanny_idTousers) {
+                            return { ...b, nanny: b.users_bookings_nanny_idTousers };
+                        }
+                        return b;
+                    });
+
+                setDashboardData({
+                    activeSession: currentActive,
+                    upcomingBookings: upcoming,
+                    notifications: notifs || []
+                });
+
             } catch (error) {
-                console.error('Failed to fetch bookings:', error);
-                // Default to new user view on error to be safe, or could show error state
-                setBookingCount(0); 
+                console.error('Failed to fetch dashboard data:', error);
+                setBookingCount(0);
             } finally {
                 setLoading(false);
             }
         };
 
-        checkUserStatus();
+        fetchDashboardData();
     }, [user, authLoading]);
 
     if (authLoading || loading) {
@@ -49,12 +98,19 @@ export default function HomePage() {
     }
 
     // Determine which dashboard to show
-    // Show ReturningUserDashboard if they have any bookings history
     const isNewUser = bookingCount === 0;
 
     return (
         <ParentLayout>
-            {isNewUser ? <NewUserDashboard /> : <ReturningUserDashboard />}
+            {isNewUser ? (
+                <NewUserDashboard />
+            ) : (
+                <ReturningUserDashboard
+                    activeSession={dashboardData.activeSession}
+                    upcomingBookings={dashboardData.upcomingBookings}
+                    notifications={dashboardData.notifications}
+                />
+            )}
         </ParentLayout>
     );
 }

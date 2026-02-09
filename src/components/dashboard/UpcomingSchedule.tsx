@@ -6,9 +6,10 @@ import { Booking } from '@/types/api';
 
 interface UpcomingScheduleProps {
     bookings?: Booking[];
+    userRole?: 'parent' | 'nanny';
 }
 
-export function UpcomingSchedule({ bookings = [] }: UpcomingScheduleProps) {
+export function UpcomingSchedule({ bookings = [], userRole = 'parent' }: UpcomingScheduleProps) {
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return {
@@ -30,7 +31,7 @@ export function UpcomingSchedule({ bookings = [] }: UpcomingScheduleProps) {
         <div className="space-y-4">
              <div className="flex items-center justify-between px-2 mb-2">
                 <h3 className="font-heading font-semibold text-xl text-dashboard-text-primary">Upcoming</h3>
-                <Link href="/dashboard/bookings" className="text-xs font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
+                <Link href={userRole === 'nanny' ? "/dashboard/schedule" : "/bookings"} className="text-xs font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
                     See All
                 </Link>
             </div>
@@ -45,6 +46,18 @@ export function UpcomingSchedule({ bookings = [] }: UpcomingScheduleProps) {
                         // Use any cast to avoid type errors
                         const bookingDate = (booking as any).date || booking.created_at;
                         const { day, month } = formatDate(bookingDate);
+                        
+                        let displayName = 'Booking';
+                        if (userRole === 'nanny') {
+                             displayName = booking.parent?.profiles?.first_name 
+                                ? `${booking.parent.profiles.first_name} ${booking.parent.profiles.last_name || ''}`.trim()
+                                : 'Family Session';
+                        } else {
+                            displayName = booking.nanny?.profiles?.first_name 
+                                ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name || ''}`.trim()
+                                : 'Caregiver Booking';
+                        }
+
                         return (
                             <GlassCard key={booking.id} hoverEffect className="p-4 flex items-center justify-between rounded-[20px]">
                                 <div className="flex items-center gap-4">
@@ -55,9 +68,7 @@ export function UpcomingSchedule({ bookings = [] }: UpcomingScheduleProps) {
                                     
                                     <div>
                                         <h4 className="font-semibold text-dashboard-text-primary text-sm line-clamp-1">
-                                            {booking.nanny?.profiles?.first_name 
-                                                ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name || ''}`
-                                                : 'Caregiver Booking'}
+                                            {displayName}
                                         </h4>
                                         <div className="flex items-center gap-1.5 text-xs text-dashboard-text-secondary mt-1">
                                             <span>

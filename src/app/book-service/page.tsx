@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -75,8 +75,18 @@ const SERVICES = [
 
 export default function BookServicePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const [selectedService, setSelectedService] = useState<ServiceType>(null);
+
+  useEffect(() => {
+    const serviceParam = searchParams.get('service');
+    if (serviceParam) {
+      if (['CHILD_CARE', 'SHADOW_TEACHER', 'SENIOR_CARE'].includes(serviceParam)) {
+        setSelectedService(serviceParam as ServiceType);
+      }
+    }
+  }, [searchParams]);
 
   const handleServiceSelect = (serviceId: ServiceType) => {
     setSelectedService(serviceId);
@@ -84,6 +94,9 @@ export default function BookServicePage() {
 
   const handleCloseModal = () => {
     setSelectedService(null);
+    // Optional: Clear query param on close to avoid reopening on refresh, 
+    // but might not be strictly necessary for this task.
+    // router.replace('/book-service', { scroll: false });
   };
 
   return (
@@ -230,3 +243,4 @@ export default function BookServicePage() {
     </ParentLayout>
   );
 }
+
