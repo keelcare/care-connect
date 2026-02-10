@@ -156,7 +156,7 @@ export default function DirectBookingPage() {
         <p className="text-stone-500 mb-8 max-w-md">
           Direct booking is currently unavailable. Please use our matching service to find the best caregiver for your needs.
         </p>
-
+       
       </div>
     </ParentLayout>
   );
