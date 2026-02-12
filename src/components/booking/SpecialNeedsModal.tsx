@@ -125,6 +125,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             ].filter(Boolean).join('. ');
 
             const payload = {
+                category: 'SN',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
