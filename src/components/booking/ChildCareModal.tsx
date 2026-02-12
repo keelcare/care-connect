@@ -90,6 +90,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
         try {
             const payload = {
+                category: 'CC',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
@@ -135,17 +136,17 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
     const modalVars = {
         hidden: { scale: 0.95, opacity: 0, y: 10 },
-        visible: { 
-            scale: 1, 
-            opacity: 1, 
-            y: 0, 
-            transition: { type: 'spring', damping: 25, stiffness: 300 } 
+        visible: {
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            transition: { type: 'spring', damping: 25, stiffness: 300 }
         },
-        exit: { 
-            scale: 0.95, 
-            opacity: 0, 
-            y: 10, 
-            transition: { duration: 0.2 } 
+        exit: {
+            scale: 0.95,
+            opacity: 0,
+            y: 10,
+            transition: { duration: 0.2 }
         }
     };
 
@@ -218,8 +219,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, date: dateStr })}
                                         className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
-                                                ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
-                                                : 'bg-white border-gray-200 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
+                                            ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
+                                            : 'bg-white border-gray-200 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
                                             }`}
                                     >
                                         <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-green-100' : 'text-gray-500'}`}>
@@ -252,8 +253,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, startTime: time })}
                                         className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
+                                            ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
                                             }`}
                                     >
                                         {time}
@@ -278,8 +279,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, duration: option.value })}
                                         className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
+                                            ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B] hover:bg-[#E5F1EC]'
                                             }`}
                                     >
                                         {option.label}
@@ -304,8 +305,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, numChildren: num })}
                                         className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                                ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B]'
+                                            ? 'bg-[#1F6F5B] text-white border-[#1F6F5B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#1F6F5B]'
                                             }`}
                                     >
                                         {num}

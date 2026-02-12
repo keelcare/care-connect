@@ -87,6 +87,7 @@ export default function SeniorCareModal({ onClose }: SeniorCareModalProps) {
             ].filter(Boolean).join('. ');
 
             const payload = {
+                category: 'EC',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
@@ -120,17 +121,17 @@ export default function SeniorCareModal({ onClose }: SeniorCareModalProps) {
 
     const modalVars = {
         hidden: { scale: 0.95, opacity: 0, y: 10 },
-        visible: { 
-            scale: 1, 
-            opacity: 1, 
-            y: 0, 
-            transition: { type: 'spring', damping: 25, stiffness: 300 } 
+        visible: {
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            transition: { type: 'spring', damping: 25, stiffness: 300 }
         },
-        exit: { 
-            scale: 0.95, 
-            opacity: 0, 
-            y: 10, 
-            transition: { duration: 0.2 } 
+        exit: {
+            scale: 0.95,
+            opacity: 0,
+            y: 10,
+            transition: { duration: 0.2 }
         }
     };
 
