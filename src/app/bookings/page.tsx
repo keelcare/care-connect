@@ -25,6 +25,7 @@ import { usePayment } from '@/hooks/usePayment';
 import { useSocket } from '@/context/SocketProvider';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { CancellationModal } from '@/components/ui/CancellationModal';
+import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 
@@ -58,6 +59,10 @@ export default function ParentBookingsPage() {
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
     null
   );
+
+  // Reschedule Modal State
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+  const [bookingToReschedule, setBookingToReschedule] = useState<Booking | ServiceRequest | null>(null);
 
   // Socket Integration
   const { onNotification, offNotification } = useSocket();
@@ -288,6 +293,36 @@ export default function ParentBookingsPage() {
     }
   };
 
+  const handleReschedule = (booking: Booking | ServiceRequest) => {
+    setBookingToReschedule(booking);
+    setIsRescheduleModalOpen(true);
+  };
+
+  const confirmedReschedule = async (date: string, startTime: string, endTime: string) => {
+    if (!bookingToReschedule) return;
+
+    try {
+      // Find the actual booking ID
+      let bookingId = bookingToReschedule.id;
+
+      // If it's a ServiceRequest, find the associated booking
+      if ('num_children' in bookingToReschedule) {
+        const associatedBooking = bookings.find(b => b.job_id === bookingToReschedule.id || (b as any).request_id === bookingToReschedule.id);
+        if (associatedBooking) {
+          bookingId = associatedBooking.id;
+        }
+      }
+
+      await api.bookings.reschedule(bookingId, { date, startTime, endTime });
+      await fetchData();
+      setIsRescheduleModalOpen(false);
+      setBookingToReschedule(null);
+    } catch (err) {
+      console.error('Failed to reschedule booking:', err);
+      throw err; // Re-throw to let modal handle the error
+    }
+  };
+
   const calculateEndTime = (startTime: string, durationHours: number) => {
     const [hours, minutes] = startTime.split(':').map(Number);
     const date = new Date();
@@ -432,6 +467,17 @@ export default function ParentBookingsPage() {
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-24">
               <h2 className="text-md font-bold text-primary-900 mb-4 font-display uppercase tracking-wider text-sm">Actions</h2>
               <div className="space-y-3">
+                {/* Reschedule Button */}
+                {(['CONFIRMED', 'REQUESTED'].includes(request.status.toUpperCase())) && (
+                  <Button
+                    variant="outline"
+                    className="w-full border-primary-100 text-primary-600 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 rounded-xl"
+                    onClick={() => handleReschedule(request)}
+                    disabled={actionLoading === request.id}
+                  >
+                    Reschedule Booking
+                  </Button>
+                )}
                 {/* Single Cancel Button */}
                 {(['PENDING', 'ASSIGNED', 'REQUESTED', 'CONFIRMED'].includes(request.status.toUpperCase())) && (
                   <Button
@@ -475,6 +521,8 @@ export default function ParentBookingsPage() {
         return 'bg-slate-100 text-slate-700 border border-slate-200';
       case 'CANCELLED':
         return 'bg-red-50 text-red-700 border border-red-100';
+      case 'EXPIRED':
+        return 'bg-amber-50 text-amber-600 border border-amber-200';
       case 'PENDING':
         return 'bg-amber-50 text-amber-700 border border-amber-200';
       case 'REQUESTED':
@@ -657,9 +705,17 @@ export default function ParentBookingsPage() {
   };
 
   const filteredBookings = bookings.filter((booking) => {
+    const isTechnicallyExpired = booking.end_time &&
+      new Date(booking.end_time).getTime() + 2 * 60 * 60 * 1000 < Date.now() &&
+      !['COMPLETED', 'IN_PROGRESS'].includes(booking.status);
+    const showsAsExpired = booking.tags?.includes('noshow') || (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired'));
+
     if (activeTab === 'upcoming') {
       const isUpcomingStatus = ['CONFIRMED', 'IN_PROGRESS', 'PENDING', 'requested', 'REQUESTED'].includes(booking.status);
       if (!isUpcomingStatus) return false;
+
+      // Proactively move to cancelled if expired even if backend hasn't updated status yet
+      if (isTechnicallyExpired && booking.status !== 'IN_PROGRESS') return false;
 
       // Avoid duplication with the "Assignment" cards shown above
       const isAlreadyShownAsAssignment = requests.some(
@@ -669,7 +725,10 @@ export default function ParentBookingsPage() {
       return !isAlreadyShownAsAssignment;
     }
     if (activeTab === 'completed') return booking.status === 'COMPLETED';
-    if (activeTab === 'cancelled') return booking.status === 'CANCELLED';
+    if (activeTab === 'cancelled') {
+      // Include explicitly cancelled ones AND technically expired ones
+      return booking.status === 'CANCELLED' || (isTechnicallyExpired && booking.status !== 'COMPLETED' && booking.status !== 'IN_PROGRESS');
+    }
     return true;
   });
 
@@ -796,6 +855,10 @@ export default function ParentBookingsPage() {
 
                 {filteredBookings.map((booking) => {
                   const { day, month } = formatDate(booking.start_time);
+                  const isTechnicallyExpired = booking.end_time &&
+                    new Date(booking.end_time).getTime() + 2 * 60 * 60 * 1000 < Date.now() &&
+                    !['COMPLETED', 'IN_PROGRESS'].includes(booking.status);
+
                   return (
                     <div
                       key={booking.id}
@@ -824,9 +887,27 @@ export default function ParentBookingsPage() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
-                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusBadgeStyles(booking.status)}`}>
-                          {booking.status.toLowerCase().replace('_', ' ')}
-                        </span>
+                        <div className="flex flex-col items-end gap-2">
+                          <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${booking.tags?.includes('noshow') || (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired')) || isTechnicallyExpired
+                            ? getStatusBadgeStyles('EXPIRED')
+                            : getStatusBadgeStyles(booking.status)
+                            }`}>
+                            {booking.tags?.includes('noshow')
+                              ? 'no show'
+                              : (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired')) || isTechnicallyExpired
+                                ? 'expired'
+                                : booking.status.toLowerCase().replace('_', ' ')}
+                          </span>
+                          {(booking.status === 'CANCELLED' && booking.cancellation_reason) ? (
+                            <p className="text-[10px] text-slate-400 italic max-w-[200px] text-right leading-tight">
+                              {booking.cancellation_reason}
+                            </p>
+                          ) : (booking.tags?.includes('noshow') || isTechnicallyExpired) && (
+                            <p className="text-[10px] text-amber-500 italic max-w-[200px] text-right leading-tight">
+                              {booking.tags?.includes('noshow') ? 'Patient No Show' : 'Expired (No Show)'}
+                            </p>
+                          )}
+                        </div>
                         <BookingActionButtons
                           booking={booking}
                           actionLoading={actionLoading}
@@ -878,6 +959,38 @@ export default function ParentBookingsPage() {
               />
             ) : null;
           })()
+        )}
+
+        {bookingToReschedule && (
+          <RescheduleModal
+            isOpen={isRescheduleModalOpen}
+            onClose={() => setIsRescheduleModalOpen(false)}
+            onConfirm={confirmedReschedule}
+            currentDate={(() => {
+              const b: any = bookingToReschedule;
+              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              if (booking && booking.start_time) {
+                return new Date(booking.start_time).toISOString().split('T')[0];
+              }
+              return (b as any).date || new Date().toISOString().split('T')[0];
+            })()}
+            currentStartTime={(() => {
+              const b: any = bookingToReschedule;
+              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              if (booking && booking.start_time) {
+                return formatTime(booking.start_time);
+              }
+              return (b as any).start_time || '09:00';
+            })()}
+            currentEndTime={(() => {
+              const b: any = bookingToReschedule;
+              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              if (booking && booking.end_time) {
+                return formatTime(booking.end_time);
+              }
+              return '17:00';
+            })()}
+          />
         )}
       </div>
     </ParentLayout>

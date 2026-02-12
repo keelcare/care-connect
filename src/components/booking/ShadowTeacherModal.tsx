@@ -163,7 +163,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
             const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === formData.planType);
 
             const payload = {
-                service_type: 'SHADOW_TEACHER' as const,
+                category: 'ST',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
@@ -269,8 +269,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, planType: plan.id })}
                                         className={`relative p-6 rounded-2xl border-2 transition-all text-left ${isSelected
-                                                ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B] shadow-xl'
-                                                : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B] shadow-xl'
+                                            : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
                                             }`}
                                     >
                                         {plan.popular && (
@@ -318,8 +318,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, date: dateStr })}
                                         className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
-                                                ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                                : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
+                                            : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
                                             }`}
                                     >
                                         <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-gray-800' : 'text-gray-500'}`}>
@@ -352,8 +352,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, startTime: time })}
                                         className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
                                             }`}
                                     >
                                         {time}
@@ -378,8 +378,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, duration: option.value })}
                                         className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
                                             }`}
                                     >
                                         {option.label}
@@ -404,8 +404,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, numStudents: num })}
                                         className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                                ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B]'
+                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B]'
                                             }`}
                                     >
                                         {num}

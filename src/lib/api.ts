@@ -161,10 +161,13 @@ export async function fetchApi<T>(
         window.location.pathname !== '/auth/login' &&
         !window.location.pathname.startsWith('/auth/')
       ) {
+        console.warn('Redirecting to login due to 401/expired session on:', endpoint);
         window.location.href = '/auth/login';
       }
-      throw new Error('Session expired');
+      console.log(`[API] 401 Unauthorized on ${endpoint}. SkipRefresh: ${skipRefresh}. skipRedirect: ${skipRedirect}`);
+      throw new Error(data.message || 'Session expired');
     }
+    console.error(`[API Error] ${response.status} on ${endpoint}:`, data.message);
     throw new Error(data.message || 'An error occurred');
   }
 
@@ -275,6 +278,19 @@ export const api = {
       fetchApi<Booking>(`/bookings/${id}/complete`, { method: 'PUT' }),
     cancel: (id: string, body: CancelBookingDto) =>
       fetchApi<Booking>(`/bookings/${id}/cancel`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      }),
+    checkExpired: () =>
+      fetchApi<{ message: string; expired_count: number }>(
+        '/bookings/check-expired',
+        { method: 'POST' }
+      ),
+    reschedule: (
+      id: string,
+      body: { date: string; startTime: string; endTime: string }
+    ) =>
+      fetchApi<Booking>(`/bookings/${id}/reschedule`, {
         method: 'PUT',
         body: JSON.stringify(body),
       }),

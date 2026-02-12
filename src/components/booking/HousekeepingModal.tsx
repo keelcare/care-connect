@@ -98,7 +98,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
             const requirements = `Services: ${formData.serviceTypes.join(', ')}. ${formData.specialInstructions}`;
 
             const payload = {
-                service_type: 'HOUSEKEEPING' as const,
+                category: 'HK',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),

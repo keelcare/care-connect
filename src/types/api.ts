@@ -230,6 +230,7 @@ export interface ServiceRequest {
   total_plan_amount?: number;
   total_amount?: number;
   cancellation_reason?: string;
+  category: string;
   created_at: string;
   updated_at: string;
   parent?: User;
@@ -237,12 +238,12 @@ export interface ServiceRequest {
 }
 
 export interface CreateServiceRequestDto {
-  service_type?: ServiceType;
   date: string;
   start_time: string;
   duration_hours: number;
   num_children: number;
   children_ages: number[];
+  category: string;
   special_requirements?: string;
   max_hourly_rate?: number;
   required_skills?: string[];
@@ -279,6 +280,7 @@ export interface Booking {
   cancellation_reason?: string;
   cancellation_fee?: number;
   cancellation_fee_status?: 'pending' | 'paid' | 'waived';
+  tags?: string[];
   created_at: string;
   updated_at: string;
   job?: Job;

@@ -87,7 +87,7 @@ export default function SeniorCareModal({ onClose }: SeniorCareModalProps) {
             ].filter(Boolean).join('. ');
 
             const payload = {
-                service_type: 'SENIOR_CARE' as const,
+                category: 'EC',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
