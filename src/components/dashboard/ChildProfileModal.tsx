@@ -41,13 +41,13 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
         <motion.div
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           exit={{ opacity: 0 }}
-           className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-           onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -60,7 +60,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
             <h2 className="text-2xl font-display font-bold text-[#1B3022]">
               {initialData ? 'Edit Child Profile' : 'Add Child Profile'}
             </h2>
-            <button 
+            <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
@@ -75,7 +75,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                 <span className="w-8 h-8 rounded-full bg-[#E5F1EC] flex items-center justify-center text-[#1F6F5B] text-sm">1</span>
                 Basic Information
               </h3>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
@@ -133,16 +133,15 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                 <span className="w-8 h-8 rounded-full bg-[#E5F1EC] flex items-center justify-center text-[#1F6F5B] text-sm">2</span>
                 Care Profile Type
               </h3>
-              
+
               <div className="grid md:grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => updateField('profile_type', 'STANDARD')}
-                  className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                    formData.profile_type === 'STANDARD'
+                  className={`p-4 rounded-2xl border-2 text-left transition-all ${formData.profile_type === 'STANDARD'
                       ? 'border-[#1F6F5B] bg-[#F2F7F4]'
                       : 'border-gray-100 hover:border-gray-200'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <User className={`w-5 h-5 ${formData.profile_type === 'STANDARD' ? 'text-[#1F6F5B]' : 'text-gray-400'}`} />
@@ -154,11 +153,10 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                 <button
                   type="button"
                   onClick={() => updateField('profile_type', 'SPECIAL_NEEDS')}
-                  className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                    formData.profile_type === 'SPECIAL_NEEDS'
+                  className={`p-4 rounded-2xl border-2 text-left transition-all ${formData.profile_type === 'SPECIAL_NEEDS'
                       ? 'border-[#CC7A68] bg-[#FDF3F1]'
                       : 'border-gray-100 hover:border-gray-200'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <Heart className={`w-5 h-5 ${formData.profile_type === 'SPECIAL_NEEDS' ? 'text-[#CC7A68]' : 'text-gray-400'}`} />
@@ -178,24 +176,24 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-2">Allergies (Optional)</label>
-                   <input
-                     type="text"
-                     placeholder="e.g. Peanuts, Dairy"
-                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1F6F5B] outline-none"
-                     onChange={e => updateField('allergies', e.target.value.split(',').map(s => s.trim()))}
-                     value={formData.allergies?.join(', ') || ''}
-                   />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Allergies (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Peanuts, Dairy"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1F6F5B] outline-none"
+                    onChange={e => updateField('allergies', e.target.value.split(',').map(s => s.trim()))}
+                    value={formData.allergies?.join(', ') || ''}
+                  />
                 </div>
                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-2">Dietary Restrictions (Optional)</label>
-                   <input
-                     type="text"
-                     placeholder="e.g. Vegetarian, Halal"
-                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1F6F5B] outline-none"
-                     onChange={e => updateField('dietary_restrictions', e.target.value.split(',').map(s => s.trim()))}
-                      value={formData.dietary_restrictions?.join(', ') || ''}
-                   />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dietary Restrictions (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Vegetarian, Halal"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1F6F5B] outline-none"
+                    onChange={e => updateField('dietary_restrictions', e.target.value.split(',').map(s => s.trim()))}
+                    value={formData.dietary_restrictions?.join(', ') || ''}
+                  />
                 </div>
               </div>
 
@@ -205,7 +203,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                   animate={{ opacity: 1, height: 'auto' }}
                   className="space-y-6 pt-6 border-t border-gray-100"
                 >
-                   <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Diagnosis / Conditions</label>
                     <input
                       type="text"
@@ -227,47 +225,47 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                     />
                   </div>
 
-                   <div className="bg-[#FDF3F1] p-6 rounded-2xl space-y-4">
-                      <h4 className="font-semibold text-[#CC7A68] flex items-center gap-2">
-                        <School className="w-5 h-5" />
-                        School Details (For Shadow Teacher)
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          placeholder="School Name"
-                          className="w-full px-4 py-2 rounded-lg border-transparent focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 outline-none"
-                           value={formData.school_details?.name || ''}
-                           onChange={e => updateField('school_details', { ...formData.school_details, name: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Class / Grade"
-                          className="w-full px-4 py-2 rounded-lg border-transparent focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 outline-none"
-                           value={formData.school_details?.grade || ''}
-                           onChange={e => updateField('school_details', { ...formData.school_details, grade: e.target.value })}
-                        />
-                      </div>
-                   </div>
+                  <div className="bg-[#FDF3F1] p-6 rounded-2xl space-y-4">
+                    <h4 className="font-semibold text-[#CC7A68] flex items-center gap-2">
+                      <School className="w-5 h-5" />
+                      School Details (For Shadow Teacher)
+                    </h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <input
+                        type="text"
+                        placeholder="School Name"
+                        className="w-full px-4 py-2 rounded-lg border-transparent focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 outline-none"
+                        value={formData.school_details?.name || ''}
+                        onChange={e => updateField('school_details', { ...formData.school_details, name: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Class / Grade"
+                        className="w-full px-4 py-2 rounded-lg border-transparent focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 outline-none"
+                        value={formData.school_details?.grade || ''}
+                        onChange={e => updateField('school_details', { ...formData.school_details, grade: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </div>
 
             {/* Footer Actions */}
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
-               <button
-                 type="button"
-                 onClick={onClose}
-                 className="px-6 py-3 font-semibold text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
-               >
-                 Cancel
-               </button>
-               <button
-                 type="submit"
-                 className="px-8 py-3 bg-[#1B3022] hover:bg-[#15231b] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
-               >
-                 Save Profile
-               </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-3 font-semibold text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-8 py-3 bg-[#1B3022] hover:bg-[#15231b] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                Save Profile
+              </button>
             </div>
           </form>
         </motion.div>
