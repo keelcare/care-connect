@@ -75,9 +75,9 @@ export const FeaturedServices: React.FC = () => {
                  </div>
             </div>
 
-            {/* 4. "Senior Care" Block (Terracotta) - Reference: Red Block */}
+            {/* 4. "Special Needs" Block (Terracotta) - Reference: Red Block */}
             <div 
-                onClick={() => router.push('/browse?service=Senior Care')}
+                onClick={() => router.push('/browse?service=Special Needs')}
                 className="lg:col-span-4 bg-wellness-terracotta rounded-[40px] p-8 min-h-[300px] relative overflow-hidden cursor-pointer group hover:scale-[1.02] transition-transform"
             >
                 <div className="relative z-10 h-full flex flex-col justify-between text-white">
@@ -85,8 +85,8 @@ export const FeaturedServices: React.FC = () => {
                         <Heart size={24} fill="currentColor" />
                     </div>
                     <div>
-                        <h3 className="text-3xl font-heading mb-2">Senior Care</h3>
-                        <p className="text-white/90 font-medium"> compassionate companionship</p>
+                        <h3 className="text-3xl font-heading mb-2">Special Needs</h3>
+                        <p className="text-white/90 font-medium"> Specialized care & support</p>
                     </div>
                 </div>
                  {/* Diamond decor */}

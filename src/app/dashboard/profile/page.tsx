@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, ShieldCheck, Edit } from 'lucide-react';
+import { MapPin, ShieldCheck, Edit, User, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
@@ -173,7 +173,33 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          </div>
+          
+            {/* Family Section - Visible to all parents */}
+            <div className="mt-8 pt-8 border-t border-neutral-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-primary-900">My Family</h3>
+                <Link href="/parent-dashboard/family">
+                  <Button variant="outline" className="rounded-xl">Manage Family</Button>
+                </Link>
+              </div>
+              <div 
+                className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 flex items-center justify-between group cursor-pointer hover:border-primary-200 transition-all" 
+                onClick={() => window.location.href = '/dashboard/family'}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-primary-900">
+                    <User size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-primary-900">Family Profiles</h4>
+                    <p className="text-sm text-neutral-500">Manage child profiles and care preferences</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-neutral-400 group-hover:text-primary-600 transition-colors" />
+              </div>
+            </div>
+            
+            </div>
 
           {user.role === 'nanny' && (
             <div className="space-y-8">

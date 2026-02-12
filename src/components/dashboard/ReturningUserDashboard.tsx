@@ -39,28 +39,28 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
     } : null;
 
     return (
-        <div className="min-h-screen pb-12">
+        <div className="min-h-screen pb-10">
             <GreetingHero
                 userName={user?.profiles?.first_name || 'Parent'}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Main Content Column */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6">
                     {/* Current Session */}
                     <section>
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <h2 className="text-xl font-heading font-semibold text-dashboard-text-primary">Current Session</h2>
+                        <div className="flex items-center justify-between mb-3 px-1">
+                            <h2 className="text-lg font-heading font-semibold text-dashboard-text-primary">Current Session</h2>
                         </div>
                         <SessionCard session={activeSession} />
                     </section>
 
                     {/* Quick Actions */}
                     <section>
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <h2 className="text-xl font-heading font-semibold text-dashboard-text-primary">Quick Actions</h2>
+                        <div className="flex items-center justify-between mb-3 px-1">
+                            <h2 className="text-lg font-heading font-semibold text-dashboard-text-primary">Quick Actions</h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <QuickActionCard
                                 title="Book Caregiver"
                                 subtitle="Find a specialist for next week"
@@ -82,15 +82,15 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
                 </div>
 
                 {/* Right Sidebar Column */}
-                <div className="lg:col-span-1 space-y-6">
+                <div className="lg:col-span-1 space-y-5">
                     <UpcomingSchedule bookings={upcomingBookings} />
 
                     <ActivityPanel activities={notifications} />
 
                     {/* Additional widgets can go here */}
-                    <div className="bg-gradient-to-br from-dashboard-success/20 to-dashboard-mint rounded-[24px] p-6 border border-dashboard-success/10">
-                        <h3 className="font-heading font-bold text-dashboard-childcare-teal text-lg mb-2">Did you know?</h3>
-                        <p className="text-dashboard-childcare-teal/80 text-sm leading-relaxed">
+                    <div className="bg-gradient-to-br from-dashboard-success/20 to-dashboard-mint rounded-[20px] p-5 border border-dashboard-success/10">
+                        <h3 className="font-heading font-bold text-dashboard-childcare-teal text-base mb-1.5">Did you know?</h3>
+                        <p className="text-dashboard-childcare-teal/80 text-[13px] leading-relaxed">
                             Consistent routines help children feel secure. Try booking the same caregiver for recurring sessions.
                         </p>
                     </div>

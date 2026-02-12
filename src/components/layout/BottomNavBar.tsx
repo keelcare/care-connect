@@ -10,6 +10,7 @@ const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book', icon: Sparkles },
+    { href: '/parent-dashboard/family', label: 'My Family', icon: User },
     { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 
@@ -40,19 +41,19 @@ export default function BottomNavBar() {
                                 >
                                     <div className="relative">
                                         <Icon
-                                            className={`w-6 h-6 transition-colors ${active ? 'text-[#1F6F5B]' : 'text-gray-400'
+                                            className={`w-6 h-6 transition-colors ${active ? 'text-[#1B3022]' : 'text-gray-400'
                                                 }`}
                                         />
                                         {active && (
                                             <motion.div
                                                 layoutId="activeBottomTab"
-                                                className="absolute -inset-2 bg-[#E5F1EC] rounded-full -z-10"
+                                                className="absolute -inset-2 bg-[#F2F7F4] rounded-full -z-10"
                                                 transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
                                     </div>
                                     <span
-                                        className={`text-xs font-medium transition-colors ${active ? 'text-[#1F6F5B]' : 'text-gray-500'
+                                        className={`text-xs font-medium transition-colors ${active ? 'text-[#1B3022]' : 'text-gray-500'
                                             }`}
                                     >
                                         {item.label}

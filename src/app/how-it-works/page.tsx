@@ -45,8 +45,8 @@ const ProfileAnimation = () => (
       transition={{ duration: 0.5 }}
       className="flex items-center gap-4 mb-6 border-b border-gray-100 pb-4"
     >
-      <div className="w-12 h-12 bg-[#E5F1EC] rounded-full flex items-center justify-center">
-        <UserCheck className="w-6 h-6 text-[#1F6F5B]" />
+      <div className="w-12 h-12 bg-[#F2F7F4] rounded-full flex items-center justify-center">
+        <UserCheck className="w-6 h-6 text-[#1B3022]" />
       </div>
       <div>
         <div className="h-4 w-32 bg-gray-200 rounded mb-2" />
@@ -69,7 +69,7 @@ const ProfileAnimation = () => (
         transition={{ delay: 0.8, type: "spring" }}
         className="flex items-center gap-2 mt-4"
       >
-        <div className="w-5 h-5 bg-[#1F6F5B] rounded flex items-center justify-center">
+        <div className="w-5 h-5 bg-[#1B3022] rounded flex items-center justify-center">
           <CheckCircle className="w-3 h-3 text-white" />
         </div>
         <div className="h-3 w-40 bg-gray-100 rounded" />
@@ -80,7 +80,7 @@ const ProfileAnimation = () => (
     <motion.div
       animate={{ y: [0, -10, 0] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      className="absolute top-4 right-4 bg-[#F1B92B] text-white text-xs px-2 py-1 rounded-full"
+      className="absolute top-4 right-4 bg-[#CC7A68] text-white text-xs px-2 py-1 rounded-full"
     >
       Parent
     </motion.div>
@@ -101,9 +101,9 @@ const SearchAnimation = () => (
 
     <div className="space-y-3">
       {[
-        { color: "bg-[#E08E79]", name: "Sarah" },
-        { color: "bg-[#1F6F5B]", name: "Mike" },
-        { color: "bg-[#F1B92B]", name: "Emma" }
+        { color: "bg-[#CC7A68]", name: "Sarah" },
+        { color: "bg-[#1B3022]", name: "Mike" },
+        { color: "bg-[#8DA399]", name: "Emma" }
       ].map((item, i) => (
         <motion.div
           key={i}
@@ -118,7 +118,7 @@ const SearchAnimation = () => (
             <div className="h-3 w-24 bg-gray-200 rounded mb-1" />
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map(s => (
-                <Star key={s} className="w-2 h-2 text-[#F1B92B] fill-current" />
+                <Star key={s} className="w-2 h-2 text-[#CC7A68] fill-current" />
               ))}
             </div>
           </div>
@@ -133,9 +133,9 @@ const SearchAnimation = () => (
 const MessageAnimation = () => (
   <div className="relative w-full aspect-square max-w-sm mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col">
     <div className="bg-[#F8F9FA] p-4 border-b border-gray-100 flex items-center gap-3">
-      <div className="w-8 h-8 rounded-full bg-[#E08E79]" />
+      <div className="w-8 h-8 rounded-full bg-[#CC7A68]" />
       <div className="h-3 w-24 bg-gray-200 rounded" />
-      <div className="w-2 h-2 bg-[#1F6F5B] rounded-full ml-auto" />
+      <div className="w-2 h-2 bg-[#1B3022] rounded-full ml-auto" />
     </div>
     <div className="flex-1 p-4 space-y-4">
       <motion.div
@@ -151,7 +151,7 @@ const MessageAnimation = () => (
         initial={{ scale: 0, originX: 1 }}
         whileInView={{ scale: 1 }}
         transition={{ delay: 0.8 }}
-        className="bg-[#1F6F5B] text-white rounded-2xl rounded-tr-none p-3 max-w-[80%] ml-auto"
+        className="bg-[#1B3022] text-white rounded-2xl rounded-tr-none p-3 max-w-[80%] ml-auto"
       >
         <div className="h-2 w-full bg-white/30 rounded mb-2" />
         <div className="h-2 w-1/2 bg-white/30 rounded" />
@@ -176,9 +176,9 @@ const BookAnimation = () => (
     <motion.div
       animate={{ scale: [1, 1.1, 1] }}
       transition={{ duration: 2, repeat: Infinity }}
-      className="w-16 h-16 bg-[#E5F1EC] rounded-2xl flex items-center justify-center mb-6"
+      className="w-16 h-16 bg-[#F2F7F4] rounded-2xl flex items-center justify-center mb-6"
     >
-      <Calendar className="w-8 h-8 text-[#1F6F5B]" />
+      <Calendar className="w-8 h-8 text-[#1B3022]" />
     </motion.div>
     <div className="w-full space-y-3 mb-6">
       <div className="flex justify-between items-center text-sm text-gray-500">
@@ -208,7 +208,7 @@ const BookAnimation = () => (
       initial={{ scale: 0 }}
       whileInView={{ scale: 1 }}
       transition={{ delay: 0.5, type: 'spring' }}
-      className="absolute -top-4 -right-4 w-12 h-12 bg-[#1F6F5B] rounded-full flex items-center justify-center shadow-lg border-4 border-white"
+      className="absolute -top-4 -right-4 w-12 h-12 bg-[#1B3022] rounded-full flex items-center justify-center shadow-lg border-4 border-white"
     >
       <CheckCircle className="w-6 h-6 text-white" />
     </motion.div>
@@ -222,21 +222,21 @@ export default function HowItWorksPage() {
       title: "Create Your Profile",
       desc: "Sign up in minutes. Tell us about your family's needs, preferences, and schedule.",
       Animation: ProfileAnimation,
-      color: "bg-[#F1B92B]"
+      color: "bg-[#8DA399]"
     },
     {
       id: "02",
       title: "Browse & Connect",
       desc: "Filter through verified caregivers, read reviews, and view detailed profiles.",
       Animation: SearchAnimation,
-      color: "bg-[#E08E79]"
+      color: "bg-[#CC7A68]"
     },
     {
       id: "03",
       title: "Chat & Interview",
       desc: "Message candidates safe & securely. Schedule interviews to find the perfect match.",
       Animation: MessageAnimation,
-      color: "bg-[#1F6F5B]"
+      color: "bg-[#1B3022]"
     },
     {
       id: "04",
@@ -258,7 +258,7 @@ export default function HowItWorksPage() {
             className="text-5xl md:text-7xl font-bold text-[#0F172A] mb-6 font-display"
           >
             Simple. Secure. <br />
-            <span className="text-[#E08E79]">Stress-free.</span>
+            <span className="text-[#CC7A68]">Stress-free.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -296,8 +296,8 @@ export default function HowItWorksPage() {
                 <ul className="space-y-3">
                   {[1, 2, 3].map((_, i) => (
                     <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <div className="w-5 h-5 rounded-full bg-[#E5F1EC] flex items-center justify-center">
-                        <CheckCircle className="w-3 h-3 text-[#1F6F5B]" />
+                      <div className="w-5 h-5 rounded-full bg-[#F2F7F4] flex items-center justify-center">
+                        <CheckCircle className="w-3 h-3 text-[#1B3022]" />
                       </div>
                       <span className="font-medium">
                         {index === 0 && ["Quick signup process", "Detailed preferences", "Personalized matches"][i]}
@@ -326,7 +326,7 @@ export default function HowItWorksPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          className="max-w-4xl mx-auto bg-[#E08E79] rounded-[40px] p-12 text-center text-white mt-32 relative overflow-hidden"
+          className="max-w-4xl mx-auto bg-[#CC7A68] rounded-[40px] p-12 text-center text-white mt-32 relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 p-12 opacity-10">
             <Sparkles size={200} />
@@ -339,7 +339,7 @@ export default function HowItWorksPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <Link href="/auth/signup">
-              <button className="bg-white text-[#E08E79] px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-all shadow-lg hover:scale-105">
+              <button className="bg-white text-[#CC7A68] px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-all shadow-lg hover:scale-105">
                 Get Started Now
               </button>
             </Link>

@@ -16,16 +16,16 @@ export function GreetingHero({ userName, carePlanUpdate }: GreetingHeroProps) {
     };
 
     return (
-        <section className="relative mb-8 pt-4">
+        <section className="relative mb-fluid-sm pt-3">
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-5xl md:text-6xl font-display font-medium text-dashboard-accent-start mb-3 tracking-tight">
+                <h1 className="text-fluid-5xl font-display font-medium text-dashboard-accent-start mb-2 tracking-tight">
                     {getGreeting()}, {userName}
                 </h1>
-                <p className="text-dashboard-text-secondary text-lg font-body font-medium antialiased">
+                <p className="text-dashboard-text-secondary text-fluid-base font-body font-medium antialiased">
                     {carePlanUpdate || "Here's the latest update on your care plan."}
                 </p>
             </motion.div>

@@ -9,7 +9,7 @@ import { Footer } from './Footer';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-[#F8F9FA] selection:bg-[#E08E79] selection:text-white font-sans">
+    <div className="min-h-screen bg-[#F9F7F2] selection:bg-[#CC7A68] selection:text-white font-sans">
       <Navbar />
       <main>
         <Hero />

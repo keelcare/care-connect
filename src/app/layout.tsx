@@ -70,7 +70,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/favorites');
 
   return (
-    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-gray-50 text-gray-900`}>
+    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-[#F9F7F2] text-gray-900`}>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
@@ -104,7 +104,11 @@ export default function RootLayout({
         <title>Keel - Find Trusted Caregivers</title>
         <meta
           name="description"
-          content="Connect with trusted caregivers for child care, senior care, pet care, and more."
+          content="Connect with trusted local caregivers for child care, special needs support, and housekeeping. Verified professionals, secure booking, and peace of mind."
+        />
+        <meta
+          name="keywords"
+          content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <link rel="icon" href="/logo.jpeg" />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

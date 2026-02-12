@@ -80,10 +80,10 @@ export default function DashboardLayout({
     }
   };
 
-  // Redirect parents to /home if they try to access /dashboard
+  // Redirect parents to /parent-dashboard if they try to access /dashboard
   useEffect(() => {
     if (!loading && user && user.role !== 'nanny' && user.role !== 'admin') {
-      router.push('/home');
+      router.push('/parent-dashboard');
     }
   }, [user, loading, router]);
 

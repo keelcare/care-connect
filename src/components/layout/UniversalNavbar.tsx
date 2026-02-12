@@ -54,7 +54,7 @@ export default function UniversalNavbar() {
                         <div className="w-10 h-10 bg-[#F1F5F9] rounded-full flex items-center justify-center group-hover:bg-[#E2E8F0] transition-colors">
                             <img src="/logo.svg" alt="Keel Logo" className="h-6 w-auto" />
                         </div>
-                        <span className="text-xl font-bold font-display text-[#0F172A] tracking-tight hidden sm:block">
+                        <span className="text-xl font-bold font-display text-[#1B3022] tracking-tight hidden sm:block">
                             Keel
                         </span>
                     </Link>
@@ -69,8 +69,8 @@ export default function UniversalNavbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={`relative px-4 py-2 rounded-full font-medium text-sm transition-all ${active
-                                        ? 'text-[#1F6F5B] bg-[#E5F1EC]'
-                                        : 'text-gray-600 hover:text-[#0F172A] hover:bg-gray-50'
+                                        ? 'text-[#1B3022] bg-[#F2F7F4]'
+                                        : 'text-gray-600 hover:text-[#1B3022] hover:bg-gray-50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export default function UniversalNavbar() {
                                     {active && (
                                         <motion.div
                                             layoutId="activeTab"
-                                            className="absolute inset-0 bg-[#E5F1EC] rounded-full -z-10"
+                                            className="absolute inset-0 bg-[#F2F7F4] rounded-full -z-10"
                                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                         />
                                     )}
@@ -98,7 +98,7 @@ export default function UniversalNavbar() {
                         >
                             <Bell className="w-5 h-5 text-gray-600" />
                             {/* Notification badge */}
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-[#E08E79] rounded-full" />
+                            <span className="absolute top-1 right-1 w-2 h-2 bg-[#CC7A68] rounded-full" />
                         </Link>
 
                         {/* Profile Dropdown */}
@@ -107,7 +107,7 @@ export default function UniversalNavbar() {
                                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1F6F5B] to-[#E08E79] flex items-center justify-center text-white font-bold text-sm">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1B3022] to-[#CC7A68] flex items-center justify-center text-white font-bold text-sm">
                                     {user?.profiles?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                                 </div>
                                 <ChevronDown
@@ -135,7 +135,7 @@ export default function UniversalNavbar() {
                                         >
                                             {/* User Info */}
                                             <div className="px-4 py-3 border-b border-gray-100">
-                                                <p className="font-semibold text-[#0F172A] text-sm">
+                                                <p className="font-semibold text-[#1B3022] text-sm">
                                                     {user?.profiles?.first_name} {user?.profiles?.last_name}
                                                 </p>
                                                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
@@ -204,7 +204,7 @@ export default function UniversalNavbar() {
                                         href={item.href}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all ${active
-                                            ? 'text-[#1F6F5B] bg-[#E5F1EC] font-semibold'
+                                            ? 'text-[#1B3022] bg-[#F2F7F4] font-semibold'
                                             : 'text-gray-600 hover:bg-gray-50'
                                             }`}
                                     >

@@ -32,36 +32,36 @@ export function ActivityPanel({ activities = [] }: ActivityPanelProps) {
 
     return (
         <>
-            <div className="bg-gradient-to-br from-dashboard-accent-start to-dashboard-accent-end rounded-[32px] p-8 text-white shadow-xl relative overflow-hidden h-[400px] flex flex-col">
+            <div className="@container bg-gradient-to-br from-dashboard-accent-start to-dashboard-accent-end rounded-3xl p-fluid-sm text-white shadow-xl relative overflow-hidden h-[21.25rem] flex flex-col">
                 {/* Decorative circles */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-                <div className="flex items-center justify-between mb-6 relative z-10">
-                    <h3 className="font-heading font-semibold text-xl">Recent Activity</h3>
+                <div className="flex items-center justify-between mb-5 relative z-10">
+                    <h3 className="font-heading font-semibold text-fluid-lg">Recent Activity</h3>
                     {activities.length > 0 && (
-                        <div className="w-2 h-2 rounded-full bg-dashboard-success animate-pulse" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-dashboard-success animate-pulse" />
                     )}
                 </div>
 
-                <div className="space-y-6 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar max-h-[300px]">
+                <div className="space-y-fluid-xs relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar max-h-[16rem]">
                     {activities.length > 0 && (
-                        <div className="absolute left-[19px] top-3 bottom-3 w-0.5 bg-white/10" />
+                        <div className="absolute left-[17px] top-3 bottom-3 w-0.5 bg-white/10" />
                     )}
 
                     {activities.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-40 text-white/60">
-                            <Bell className="w-8 h-8 mb-2 opacity-50" />
-                            <p className="text-sm">No recent activity</p>
+                            <Bell className="w-7 h-7 mb-2 opacity-50" />
+                            <p className="text-fluid-sm">No recent activity</p>
                         </div>
                     ) : (
                         activities.slice(0, 5).map((activity) => (
-                            <div key={activity.id} className="flex gap-4 relative">
-                                <div className={cn("relative z-10 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 text-white")}>
-                                    {activity.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                            <div key={activity.id} className="flex gap-fluid-xs relative">
+                                <div className={cn("relative z-10 w-9 h-9 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 text-white")}>
+                                    {activity.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
                                 </div>
-                                <div className="pt-2">
-                                    <p className="font-medium text-white/90 text-sm">{activity.message}</p>
-                                    <p className="text-white/50 text-xs mt-0.5 flex items-center gap-1">
+                                <div className="pt-1.5">
+                                    <p className="font-medium text-white/90 text-fluid-sm">{activity.message}</p>
+                                    <p className="text-white/50 text-[11px] mt-0.5 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
                                         {formatTimeAgo(activity.created_at)}
                                     </p>

@@ -246,11 +246,11 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
             >
                 {/* Header */}
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-[#F1B92B] to-[#d9a526] text-[#0F172A] p-8 z-10">
+                <div className="sticky top-0 bg-gradient-to-r from-[#8DA399] to-[#7a8f86] text-white p-8 z-10">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-3xl font-bold font-display mb-2">Shadow Teacher Booking</h2>
-                            <p className="text-gray-800 font-body">Specialized educational support with flexible plans</p>
+                            <p className="text-white/90 font-body">Specialized educational support with flexible plans</p>
                         </div>
                         <button
                             onClick={onClose}
@@ -283,7 +283,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Subscription Plan Selection */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="w-5 h-5 text-[#F1B92B]" />
+                            <Sparkles className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Choose Your Plan</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -295,19 +295,19 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, planType: plan.id })}
                                         className={`relative p-6 rounded-2xl border-2 transition-all text-left ${isSelected
-                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B] shadow-xl'
-                                            : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                                ? 'bg-[#8DA399] text-white border-[#8DA399] shadow-xl'
+                                                : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {plan.popular && (
-                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#E08E79] text-white text-xs font-bold px-3 py-1 rounded-full">
+                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CC7A68] text-white text-xs font-bold px-3 py-1 rounded-full">
                                                 MOST POPULAR
                                             </div>
                                         )}
                                         <div className="flex items-start justify-between mb-2">
                                             <div>
                                                 <h4 className="font-bold text-lg font-display">{plan.label}</h4>
-                                                <p className={`text-sm mt-1 ${isSelected ? 'text-gray-800' : 'text-gray-600'}`}>
+                                                <p className={`text-sm mt-1 ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
                                                     {plan.description}
                                                 </p>
                                             </div>
@@ -331,7 +331,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Date Selection */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <Calendar className="w-5 h-5 text-[#F1B92B]" />
+                            <Calendar className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Select Date</h3>
                         </div>
                         <div className="flex gap-3 overflow-x-auto pb-2">
@@ -344,17 +344,17 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, date: dateStr })}
                                         className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
-                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                            : 'bg-white border-gray-200 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                                : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
-                                        <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-gray-800' : 'text-gray-500'}`}>
+                                        <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
                                             {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                         </span>
-                                        <span className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-[#F1B92B]' : ''}`}>
+                                        <span className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-[#8DA399]' : ''}`}>
                                             {date.getDate()}
                                         </span>
-                                        <span className={`text-xs ${isSelected ? 'text-gray-800' : 'text-gray-400'}`}>
+                                        <span className={`text-xs ${isSelected ? 'text-white/90' : 'text-gray-400'}`}>
                                             {date.toLocaleDateString('en-US', { month: 'short' })}
                                         </span>
                                     </button>
@@ -366,7 +366,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Time Selection */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-5 h-5 text-[#F1B92B]" />
+                            <Clock className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Start Time</h3>
                         </div>
                         <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
@@ -378,8 +378,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, startTime: time })}
                                         className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {time}
@@ -392,7 +392,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Duration */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-5 h-5 text-[#F1B92B]" />
+                            <Clock className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Session Duration</h3>
                         </div>
                         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -404,8 +404,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, duration: option.value })}
                                         className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B] hover:bg-[#FEF7E6]'
+                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {option.label}
@@ -418,7 +418,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Number of Students */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <Users className="w-5 h-5 text-[#F1B92B]" />
+                            <Users className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Number of Students</h3>
                         </div>
                         <div className="flex gap-3">
@@ -430,8 +430,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, numStudents: num })}
                                         className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                            ? 'bg-[#F1B92B] text-[#0F172A] border-[#F1B92B]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#F1B92B]'
+                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399]'
                                             }`}
                                     >
                                         {num}
@@ -444,20 +444,20 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     {/* Special Educational Requirements */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
-                            <FileText className="w-5 h-5 text-[#F1B92B]" />
+                            <FileText className="w-5 h-5 text-[#8DA399]" />
                             <h3 className="text-xl font-bold text-[#0F172A] font-display">Special Educational Requirements</h3>
                         </div>
                         <textarea
                             value={formData.specialRequirements}
                             onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
                             placeholder="Learning needs, educational goals, specific support required..."
-                            className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#F1B92B] focus:ring-2 focus:ring-[#F1B92B]/20 focus:outline-none resize-none text-gray-900 placeholder:text-gray-400"
+                            className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#8DA399] focus:ring-2 focus:ring-[#8DA399]/20 focus:outline-none resize-none text-gray-900 placeholder:text-gray-400"
                         />
                     </div>
 
                     {/* Pricing Summary */}
                     {pricing && (
-                        <div className="mb-8 p-6 bg-gradient-to-br from-[#FEF7E6] to-[#FFF9F0] rounded-2xl border-2 border-[#F1B92B]/30">
+                        <div className="mb-8 p-6 bg-gradient-to-br from-[#F5F8F6] to-[#E9EFED] rounded-2xl border-2 border-[#8DA399]/30">
                             <h4 className="font-bold text-lg text-[#0F172A] mb-4 font-display">Pricing Summary</h4>
                             <div className="space-y-3">
                                 <div className="flex justify-between text-sm">
@@ -476,14 +476,14 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                             <span className="text-gray-600">Monthly Cost ({pricing.sessionsPerMonth} sessions/month)</span>
                                             <span className="font-semibold text-gray-900">₹{pricing.monthlyCost.toLocaleString()}/month</span>
                                         </div>
-                                        <div className="h-px bg-[#F1B92B]/30 my-2" />
+                                        <div className="h-px bg-[#8DA399]/30 my-2" />
                                     </>
                                 )}
                                 <div className="flex justify-between text-lg pt-2">
                                     <span className="font-bold text-[#0F172A]">
                                         {formData.planType === 'ONE_TIME' ? 'Total' : 'Total Plan Cost'}
                                     </span>
-                                    <span className="font-bold text-[#F1B92B]">₹{pricing.totalCost.toLocaleString()}</span>
+                                    <span className="font-bold text-[#8DA399]">₹{pricing.totalCost.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -493,7 +493,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     <button
                         type="submit"
                         disabled={loading || missingLocation}
-                        className="w-full bg-[#F1B92B] hover:bg-[#d9a526] text-[#0F172A] py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                        className="w-full bg-[#8DA399] hover:bg-[#7a8f86] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                     >
                         {loading ? 'Finding Shadow Teachers...' : 'Find My Shadow Teacher'}
                     </button>

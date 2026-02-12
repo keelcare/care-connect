@@ -36,7 +36,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-[#F8F9FA]">
+    <div className="min-h-screen w-full flex bg-[#F9F7F2]">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-12">
         <motion.div
@@ -84,7 +84,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm font-medium text-[#1F6F5B] hover:text-[#1a5f4f] transition-colors"
+                  className="text-sm font-medium text-[#1B3022] hover:text-[#15231b] transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
-                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#1F6F5B] hover:bg-[#1a5f4f] text-white py-4 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+              className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
               {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
@@ -159,7 +159,7 @@ export default function LoginPage() {
               Don't have an account?{' '}
               <Link
                 href="/auth/signup"
-                className="font-bold text-[#1F6F5B] hover:text-[#1a5f4f] transition-colors"
+                className="font-bold text-[#1B3022] hover:text-[#15231b] transition-colors"
               >
                 Sign up
               </Link>

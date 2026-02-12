@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 export interface FilterState {
   services: {
     childCare: boolean;
-    seniorCare: boolean;
+
     petCare: boolean;
     housekeeping: boolean;
     tutoring: boolean;
@@ -60,7 +60,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       ...filters,
       services: {
         childCare: false,
-        seniorCare: false,
+
         petCare: false,
         housekeeping: false,
         tutoring: false,
@@ -73,7 +73,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
     onFilterChange({
       services: {
         childCare: false,
-        seniorCare: false,
+
         petCare: false,
         housekeeping: false,
         tutoring: false,
@@ -134,11 +134,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             checked={filters.services.childCare}
             onChange={() => handleServiceChange('childCare')}
           />
-          <Checkbox
-            label="Senior Care"
-            checked={filters.services.seniorCare}
-            onChange={() => handleServiceChange('seniorCare')}
-          />
+
           <Checkbox
             label="Pet Care"
             checked={filters.services.petCare}

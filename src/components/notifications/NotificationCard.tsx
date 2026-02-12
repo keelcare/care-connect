@@ -34,9 +34,9 @@ const iconMap = {
 
 const typeStyles = {
   success: {
-    bg: 'bg-[#E5F1EC]', // Mint
-    text: 'text-[#1F6F5B]', // Green
-    border: 'border-[#1F6F5B]/20',
+    bg: 'bg-[#F2F7F4]', // Mint/Cream
+    text: 'text-[#1B3022]', // Deep Forest
+    border: 'border-[#1B3022]/20',
     icon: CheckCircle
   },
   info: {
@@ -46,15 +46,15 @@ const typeStyles = {
     icon: Info
   },
   warning: {
-    bg: 'bg-[#FEF7E6]', // Yellow tint
-    text: 'text-[#F1B92B]', // Mustard
-    border: 'border-[#F1B92B]/20',
+    bg: 'bg-[#F5F8F6]', // Sage tint
+    text: 'text-[#8DA399]', // Muted Sage
+    border: 'border-[#8DA399]/20',
     icon: AlertTriangle
   },
   error: {
     bg: 'bg-[#FDF3F1]', // Terracotta tint
-    text: 'text-[#E08E79]', // Terracotta
-    border: 'border-[#E08E79]/20',
+    text: 'text-[#CC7A68]', // Terracotta
+    border: 'border-[#CC7A68]/20',
     icon: AlertCircle
   },
 };
@@ -105,7 +105,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
               {notification.title}
             </h3>
             {!notification.is_read && (
-              <span className="flex-shrink-0 w-2.5 h-2.5 bg-[#E08E79] rounded-full mt-2 animate-pulse" />
+              <span className="flex-shrink-0 w-2.5 h-2.5 bg-[#CC7A68] rounded-full mt-2 animate-pulse" />
             )}
           </div>
 

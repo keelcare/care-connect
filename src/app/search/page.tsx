@@ -44,7 +44,7 @@ export default function SearchPage() {
   const [filters, setFilters] = useState<FilterState>({
     services: {
       childCare: false,
-      seniorCare: false,
+
       petCare: false,
       housekeeping: false,
       tutoring: false,
@@ -304,10 +304,7 @@ export default function SearchPage() {
                 s.includes('baby') ||
                 s.includes('newborn')
             );
-          if (service === 'seniorCare')
-            return nannySkills.some(
-              (s) => s.includes('senior') || s.includes('elderly')
-            );
+
           if (service === 'petCare')
             return nannySkills.some(
               (s) => s.includes('pet') || s.includes('dog') || s.includes('cat')
@@ -326,7 +323,7 @@ export default function SearchPage() {
             );
           if (service === 'specialNeeds')
             return nannySkills.some(
-              (s) => s.includes('special') || s.includes('disability')
+              (s) => s.includes('special') || s.includes('disability') || s.includes('senior') || s.includes('elderly')
             );
           return false;
         });
@@ -592,7 +589,7 @@ export default function SearchPage() {
                     setFilters({
                       services: {
                         childCare: false,
-                        seniorCare: false,
+
                         petCare: false,
                         housekeeping: false,
                         tutoring: false,

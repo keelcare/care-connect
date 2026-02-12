@@ -16,6 +16,7 @@ export interface User {
   nanny_details?: NannyDetails;
   averageRating?: number;
   totalReviews?: number;
+  children?: Child[];
 }
 
 export interface IdentityDocument {
@@ -25,6 +26,42 @@ export interface IdentityDocument {
   file_path: string;
   original_name?: string;
   uploaded_at: string;
+}
+
+export type ChildProfileType = 'STANDARD' | 'SPECIAL_NEEDS';
+
+export interface Child {
+  id: string;
+  parent_id: string;
+  first_name: string;
+  last_name: string;
+  dob: string; // ISO Date
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  profile_type: ChildProfileType;
+  
+  // Standard Fields
+  allergies?: string[];
+  dietary_restrictions?: string[];
+  
+  // Special Needs / Shadow Teacher Fields
+  diagnosis?: string; // Optional
+  care_instructions?: string;
+  emergency_contact_override?: {
+    name: string;
+    phone: string;
+    relation: string;
+  };
+  
+  // Shadow Teacher Specifics
+  school_details?: {
+    name: string;
+    grade: string;
+    teacher_contact?: string;
+  };
+  learning_goals?: string[];
+  
+  created_at: string;
+  updated_at: string;
 }
 
 export interface VerificationUploadResponse {
@@ -80,7 +117,7 @@ export interface Job {
 }
 
 // Service Types
-export type ServiceType = 'CHILD_CARE' | 'SHADOW_TEACHER' | 'SENIOR_CARE' | 'PET_CARE' | 'HOUSEKEEPING' | 'SPECIAL_NEEDS';
+export type ServiceType = 'CHILD_CARE' | 'SHADOW_TEACHER' | 'SPECIAL_NEEDS' | 'PET_CARE' | 'HOUSEKEEPING';
 
 export type SubscriptionPlanType = 'ONE_TIME' | 'MONTHLY' | 'SIX_MONTH' | 'YEARLY';
 
@@ -242,6 +279,7 @@ export interface CreateServiceRequestDto {
   start_time: string;
   duration_hours: number;
   num_children: number;
+  child_ids?: string[];
   children_ages: number[];
   category: string;
   special_requirements?: string;

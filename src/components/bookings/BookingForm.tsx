@@ -31,8 +31,8 @@ const SERVICE_TYPES = [
     color: 'bg-amber-100 text-amber-700',
   },
   {
-    id: 'senior-care',
-    label: 'Senior Care',
+    id: 'special-needs',
+    label: 'Special Needs',
     icon: Heart,
     color: 'bg-rose-100 text-rose-700',
   },
@@ -285,7 +285,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             required
             className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-400 transition-all bg-white text-stone-900"
           >
-            <option value="">Select duration</option>
+            <option value="SPECIAL_NEEDS">Special Needs</option>
             {DURATION_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}

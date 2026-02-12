@@ -26,12 +26,12 @@ export const SafetyPromise = () => {
   return (
     <section 
       ref={containerRef} 
-      className="h-screen flex items-center justify-center px-6 bg-[#FAF9F6] relative overflow-hidden" 
+      className="h-screen flex items-center justify-center px-6 bg-[#F9F7F2] relative overflow-hidden" 
     >
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-[10%] left-[-5%] w-96 h-96 bg-[#1F6F5B]/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-[10%] right-[-5%] w-96 h-96 bg-[#E08E79]/5 rounded-full blur-[100px]" />
+          <div className="absolute top-[10%] left-[-5%] w-96 h-96 bg-[#1B3022]/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-96 h-96 bg-[#CC7A68]/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -45,14 +45,14 @@ export const SafetyPromise = () => {
             transition={{ duration: 1.0, ease: SMOOTH_EASE }}
             className="max-w-3xl mx-auto mb-20"
           >
-            <div className="inline-flex items-center gap-2 bg-[#1F6F5B]/10 px-4 py-1.5 rounded-full text-[#1F6F5B] text-sm font-semibold tracking-wide uppercase mb-6">
+            <div className="inline-flex items-center gap-2 bg-[#1B3022]/10 px-4 py-1.5 rounded-full text-[#1B3022] text-sm font-semibold tracking-wide uppercase mb-6">
               <ShieldCheck className="w-4 h-4" />
               <span>Uncompromised Safety</span>
             </div>
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-[#0F172A] mb-8 leading-[1.15]">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-[#1B3022] mb-8 leading-[1.15]">
               Peace of mind is <br/>
-              <span className="italic text-[#1F6F5B]">our promise to you.</span>
+              <span className="italic text-[#1B3022]">our promise to you.</span>
             </h2>
             
             <p className="text-xl text-stone-600 leading-relaxed font-body">
@@ -75,13 +75,13 @@ export const SafetyPromise = () => {
                 icon={<UserCheck className="w-8 h-8 text-white" />}
                 title="Identity Verified"
                 desc="Government-issued ID checks for every caregiver."
-                color="bg-[#1F6F5B]"
+                color="bg-[#1B3022]"
               />
               <SafetyCard 
                 icon={<FileCheck className="w-8 h-8 text-white" />}
                 title="Background Checks"
                 desc="Comprehensive criminal & registry scanning."
-                color="bg-[#E08E79]"
+                color="bg-[#CC7A68]"
                 delay={0.1}
               />
             </motion.div>
@@ -98,11 +98,11 @@ export const SafetyPromise = () => {
                 icon={<CheckCircle className="w-8 h-8 text-white" />}
                 title="Reference Checked"
                 desc="Verified employment history and character references."
-                color="bg-[#F1B92B]"
+                color="bg-[#8DA399]"
                 delay={0.2}
               />
               <div className="hidden md:block p-8 rounded-3xl bg-white shadow-xl shadow-emerald-900/5 border border-white/50 backdrop-blur-sm opacity-80 scale-95">
-                 <p className="font-display text-2xl text-[#1F6F5B] mb-2">100%</p>
+                 <p className="font-display text-2xl text-[#1B3022] mb-2">100%</p>
                  <p className="text-stone-500 font-medium">Verified Professionals</p>
               </div>
             </motion.div>
@@ -121,7 +121,7 @@ const SafetyCard = ({ icon, title, desc, color, delay = 0 }: { icon: React.React
       {icon}
     </div>
     <div>
-      <h3 className="text-xl font-bold text-[#0F172A] mb-1">{title}</h3>
+      <h3 className="text-xl font-bold text-[#1B3022] mb-1">{title}</h3>
       <p className="text-stone-500 text-sm font-medium leading-relaxed">{desc}</p>
     </div>
   </div>

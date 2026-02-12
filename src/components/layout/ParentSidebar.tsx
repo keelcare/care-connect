@@ -46,6 +46,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
     { icon: Sparkles, label: 'Book a Service', href: '/book-service' },
     { icon: Calendar, label: 'Your Bookings', href: '/bookings' },
     { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
+    { icon: User, label: 'My Family', href: '/dashboard/family' },
   ];
 
   return (

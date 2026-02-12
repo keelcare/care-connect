@@ -32,7 +32,7 @@ export default function NannyOnboardingPage() {
   // Initialize with "Child Care" by default since this is a nanny app
   const [categories, setCategories] = useState<{ [key: string]: boolean }>({
     childCare: true,
-    seniorCare: false,
+
     specialNeeds: false,
     tutoring: false,
     petCare: false,
@@ -56,7 +56,7 @@ export default function NannyOnboardingPage() {
       const userSkills = (user.nanny_details?.skills || []).map(s => s.toLowerCase());
       
       const newCategories = { ...categories };
-      if (userSkills.some(s => s.includes('senior') || s.includes('elderly'))) newCategories.seniorCare = true;
+
       if (userSkills.some(s => s.includes('special') || s.includes('disability'))) newCategories.specialNeeds = true;
       if (userSkills.some(s => s.includes('tutor') || s.includes('math') || s.includes('homework'))) newCategories.tutoring = true;
       if (userSkills.some(s => s.includes('pet') || s.includes('dog'))) newCategories.petCare = true;
@@ -85,7 +85,7 @@ export default function NannyOnboardingPage() {
   const serviceOptions = [
     { id: 'childCare', label: 'Child Care', icon: Baby, color: 'text-amber-500 bg-amber-50 border-amber-200' },
     { id: 'specialNeeds', label: 'Special Needs', icon: HandHeart, color: 'text-teal-500 bg-teal-50 border-teal-200' },
-    { id: 'seniorCare', label: 'Senior Care', icon: Heart, color: 'text-rose-500 bg-rose-50 border-rose-200' },
+
     { id: 'tutoring', label: 'Tutoring', icon: GraduationCap, color: 'text-indigo-500 bg-indigo-50 border-indigo-200' },
     { id: 'petCare', label: 'Pet Care', icon: Briefcase, color: 'text-orange-500 bg-orange-50 border-orange-200' },
     { id: 'housekeeping', label: 'Housekeeping', icon: Home, color: 'text-blue-500 bg-blue-50 border-blue-200' },
@@ -154,7 +154,7 @@ export default function NannyOnboardingPage() {
       
       // Add category keywords
       if (categories.childCare) skillsList.push('Child Care', 'Babysitting');
-      if (categories.seniorCare) skillsList.push('Senior Care', 'Elderly Care');
+
       if (categories.specialNeeds) skillsList.push('Special Needs', 'Disability Care');
       if (categories.tutoring) skillsList.push('Tutoring', 'Homework Help');
       if (categories.petCare) skillsList.push('Pet Care');

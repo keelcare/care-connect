@@ -24,8 +24,8 @@ export default function ParentLayout({
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <div className="w-8 h-8 border-4 border-[#1F6F5B] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#F9F7F2]">
+        <div className="w-8 h-8 border-4 border-[#1B3022] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function ParentLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-[#F9F7F2]">
       {/* Premium Navbar */}
       <PremiumNavbar />
 

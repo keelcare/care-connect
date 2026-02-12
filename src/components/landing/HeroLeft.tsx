@@ -32,7 +32,7 @@ export const HeroLeft = () => {
 
       {/* Subtext */}
       <p className="text-[#6b6b6b] text-base leading-relaxed max-w-[420px] mb-10">
-        Connect with verified, experienced caregivers for child care, senior care, and pet care. We make finding the perfect match simple and safe.
+        Connect with verified, experienced caregivers for child care, special needs support, and pet care. We make finding the perfect match simple and safe.
       </p>
 
       {/* CTA Buttons */}

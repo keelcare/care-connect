@@ -94,7 +94,7 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
         </button>
 
         <div className="p-8 md:p-10">
-            <h2 className="text-3xl font-display font-semibold text-center text-[#0F172A] mb-3">Which service do you need?</h2>
+            <h2 className="text-3xl font-display font-semibold text-center text-[#1B3022] mb-3">Which service do you need?</h2>
             <p className="text-gray-500 mb-10 text-center max-w-lg mx-auto leading-relaxed text-lg">
                 Select a service to get started. We'll connect you with verified professionals tailored to your needs.
             </p>
@@ -112,18 +112,18 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleSelect('CHILD_CARE')}
-                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#1F6F5B]/10 hover:shadow-xl bg-gradient-to-br from-[#E5F1EC] to-white group relative overflow-hidden"
+                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#1B3022]/10 hover:shadow-xl bg-gradient-to-br from-[#F2F7F4] to-white group relative overflow-hidden"
             >
-                <div className="absolute inset-0 bg-[#E5F1EC] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-[#F2F7F4] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#1F6F5B]">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#1B3022]">
                 <Baby strokeWidth={1.5} className="w-8 h-8" />
                 </div>
-                <span className="font-heading font-semibold text-lg text-[#1F6F5B] mb-1 relative z-10">Child Care</span>
-                <span className="text-xs text-[#1F6F5B]/70 font-medium tracking-wide uppercase relative z-10 mb-3">0-6 Years</span>
+                <span className="font-heading font-semibold text-lg text-[#1B3022] mb-1 relative z-10">Child Care</span>
+                <span className="text-xs text-[#1B3022]/70 font-medium tracking-wide uppercase relative z-10 mb-3">0-6 Years</span>
 
-                <div className="mt-auto w-8 h-8 rounded-full bg-[#1F6F5B]/10 flex items-center justify-center relative z-10 group-hover:bg-[#1F6F5B] group-hover:text-white transition-colors duration-300">
+                <div className="mt-auto w-8 h-8 rounded-full bg-[#1B3022]/10 flex items-center justify-center relative z-10 group-hover:bg-[#1B3022] group-hover:text-white transition-colors duration-300">
                     <ChevronRight size={16} />
                 </div>
             </motion.button>
@@ -134,40 +134,40 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleSelect('SHADOW_TEACHER')}
-                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#F1B92B]/10 hover:shadow-xl bg-gradient-to-br from-[#FEF7E6] to-white group relative overflow-hidden"
+                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#8DA399]/10 hover:shadow-xl bg-gradient-to-br from-[#F5F8F6] to-white group relative overflow-hidden"
             >
-                <div className="absolute inset-0 bg-[#FEF7E6] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-[#F5F8F6] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#F1B92B]">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#8DA399]">
                 <GraduationCap strokeWidth={1.5} className="w-8 h-8" />
                 </div>
-                <span className="font-heading font-semibold text-lg text-[#F1B92B] mb-1 relative z-10">Shadow Teacher</span>
-                <span className="text-xs text-[#F1B92B]/70 font-medium tracking-wide uppercase relative z-10 mb-3">Education Support</span>
+                <span className="font-heading font-semibold text-lg text-[#8DA399] mb-1 relative z-10">Shadow Teacher</span>
+                <span className="text-xs text-[#8DA399]/70 font-medium tracking-wide uppercase relative z-10 mb-3">Education Support</span>
                 
-                <div className="mt-auto w-8 h-8 rounded-full bg-[#F1B92B]/10 flex items-center justify-center relative z-10 group-hover:bg-[#F1B92B] group-hover:text-white transition-colors duration-300">
+                <div className="mt-auto w-8 h-8 rounded-full bg-[#8DA399]/10 flex items-center justify-center relative z-10 group-hover:bg-[#8DA399] group-hover:text-white transition-colors duration-300">
                     <ChevronRight size={16} />
                 </div>
             </motion.button>
 
-            {/* Senior Care */}
+            {/* Special Needs */}
             <motion.button
                 variants={itemVars}
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => handleSelect('SENIOR_CARE')}
-                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#E08E79]/10 hover:shadow-xl bg-gradient-to-br from-[#FDF3F1] to-white group relative overflow-hidden"
+                onClick={() => handleSelect('SPECIAL_NEEDS')}
+                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#CC7A68]/10 hover:shadow-xl bg-gradient-to-br from-[#FDF3F1] to-white group relative overflow-hidden"
             >
                 <div className="absolute inset-0 bg-[#FDF3F1] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#E08E79]">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#CC7A68]">
                 <HeartPulse strokeWidth={1.5} className="w-8 h-8" />
                 </div>
-                <span className="font-heading font-semibold text-lg text-[#E08E79] mb-1 relative z-10">Senior Care</span>
-                <span className="text-xs text-[#E08E79]/70 font-medium tracking-wide uppercase relative z-10 mb-3">Companionship</span>
+                <span className="font-heading font-semibold text-lg text-[#CC7A68] mb-1 relative z-10">Special Needs</span>
+                <span className="text-xs text-[#CC7A68]/70 font-medium tracking-wide uppercase relative z-10 mb-3">Specialized Care</span>
                 
-                <div className="mt-auto w-8 h-8 rounded-full bg-[#E08E79]/10 flex items-center justify-center relative z-10 group-hover:bg-[#E08E79] group-hover:text-white transition-colors duration-300">
+                <div className="mt-auto w-8 h-8 rounded-full bg-[#CC7A68]/10 flex items-center justify-center relative z-10 group-hover:bg-[#CC7A68] group-hover:text-white transition-colors duration-300">
                     <ChevronRight size={16} />
                 </div>
             </motion.button>

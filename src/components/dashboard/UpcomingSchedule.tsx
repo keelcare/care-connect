@@ -28,18 +28,18 @@ export function UpcomingSchedule({ bookings = [], userRole = 'parent' }: Upcomin
     };
 
     return (
-        <div className="space-y-4">
-             <div className="flex items-center justify-between px-2 mb-2">
-                <h3 className="font-heading font-semibold text-xl text-dashboard-text-primary">Upcoming</h3>
-                <Link href={userRole === 'nanny' ? "/dashboard/schedule" : "/bookings"} className="text-xs font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
+        <div className="@container space-y-fluid-xs">
+             <div className="flex items-center justify-between px-1 mb-2">
+                <h3 className="font-heading font-semibold text-fluid-lg text-dashboard-text-primary">Upcoming</h3>
+                <Link href={userRole === 'nanny' ? "/dashboard/schedule" : "/bookings"} className="text-[10px] font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
                     See All
                 </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
                 {bookings.length === 0 ? (
-                     <div className="p-8 text-center bg-white/50 rounded-[20px] border border-gray-100">
-                        <p className="text-dashboard-text-secondary text-sm">No upcoming bookings</p>
+                     <div className="p-fluid-xs text-center bg-white/50 rounded-xl border border-gray-100">
+                        <p className="text-dashboard-text-secondary text-fluid-sm">No upcoming bookings</p>
                      </div>
                 ) : (
                     bookings.map((booking) => {
@@ -59,18 +59,18 @@ export function UpcomingSchedule({ bookings = [], userRole = 'parent' }: Upcomin
                         }
 
                         return (
-                            <GlassCard key={booking.id} hoverEffect className="p-4 flex items-center justify-between rounded-[20px]">
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-white rounded-xl min-w-[56px] h-[56px] flex flex-col items-center justify-center border border-gray-100 shadow-sm">
-                                        <span className="text-[10px] font-bold uppercase text-dashboard-text-secondary tracking-wider">{month}</span>
-                                        <span className="text-xl font-heading font-bold text-dashboard-text-primary leading-none mt-0.5">{day}</span>
+                            <GlassCard key={booking.id} hoverEffect className="p-fluid-xs flex items-center justify-between rounded-xl">
+                                <div className="flex items-center gap-fluid-xs">
+                                    <div className="bg-white rounded-xl min-w-[3rem] h-[3rem] flex flex-col items-center justify-center border border-gray-100 shadow-sm">
+                                        <span className="text-[9px] font-bold uppercase text-dashboard-text-secondary tracking-wider">{month}</span>
+                                        <span className="text-fluid-lg font-heading font-bold text-dashboard-text-primary leading-none mt-0.5">{day}</span>
                                     </div>
                                     
                                     <div>
-                                        <h4 className="font-semibold text-dashboard-text-primary text-sm line-clamp-1">
+                                        <h4 className="font-semibold text-dashboard-text-primary text-fluid-sm line-clamp-1">
                                             {displayName}
                                         </h4>
-                                        <div className="flex items-center gap-1.5 text-xs text-dashboard-text-secondary mt-1">
+                                        <div className="flex items-center gap-1.5 text-[11px] text-dashboard-text-secondary mt-0.5">
                                             <span>
                                                  {booking.status === 'CONFIRMED' ? 'Confirmed' : 'Pending'}
                                             </span>

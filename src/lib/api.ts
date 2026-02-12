@@ -37,6 +37,7 @@ import {
   SystemSetting,
   Notification,
   AdminVerificationRejectDto,
+  Child,
 } from '@/types/api';
 
 export const API_URL =
@@ -535,5 +536,20 @@ export const api = {
           razorpay_signature,
         }),
       }),
+  },
+  family: {
+    list: () => fetchApi<Child[]>('/family/children'),
+    create: (body: Partial<Child>) =>
+      fetchApi<Child>('/family/children', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    update: (id: string, body: Partial<Child>) =>
+      fetchApi<Child>(`/family/children/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body), 
+      }),
+    delete: (id: string) =>
+      fetchApi<void>(`/family/children/${id}`, { method: 'DELETE' }),
   },
 };

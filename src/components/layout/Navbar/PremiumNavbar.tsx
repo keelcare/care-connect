@@ -14,6 +14,7 @@ const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'My Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book a Service', icon: Sparkles },
+    { href: '/parent-dashboard/family', label: 'My Family', icon: User },
     { href: '/contact', label: 'Contact', icon: Phone },
 ];
 
@@ -80,7 +81,9 @@ export function PremiumNavbar() {
                                                 <p className="text-sm font-semibold text-dashboard-text-primary">{user?.profiles?.first_name} {user?.profiles?.last_name}</p>
                                                 <p className="text-xs text-dashboard-text-secondary truncate">{user?.email}</p>
                                             </div>
-                                            <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white/50 rounded-xl transition-colors">
+                                            <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white/50 rounded-xl transition-colors"
+                                            >
+                                                
                                                 <User className="w-4 h-4" /> Profile
                                             </button>
                                             <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white/50 rounded-xl transition-colors">

@@ -24,7 +24,7 @@ const ValueCard = ({ value, index }: { value: any, index: number }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="group p-8 rounded-[32px] bg-white border border-gray-100 hover:shadow-xl hover:shadow-[#1F6F5B]/5 transition-all duration-300 relative overflow-hidden"
+      className="group p-8 rounded-[32px] bg-white border border-gray-100 hover:shadow-xl hover:shadow-[#1B3022]/5 transition-all duration-300 relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-8 opacity-5 transform translate-x-1/2 -translate-y-1/2">
         <Icon size={120} />
@@ -52,7 +52,7 @@ const StatItem = ({ stat, index }: { stat: any, index: number }) => (
     <div className="text-4xl md:text-6xl font-bold font-display text-white mb-2">
       {stat.value}
     </div>
-    <div className="text-[#E5F1EC] font-medium text-lg uppercase tracking-wide opacity-80">
+    <div className="text-[#F2F7F4] font-medium text-lg uppercase tracking-wide opacity-80">
       {stat.label}
     </div>
   </motion.div>
@@ -74,19 +74,19 @@ export default function AboutPage() {
       icon: Heart,
       title: 'Compassionate Care',
       description: 'We connect you with caregivers who genuinely care, bringing warmth and dedication to every interaction.',
-      color: "bg-[#E08E79]"
+      color: "bg-[#CC7A68]"
     },
     {
       icon: Users,
       title: 'Community Driven',
       description: 'Building meaningful relationships between families and caregivers that go beyond just services.',
-      color: "bg-[#1F6F5B]"
+      color: "bg-[#1B3022]"
     },
     {
       icon: Award,
       title: 'Excellence',
       description: 'Committed to the highest standards in everything we do, continuously improving based on your feedback.',
-      color: "bg-[#F1B92B]"
+      color: "bg-[#8DA399]"
     },
   ];
 
@@ -136,19 +136,19 @@ export default function AboutPage() {
             className="relative z-10"
           >
             <div className="inline-flex items-center gap-2 bg-white border border-gray-100 px-4 py-2 rounded-full mb-6 shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#F1B92B]" />
+              <Sparkles className="w-4 h-4 text-[#CC7A68]" />
               <span className="text-sm font-bold text-[#0F172A]">Our Story</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-[#0F172A] leading-[1.1] font-display mb-8">
               We believe every family deserves <br />
-              <span className="text-[#E08E79]">trusted care.</span>
+              <span className="text-[#CC7A68]">trusted care.</span>
             </h1>
             <p className="text-xl text-gray-600 font-body leading-relaxed mb-8 max-w-lg">
               Keel was born from a simple mission: to make finding safe, reliable, and loving care effortless for families everywhere.
             </p>
             <div className="flex gap-4">
               <Link href="/book-service">
-                <button className="bg-[#1F6F5B] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#155243] transition-all shadow-lg hover:translate-y-[-2px]">
+                <button className="bg-[#1B3022] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#15231b] transition-all shadow-lg hover:translate-y-[-2px]">
                   Find Care
                 </button>
               </Link>
@@ -173,14 +173,14 @@ export default function AboutPage() {
                 className="object-cover w-full h-[600px]"
               />
             </motion.div>
-            <div className="absolute -bottom-10 -left-10 w-full h-full bg-[#E5F1EC] rounded-[40px] -z-10 transform rotate-3" />
-            <div className="absolute top-10 -right-10 w-full h-full bg-[#FEF7E6] rounded-[40px] -z-10 transform -rotate-2" />
+            <div className="absolute -bottom-10 -left-10 w-full h-full bg-[#F2F7F4] rounded-[40px] -z-10 transform rotate-3" />
+            <div className="absolute top-10 -right-10 w-full h-full bg-[#F5F8F6] rounded-[40px] -z-10 transform -rotate-2" />
           </div>
         </div>
       </div>
 
       {/* Stats Section with Parallax Background */}
-      <div className="relative py-24 bg-[#E08E79] overflow-hidden">
+      <div className="relative py-24 bg-[#CC7A68] overflow-hidden">
         <div className="absolute inset-0 opacity-10 pattern-grid-lg" />
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, i) => (
@@ -213,9 +213,9 @@ export default function AboutPage() {
       <div className="py-32 px-6 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 bg-[#E5F1EC] px-4 py-2 rounded-full mb-6">
-              <Users className="w-4 h-4 text-[#1F6F5B]" />
-              <span className="text-sm font-bold text-[#1F6F5B]">The Team</span>
+            <div className="inline-flex items-center gap-2 bg-[#F2F7F4] px-4 py-2 rounded-full mb-6">
+              <Users className="w-4 h-4 text-[#1B3022]" />
+              <span className="text-sm font-bold text-[#1B3022]">The Team</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-[#0F172A] mb-6 font-display">
               Meet the visionaries
@@ -242,7 +242,7 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold text-[#0F172A] mb-1 font-display">
                   {member.name}
                 </h3>
-                <p className="text-[#E08E79] font-bold text-sm mb-2 uppercase tracking-wide">
+                <p className="text-[#CC7A68] font-bold text-sm mb-2 uppercase tracking-wide">
                   {member.role}
                 </p>
                 <p className="text-gray-500 text-sm">
@@ -255,21 +255,21 @@ export default function AboutPage() {
       </div>
 
       {/* Mission / Quote */}
-      <div className="py-24 px-6 bg-[#E5F1EC] overflow-hidden relative">
+      <div className="py-24 px-6 bg-[#F2F7F4] overflow-hidden relative">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <Quote className="w-16 h-16 text-[#1F6F5B] mx-auto mb-8 opacity-30" />
+          <Quote className="w-16 h-16 text-[#1B3022] mx-auto mb-8 opacity-30" />
           <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] leading-tight font-display italic mb-8">
             "We started Keel because we knew there had to be a better way to find care. Today, we're proud to be that better way for thousands of families."
           </h2>
           <div className="flex items-center justify-center gap-4">
             <div className="text-left">
               <div className="font-bold text-[#0F172A] text-lg">Sarah Johnson</div>
-              <div className="text-[#1F6F5B]">Founder & CEO</div>
+              <div className="text-[#1B3022]">Founder & CEO</div>
             </div>
           </div>
         </div>
-        <div className="absolute top-1/2 left-0 w-64 h-64 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
-        <div className="absolute top-1/2 right-0 w-64 h-64 bg-[#F1B92B] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-0 w-64 h-64 bg-[#1B3022] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
+        <div className="absolute top-1/2 right-0 w-64 h-64 bg-[#8DA399] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
       </div>
     </PublicLayout>
   );

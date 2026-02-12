@@ -25,9 +25,9 @@ const SERVICES = [
         tagline: 'Nurturing care for your little ones',
         description: 'Professional nannies and babysitters who provide loving, attentive care for children aged 5 months to 6+ years.',
         icon: Baby,
-        color: 'bg-[#1F6F5B]',
-        lightBg: 'bg-[#E5F1EC]',
-        textColor: 'text-[#1F6F5B]',
+        color: 'bg-[#1B3022]',
+        lightBg: 'bg-[#F2F7F4]',
+        textColor: 'text-[#1B3022]',
         image: '/babysitter_playing.png',
         features: [
             'Background-verified caregivers',
@@ -44,9 +44,9 @@ const SERVICES = [
         tagline: 'Specialized educational support',
         description: 'Dedicated educational professionals providing one-on-one support for children with unique learning needs.',
         icon: GraduationCap,
-        color: 'bg-[#F1B92B]',
-        lightBg: 'bg-[#FEF7E6]',
-        textColor: 'text-[#F1B92B]',
+        color: 'bg-[#8DA399]',
+        lightBg: 'bg-[#F5F8F6]',
+        textColor: 'text-[#8DA399]',
         image: '/ShadowTeacher.png',
         features: [
             'Individualized learning plans',
@@ -59,20 +59,20 @@ const SERVICES = [
         badge: 'Subscription Plans Available',
     },
     {
-        id: 'SENIOR_CARE',
-        name: 'Senior Care',
-        tagline: 'Compassionate care for aging loved ones',
-        description: 'Experienced caregivers providing companionship, assistance, and medical support for elderly family members.',
+        id: 'SPECIAL_NEEDS',
+        name: 'Special Needs',
+        tagline: 'Specialized support for unique requirements',
+        description: 'Dedicated care professionals experienced in supporting individuals with diverse abilities and needs.',
         icon: HeartPulse,
-        color: 'bg-[#E08E79]',
+        color: 'bg-[#CC7A68]',
         lightBg: 'bg-[#FDF3F1]',
-        textColor: 'text-[#E08E79]',
+        textColor: 'text-[#CC7A68]',
         image: '/mother_child_caring.png',
         features: [
-            'Medication management',
+            'Personalized care plans',
             'Mobility assistance',
-            'Companionship & activities',
-            'Meal preparation',
+            'Companionship & engagement',
+            'Daily living support',
             'Medical condition support',
         ],
         pricing: 'Starting from ₹400/hour',
@@ -101,7 +101,7 @@ export default function ServicesPage() {
                         transition={{ delay: 0.2 }}
                         className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-6"
                     >
-                        <Sparkles className="w-4 h-4 text-[#1F6F5B]" />
+                        <Sparkles className="w-4 h-4 text-[#1B3022]" />
                         <span className="text-sm font-semibold text-[#0F172A]">Premium Care Services</span>
                     </motion.div>
 
@@ -229,19 +229,19 @@ export default function ServicesPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="bg-[#E08E79] rounded-[40px] p-12 md:p-16 text-center relative overflow-hidden"
+                    className="bg-[#CC7A68] rounded-[40px] p-12 md:p-16 text-center relative overflow-hidden"
                 >
                     <motion.div style={{ y: physicsY1 }} className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20" />
-                    <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-96 h-96 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-10" />
+                    <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-96 h-96 bg-[#1B3022] rounded-full mix-blend-multiply filter blur-3xl opacity-10" />
 
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-12 font-display">
                         Why Choose Keel?
                     </h2>
                     <div className="grid md:grid-cols-3 gap-12 mt-12">
                         {[
-                            { icon: Shield, title: '100% Verified', description: 'All caregivers undergo thorough background checks and verification', color: 'bg-white', iconColor: 'text-[#E08E79]' },
-                            { icon: Clock, title: 'Flexible Scheduling', description: 'Book services on your schedule, with options for one-time or recurring care', color: 'bg-white', iconColor: 'text-[#E08E79]' },
-                            { icon: Heart, title: 'Trusted by Families', description: 'Join 50,000+ families who trust Keel for their care needs', color: 'bg-white', iconColor: 'text-[#E08E79]' },
+                            { icon: Shield, title: '100% Verified', description: 'All caregivers undergo thorough background checks and verification', color: 'bg-white', iconColor: 'text-[#CC7A68]' },
+                            { icon: Clock, title: 'Flexible Scheduling', description: 'Book services on your schedule, with options for one-time or recurring care', color: 'bg-white', iconColor: 'text-[#CC7A68]' },
+                            { icon: Heart, title: 'Trusted by Families', description: 'Join 50,000+ families who trust Keel for their care needs', color: 'bg-white', iconColor: 'text-[#CC7A68]' },
                         ].map((item, index) => {
                             const Icon = item.icon;
                             return (
@@ -285,7 +285,7 @@ export default function ServicesPage() {
                     </p>
                     <Link
                         href="/book-service"
-                        className="inline-flex items-center gap-2 bg-[#1F6F5B] hover:bg-[#1a5f4f] text-white px-10 py-5 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl group"
+                        className="inline-flex items-center gap-2 bg-[#1B3022] hover:bg-[#15231b] text-white px-10 py-5 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl group"
                     >
                         Book a Service
                         <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

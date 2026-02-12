@@ -63,23 +63,23 @@ export default function ContactPage() {
             title: 'Email Us',
             value: 'support@keelcare.com',
             description: 'We will respond within 24 hours',
-            color: 'bg-[#1F6F5B]',
-            lightBg: 'bg-[#E5F1EC]',
+            color: 'bg-[#1B3022]',
+            lightBg: 'bg-[#F2F7F4]',
         },
         {
             icon: Phone,
             title: 'Call Us',
             value: '+91 98765 43210',
             description: 'Mon-Fri, 9AM-6PM IST',
-            color: 'bg-[#F1B92B]',
-            lightBg: 'bg-[#FEF7E6]',
+            color: 'bg-[#8DA399]',
+            lightBg: 'bg-[#F5F8F6]',
         },
         {
             icon: MapPin,
             title: 'Visit Us',
             value: 'Mumbai, India',
             description: 'Serving families nationwide',
-            color: 'bg-[#E08E79]',
+            color: 'bg-[#CC7A68]',
             lightBg: 'bg-[#FDF3F1]',
         },
     ];
@@ -100,7 +100,7 @@ export default function ContactPage() {
                         transition={{ delay: 0.2 }}
                         className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-6"
                     >
-                        <Sparkles className="w-4 h-4 text-[#1F6F5B]" />
+                        <Sparkles className="w-4 h-4 text-[#1B3022]" />
                         <span className="text-sm font-semibold text-[#0F172A]">We're Here to Help</span>
                     </motion.div>
 
@@ -158,7 +158,7 @@ export default function ContactPage() {
                         className="md:col-span-3 bg-white rounded-[40px] p-8 md:p-12 border-2 border-gray-100 shadow-lg"
                     >
                         <div className="flex items-center gap-3 mb-8">
-                            <MessageSquare className="w-7 h-7 text-[#1F6F5B]" />
+                            <MessageSquare className="w-7 h-7 text-[#1B3022]" />
                             <h2 className="text-3xl font-bold text-[#0F172A] font-display">
                                 Send us a message
                             </h2>
@@ -174,9 +174,9 @@ export default function ContactPage() {
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
                                     transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                                    className="w-24 h-24 bg-[#E5F1EC] rounded-full flex items-center justify-center mx-auto mb-6"
+                                    className="w-24 h-24 bg-[#F2F7F4] rounded-full flex items-center justify-center mx-auto mb-6"
                                 >
-                                    <CheckCircle className="w-12 h-12 text-[#1F6F5B]" />
+                                    <CheckCircle className="w-12 h-12 text-[#1B3022]" />
                                 </motion.div>
                                 <h3 className="text-3xl font-bold text-[#0F172A] mb-3 font-display">
                                     Message Sent!
@@ -197,7 +197,7 @@ export default function ContactPage() {
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             required
-                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-lg"
                                             placeholder="John Doe"
                                         />
                                     </div>
@@ -211,7 +211,7 @@ export default function ContactPage() {
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             required
-                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                            className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-lg"
                                             placeholder="john@example.com"
                                         />
                                     </div>
@@ -225,7 +225,7 @@ export default function ContactPage() {
                                         type="tel"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-lg"
                                         placeholder="+91 98765 43210"
                                     />
                                 </div>
@@ -239,7 +239,7 @@ export default function ContactPage() {
                                         value={formData.subject}
                                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                         required
-                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all text-lg"
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all text-lg"
                                         placeholder="How can we help?"
                                     />
                                 </div>
@@ -253,7 +253,7 @@ export default function ContactPage() {
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         required
                                         rows={6}
-                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all resize-none text-lg"
+                                        className="w-full px-5 py-4 rounded-[20px] border-2 border-gray-200 focus:border-[#1B3022] focus:ring-4 focus:ring-[#1B3022]/10 outline-none transition-all resize-none text-lg"
                                         placeholder="Tell us more about your inquiry..."
                                     />
                                 </div>
@@ -261,7 +261,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full bg-[#1F6F5B] hover:bg-[#1a5f4f] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -298,9 +298,9 @@ export default function ContactPage() {
                         </div>
 
                         {/* Business Hours */}
-                        <div className="bg-[#E08E79] rounded-[30px] p-8 text-white relative overflow-hidden">
+                        <div className="bg-[#CC7A68] rounded-[30px] p-8 text-white relative overflow-hidden">
                             <motion.div style={{ y: physicsY1 }} className="absolute top-0 right-0 w-48 h-48 bg-white/20 rounded-full mix-blend-overlay filter blur-3xl" />
-                            <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-48 h-48 bg-[#1F6F5B] rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+                            <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-48 h-48 bg-[#1B3022] rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
 
                             <Clock className="w-10 h-10 text-white mb-4" />
                             <h3 className="text-2xl font-bold mb-4 font-display">
@@ -323,7 +323,7 @@ export default function ContactPage() {
                                         transition={{ delay: index * 0.1 }}
                                         className="flex items-center gap-3"
                                     >
-                                        <div className="w-2 h-2 bg-[#F1B92B] rounded-full" />
+                                        <div className="w-2 h-2 bg-[#8DA399] rounded-full" />
                                         <span className="text-gray-300 flex-1">{schedule.day}</span>
                                         <span className="text-white font-semibold">{schedule.time}</span>
                                     </motion.div>
@@ -332,7 +332,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* FAQ */}
-                        <div className="bg-[#E5F1EC] rounded-[30px] p-8">
+                        <div className="bg-[#F2F7F4] rounded-[30px] p-8">
                             <h3 className="text-xl font-bold text-[#0F172A] mb-6 font-display">
                                 Quick Answers
                             </h3>
@@ -350,7 +350,7 @@ export default function ContactPage() {
                                         transition={{ delay: index * 0.1 }}
                                     >
                                         <h4 className="font-semibold text-[#0F172A] mb-2 flex items-start gap-2">
-                                            <ArrowUpRight className="w-4 h-4 text-[#1F6F5B] flex-shrink-0 mt-1" />
+                                            <ArrowUpRight className="w-4 h-4 text-[#1B3022] flex-shrink-0 mt-1" />
                                             {faq.q}
                                         </h4>
                                         <p className="text-gray-600 text-sm font-body pl-6">
