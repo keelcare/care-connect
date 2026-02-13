@@ -5,28 +5,30 @@ import { cn } from '@/lib/utils';
 
 interface LocationSelectorProps {
     className?: string;
+    onClick?: () => void;
 }
 
-export function LocationSelector({ className }: LocationSelectorProps) {
+export function LocationSelector({ className, onClick }: LocationSelectorProps) {
     const { user } = useAuth();
-    
+
     // Get address from profile or user data
     // Priority: address -> city/state -> fallback
     const address = React.useMemo(() => {
         if (!user?.profiles) return 'Set Location';
-        
+
         const { address } = user.profiles;
-        
+
         if (address) {
             // Keep it short for the navbar
             return address.length > 25 ? `${address.substring(0, 22)}...` : address;
         }
-        
+
         return 'Set Location';
     }, [user]);
 
     return (
-        <button 
+        <button
+            onClick={onClick}
             className={cn(
                 "hidden md:flex items-center gap-2 px-4 py-2 rounded-full",
                 "bg-white/40 backdrop-blur-md border border-white/50 shadow-sm",

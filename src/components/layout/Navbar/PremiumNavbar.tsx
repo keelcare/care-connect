@@ -9,6 +9,7 @@ import { NavItem } from './NavItem';
 import { NotificationButton } from './NotificationButton';
 import { ProfileChip } from './ProfileChip';
 import { LocationSelector } from './LocationSelector';
+import { LocationModal } from '@/components/features/LocationModal';
 
 const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
@@ -23,6 +24,7 @@ export function PremiumNavbar() {
     const { user, logout } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const isActive = (href: string) => {
         if (href === '/parent-dashboard') return pathname === '/parent-dashboard';
@@ -56,16 +58,16 @@ export function PremiumNavbar() {
 
                     {/* Right: Actions */}
                     <div className="flex items-center gap-3">
-                        <LocationSelector />
+                        <LocationSelector onClick={() => setIsLocationModalOpen(true)} />
                         <NotificationButton />
-                        
+
                         <div className="hidden md:block relative">
-                            <ProfileChip 
-                                name={user?.profiles?.first_name || 'User'} 
+                            <ProfileChip
+                                name={user?.profiles?.first_name || 'User'}
                                 image={user?.profiles?.profile_image_url || undefined}
                                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                             />
-                             {/* Desktop Profile Dropdown */}
+                            {/* Desktop Profile Dropdown */}
                             <AnimatePresence>
                                 {isProfileOpen && (
                                     <>
@@ -83,14 +85,14 @@ export function PremiumNavbar() {
                                             </div>
                                             <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white/50 rounded-xl transition-colors"
                                             >
-                                                
+
                                                 <User className="w-4 h-4" /> Profile
                                             </button>
                                             <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white/50 rounded-xl transition-colors">
                                                 <Settings className="w-4 h-4" /> Settings
                                             </button>
                                             <div className="h-px bg-gray-100/50 my-1" />
-                                            <button 
+                                            <button
                                                 onClick={() => logout()}
                                                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                                             >
@@ -134,7 +136,7 @@ export function PremiumNavbar() {
                         >
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-xl font-display font-bold text-dashboard-accent-start">Menu</h2>
-                                <button 
+                                <button
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="p-2 bg-gray-100/50 rounded-full text-gray-500 hover:text-gray-900"
                                 >
@@ -156,7 +158,7 @@ export function PremiumNavbar() {
 
                             <div className="pt-6 border-t border-gray-100">
                                 <div className="flex items-center gap-3 mb-4">
-                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={user?.profiles?.profile_image_url || '/placeholder-avatar.png'}
@@ -169,7 +171,7 @@ export function PremiumNavbar() {
                                         <p className="text-xs text-gray-500 truncate max-w-[150px]">{user?.email}</p>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => logout()}
                                     className="w-full flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium transition-colors"
                                 >
@@ -180,6 +182,11 @@ export function PremiumNavbar() {
                     </>
                 )}
             </AnimatePresence>
+
+            <LocationModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+            />
         </>
     );
 }
