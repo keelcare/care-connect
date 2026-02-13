@@ -36,6 +36,8 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [missingLocation, setMissingLocation] = useState(false);
+    const [hourlyRate, setHourlyRate] = useState<number | null>(null);
+    const [isLoadingPrice, setIsLoadingPrice] = useState(false);
 
     const [formData, setFormData] = useState({
         date: '',
@@ -66,6 +68,24 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
         }
     }, [user]);
 
+    useEffect(() => {
+        const fetchServices = async () => {
+            setIsLoadingPrice(true);
+            try {
+                const services = await api.services.list();
+                const pcService = services.find(s => s.name === 'PC' || s.name === 'Pet Care');
+                if (pcService) {
+                    setHourlyRate(Number(pcService.hourly_rate));
+                }
+            } catch (error) {
+                console.error('Failed to fetch services:', error);
+            } finally {
+                setIsLoadingPrice(false);
+            }
+        };
+        fetchServices();
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -93,6 +113,7 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                 children_ages: [],
                 required_skills: ['pet_care', 'animal_handling'],
                 special_requirements: requirements,
+                max_hourly_rate: hourlyRate || undefined,
             };
 
             await api.requests.create(payload);

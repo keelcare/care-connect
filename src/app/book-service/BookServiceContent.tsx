@@ -68,7 +68,7 @@ export default function BookServiceContent() {
           <ServiceCard
             title="Child Care"
             description="Safety, engagement, developmental milestones focus."
-            pricing={{ label: '₹500/hr', sublabel: 'Starting from' }}
+            pricing={{ label: '₹200/hr', sublabel: 'Starting from' }}
             imagePlaceholder={
               <div className="w-full h-full flex items-center justify-center text-primary-900/20">
                 <Baby className="w-24 h-24" strokeWidth={1.5} />

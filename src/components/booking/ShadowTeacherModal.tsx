@@ -65,7 +65,7 @@ const TIME_SLOTS = [
     '18:00', '19:00', '20:00', '21:00',
 ];
 
-const BASE_HOURLY_RATE = 500; // ₹500 per hour base rate
+// Removed hardcoded BASE_HOURLY_RATE
 
 export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps) {
     const router = useRouter();
@@ -73,6 +73,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [missingLocation, setMissingLocation] = useState(false);
+    const [hourlyRate, setHourlyRate] = useState<number>(500); // Default to 500 until fetched
+    const [isLoadingPrice, setIsLoadingPrice] = useState(false);
 
     const [formData, setFormData] = useState({
         planType: 'ONE_TIME',
@@ -103,14 +105,33 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 setMissingLocation(false);
             }
         }
+
     }, [user]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            setIsLoadingPrice(true);
+            try {
+                const services = await api.services.list();
+                const stService = services.find(s => s.name === 'ST' || s.name === 'Shadow Teacher');
+                if (stService) {
+                    setHourlyRate(Number(stService.hourly_rate));
+                }
+            } catch (error) {
+                console.error('Failed to fetch services:', error);
+            } finally {
+                setIsLoadingPrice(false);
+            }
+        };
+        fetchServices();
+    }, []);
 
     const calculatePricing = () => {
         const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === formData.planType);
         if (!selectedPlan || !formData.duration) return null;
 
         const durationHours = Number(formData.duration);
-        const sessionCost = BASE_HOURLY_RATE * durationHours;
+        const sessionCost = hourlyRate * durationHours;
         const discount = selectedPlan.discount;
         const discountAmount = (sessionCost * discount) / 100;
         const sessionCostAfterDiscount = sessionCost - discountAmount;
@@ -169,13 +190,14 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 duration_hours: Number(formData.duration),
                 num_children: Number(formData.numStudents),
                 children_ages: [],
-                max_hourly_rate: undefined,
+
                 required_skills: ['shadow_teacher', 'special_education'],
                 special_requirements: formData.specialRequirements,
                 plan_type: formData.planType as any,
                 plan_duration_months: selectedPlan?.duration || 0,
                 monthly_rate: pricing?.monthlyCost || 0,
                 discount_percentage: selectedPlan?.discount || 0,
+                max_hourly_rate: hourlyRate,
             };
 
             await api.requests.create(payload);
@@ -295,8 +317,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, planType: plan.id })}
                                         className={`relative p-6 rounded-2xl border-2 transition-all text-left ${isSelected
-                                                ? 'bg-[#8DA399] text-white border-[#8DA399] shadow-xl'
-                                                : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
+                                            ? 'bg-[#8DA399] text-white border-[#8DA399] shadow-xl'
+                                            : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {plan.popular && (
@@ -344,8 +366,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, date: dateStr })}
                                         className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
-                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                                : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
+                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                            : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
@@ -378,8 +400,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, startTime: time })}
                                         className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
+                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {time}
@@ -404,8 +426,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, duration: option.value })}
                                         className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
+                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
                                             }`}
                                     >
                                         {option.label}
@@ -430,8 +452,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                         type="button"
                                         onClick={() => setFormData({ ...formData, numStudents: num })}
                                         className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                                ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399]'
+                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399]'
                                             }`}
                                     >
                                         {num}

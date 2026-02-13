@@ -66,6 +66,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [missingLocation, setMissingLocation] = useState(false);
+    const [hourlyRate, setHourlyRate] = useState<number | null>(null);
+    const [isLoadingPrice, setIsLoadingPrice] = useState(false);
 
     // Family Data
     const [children, setChildren] = useState<Child[]>([]);
@@ -103,6 +105,25 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
             }
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            setIsLoadingPrice(true);
+            try {
+                const services = await api.services.list();
+                const ccService = services.find(s => s.name === 'CC' || s.name === 'Child Care');
+                if (ccService) {
+                    // setHourlyRate(Number(ccService.hourly_rate));
+                    setHourlyRate(200); // Explicitly set to 200 as requested
+                }
+            } catch (error) {
+                console.error('Failed to fetch services:', error);
+            } finally {
+                setIsLoadingPrice(false);
+            }
+        };
+        fetchServices();
+    }, []);
 
     const handleChildSelect = (ids: string[]) => {
         setSelectedChildIds(ids);
@@ -195,7 +216,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 num_children: selectedChildIds.length,
                 child_ids: selectedChildIds,
                 children_ages: [],
-                max_hourly_rate: undefined,
+                max_hourly_rate: hourlyRate || undefined,
                 required_skills: [],
                 special_requirements: specialRequirements,
             };
@@ -387,11 +408,10 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                                     key={day}
                                                     type="button"
                                                     onClick={() => setSelectedDate(day)}
-                                                    className={`aspect-square rounded-full text-sm font-medium transition ${
-                                                        isSel
-                                                            ? 'bg-[#3d6b55] text-white'
-                                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                                                    }`}
+                                                    className={`aspect-square rounded-full text-sm font-medium transition ${isSel
+                                                        ? 'bg-[#3d6b55] text-white'
+                                                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                                        }`}
                                                 >
                                                     {day}
                                                 </button>
@@ -446,7 +466,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                             <div className="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
                                 <div className="w-12 h-12 rounded-full bg-[#e8f2ec] flex items-center justify-center text-2xl">
                                     👶
-                                    </div>
+                                </div>
                                 <div>
                                     <div className="font-bold text-gray-900 text-sm">Child Care</div>
                                     <div className="text-xs text-gray-500">Standard Care</div>
@@ -488,8 +508,12 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                     TOTAL ESTIMATE
                                 </div>
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-2xl font-bold text-gray-300">—</span>
-                                    <span className="text-xs text-gray-400">Pricing TBD</span>
+                                    <span className={`text-2xl font-bold ${hourlyRate ? 'text-[#1B3022]' : 'text-gray-300'}`}>
+                                        {hourlyRate ? `₹${(hourlyRate * durationHrs).toFixed(0)}` : '—'}
+                                    </span>
+                                    <span className="text-xs text-gray-400">
+                                        {hourlyRate ? `Based on ${durationHrs} hrs @ ₹${hourlyRate}/hr` : 'Pricing TBD'}
+                                    </span>
                                 </div>
                             </div>
 

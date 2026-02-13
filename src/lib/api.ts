@@ -38,6 +38,7 @@ import {
   Notification,
   AdminVerificationRejectDto,
   Child,
+  Service,
 } from '@/types/api';
 
 export const API_URL =
@@ -238,6 +239,11 @@ export const api = {
       fetchApi<ApiResponse<Coordinates>>('/location/geocode', {
         method: 'POST',
         body: JSON.stringify({ address }),
+      }),
+    reverseGeocode: (lat: number, lng: number) =>
+      fetchApi<ApiResponse<{ address: string }>>('/location/reverse-geocode', {
+        method: 'POST',
+        body: JSON.stringify({ lat, lng }),
       }),
     nearbyNannies: (lat: number, lng: number, radius: number = 10) =>
       fetchApi<NearbySearchResponse<NearbyNanny>>(
@@ -547,9 +553,12 @@ export const api = {
     update: (id: string, body: Partial<Child>) =>
       fetchApi<Child>(`/family/children/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(body), 
+        body: JSON.stringify(body),
       }),
     delete: (id: string) =>
       fetchApi<void>(`/family/children/${id}`, { method: 'DELETE' }),
+  },
+  services: {
+    list: () => fetchApi<Service[]>('/services'),
   },
 };

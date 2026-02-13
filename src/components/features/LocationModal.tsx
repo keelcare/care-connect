@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/Modal';
@@ -25,6 +25,12 @@ export const LocationModal: React.FC<LocationModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
 
+  useEffect(() => {
+    if (isOpen && user?.profiles?.address) {
+      setAddress(user.profiles.address);
+    }
+  }, [isOpen, user]);
+
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       addToast({
@@ -39,41 +45,36 @@ export const LocationModal: React.FC<LocationModalProps> = ({
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
+          let addressText = 'Current Location';
+
+          // Try to reverse geocode
+          try {
+            const reverseRes = await api.location.reverseGeocode(latitude, longitude);
+            if (reverseRes.success && reverseRes.data) {
+              addressText = reverseRes.data.address;
+              setAddress(addressText);
+            }
+          } catch (err) {
+            console.warn('Reverse geocoding failed:', err);
+          }
 
           // Update user profile if logged in
           if (user?.id) {
             await api.users.update(user.id, {
               lat: latitude,
               lng: longitude,
-            });
-
-            // Wait for backend reverse geocoding to complete (simulated delay if needed)
-            // In a real app, the update response might include the new address
-            // For now, we'll fetch the user again or assume backend handles it
-            const updatedUser = await api.users.me();
-
-            updatePreferences({
-              location: {
-                lat: latitude,
-                lng: longitude,
-                address: updatedUser.profiles?.address || 'Current Location',
-              },
-            });
-          } else {
-            // For guest users, we might want to reverse geocode here or just store coords
-            // Since we don't have a public reverse geocode endpoint in the API list,
-            // we'll just set a generic address or try to use the one from preferences if it was already set?
-            // Actually, let's try to use the geocode endpoint if it supports reverse?
-            // The API docs only show POST /location/geocode for address -> coords.
-            // We'll just set "Current Location" for now for guests.
-            updatePreferences({
-              location: {
-                lat: latitude,
-                lng: longitude,
-                address: 'Current Location',
-              },
+              address: addressText,
             });
           }
+
+          // Always update preferences
+          updatePreferences({
+            location: {
+              lat: latitude,
+              lng: longitude,
+              address: addressText,
+            },
+          });
 
           addToast({
             message: 'Location updated successfully',

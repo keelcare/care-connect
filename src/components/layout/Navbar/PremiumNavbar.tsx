@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Calendar, Sparkles, Phone, Menu, X, LogOut, User, Settings } from 'lucide-react';
+import { Home, Calendar, Sparkles, Phone, Menu, X, LogOut, User, Settings, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { LogoPill } from './LogoPill';
 import { NavItem } from './NavItem';
@@ -157,6 +157,24 @@ export function PremiumNavbar() {
                             </div>
 
                             <div className="pt-6 border-t border-gray-100">
+                                <button
+                                    onClick={() => {
+                                        setIsMobileMenuOpen(false);
+                                        setIsLocationModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-3 py-3 mb-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors text-left"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                                        <MapPin className="w-5 h-5 text-dashboard-accent-start" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-sm text-gray-900">Location</p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            {user?.profiles?.address || 'Set Location'}
+                                        </p>
+                                    </div>
+                                </button>
+
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}

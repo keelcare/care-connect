@@ -38,11 +38,11 @@ export interface Child {
   dob: string; // ISO Date
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   profile_type: ChildProfileType;
-  
+
   // Standard Fields
   allergies?: string[];
   dietary_restrictions?: string[];
-  
+
   // Special Needs / Shadow Teacher Fields
   diagnosis?: string; // Optional
   care_instructions?: string;
@@ -51,7 +51,7 @@ export interface Child {
     phone: string;
     relation: string;
   };
-  
+
   // Shadow Teacher Specifics
   school_details?: {
     name: string;
@@ -59,7 +59,7 @@ export interface Child {
     teacher_contact?: string;
   };
   learning_goals?: string[];
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -117,6 +117,14 @@ export interface Job {
 }
 
 // Service Types
+export interface Service {
+  id: string;
+  name: string;
+  hourly_rate: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type ServiceType = 'CHILD_CARE' | 'SHADOW_TEACHER' | 'SPECIAL_NEEDS' | 'PET_CARE' | 'HOUSEKEEPING';
 
 export type SubscriptionPlanType = 'ONE_TIME' | 'MONTHLY' | 'SIX_MONTH' | 'YEARLY';

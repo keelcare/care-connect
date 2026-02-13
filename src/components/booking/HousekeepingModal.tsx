@@ -41,6 +41,8 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [missingLocation, setMissingLocation] = useState(false);
+    const [hourlyRate, setHourlyRate] = useState<number | null>(null);
+    const [isLoadingPrice, setIsLoadingPrice] = useState(false);
 
     const [formData, setFormData] = useState({
         date: '',
@@ -69,6 +71,24 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
             }
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            setIsLoadingPrice(true);
+            try {
+                const services = await api.services.list();
+                const hkService = services.find(s => s.name === 'HK' || s.name === 'Housekeeping');
+                if (hkService) {
+                    setHourlyRate(Number(hkService.hourly_rate));
+                }
+            } catch (error) {
+                console.error('Failed to fetch services:', error);
+            } finally {
+                setIsLoadingPrice(false);
+            }
+        };
+        fetchServices();
+    }, []);
 
     const toggleServiceType = (type: string) => {
         setFormData(prev => ({
@@ -106,6 +126,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 children_ages: [],
                 required_skills: ['housekeeping', 'cleaning'],
                 special_requirements: requirements,
+                max_hourly_rate: hourlyRate || undefined,
             };
 
             await api.requests.create(payload);
@@ -274,6 +295,18 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                             className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#0F172A] focus:ring-2 focus:ring-[#0F172A]/20 focus:outline-none resize-none"
                         />
                     </div>
+
+                    {hourlyRate && formData.duration && (
+                        <div className="mb-6 p-4 bg-[#0F172A]/5 rounded-2xl flex justify-between items-center">
+                            <div>
+                                <p className="text-sm font-medium text-[#0F172A]">Estimated Total</p>
+                                <p className="text-xs text-gray-500">Based on {formData.duration} hours @ ₹{hourlyRate}/hr</p>
+                            </div>
+                            <div className="text-2xl font-bold text-[#0F172A]">
+                                ₹{(hourlyRate * Number(formData.duration)).toFixed(0)}
+                            </div>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
