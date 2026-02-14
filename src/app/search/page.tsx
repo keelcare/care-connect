@@ -99,7 +99,7 @@ export default function SearchPage() {
       },
       (error) => {
         let errorMessage = 'Unable to retrieve your location';
-        
+
         if (error.code === 1) {
           errorMessage = 'Please allow location access in your browser settings';
         } else if (error.code === 2) {
@@ -107,7 +107,7 @@ export default function SearchPage() {
         } else if (error.code === 3) {
           errorMessage = 'Location request timed out. Please try again';
         }
-        
+
         addToast({
           message: errorMessage,
           type: 'error',
@@ -370,6 +370,7 @@ export default function SearchPage() {
         experience_years: 5,
         hourly_rate: '25.00',
         bio: 'Experienced nanny with a passion for child development.',
+        categories: [],
         availability_schedule: {},
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -402,6 +403,7 @@ export default function SearchPage() {
         experience_years: 3,
         hourly_rate: '20.00',
         bio: 'Energetic and responsible caregiver specializing in active play.',
+        categories: [],
         availability_schedule: {},
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -434,6 +436,7 @@ export default function SearchPage() {
         experience_years: 8,
         hourly_rate: '35.00',
         bio: 'Professional nanny with extensive experience in newborn care.',
+        categories: [],
         availability_schedule: {},
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
