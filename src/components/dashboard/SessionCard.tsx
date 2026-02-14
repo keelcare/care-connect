@@ -26,18 +26,18 @@ export function SessionCard({
                 <div className="w-14 h-14 rounded-full bg-dashboard-sage/10 flex items-center justify-center mb-5">
                     <Leaf className="w-7 h-7 text-dashboard-sage" />
                 </div>
-                
+
                 <h3 className="text-fluid-2xl font-display font-medium text-dashboard-text-primary mb-3">
                     {userRole === 'nanny' ? 'No session active' : 'No session active right now'}
                 </h3>
-                
+
                 <p className="text-dashboard-text-secondary/80 text-fluid-base max-w-md mb-8 leading-relaxed">
-                    {userRole === 'nanny' 
-                        ? 'You have no confirmed sessions happening right now.' 
+                    {userRole === 'nanny'
+                        ? 'You have no confirmed sessions happening right now.'
                         : 'You have no confirmed sessions happening right now.'}
                 </p>
 
-             
+
             </div>
         );
     }
@@ -49,7 +49,7 @@ export function SessionCard({
 
     if (userRole === 'nanny') {
         // Show Parent Details
-        displayName = session.parent?.profiles?.first_name 
+        displayName = session.parent?.profiles?.first_name
             ? `${session.parent.profiles.first_name} ${session.parent.profiles.last_name || ''}`.trim()
             : 'Parent';
         displayRole = 'Parent';
@@ -57,21 +57,20 @@ export function SessionCard({
         displayImage = session.parent?.profiles?.profile_image_url || '/placeholder-avatar.png';
     } else {
         // Show Nanny Details (Default)
-        displayName = session.nanny?.profiles?.first_name 
+        displayName = session.nanny?.profiles?.first_name
             ? `${session.nanny.profiles.first_name} ${session.nanny.profiles.last_name || ''}`.trim()
             : 'Caregiver';
         displayRole = 'Nanny';
         displayImage = session.nanny?.profiles?.profile_image_url || '/placeholder-avatar.png';
     }
-    
+
     // Simple time formatting
-    const formatTime = (timeStr: string) => {
+    const formatTime = (isoString?: string | null) => {
+        if (!isoString) return '...';
         try {
-            const [hours, minutes] = timeStr.split(':');
-            const date = new Date();
-            date.setHours(parseInt(hours), parseInt(minutes));
+            const date = new Date(isoString);
             return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        } catch (e) { return timeStr; }
+        } catch (e) { return isoString; }
     };
 
     const startTime = formatTime(session.start_time);
@@ -96,7 +95,7 @@ export function SessionCard({
                 {/* Avatar with Ring */}
                 <div className="relative">
                     <div className="w-20 h-20 rounded-full p-1 bg-white border border-gray-100 shadow-sm relative">
-                         <div className="w-full h-full rounded-full overflow-hidden relative">
+                        <div className="w-full h-full rounded-full overflow-hidden relative">
                             <Image
                                 src={displayImage}
                                 alt={displayName}
@@ -136,15 +135,15 @@ export function SessionCard({
             {/* Actions */}
             <div className="flex items-center gap-fluid-xs">
                 <Link href={`/dashboard/messages?booking=${session.id}`} className="block">
-                    <Button 
+                    <Button
                         className="min-h-tap px-6 rounded-2xl bg-dashboard-accent-start hover:bg-dashboard-accent-end text-white text-fluid-sm font-semibold shadow-lg shadow-dashboard-accent-start/10 transition-all hover:scale-[1.02]"
                     >
                         Message
                     </Button>
                 </Link>
-                <Link href={userRole === 'nanny' ? `/dashboard/schedule` : `/bookings/${session.id}`} className="block">
-                    <Button 
-                        variant="ghost" 
+                <Link href={userRole === 'nanny' ? `/dashboard/bookings` : `/bookings/${session.id}`} className="block">
+                    <Button
+                        variant="ghost"
                         className="min-h-tap px-6 rounded-2xl bg-white border border-gray-200 text-dashboard-text-primary hover:bg-gray-50 text-fluid-sm font-semibold transition-all hover:scale-[1.02]"
                     >
                         View Details

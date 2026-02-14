@@ -25,10 +25,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    
+
     // Auth checks moved to ProtectedRoute
     if (user && user.role === 'nanny') {
-        fetchDashboardData();
+      fetchDashboardData();
     }
   }, [user, authLoading]);
 
@@ -97,8 +97,8 @@ export default function DashboardPage() {
   };
 
   const handleCheckIn = async (booking: Booking) => {
-      // TODO: Implement check-in logic
-      console.log('Check in for booking', booking.id);
+    // TODO: Implement check-in logic
+    console.log('Check in for booking', booking.id);
   };
 
   const upcomingBookings = bookings
@@ -108,15 +108,16 @@ export default function DashboardPage() {
         new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
     );
 
-  // Determine "current session" or "next up"
-  // Prioritize IN_PROGRESS, then the nearest CONFIRMED
+  // Determine "current session"
+  // ONLY show IN_PROGRESS as current session
   const currentSession = bookings.find(b => b.status === 'IN_PROGRESS');
-  const nextConfirmed = upcomingBookings.length > 0 ? upcomingBookings[0] : undefined;
-  
-  const featuredBooking = currentSession || nextConfirmed;
-  
-  // Remaining upcoming bookings for the list (excluding the one shown in main widget)
-  const remainingUpcoming = upcomingBookings.filter(b => b.id !== featuredBooking?.id).slice(0, 3);
+  const featuredBooking = currentSession;
+
+  // Remaining upcoming bookings for the list
+  // If no current session, show top-3. If current session, show top-3 excluding it.
+  const remainingUpcoming = upcomingBookings
+    .filter(b => b.id !== featuredBooking?.id)
+    .slice(0, 3);
 
 
   if (authLoading || loading) {
@@ -140,37 +141,37 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={['nanny']}>
-        <div className="font-sans text-wellness-text">
-            
-            {/* 1. Hero Section */}
-            <NannyHero />
+      <div className="font-sans text-wellness-text">
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                {/* Left Column (2/3) */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Next Up / Current Session */}
-                    <SessionCard 
-                        session={featuredBooking} 
-                        onMessage={() => featuredBooking && handleMessageBooking(featuredBooking)}
-                        userRole="nanny"
-                    />
+        {/* 1. Hero Section */}
+        <NannyHero />
 
-                    {/* Quick Actions Grid */}
-                    <QuickActions />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* Right Column (1/3) */}
-                <div className="lg:col-span-1 space-y-6">
-                    {/* Upcoming List */}
-                    <UpcomingSchedule bookings={remainingUpcoming} userRole="nanny" />
+          {/* Left Column (2/3) */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Next Up / Current Session */}
+            <SessionCard
+              session={featuredBooking}
+              onMessage={() => featuredBooking && handleMessageBooking(featuredBooking)}
+              userRole="nanny"
+            />
 
-                    {/* Recent Feedback */}
-                    <RecentFeedback reviews={reviews.slice(0, 1)} />
-                </div>
+            {/* Quick Actions Grid */}
+            <QuickActions />
+          </div>
 
-            </div>
+          {/* Right Column (1/3) */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Upcoming List */}
+            <UpcomingSchedule bookings={remainingUpcoming} userRole="nanny" />
+
+            {/* Recent Feedback */}
+            <RecentFeedback reviews={reviews.slice(0, 1)} />
+          </div>
+
         </div>
+      </div>
     </ProtectedRoute>
   );
 }
