@@ -95,6 +95,7 @@ export interface NannyDetails {
   experience_years: number | null;
   hourly_rate: string | null; // Decimal stored as string
   bio: string | null;
+  categories: string[];
   availability_schedule: Record<string, string[]> | null;
   created_at: string;
   updated_at: string;
@@ -135,6 +136,7 @@ export interface SignupDto {
   password: string;
   firstName: string;
   lastName: string;
+  categories?: string[];
 }
 
 export interface LoginDto {
@@ -593,4 +595,27 @@ export interface Notification {
   created_at: string;
   related_id?: string;
   category?: string;
+}
+
+// Nanny Category Requests
+export type CategoryRequestStatus = 'pending' | 'approved' | 'rejected';
+
+export interface CategoryRequest {
+  id: string;
+  nanny_id: string;
+  requested_categories: string[];
+  status: CategoryRequestStatus;
+  admin_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminCategoryRequest extends CategoryRequest {
+  users: {
+    email: string;
+    profiles: {
+      first_name: string | null;
+      last_name: string | null;
+    } | null;
+  };
 }

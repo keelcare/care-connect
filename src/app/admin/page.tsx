@@ -204,6 +204,13 @@ export default function AdminDashboard() {
             <ShieldCheck className="mr-3" size={24} />
             Verify Nannies
           </Button>
+          <Button
+            className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100"
+            onClick={() => router.push('/admin/category-requests')}
+          >
+            <CheckCircle className="mr-3" size={24} />
+            Manage Categories
+          </Button>
         </div>
       </div>
 

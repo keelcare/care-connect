@@ -38,6 +38,9 @@ import {
   Notification,
   AdminVerificationRejectDto,
   Child,
+  AdminCategoryRequest,
+  CategoryRequest,
+  CategoryRequestStatus,
   Service,
 } from '@/types/api';
 
@@ -72,10 +75,18 @@ export async function fetchApi<T>(
 
   const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
-  // Try to parse JSON, handle non-JSON responses
+  // Handle 204 No Content
+  if (response.status === 204) {
+    return null as any;
+  }
+
+  // Get text body first to check if it's empty
+  const text = await response.text();
+
+  // Try to parse JSON, handle non-JSON or empty responses
   let data;
   try {
-    data = await response.json();
+    data = text ? JSON.parse(text) : null;
   } catch {
     data = { message: 'Invalid response from server' };
   }
@@ -234,6 +245,21 @@ export const api = {
         body: JSON.stringify({ userId, imageUrl }),
       }),
   },
+  nanny: {
+    requestCategoryChange: (categories: string[]) =>
+      fetchApi<CategoryRequest>('/nannies/me/category-request', {
+        method: 'POST',
+        body: JSON.stringify({ categories }),
+      }),
+    getCategoryRequest: () =>
+      fetchApi<CategoryRequest | null>('/nannies/me/category-request'),
+    getCategoryRequestHistory: () =>
+      fetchApi<CategoryRequest[]>('/nannies/me/category-requests/history'),
+    cancelCategoryRequest: (requestId: string) =>
+      fetchApi<{ message: string }>(`/nannies/me/category-request/${requestId}`, {
+        method: 'DELETE',
+      }),
+  },
   location: {
     geocode: (address: string) =>
       fetchApi<ApiResponse<Coordinates>>('/location/geocode', {
@@ -356,6 +382,20 @@ export const api = {
       }),
     unbanUser: (id: string) =>
       fetchApi<User>(`/admin/users/${id}/unban`, { method: 'PUT' }),
+    getCategoryRequests: (status: CategoryRequestStatus = 'pending') =>
+      fetchApi<AdminCategoryRequest[]>(
+        `/admin/category-requests?status=${status}`
+      ),
+    approveCategoryRequest: (id: string, notes?: string) =>
+      fetchApi<void>(`/admin/category-requests/${id}/approve`, {
+        method: 'PUT',
+        body: JSON.stringify({ notes }),
+      }),
+    rejectCategoryRequest: (id: string, notes?: string) =>
+      fetchApi<void>(`/admin/category-requests/${id}/reject`, {
+        method: 'PUT',
+        body: JSON.stringify({ notes }),
+      }),
   },
   assignments: {
     getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),

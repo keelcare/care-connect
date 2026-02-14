@@ -25,7 +25,7 @@ export default function HomePage() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             if (authLoading) return;
-            
+
             if (!user) {
                 setLoading(false);
                 return;
@@ -43,36 +43,54 @@ export default function HomePage() {
                 setBookingCount(allBookings.length);
 
                 // Process active session
-                let currentActive = null;
-                if (activeResponse && activeResponse.length > 0) {
-                    const inProgressBooking = activeResponse.find((b: any) => b.status === 'IN_PROGRESS');
-                    if (inProgressBooking) {
-                        currentActive = inProgressBooking;
-                        // Map nanny details if needed
-                        if (!currentActive.nanny && currentActive.users_bookings_nanny_idTousers) {
-                            currentActive.nanny = currentActive.users_bookings_nanny_idTousers;
-                        }
-                    }
-                }
+                // ONLY show IN_PROGRESS as current session
+                const inProgressBooking = allBookings.find((b: any) => b.status === 'IN_PROGRESS');
+                let currentActive = inProgressBooking || null;
 
-                // Process upcoming bookings
-                const upcoming = allBookings
+                // Process upcoming bookings (all confirmed/requested, excluding featured)
+                const upcomingBookings = allBookings
                     .filter(b =>
                         (b.status === 'CONFIRMED' || b.status === 'REQUESTED') &&
                         b.id !== currentActive?.id
                     )
-                    .sort((a, b) => new Date((a as any).date || a.created_at).getTime() - new Date((b as any).date || b.created_at).getTime())
-                    .slice(0, 3)
-                    .map((b: any) => {
-                        if (!b.nanny && b.users_bookings_nanny_idTousers) {
-                            return { ...b, nanny: b.users_bookings_nanny_idTousers };
-                        }
-                        return b;
-                    });
+                    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+                // Deep enrichment for nanny details if missing
+                const nannyIdsToFetch = new Set<string>();
+                if (currentActive?.nanny_id && !currentActive.nanny?.profiles?.first_name) {
+                    nannyIdsToFetch.add(currentActive.nanny_id);
+                }
+                upcomingBookings.forEach(b => {
+                    if (b.nanny_id && !b.nanny?.profiles?.first_name) {
+                        nannyIdsToFetch.add(b.nanny_id);
+                    }
+                });
+
+                const nannyMap = new Map<string, any>();
+                for (const nannyId of Array.from(nannyIdsToFetch)) {
+                    try {
+                        const nannyDetails = await api.users.get(nannyId);
+                        nannyMap.set(nannyId, nannyDetails);
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    } catch (err) {
+                        console.error(`Failed to fetch nanny ${nannyId}:`, err);
+                    }
+                }
+
+                const enrich = (b: any) => {
+                    if (b.nanny_id && nannyMap.has(b.nanny_id)) {
+                        return { ...b, nanny: nannyMap.get(b.nanny_id) };
+                    }
+                    // Fallback to existing field if present
+                    if (!b.nanny && b.users_bookings_nanny_idTousers) {
+                        return { ...b, nanny: b.users_bookings_nanny_idTousers };
+                    }
+                    return b;
+                };
 
                 setDashboardData({
-                    activeSession: currentActive,
-                    upcomingBookings: upcoming,
+                    activeSession: currentActive ? enrich(currentActive) : null,
+                    upcomingBookings: upcomingBookings.map(enrich).slice(0, 3),
                     notifications: notifs || []
                 });
 

@@ -10,10 +10,21 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import styles from './page.module.css';
 import { usePreferences } from '@/hooks/usePreferences';
+import { CategoryRequestModal } from '@/components/nanny/CategoryRequestModal';
+import { NannyDetails } from '@/types/api';
+
+const CATEGORY_MAP: Record<string, string> = {
+  EC: 'Elder Care',
+  CC: 'Child Care',
+  SN: 'Special Needs',
+  ST: 'Shadow Teacher',
+};
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const { updatePreferences } = usePreferences();
+  const [updatingLocation, setUpdatingLocation] = React.useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = React.useState(false);
 
   if (loading) {
     return (
@@ -51,7 +62,6 @@ export default function ProfilePage() {
   }
 
   const { profiles, nanny_details } = user;
-  const [updatingLocation, setUpdatingLocation] = React.useState(false);
 
   const handleUpdateLocation = () => {
     if (!navigator.geolocation) {
@@ -137,9 +147,6 @@ export default function ProfilePage() {
                 className="w-32 h-32"
                 ringColor="bg-white"
               />
-              <div className="absolute bottom-0 right-0 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow-sm capitalize">
-                {user.role}
-              </div>
             </div>
 
             <div className="pt-2 md:pt-14 flex-1">
@@ -150,16 +157,16 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-1.5">
                   <MapPin size={16} className="text-neutral-400" />
                   <span>{profiles?.address || 'No address set'}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleUpdateLocation}
-                    disabled={updatingLocation}
-                    className="h-6 px-2 text-xs text-neutral-700 hover:text-primary-900 hover:bg-neutral-100 ml-2"
-                  >
-                    {updatingLocation ? 'Updating...' : 'Use current location'}
-                  </Button>
                 </div>
+                {user.role === 'nanny' && nanny_details?.categories && nanny_details.categories.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {nanny_details.categories.map((cat, i) => (
+                      <div key={i} className="px-3 py-1 bg-slate-800 text-white text-xs font-bold rounded-lg whitespace-nowrap">
+                        {CATEGORY_MAP[cat] || cat}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck
                     size={16}
@@ -173,7 +180,7 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          
+
             {/* Family Section - Visible to all parents */}
             <div className="mt-8 pt-8 border-t border-neutral-100">
               <div className="flex items-center justify-between mb-4">
@@ -182,8 +189,8 @@ export default function ProfilePage() {
                   <Button variant="outline" className="rounded-xl">Manage Family</Button>
                 </Link>
               </div>
-              <div 
-                className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 flex items-center justify-between group cursor-pointer hover:border-primary-200 transition-all" 
+              <div
+                className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 flex items-center justify-between group cursor-pointer hover:border-primary-200 transition-all"
                 onClick={() => window.location.href = '/dashboard/family'}
               >
                 <div className="flex items-center gap-4">
@@ -198,8 +205,8 @@ export default function ProfilePage() {
                 <ChevronRight className="text-neutral-400 group-hover:text-primary-600 transition-colors" />
               </div>
             </div>
-            
-            </div>
+
+          </div>
 
           {user.role === 'nanny' && (
             <div className="space-y-8">
@@ -254,6 +261,44 @@ export default function ProfilePage() {
                     )}
                 </div>
               </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-primary-900">Categories</h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsCategoryModalOpen(true)}
+                  >
+                    Request Change
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {nanny_details?.categories?.map((category, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium"
+                    >
+                      {category}
+                    </span>
+                  )) || (
+                      <span className="text-neutral-500 italic">
+                        No categories listed
+                      </span>
+                    )}
+                </div>
+              </div>
+
+              <CategoryRequestModal
+                isOpen={isCategoryModalOpen}
+                onClose={() => setIsCategoryModalOpen(false)}
+                currentCategories={nanny_details?.categories || []}
+                onSuccess={() => {
+                  // Ideally refresh user data here, but for now just close
+                  // user data refresh might happen on next load or we could force it
+                  // api.users.me().then(setUser); (if setUser was available from context)
+                }}
+              />
 
               <div className="pt-4 border-t border-neutral-100">
                 <Link href={`/caregiver/${user.id}`}>

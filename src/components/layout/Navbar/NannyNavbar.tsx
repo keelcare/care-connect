@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Calendar, CalendarCheck, Users, User, Menu, X, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, Calendar, CalendarCheck, Users, User, Menu, X, LogOut, Settings, MapPin, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { usePreferences } from '@/hooks/usePreferences';
 import { LogoPill } from './LogoPill';
 import { NavItem } from './NavItem';
 import { NotificationButton } from './NotificationButton';
 import { ProfileChip } from './ProfileChip';
+import { LocationModal } from '@/components/features/LocationModal';
 
 const NAV_ITEMS = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,8 +20,10 @@ const NAV_ITEMS = [
 export function NannyNavbar() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
+    const { preferences } = usePreferences();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const isActive = (href: string) => {
         if (href === '/dashboard') return pathname === '/dashboard';
@@ -53,16 +57,29 @@ export function NannyNavbar() {
 
                     {/* Right: Actions */}
                     <div className="flex items-center gap-3">
-                        {/* Nannies might not need LocationSelector, keeping it aligned with user request for "same navbar" minus irrelevant features */}
+                        {/* Location Selector */}
+                        <div
+                            className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/50 backdrop-blur-md rounded-full border border-white/60 text-dashboard-text-secondary hover:border-dashboard-accent-start hover:bg-white/70 transition-all cursor-pointer shadow-sm"
+                            onClick={() => setIsLocationModalOpen(true)}
+                        >
+                            <MapPin size={16} className="text-dashboard-text-secondary" />
+                            <span className="text-xs font-medium truncate max-w-[120px]">
+                                {preferences.location?.address ||
+                                    user?.profiles?.address ||
+                                    'Set Location'}
+                            </span>
+                            <ChevronDown size={12} className="text-dashboard-text-secondary" />
+                        </div>
+
                         <NotificationButton />
-                        
+
                         <div className="hidden md:block relative">
-                            <ProfileChip 
-                                name={user?.profiles?.first_name || 'User'} 
+                            <ProfileChip
+                                name={user?.profiles?.first_name || 'User'}
                                 image={user?.profiles?.profile_image_url || undefined}
                                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                             />
-                             {/* Desktop Profile Dropdown */}
+                            {/* Desktop Profile Dropdown */}
                             <AnimatePresence>
                                 {isProfileOpen && (
                                     <>
@@ -85,7 +102,7 @@ export function NannyNavbar() {
                                                 <Settings className="w-4 h-4" /> Settings
                                             </button>
                                             <div className="h-px bg-gray-100/50 my-1" />
-                                            <button 
+                                            <button
                                                 onClick={() => logout()}
                                                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                                             >
@@ -129,7 +146,7 @@ export function NannyNavbar() {
                         >
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-xl font-display font-bold text-dashboard-accent-start">Menu</h2>
-                                <button 
+                                <button
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="p-2 bg-gray-100/50 rounded-full text-gray-500 hover:text-gray-900"
                                 >
@@ -151,7 +168,7 @@ export function NannyNavbar() {
 
                             <div className="pt-6 border-t border-gray-100">
                                 <div className="flex items-center gap-3 mb-4">
-                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={user?.profiles?.profile_image_url || '/placeholder-avatar.png'}
@@ -164,7 +181,7 @@ export function NannyNavbar() {
                                         <p className="text-xs text-gray-500 truncate max-w-[150px]">{user?.email}</p>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => logout()}
                                     className="w-full flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium transition-colors"
                                 >
@@ -175,6 +192,12 @@ export function NannyNavbar() {
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Location Modal */}
+            <LocationModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+            />
         </>
     );
 }

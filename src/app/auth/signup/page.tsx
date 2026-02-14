@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
+import { MultiSelect } from '@/components/ui/MultiSelect';
 import { api } from '@/lib/api';
 
 type Role = 'family' | 'caregiver';
@@ -42,13 +43,28 @@ function SignupContent() {
     password: '',
     confirmPassword: '',
     agreeToTerms: false,
+    categories: [] as string[],
   });
+
+  const categoriesOptions = [
+    { label: 'Elder Care', value: 'EC' },
+    { label: 'Child Care', value: 'CC' },
+    { label: 'Special Needs', value: 'SN' },
+    { label: 'Shadow Teacher', value: 'ST' },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const backendRole = role === 'family' ? 'parent' : 'nanny';
+
+      if (backendRole === 'nanny' && formData.categories.length === 0) {
+        alert('Please select at least one category.');
+        setIsLoading(false);
+        return;
+      }
+
       await api.auth.signup({
         ...formData,
         role: backendRole,
@@ -490,6 +506,26 @@ function SignupContent() {
                 }
               />
 
+
+
+              {role === 'caregiver' && (
+                <div className="space-y-1">
+                  <MultiSelect
+                    label="Select Categories"
+                    placeholder="Select services you provide..."
+                    options={categoriesOptions}
+                    value={formData.categories}
+                    onChange={(categories) =>
+                      setFormData({ ...formData, categories })
+                    }
+                    className="w-full"
+                  />
+                  <p className="text-xs text-neutral-500">
+                    Select at least one category to proceed.
+                  </p>
+                </div>
+              )}
+
               <div className="flex items-start pt-2">
                 <Checkbox
                   label={
@@ -542,14 +578,34 @@ function SignupContent() {
 
             <button
               onClick={() => {
+                // Validate categories for nannies
+                if (role === 'caregiver' && formData.categories.length === 0) {
+                  alert('Please select at least one category before signing up with Google.');
+                  return;
+                }
+
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
                 const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
                 const origin = window.location.origin;
-                window.location.href = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}`;
+
+                // Build URL with role and origin
+                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}`;
+
+                // Add categories for nannies
+                if (role === 'caregiver' && formData.categories.length > 0) {
+                  const categoriesParam = formData.categories.join(',');
+                  oauthUrl += `&categories=${encodeURIComponent(categoriesParam)}`;
+                }
+
+                window.location.href = oauthUrl;
               }}
               type="button"
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-full bg-white hover:bg-neutral-50 transition-colors text-neutral-700 font-medium h-12"
+              disabled={role === 'caregiver' && formData.categories.length === 0}
+              className={`w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-full bg-white transition-colors text-neutral-700 font-medium h-12 ${role === 'caregiver' && formData.categories.length === 0
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-neutral-50'
+                }`}
             >
               <svg
                 width="20"
@@ -591,8 +647,8 @@ function SignupContent() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
