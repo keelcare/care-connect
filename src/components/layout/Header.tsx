@@ -114,7 +114,7 @@ export const Header: React.FC = () => {
           {user ? (
             <div className="flex items-center gap-4">
               <button
-                onClick={() => router.push('/notifications')}
+                onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
                 className="relative p-2 text-stone-500 hover:text-stone-900 transition-colors rounded-xl hover:bg-stone-100"
               >
                 <Bell size={20} />

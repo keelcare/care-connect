@@ -2,10 +2,21 @@
 import React from 'react';
 import { Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export function NotificationButton() {
+    const router = useRouter();
+    const { user } = useAuth();
+
+    const handleClick = () => {
+        const path = user?.role === 'nanny' ? '/dashboard/notifications' : '/notifications';
+        router.push(path);
+    };
+
     return (
         <motion.button
+            onClick={handleClick}
             className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-sm border border-white/60 flex items-center justify-center text-dashboard-text-secondary hover:text-dashboard-text-primary hover:bg-white transition-colors relative focus:outline-none focus:ring-2 focus:ring-dashboard-accent-start/20"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95, rotate: 10 }}
