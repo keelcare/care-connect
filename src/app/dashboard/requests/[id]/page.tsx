@@ -262,7 +262,7 @@ export default function RequestDetailsPage() {
                     Time
                   </label>
                   <p className="text-neutral-900 font-medium">
-                    {request.start_time} ({request.duration_hours} hours)
+                    {formatTime(request.start_time)} ({request.duration_hours} hours)
                   </p>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export default function RequestDetailsPage() {
           <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 sticky top-24">
             <h2 className="text-lg font-bold text-neutral-900 mb-4">Actions</h2>
             <div className="space-y-3">
-              {request.status === 'PENDING' && (
+              {request.status.toUpperCase() === 'PENDING' && (
                 <Button
                   variant="outline"
                   className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 rounded-xl"
@@ -357,7 +357,7 @@ export default function RequestDetailsPage() {
                   Cancel Request
                 </Button>
               )}
-              {['PENDING', 'ASSIGNED', 'ACCEPTED'].includes(request.status) && (
+              {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED'].includes(request.status.toUpperCase()) && (
                 <Button
                   variant="outline"
                   className="w-full border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-700 hover:border-stone-300 rounded-xl"
@@ -366,14 +366,14 @@ export default function RequestDetailsPage() {
                   Reschedule
                 </Button>
               )}
-              {request.status === 'CANCELLED' && (
+              {request.status.toUpperCase() === 'CANCELLED' && (
                 <div className="p-4 bg-red-50 rounded-xl text-center">
                   <p className="text-red-700 font-medium">
                     This request has been cancelled.
                   </p>
                 </div>
               )}
-              {['ACCEPTED', 'IN_PROGRESS'].includes(request.status) && (
+              {['ACCEPTED', 'IN_PROGRESS', 'CONFIRMED'].includes(request.status.toUpperCase()) && (
                 <Button className="w-full rounded-xl shadow-lg hover:shadow-xl transition-all">
                   Message Nanny
                 </Button>
