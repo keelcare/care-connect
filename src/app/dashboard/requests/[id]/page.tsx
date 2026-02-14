@@ -397,19 +397,19 @@ export default function RequestDetailsPage() {
         title="Cancel Service Request"
       />
 
-      {isRescheduleModalOpen && (
+      {isRescheduleModalOpen && request && (
         <RescheduleModal
           isOpen={isRescheduleModalOpen}
           onClose={() => setIsRescheduleModalOpen(false)}
           onConfirm={confirmedReschedule}
           serviceType={request.category === 'CC' ? 'Child Care' : request.category === 'ST' ? 'Shadow Teacher' : 'Service'}
           currentDate={request.date}
-          currentStartTime={request.start_time}
+          currentStartTime={request.start_time?.includes('T') ? request.start_time.split('T')[1].slice(0, 5) : request.start_time}
           currentEndTime={(() => {
-            // Mock an end time for the dial initialization
-            const [h, m] = request.start_time.split(':').map(Number);
-            const endH = (h + request.duration_hours) % 24;
-            return `${endH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            const start = request.start_time?.includes('T') ? request.start_time.split('T')[1].slice(0, 5) : request.start_time;
+            const [h, m] = (start || '09:00').split(':').map(Number);
+            const endH = (h + (request.duration_hours || 4)) % 24;
+            return `${endH.toString().padStart(2, '0')}:${(m || 0).toString().padStart(2, '0')}`;
           })()}
         />
       )}

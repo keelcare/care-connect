@@ -94,7 +94,16 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             try {
-                const initialDate = currentDate ? new Date(currentDate) : new Date();
+                // Robust date parsing with fallback to current date
+                let initialDate = new Date();
+                if (currentDate) {
+                    const parsed = new Date(currentDate);
+                    // If date is valid and not in the distant past (1970 case)
+                    if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 2000) {
+                        initialDate = parsed;
+                    }
+                }
+
                 setCurrentYear(initialDate.getFullYear());
                 setCurrentMonth(initialDate.getMonth());
                 setSelectedDate(initialDate.getDate());
@@ -103,13 +112,19 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
                 setTimeSlot(startSlot);
 
                 const endSlot = time24ToSlot(currentEndTime);
+                // Difference in hours
                 const diffHours = (endSlot - startSlot) * STEP_MINS / 60;
-                // Avoid zero or negative duration in display logic
-                const absDiffHours = Math.max(2, Math.abs(diffHours));
+                // Avoid zero or negative duration in display logic, default to 4h if weird
+                const absDiffHours = diffHours > 0 ? diffHours : 4;
                 const idx = durationOptions.findIndex(d => d.value === absDiffHours);
                 setDurationIdx(idx !== -1 ? idx : 1);
             } catch (e) {
                 console.error("Error setting initial reschedule modal state:", e);
+                // Hard reset to defaults on error
+                const now = new Date();
+                setCurrentYear(now.getFullYear());
+                setCurrentMonth(now.getMonth());
+                setSelectedDate(now.getDate());
             }
         }
     }, [isOpen, currentDate, currentStartTime, currentEndTime]);

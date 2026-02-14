@@ -993,25 +993,37 @@ export default function ParentBookingsPage() {
             })()}
             currentDate={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'start_time' in b && b.start_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
-              if (booking && booking.start_time) {
-                return new Date(booking.start_time).toISOString().split('T')[0];
+              // Try to find a booking that has a full ISO start_time
+              const booking: any = (b.start_time && b.start_time.includes('T'))
+                ? b
+                : bookings.find(item => item.job_id === b.id || (item as any).request_id === b.id);
+
+              if (booking && booking.start_time && booking.start_time.includes('T')) {
+                return booking.start_time.split('T')[0];
               }
-              return (b as any).date || new Date().toISOString().split('T')[0];
+              return b.date || new Date().toISOString().split('T')[0];
             })()}
             currentStartTime={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'start_time' in b && b.start_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
-              if (booking && booking.start_time) {
-                return formatTime(booking.start_time);
+              const booking: any = (b.start_time && b.start_time.includes('T'))
+                ? b
+                : bookings.find(item => item.job_id === b.id || (item as any).request_id === b.id);
+
+              if (booking && booking.start_time && booking.start_time.includes('T')) {
+                const timePart = booking.start_time.split('T')[1];
+                return timePart ? timePart.slice(0, 5) : '09:00';
               }
-              return (b as any).start_time || '09:00';
+              return b.start_time || '09:00';
             })()}
             currentEndTime={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'end_time' in b && b.end_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
-              if (booking && booking.end_time) {
-                return formatTime(booking.end_time);
+              const booking: any = (b.end_time && b.end_time.includes('T'))
+                ? b
+                : bookings.find(item => item.job_id === b.id || (item as any).request_id === b.id);
+
+              if (booking && booking.end_time && booking.end_time.includes('T')) {
+                const timePart = booking.end_time.split('T')[1];
+                return timePart ? timePart.slice(0, 5) : '13:00';
               }
               return '13:00';
             })()}
