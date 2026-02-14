@@ -18,6 +18,7 @@ import { ProfileCard } from '@/components/features/ProfileCard';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { api } from '@/lib/api';
 import { ServiceRequest, User } from '@/types/api';
+import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import styles from './page.module.css';
 
 export default function RequestDetailsPage() {
@@ -29,6 +30,7 @@ export default function RequestDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
@@ -70,6 +72,57 @@ export default function RequestDetailsPage() {
       throw err; // Re-throw so the modal knows it failed
     } finally {
       setCancelling(false);
+    }
+  };
+
+  const handleReschedule = () => {
+    setIsRescheduleModalOpen(true);
+  };
+
+  const confirmedReschedule = async (date: string, startTime: string, endTime: string) => {
+    if (!request) return;
+
+    try {
+      // Find the actual booking ID if it exists, otherwise reschedule the request
+      let idToReschedule = request.id;
+
+      // If it has a nanny, it's likely a booking, but the logic in api.bookings.reschedule
+      // might expect a booking ID. Let's try to find if there's an associated booking.
+      // For simplicity in this view, we'll try the request rescheduling if the API supports it
+      // or redirect to the bookings page if needed. 
+      // Based on ParentBookingsPage, it uses api.bookings.reschedule(bookingId, ...)
+
+      // Check if this request is already a booking
+      if (['ACCEPTED', 'IN_PROGRESS', 'ASSIGNED'].includes(request.status)) {
+        // It's a booking. We need the booking ID.
+        // In this page we only have the request ID. 
+        // Usually request ID and booking ID are linked.
+        await api.bookings.reschedule(request.id, { date, startTime, endTime });
+      } else {
+        // It's just a request
+        await api.requests.update(request.id, { date, start_time: startTime });
+      }
+
+      // Refresh data
+      const updated = await api.requests.get(request.id);
+      setRequest(updated);
+      setIsRescheduleModalOpen(false);
+    } catch (err) {
+      console.error('Failed to reschedule:', err);
+      throw err;
+    }
+  };
+
+  const formatTime = (timeInput: string) => {
+    if (!timeInput) return '';
+    try {
+      if (timeInput.includes('T')) {
+        const date = new Date(timeInput);
+        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      }
+      return timeInput;
+    } catch (e) {
+      return timeInput;
     }
   };
 
@@ -304,6 +357,15 @@ export default function RequestDetailsPage() {
                   Cancel Request
                 </Button>
               )}
+              {['PENDING', 'ASSIGNED', 'ACCEPTED'].includes(request.status) && (
+                <Button
+                  variant="outline"
+                  className="w-full border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-700 hover:border-stone-300 rounded-xl"
+                  onClick={handleReschedule}
+                >
+                  Reschedule
+                </Button>
+              )}
               {request.status === 'CANCELLED' && (
                 <div className="p-4 bg-red-50 rounded-xl text-center">
                   <p className="text-red-700 font-medium">
@@ -329,6 +391,23 @@ export default function RequestDetailsPage() {
         startTime={`${request.date}T${request.start_time}`}
         title="Cancel Service Request"
       />
+
+      {isRescheduleModalOpen && (
+        <RescheduleModal
+          isOpen={isRescheduleModalOpen}
+          onClose={() => setIsRescheduleModalOpen(false)}
+          onConfirm={confirmedReschedule}
+          serviceType={request.category === 'CC' ? 'Child Care' : request.category === 'ST' ? 'Shadow Teacher' : 'Service'}
+          currentDate={request.date}
+          currentStartTime={request.start_time}
+          currentEndTime={(() => {
+            // Mock an end time for the dial initialization
+            const [h, m] = request.start_time.split(':').map(Number);
+            const endH = (h + request.duration_hours) % 24;
+            return `${endH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+          })()}
+        />
+      )}
     </div>
   );
 }

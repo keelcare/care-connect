@@ -293,6 +293,11 @@ export const api = {
         method: 'PUT',
         body: reason ? JSON.stringify({ reason }) : undefined,
       }),
+    update: (id: string, body: Partial<ServiceRequest>) =>
+      fetchApi<ServiceRequest>(`/requests/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      }),
     getMatches: (id: string) => fetchApi<User[]>(`/requests/${id}/matches`),
   },
   bookings: {

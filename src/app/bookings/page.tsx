@@ -966,9 +966,19 @@ export default function ParentBookingsPage() {
             isOpen={isRescheduleModalOpen}
             onClose={() => setIsRescheduleModalOpen(false)}
             onConfirm={confirmedReschedule}
+            serviceType={(() => {
+              const b: any = bookingToReschedule;
+              const category = b.category || b.job?.category || 'Service';
+              switch (category) {
+                case 'CC': return 'Child Care';
+                case 'ST': return 'Shadow Teacher';
+                case 'SN': return 'Special Needs';
+                default: return 'Service';
+              }
+            })()}
             currentDate={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              const booking: any = 'start_time' in b && b.start_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
               if (booking && booking.start_time) {
                 return new Date(booking.start_time).toISOString().split('T')[0];
               }
@@ -976,7 +986,7 @@ export default function ParentBookingsPage() {
             })()}
             currentStartTime={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              const booking: any = 'start_time' in b && b.start_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
               if (booking && booking.start_time) {
                 return formatTime(booking.start_time);
               }
@@ -984,11 +994,11 @@ export default function ParentBookingsPage() {
             })()}
             currentEndTime={(() => {
               const b: any = bookingToReschedule;
-              const booking: any = 'start_time' in b ? b : bookings.find(item => item.job_id === b.id);
+              const booking: any = 'end_time' in b && b.end_time.includes('T') ? b : bookings.find(item => item.job_id === b.id);
               if (booking && booking.end_time) {
                 return formatTime(booking.end_time);
               }
-              return '17:00';
+              return '13:00';
             })()}
           />
         )}
