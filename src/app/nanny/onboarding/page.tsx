@@ -136,8 +136,17 @@ export default function NannyOnboardingPage() {
         }
       },
       (error) => {
-        console.error('Geolocation error:', error);
-        addToast({ message: 'Unable to retrieve location.', type: 'error' });
+        let errorMessage = 'Unable to retrieve location';
+        
+        if (error.code === 1) {
+          errorMessage = 'Please allow location access in your browser settings';
+        } else if (error.code === 2) {
+          errorMessage = 'Unable to determine your location. Please check your Wi-Fi and Location Services';
+        } else if (error.code === 3) {
+          errorMessage = 'Location request timed out. Please try again';
+        }
+        
+        addToast({ message: errorMessage, type: 'error' });
         setUpdatingLocation(false);
       }
     );

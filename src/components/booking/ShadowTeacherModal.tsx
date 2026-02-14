@@ -249,13 +249,88 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
         }
     };
 
+    const ServiceSummary = () => (
+        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+            <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
+
+             {/* Service Info */}
+            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200">
+                <div className="w-12 h-12 rounded-full bg-[#E8F2EC] flex items-center justify-center text-2xl">
+                    🎓
+                </div>
+                <div>
+                    <div className="font-bold text-gray-900 text-sm">Shadow Teacher</div>
+                    <div className="text-xs text-gray-500">Educational Support</div>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Plan</span>
+                    <span className="font-medium text-gray-900">
+                        {SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.label || 'One-Time'}
+                    </span>
+                </div>
+                {formData.date && (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Date</span>
+                        <span className="font-medium text-gray-900">
+                            {new Date(formData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                    </div>
+                )}
+                 {formData.startTime && (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Time</span>
+                        <span className="font-medium text-gray-900">{formData.startTime}</span>
+                    </div>
+                )}
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Duration</span>
+                    <span className="font-medium text-gray-900">{formData.duration || 0} hours</span>
+                </div>
+                
+                <div className="border-t border-gray-200 my-4" />
+
+                {pricing ? (
+                    <>
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-500">Session Cost</span>
+                            <span className="font-medium">₹{pricing.sessionCost.toLocaleString()}</span>
+                        </div>
+                        {pricing.discount > 0 && (
+                            <div className="flex justify-between text-sm mb-2 text-green-600">
+                                <span>Discount ({pricing.discount}%)</span>
+                                <span>-₹{pricing.discountAmount.toLocaleString()}</span>
+                            </div>
+                        )}
+                        {formData.planType !== 'ONE_TIME' && (
+                            <div className="flex justify-between text-sm font-medium pt-2 border-t border-dashed border-gray-200">
+                                <span className="text-gray-700">Monthly</span>
+                                <span>₹{pricing.monthlyCost.toLocaleString()}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
+                             <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL</span>
+                            <span className="text-xl font-bold text-[#1B3022]">₹{pricing.totalCost.toLocaleString()}</span>
+                        </div>
+                    </>
+                ) : (
+                     <div className="text-center text-sm text-gray-400 py-2">
+                        Pricing calculated based on duration
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <motion.div
             variants={overlayVars}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center sm:p-4"
             onClick={onClose}
         >
             <motion.div
@@ -264,28 +339,39 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 animate="visible"
                 exit="exit"
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-[32px] max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative overflow-hidden"
+                className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[90vh] shadow-2xl relative overflow-hidden flex flex-col"
             >
                 {/* Header */}
-                {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-[#8DA399] to-[#7a8f86] text-white p-8 z-10">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-3xl font-bold font-display mb-2">Shadow Teacher Booking</h2>
-                            <p className="text-white/90 font-body">Specialized educational support with flexible plans</p>
-                        </div>
-                        <button
+                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
+                     <div className="flex items-center gap-4">
+                        <button 
                             onClick={onClose}
-                            className="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
+                            className="w-8 h-8 -ml-2 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden"
                         >
-                            <X className="w-6 h-6" />
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+                        <div>
+                            <h2 className="text-xl font-bold font-display text-gray-900">Booking</h2>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                            <button
+                            onClick={onClose}
+                            className="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 items-center justify-center transition-colors text-gray-500"
+                        >
+                            <X size={18} />
+                        </button>
+                            <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
+                            <span className="font-bold text-gray-900 text-xl tracking-widest pb-2">...</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Location Warning */}
                 {missingLocation && (
-                    <div className="mx-8 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                    <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 shrink-0">
                         <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-amber-800">Location Required</p>
@@ -300,226 +386,247 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     </div>
                 )}
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-8">
-                    {/* Subscription Plan Selection */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Choose Your Plan</h3>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {SUBSCRIPTION_PLANS.map((plan) => {
-                                const isSelected = formData.planType === plan.id;
-                                return (
-                                    <button
-                                        key={plan.id}
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, planType: plan.id })}
-                                        className={`relative p-6 rounded-2xl border-2 transition-all text-left ${isSelected
-                                            ? 'bg-[#8DA399] text-white border-[#8DA399] shadow-xl'
-                                            : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
-                                            }`}
-                                    >
-                                        {plan.popular && (
-                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CC7A68] text-white text-xs font-bold px-3 py-1 rounded-full">
-                                                MOST POPULAR
-                                            </div>
-                                        )}
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div>
-                                                <h4 className="font-bold text-lg font-display">{plan.label}</h4>
-                                                <p className={`text-sm mt-1 ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
-                                                    {plan.description}
-                                                </p>
-                                            </div>
-                                            {isSelected && (
-                                                <div className="w-6 h-6 rounded-full bg-[#0F172A] flex items-center justify-center">
-                                                    <Check className="w-4 h-4 text-white" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        {plan.discount > 0 && (
-                                            <div className="mt-3 inline-block bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">
-                                                Save {plan.discount}%
-                                            </div>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+                {/* Responsive Layout Container */}
+                <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+                    
+                    {/* LEFT Panel (Form) */}
+                    <div className="flex-1 overflow-y-auto scrollbar-hide">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
+                            
+                            {/* Title */}
+                            <h1 className="text-3xl font-display font-medium text-[#1B3022]">
+                                Book a Shadow Teacher
+                            </h1>
 
-                    {/* Date Selection */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Calendar className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Select Date</h3>
-                        </div>
-                        <div className="flex gap-3 overflow-x-auto pb-2">
-                            {availableDates.map((date) => {
-                                const dateStr = formatDate(date);
-                                const isSelected = formData.date === dateStr;
-                                return (
-                                    <button
-                                        key={dateStr}
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, date: dateStr })}
-                                        className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected
-                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                            : 'bg-white border-gray-200 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
-                                            }`}
-                                    >
-                                        <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                                            {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                                        </span>
-                                        <span className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-[#8DA399]' : ''}`}>
-                                            {date.getDate()}
-                                        </span>
-                                        <span className={`text-xs ${isSelected ? 'text-white/90' : 'text-gray-400'}`}>
-                                            {date.toLocaleDateString('en-US', { month: 'short' })}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Time Selection */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Start Time</h3>
-                        </div>
-                        <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
-                            {TIME_SLOTS.map((time) => {
-                                const isSelected = formData.startTime === time;
-                                return (
-                                    <button
-                                        key={time}
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, startTime: time })}
-                                        className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
-                                            }`}
-                                    >
-                                        {time}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Session Duration</h3>
-                        </div>
-                        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                            {DURATION_OPTIONS.map((option) => {
-                                const isSelected = formData.duration === option.value;
-                                return (
-                                    <button
-                                        key={option.value}
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, duration: option.value })}
-                                        className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399] hover:bg-[#F5F8F6]'
-                                            }`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Number of Students */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Users className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Number of Students</h3>
-                        </div>
-                        <div className="flex gap-3">
-                            {['1', '2', '3', '4', '5+'].map((num) => {
-                                const isSelected = formData.numStudents === num;
-                                return (
-                                    <button
-                                        key={num}
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, numStudents: num })}
-                                        className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected
-                                            ? 'bg-[#8DA399] text-white border-[#8DA399]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-[#8DA399]'
-                                            }`}
-                                    >
-                                        {num}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Special Educational Requirements */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <FileText className="w-5 h-5 text-[#8DA399]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Special Educational Requirements</h3>
-                        </div>
-                        <textarea
-                            value={formData.specialRequirements}
-                            onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
-                            placeholder="Learning needs, educational goals, specific support required..."
-                            className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#8DA399] focus:ring-2 focus:ring-[#8DA399]/20 focus:outline-none resize-none text-gray-900 placeholder:text-gray-400"
-                        />
-                    </div>
-
-                    {/* Pricing Summary */}
-                    {pricing && (
-                        <div className="mb-8 p-6 bg-gradient-to-br from-[#F5F8F6] to-[#E9EFED] rounded-2xl border-2 border-[#8DA399]/30">
-                            <h4 className="font-bold text-lg text-[#0F172A] mb-4 font-display">Pricing Summary</h4>
-                            <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Session Cost ({formData.duration || 0} hours)</span>
-                                    <span className="font-semibold text-gray-900">₹{pricing.sessionCost.toLocaleString()}</span>
+                            {/* Subscription Plan Selection */}
+                            <div>
+                                <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                    Choose Your Plan
                                 </div>
-                                {pricing.discount > 0 && (
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-green-600">Discount ({pricing.discount}%)</span>
-                                        <span className="font-semibold text-green-600">-₹{pricing.discountAmount.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                {formData.planType !== 'ONE_TIME' && (
-                                    <>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Monthly Cost ({pricing.sessionsPerMonth} sessions/month)</span>
-                                            <span className="font-semibold text-gray-900">₹{pricing.monthlyCost.toLocaleString()}/month</span>
-                                        </div>
-                                        <div className="h-px bg-[#8DA399]/30 my-2" />
-                                    </>
-                                )}
-                                <div className="flex justify-between text-lg pt-2">
-                                    <span className="font-bold text-[#0F172A]">
-                                        {formData.planType === 'ONE_TIME' ? 'Total' : 'Total Plan Cost'}
-                                    </span>
-                                    <span className="font-bold text-[#8DA399]">₹{pricing.totalCost.toLocaleString()}</span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {SUBSCRIPTION_PLANS.map((plan) => {
+                                        const isSelected = formData.planType === plan.id;
+                                        return (
+                                            <button
+                                                key={plan.id}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, planType: plan.id })}
+                                                className={`relative p-5 rounded-2xl border transition-all text-left group ${isSelected
+                                                    ? 'bg-[#1B3022] text-white border-[#1B3022] shadow-lg shadow-[#1B3022]/10'
+                                                    : 'bg-white border-gray-200 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                {plan.popular && (
+                                                    <div className="absolute -top-3 left-6 bg-[#CC7A68] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
+                                                        POPULAR
+                                                    </div>
+                                                )}
+                                                <div className="flex items-start justify-between mb-1">
+                                                    <div>
+                                                        <h4 className="font-bold text-base font-display">{plan.label}</h4>
+                                                        <p className={`text-xs mt-1 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                                                            {plan.description}
+                                                        </p>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                                                            <Check className="w-3 h-3 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {plan.discount > 0 && (
+                                                    <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${
+                                                        isSelected ? 'bg-white/20 text-white' : 'bg-green-100 text-green-800'
+                                                    }`}>
+                                                        Save {plan.discount}%
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
-                        </div>
-                    )}
 
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        disabled={loading || missingLocation}
-                        className="w-full bg-[#8DA399] hover:bg-[#7a8f86] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                    >
-                        {loading ? 'Finding Shadow Teachers...' : 'Find My Shadow Teacher'}
-                    </button>
-                </form>
+                            {/* Date Selection */}
+                            <div>
+                                <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                    Select Date
+                                </div>
+                                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
+                                    {availableDates.map((date) => {
+                                        const dateStr = formatDate(date);
+                                        const isSelected = formData.date === dateStr;
+                                        return (
+                                            <button
+                                                key={dateStr}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, date: dateStr })}
+                                                className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border transition-all min-w-[70px] ${isSelected
+                                                    ? 'bg-[#1B3022] text-white border-[#1B3022] shadow-md'
+                                                    : 'bg-white border-gray-200 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                <span className={`text-[10px] font-bold uppercase mb-1 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                                                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                                </span>
+                                                <span className="text-xl font-bold mb-1">
+                                                    {date.getDate()}
+                                                </span>
+                                                <span className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                                                    {date.toLocaleDateString('en-US', { month: 'short' })}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Time Selection */}
+                            <div>
+                                <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                    Start Time
+                                </div>
+                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                                    {TIME_SLOTS.map((time) => {
+                                        const isSelected = formData.startTime === time;
+                                        return (
+                                            <button
+                                                key={time}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, startTime: time })}
+                                                className={`py-2 px-1 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                    ? 'bg-[#1B3022] text-white border-[#1B3022]'
+                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Duration & Students Row */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                {/* Duration */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Duration
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {DURATION_OPTIONS.slice(0, 4).map((option) => {
+                                            const isSelected = formData.duration === option.value;
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, duration: option.value })}
+                                                    className={`flex-1 min-w-[80px] py-3 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-[#6b5b3d] text-white border-[#6b5b3d]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#6b5b3d]'
+                                                        }`}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {DURATION_OPTIONS.slice(4).map((option) => {
+                                            const isSelected = formData.duration === option.value;
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, duration: option.value })}
+                                                    className={`flex-1 min-w-[80px] py-3 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-[#6b5b3d] text-white border-[#6b5b3d]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#6b5b3d]'
+                                                        }`}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Number of Students */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Number of Students
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {['1', '2', '3', '4', '5+'].map((num) => {
+                                            const isSelected = formData.numStudents === num;
+                                            return (
+                                                <button
+                                                    key={num}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, numStudents: num })}
+                                                    className={`w-12 h-12 rounded-xl font-bold border transition-all ${isSelected
+                                                        ? 'bg-[#1B3022] text-white border-[#1B3022]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#1B3022]'
+                                                        }`}
+                                                >
+                                                    {num}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Special Educational Requirements */}
+                            <div>
+                                <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                    Special Educational Requirements
+                                </div>
+                                <textarea
+                                    value={formData.specialRequirements}
+                                    onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
+                                    placeholder="Learning needs, educational goals, specific support required..."
+                                    className="w-full h-28 px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022] focus:outline-none resize-none text-sm bg-gray-50/50"
+                                />
+                            </div>
+
+                            {/* Mobile Only: Service Summary at Bottom */}
+                            <div className="lg:hidden mt-8 pt-8 border-t border-gray-100">
+                                <ServiceSummary />
+                                <button
+                                    type="submit"
+                                    disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                >
+                                    {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
+                                </button>
+                            </div>
+                        
+                        </form>
+                    </div>
+
+                    {/* RIGHT Panel (Desktop Only) */}
+                    <div className="hidden lg:flex w-[400px] border-l border-gray-100 bg-white flex-col p-8 shrink-0">
+                         <div className="sticky top-0">
+                            <ServiceSummary />
+                            <div className="mt-6">
+                                <button
+                                    type="submit"
+                                    onClick={handleSubmit}
+                                    disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                >
+                                    {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
+                                </button>
+                                 {(!formData.date || !formData.duration) && (
+                                    <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
+                                        Please select date and duration
+                                    </p>
+                                )}
+                            </div>
+                         </div>
+                    </div>
+                </div>
             </motion.div>
         </motion.div>
     );

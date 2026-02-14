@@ -57,6 +57,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
           } catch (err) {
             console.warn('Reverse geocoding failed:', err);
           }
+          setAddress(addressText);
 
           // Update user profile if logged in
           if (user?.id) {
@@ -94,16 +95,16 @@ export const LocationModal: React.FC<LocationModalProps> = ({
         }
       },
       (error) => {
-        console.error('Geolocation error:', error);
         let errorMessage = 'Unable to retrieve your location';
-        if (error.code === 1)
-          errorMessage =
-            'Location permission denied. Please enable it in your browser settings.';
-        else if (error.code === 2)
-          errorMessage = 'Location information is unavailable.';
-        else if (error.code === 3)
-          errorMessage = 'Location retrieval timed out.';
-
+        
+        if (error.code === 1) {
+          errorMessage = 'Please allow location access in your browser settings';
+        } else if (error.code === 2) {
+          errorMessage = 'Unable to determine your location. Please check your Wi-Fi and Location Services';
+        } else if (error.code === 3) {
+          errorMessage = 'Location request timed out. Please try again';
+        }
+        
         addToast({ message: errorMessage, type: 'error' });
         setGeoLoading(false);
       }

@@ -197,6 +197,71 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         }
     };
 
+    const ServiceSummary = () => (
+        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+            <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
+
+             {/* Service Info */}
+            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200">
+                <div className="w-12 h-12 rounded-full bg-[#FDF3F1] flex items-center justify-center text-2xl">
+                    💝
+                </div>
+                <div>
+                    <div className="font-bold text-gray-900 text-sm">Special Needs Care</div>
+                    <div className="text-xs text-gray-500">Professional Support</div>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+                 {formData.date && (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Date</span>
+                        <span className="font-medium text-gray-900">
+                            {new Date(formData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                    </div>
+                )}
+                 {formData.startTime && (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Time</span>
+                        <span className="font-medium text-gray-900">{formData.startTime}</span>
+                    </div>
+                )}
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Duration</span>
+                    <span className="font-medium text-gray-900">{formData.duration || 0} hours</span>
+                </div>
+                 <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">People</span>
+                    <span className="font-medium text-gray-900">
+                         {selectedChildIds.length > 0 ? selectedChildIds.length : formData.numPeople}
+                    </span>
+                </div>
+                
+                <div className="border-t border-gray-200 my-4" />
+
+                {(hourlyRate && formData.duration) ? (
+                    <>
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-500">Hourly Rate</span>
+                            <span className="font-medium">₹{hourlyRate.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
+                             <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL EST.</span>
+                            <span className="text-xl font-bold text-[#CC7A68]">
+                                ₹{(hourlyRate * Number(formData.duration)).toLocaleString()}
+                            </span>
+                        </div>
+                    </>
+                ) : (
+                     <div className="text-center text-sm text-gray-400 py-2">
+                        Pricing calculated based on duration
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <>
             <motion.div
@@ -204,7 +269,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center sm:p-4"
                 onClick={onClose}
             >
                 <motion.div
@@ -213,194 +278,266 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                     animate="visible"
                     exit="exit"
                     onClick={(e) => e.stopPropagation()}
-                    className="bg-white rounded-[32px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative overflow-hidden"
+                    className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[90vh] shadow-2xl relative overflow-hidden flex flex-col"
                 >
-                    <div className="sticky top-0 bg-gradient-to-r from-[#CC7A68] to-[#b06a5b] text-white p-8 z-10">
-                        <div className="flex items-center justify-between">
+                     {/* Header */}
+                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
+                         <div className="flex items-center gap-4">
+                            <button 
+                                onClick={onClose}
+                                className="w-8 h-8 -ml-2 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
                             <div>
-                                <h2 className="text-3xl font-bold font-display mb-2">Special Needs Care</h2>
-                                <p className="text-red-100 font-body">Professional support for unique requirements</p>
+                                <h2 className="text-xl font-bold font-display text-gray-900">Booking</h2>
                             </div>
-                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
-                                <X className="w-6 h-6" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                                <button
+                                onClick={onClose}
+                                className="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 items-center justify-center transition-colors text-gray-500"
+                            >
+                                <X size={18} />
+                            </button>
+                                <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
+                                <span className="font-bold text-gray-900 text-xl tracking-widest pb-2">...</span>
                             </button>
                         </div>
                     </div>
 
+                    {/* Location Warning */}
                     {missingLocation && (
-                        <div className="mx-8 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                        <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 shrink-0">
                             <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
                             <div>
                                 <p className="text-sm font-medium text-amber-800">Location Required</p>
                                 <p className="text-sm text-amber-700 mt-1">
-                                    Please set your location in your <Link href="/dashboard/profile" className="underline font-medium text-amber-900">profile settings</Link>.
+                                    Please set your location in your{' '}
+                                    <Link href="/dashboard/profile" className="underline font-medium text-amber-900">
+                                        profile settings
+                                    </Link>{' '}
+                                    to use auto-matching.
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="p-8">
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Calendar className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Select Date</h3>
-                            </div>
-                            <div className="flex gap-3 overflow-x-auto pb-2">
-                                {availableDates.map((date) => {
-                                    const dateStr = formatDate(date);
-                                    const isSelected = formData.date === dateStr;
-                                    return (
-                                        <button
-                                            key={dateStr}
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, date: dateStr })}
-                                            className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[80px] ${isSelected ? 'bg-[#CC7A68] text-white border-[#CC7A68]' : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-[#FDF3F1]'
-                                                }`}
-                                        >
-                                            <span className={`text-xs font-medium mb-1 ${isSelected ? 'text-red-100' : 'text-gray-500'}`}>
-                                                {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                                            </span>
-                                            <span className={`text-2xl font-bold ${isToday(date) && !isSelected ? 'text-[#CC7A68]' : ''}`}>{date.getDate()}</span>
-                                            <span className={`text-xs ${isSelected ? 'text-red-100' : 'text-gray-400'}`}>
-                                                {date.toLocaleDateString('en-US', { month: 'short' })}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                    {/* Responsive Layout Container */}
+                    <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+                        
+                        {/* LEFT Panel (Form) */}
+                        <div className="flex-1 overflow-y-auto scrollbar-hide">
+                            <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
+                                
+                                {/* Title */}
+                                <h1 className="text-3xl font-display font-medium text-[#CC7A68]">
+                                    Special Needs Care
+                                </h1>
 
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Clock className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Start Time</h3>
-                            </div>
-                            <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
-                                {TIME_SLOTS.map((time) => {
-                                    const isSelected = formData.startTime === time;
-                                    return (
-                                        <button
-                                            key={time}
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, startTime: time })}
-                                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected ? 'bg-[#CC7A68] text-white border-[#CC7A68]' : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-[#FDF3F1]'
-                                                }`}
-                                        >
-                                            {time}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Clock className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Duration</h3>
-                            </div>
-                            <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                                {DURATION_OPTIONS.map((option) => {
-                                    const isSelected = formData.duration === option.value;
-                                    return (
-                                        <button
-                                            key={option.value}
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, duration: option.value })}
-                                            className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-all ${isSelected ? 'bg-[#CC7A68] text-white border-[#CC7A68]' : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-[#FDF3F1]'
-                                                }`}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Users className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Who is this for?</h3>
-                            </div>
-
-                            {/* Fallback Manual Counter */}
-                            {children.length === 0 && (
-                                <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                    <p className="text-sm text-gray-600 mb-3">
-                                        No profiles found. You can select the number of people below, or add a profile for better matching.
-                                    </p>
-                                    <div className="flex gap-3">
-                                        {['1', '2', '3'].map((num) => {
-                                            const isSelected = formData.numPeople === num;
+                                {/* Date Selection */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Select Date
+                                    </div>
+                                    <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
+                                        {availableDates.map((date) => {
+                                            const dateStr = formatDate(date);
+                                            const isSelected = formData.date === dateStr;
                                             return (
                                                 <button
-                                                    key={num}
+                                                    key={dateStr}
                                                     type="button"
-                                                    onClick={() => setFormData({ ...formData, numPeople: num })}
-                                                    className={`w-14 h-14 rounded-xl font-semibold border-2 transition-all ${isSelected ? 'bg-[#CC7A68] text-white border-[#CC7A68]' : 'bg-white border-gray-200 hover:border-[#CC7A68]'
+                                                    onClick={() => setFormData({ ...formData, date: dateStr })}
+                                                    className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border transition-all min-w-[70px] ${isSelected
+                                                        ? 'bg-[#CC7A68] text-white border-[#CC7A68] shadow-md'
+                                                        : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-gray-50'
                                                         }`}
                                                 >
-                                                    {num}
+                                                    <span className={`text-[10px] font-bold uppercase mb-1 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                                                        {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                                    </span>
+                                                    <span className="text-xl font-bold mb-1">
+                                                        {date.getDate()}
+                                                    </span>
+                                                    <span className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                                                        {date.toLocaleDateString('en-US', { month: 'short' })}
+                                                    </span>
                                                 </button>
                                             );
                                         })}
                                     </div>
                                 </div>
-                            )}
 
-                            <ChildSelector
-                                childrenMap={children}
-                                selectedIds={selectedChildIds}
-                                onChange={handleChildSelect}
-                                onAddNew={() => setIsAddChildModalOpen(true)}
-                            />
+                                {/* Time Selection */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Start Time
+                                    </div>
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2">
+                                        {TIME_SLOTS.map((time) => {
+                                            const isSelected = formData.startTime === time;
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, startTime: time })}
+                                                    className={`py-2 px-1 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-[#CC7A68] text-white border-[#CC7A68]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#CC7A68] hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Duration */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Duration
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {DURATION_OPTIONS.map((option) => {
+                                            const isSelected = formData.duration === option.value;
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, duration: option.value })}
+                                                    className={`flex-1 min-w-[80px] py-3 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-[#b06a5b] text-white border-[#b06a5b]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#b06a5b]'
+                                                        }`}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                 {/* Whom For (Children/People) */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Who is this for?
+                                    </div>
+                                    
+                                     {/* Fallback Manual Counter if no children */}
+                                    {children.length === 0 && (
+                                        <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                            <p className="text-xs text-gray-600 mb-3">
+                                                No profiles found. You can select the number of people below, or add a profile for better matching.
+                                            </p>
+                                            <div className="flex gap-3">
+                                                {['1', '2', '3'].map((num) => {
+                                                    const isSelected = formData.numPeople === num;
+                                                    return (
+                                                        <button
+                                                            key={num}
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, numPeople: num })}
+                                                            className={`w-12 h-12 rounded-xl font-bold border transition-all ${isSelected
+                                                                ? 'bg-[#CC7A68] text-white border-[#CC7A68]'
+                                                                : 'bg-white border-gray-200 text-gray-700 hover:border-[#CC7A68]'
+                                                                }`}
+                                                        >
+                                                            {num}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <ChildSelector
+                                        childrenMap={children}
+                                        selectedIds={selectedChildIds}
+                                        onChange={handleChildSelect}
+                                        onAddNew={() => setIsAddChildModalOpen(true)}
+                                    />
+                                </div>
+
+                                {/* Specific Requirements */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Specific Requirements
+                                    </div>
+                                    <textarea
+                                        value={formData.medicalConditions}
+                                        onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
+                                        placeholder="Please describe any specific needs, conditions, or routines we should know about..."
+                                        className="w-full h-24 px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#CC7A68] focus:ring-1 focus:ring-[#CC7A68] focus:outline-none resize-none text-sm bg-gray-50/50"
+                                    />
+                                </div>
+
+                                {/* Mobility */}
+                                <div>
+                                    <label className="flex items-center gap-3 cursor-pointer p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.mobilityAssistance}
+                                            onChange={(e) => setFormData({ ...formData, mobilityAssistance: e.target.checked })}
+                                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#CC7A68] focus:ring-[#CC7A68]"
+                                        />
+                                        <span className="text-gray-700 font-medium text-sm">Mobility assistance required</span>
+                                    </label>
+                                </div>
+
+                                {/* Additional Notes */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Additional Notes (Optional)
+                                    </div>
+                                    <textarea
+                                        value={formData.specialRequirements}
+                                        onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
+                                        placeholder="Any other preferences or special instructions..."
+                                        className="w-full h-24 px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#CC7A68] focus:ring-1 focus:ring-[#CC7A68] focus:outline-none resize-none text-sm bg-gray-50/50"
+                                    />
+                                </div>
+
+                                {/* Mobile Only: Service Summary at Bottom */}
+                                <div className="lg:hidden mt-8 pt-8 border-t border-gray-100">
+                                    <ServiceSummary />
+                                    <button
+                                        type="submit"
+                                        disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                    >
+                                        {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
+                                    </button>
+                                </div>
+                            
+                            </form>
                         </div>
 
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <HeartHandshake className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Specific Requirements</h3>
-                            </div>
-                            <textarea
-                                value={formData.medicalConditions}
-                                onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
-                                placeholder="Please describe any specific needs, conditions, or routines we should know about..."
-                                className="w-full h-24 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 focus:outline-none resize-none"
-                            />
+                        {/* RIGHT Panel (Desktop Only) */}
+                        <div className="hidden lg:flex w-[400px] border-l border-gray-100 bg-white flex-col p-8 shrink-0">
+                             <div className="sticky top-0">
+                                <ServiceSummary />
+                                <div className="mt-6">
+                                    <button
+                                        type="submit"
+                                        onClick={handleSubmit}
+                                        disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                    >
+                                        {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
+                                    </button>
+                                     {(!formData.date || !formData.duration) && (
+                                        <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
+                                            Please select date and duration
+                                        </p>
+                                    )}
+                                </div>
+                             </div>
                         </div>
-
-                        <div className="mb-8">
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.mobilityAssistance}
-                                    onChange={(e) => setFormData({ ...formData, mobilityAssistance: e.target.checked })}
-                                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#CC7A68] focus:ring-[#CC7A68]"
-                                />
-                                <span className="text-gray-700 font-medium">Mobility assistance required</span>
-                            </label>
-                        </div>
-
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <FileText className="w-5 h-5 text-[#CC7A68]" />
-                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Additional Notes (Optional)</h3>
-                            </div>
-                            <textarea
-                                value={formData.specialRequirements}
-                                onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
-                                placeholder="Any other preferences or special instructions..."
-                                className="w-full h-24 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#CC7A68] focus:ring-2 focus:ring-[#CC7A68]/20 focus:outline-none resize-none"
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading || missingLocation}
-                            className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 shadow-lg hover:shadow-xl"
-                        >
-                            {loading ? 'Finding Caregivers...' : 'Find My Caregiver'}
-                        </button>
-                    </form>
+                    </div>
                 </motion.div>
             </motion.div>
 
