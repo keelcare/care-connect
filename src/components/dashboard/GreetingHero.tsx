@@ -16,7 +16,7 @@ export function GreetingHero({ userName, carePlanUpdate }: GreetingHeroProps) {
     };
 
     return (
-        <section className="relative mb-fluid-sm pt-3">
+        <section className="relative mb-fluid-sm pt-10">
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

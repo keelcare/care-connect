@@ -61,7 +61,7 @@ export function NewUserDashboard() {
     const { user } = useAuth();
     
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pb-5 lg:h-[calc(100vh-140px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pb-5 pt-10 lg:h-[calc(100vh-140px)]">
             {/* Left Column: Banner & Quick Actions */}
             <div className="lg:col-span-2 space-y-5 flex flex-col h-full">
                 {/* Welcome Banner */}

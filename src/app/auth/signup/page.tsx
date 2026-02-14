@@ -45,6 +45,15 @@ function SignupContent() {
     agreeToTerms: false,
     categories: [] as string[],
   });
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    categories: '',
+    terms: '',
+  });
 
   const categoriesOptions = [
     { label: 'Elder Care', value: 'EC' },
@@ -53,17 +62,73 @@ function SignupContent() {
     { label: 'Shadow Teacher', value: 'ST' },
   ];
 
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      categories: '',
+      terms: '',
+    };
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+      isValid = false;
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+      isValid = false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+
+    if (role === 'caregiver' && formData.categories.length === 0) {
+      newErrors.categories = 'Please select at least one category';
+      isValid = false;
+    }
+
+    if (!formData.agreeToTerms) {
+      newErrors.terms = 'You must agree to the terms';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     try {
       const backendRole = role === 'family' ? 'parent' : 'nanny';
-
-      if (backendRole === 'nanny' && formData.categories.length === 0) {
-        alert('Please select at least one category.');
-        setIsLoading(false);
-        return;
-      }
 
       await api.auth.signup({
         ...formData,
@@ -441,7 +506,7 @@ function SignupContent() {
                   onChange={(e) =>
                     setFormData({ ...formData, firstName: e.target.value })
                   }
-                  required
+                  error={errors.firstName}
                   className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
                   style={
                     {
@@ -457,7 +522,7 @@ function SignupContent() {
                   onChange={(e) =>
                     setFormData({ ...formData, lastName: e.target.value })
                   }
-                  required
+                  error={errors.lastName}
                   className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
                   style={
                     {
@@ -477,7 +542,7 @@ function SignupContent() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                required
+                error={errors.email}
                 className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
                 style={
                   {
@@ -496,7 +561,7 @@ function SignupContent() {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                required
+                error={errors.password}
                 className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
                 style={
                   {
@@ -506,7 +571,24 @@ function SignupContent() {
                 }
               />
 
-
+              <Input
+                label="Confirm Password"
+                type="password"
+                placeholder="Confirm your password"
+                leftIcon={<Lock size={18} />}
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
+                error={errors.confirmPassword}
+                className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
+                style={
+                  {
+                    '--tw-ring-color':
+                      role === 'caregiver' ? '#059669' : '#0d9488',
+                  } as React.CSSProperties
+                }
+              />
 
               {role === 'caregiver' && (
                 <div className="space-y-1">
@@ -518,15 +600,18 @@ function SignupContent() {
                     onChange={(categories) =>
                       setFormData({ ...formData, categories })
                     }
+                    error={errors.categories}
                     className="w-full"
                   />
-                  <p className="text-xs text-neutral-500">
-                    Select at least one category to proceed.
-                  </p>
+                  {!errors.categories && (
+                    <p className="text-xs text-neutral-500">
+                      Select at least one category to proceed.
+                    </p>
+                  )}
                 </div>
               )}
 
-              <div className="flex items-start pt-2">
+              <div className="flex items-start pt-2 flex-col gap-1">
                 <Checkbox
                   label={
                     <span className="text-sm text-neutral-500">
@@ -554,13 +639,13 @@ function SignupContent() {
                     })
                   }
                 />
+                {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
               </div>
 
               <Button
                 type="submit"
                 size="lg"
                 isLoading={isLoading}
-                disabled={!formData.agreeToTerms}
                 className={`w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium ${currentTheme.button}`}
               >
                 Create Account
@@ -585,7 +670,7 @@ function SignupContent() {
                 }
 
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
-                const apiUrl =
+                 const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
                 const origin = window.location.origin;
 

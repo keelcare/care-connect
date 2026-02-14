@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { PremiumNavbar } from '@/components/layout/Navbar/PremiumNavbar';
+import { Navbar } from '@/components/layout/Navbar';
 import BottomNavBar from '@/components/layout/BottomNavBar';
 
 export default function ParentLayout({
@@ -24,8 +24,8 @@ export default function ParentLayout({
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F9F7F2]">
-        <div className="w-8 h-8 border-4 border-[#1B3022] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-4 border-primary-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -36,12 +36,12 @@ export default function ParentLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2]">
-      {/* Premium Navbar */}
-      <PremiumNavbar />
+    <div className="min-h-screen bg-background">
+      {/* Unified Navbar */}
+      <Navbar />
 
       {/* Main Content Area */}
-      <main className="pt-24 pb-24 lg:pb-8 px-4 md:px-6">
+      <main className="pt-24 pb-24 lg:pb-8 px-5 md:px-6">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>

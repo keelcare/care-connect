@@ -34,27 +34,27 @@ const iconMap = {
 
 const typeStyles = {
   success: {
-    bg: 'bg-[#F2F7F4]', // Mint/Cream
-    text: 'text-[#1B3022]', // Deep Forest
-    border: 'border-[#1B3022]/20',
+    bg: 'bg-primary-50', // Mint/Cream
+    text: 'text-primary-900', // Deep Forest
+    border: 'border-primary-900/20',
     icon: CheckCircle
   },
   info: {
     bg: 'bg-white',
-    text: 'text-[#0F172A]', // Navy
+    text: 'text-gray-900', // Navy
     border: 'border-gray-200',
     icon: Info
   },
   warning: {
-    bg: 'bg-[#F5F8F6]', // Sage tint
-    text: 'text-[#8DA399]', // Muted Sage
-    border: 'border-[#8DA399]/20',
+    bg: 'bg-neutral-50', // Sage tint
+    text: 'text-secondary', // Muted Sage
+    border: 'border-secondary/20',
     icon: AlertTriangle
   },
   error: {
-    bg: 'bg-[#FDF3F1]', // Terracotta tint
-    text: 'text-[#CC7A68]', // Terracotta
-    border: 'border-[#CC7A68]/20',
+    bg: 'bg-red-50', // Terracotta tint
+    text: 'text-terracotta', // Terracotta
+    border: 'border-terracotta/20',
     icon: AlertCircle
   },
 };
@@ -101,11 +101,11 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className={`font-bold font-display text-lg ${notification.is_read ? 'text-gray-700' : 'text-[#0F172A]'}`}>
+            <h3 className={`font-bold font-display text-lg ${notification.is_read ? 'text-gray-700' : 'text-primary-900'}`}>
               {notification.title}
             </h3>
             {!notification.is_read && (
-              <span className="flex-shrink-0 w-2.5 h-2.5 bg-[#CC7A68] rounded-full mt-2 animate-pulse" />
+              <span className="flex-shrink-0 w-2.5 h-2.5 bg-terracotta rounded-full mt-2 animate-pulse" />
             )}
           </div>
 

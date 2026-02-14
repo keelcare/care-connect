@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar } from './Navbar';
+import { Navbar } from '@/components/layout/Navbar';
 import { Hero } from './Hero';
 import { BentoServices } from './BentoServices';
 
@@ -9,7 +9,7 @@ import { Footer } from './Footer';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-[#F9F7F2] selection:bg-[#CC7A68] selection:text-white font-sans">
+    <div className="min-h-screen bg-background selection:bg-terracotta selection:text-white font-sans">
       <Navbar />
       <main>
         <Hero />
