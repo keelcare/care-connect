@@ -24,7 +24,7 @@ import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
 import { Avatar } from '@/components/ui/avatar';
 import { LocationModal } from '@/components/features/LocationModal';
 import { usePreferences } from '@/hooks/usePreferences';
-import { NannyNavbar } from '@/components/layout/Navbar/NannyNavbar'; // Import Nanny Navbar
+import { Navbar } from '@/components/layout/Navbar';
 
 export default function DashboardLayout({
   children,
@@ -105,7 +105,7 @@ export default function DashboardLayout({
   if (user?.role === 'nanny') {
       return (
           <div className="min-h-screen bg-neutral-50">
-              <NannyNavbar />
+              <Navbar />
               <main className="pt-24 min-h-screen">
                   <div className="max-w-7xl mx-auto p-4 md:p-8">
                       {children}

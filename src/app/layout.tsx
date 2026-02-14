@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Header } from '@/components/layout/Header';
+import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 import { AuthProvider } from '@/context/AuthContext';
@@ -70,16 +70,17 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/favorites');
 
   return (
-    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-[#F9F7F2] text-gray-900`}>
+    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
-            {!hideHeader && <Header />}
+            {!hideHeader && <Navbar />}
             <main
+              className={!hideHeader ? 'pt-24' : ''}
               style={{
                 minHeight: hideHeader
                   ? '100vh'
-                  : 'calc(100vh - 72px - 400px)',
+                  : 'calc(100vh - 96px-400px)',
               }}
             >
               {children}

@@ -36,10 +36,10 @@ export const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-8 max-w-lg mx-auto"
         >
-          <div className="w-6 h-6 rounded-full bg-[#1B3022]/10 flex items-center justify-center shrink-0">
-            <Quote size={12} className="text-[#1B3022] fill-current" />
+          <div className="w-6 h-6 rounded-full bg-primary-900/10 flex items-center justify-center shrink-0">
+            <Quote size={12} className="text-primary-900 fill-current" />
           </div>
-          <p className="text-fluid-xs md:text-fluid-sm font-medium text-[#1B3022] italic">
+          <p className="text-fluid-xs md:text-fluid-sm font-medium text-primary-900 italic">
             "It is not how much we do, but how much love we put in the doing."
             <span className="block text-[10px] text-gray-400 not-italic mt-0.5 font-semibold tracking-wide uppercase">— Mother Teresa</span>
           </p>
@@ -49,7 +49,7 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.1 }}
-          className="text-fluid-5xl font-display font-medium text-[#1B3022] leading-[1.1] mb-8"
+          className="text-fluid-5xl font-display font-medium text-primary-900 leading-[1.1] mb-8"
         >
           Where Big Needs <br />
           Meet Gentle Care
@@ -71,17 +71,17 @@ export const Hero = () => {
           className="flex flex-col sm:flex-row gap-6 justify-center"
         >
           <Link href="/book-service">
-            <button className="min-h-tap bg-[#1B3022] text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-primary/10">
+            <button className="min-h-tap bg-primary-900 text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-primary/10">
               Book a Session
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#CC7A68] transition-colors duration-300">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-terracotta transition-colors duration-300">
                 <ArrowUpRight size={18} />
               </div>
             </button>
           </Link>
           <Link href="/services">
-            <button className="min-h-tap bg-[#CC7A68] text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-terracotta/20">
+            <button className="min-h-tap bg-terracotta text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-terracotta/20">
               Our Services
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#1B3022] transition-colors duration-300">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-primary-900 transition-colors duration-300">
                 <ArrowUpRight size={18} />
               </div>
             </button>
@@ -117,8 +117,8 @@ export const Hero = () => {
       </div>
 
       {/* Decorative background blobs */}
-      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-[#1B3022] rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />
-      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-[#CC7A68] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 translate-x-1/2 -z-10" />
+      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary-900 rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />
+      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-terracotta rounded-full mix-blend-multiply filter blur-[120px] opacity-20 translate-x-1/2 -z-10" />
     </section>
   );
 };

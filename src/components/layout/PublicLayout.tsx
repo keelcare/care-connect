@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Navbar } from '@/components/landing-new/Navbar';
+import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/landing-new/Footer';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="min-h-screen bg-[#FDFBF7]">
+        <div className="min-h-screen bg-background">
             <Navbar />
             <main>
                 {children}
