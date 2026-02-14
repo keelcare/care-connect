@@ -78,32 +78,19 @@ export default function RequestDetailsPage() {
   const handleReschedule = () => {
     setIsRescheduleModalOpen(true);
   };
+  const normalizeStatus = (s: any) => String(s || '').trim().toUpperCase();
 
   const confirmedReschedule = async (date: string, startTime: string, endTime: string) => {
     if (!request) return;
 
     try {
-      // Find the actual booking ID if it exists, otherwise reschedule the request
-      let idToReschedule = request.id;
-
-      // If it has a nanny, it's likely a booking, but the logic in api.bookings.reschedule
-      // might expect a booking ID. Let's try to find if there's an associated booking.
-      // For simplicity in this view, we'll try the request rescheduling if the API supports it
-      // or redirect to the bookings page if needed. 
-      // Based on ParentBookingsPage, it uses api.bookings.reschedule(bookingId, ...)
-
-      // Check if this request is already a booking
-      if (['ACCEPTED', 'IN_PROGRESS', 'ASSIGNED'].includes(request.status)) {
-        // It's a booking. We need the booking ID.
-        // In this page we only have the request ID. 
-        // Usually request ID and booking ID are linked.
+      const status = normalizeStatus(request.status);
+      if (['ACCEPTED', 'IN_PROGRESS', 'ASSIGNED', 'CONFIRMED'].includes(status)) {
         await api.bookings.reschedule(request.id, { date, startTime, endTime });
       } else {
-        // It's just a request
         await api.requests.update(request.id, { date, start_time: startTime });
       }
 
-      // Refresh data
       const updated = await api.requests.get(request.id);
       setRequest(updated);
       setIsRescheduleModalOpen(false);
@@ -114,11 +101,27 @@ export default function RequestDetailsPage() {
   };
 
   const formatTime = (timeInput: string) => {
-    if (!timeInput) return '';
+    if (!timeInput) return '—';
     try {
       if (timeInput.includes('T')) {
         const date = new Date(timeInput);
-        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+        }
+      }
+      if (timeInput.includes(':')) {
+        const [hStr, mStr] = timeInput.split(':');
+        let h = parseInt(hStr, 10);
+        let m = parseInt(mStr, 10);
+        if (!isNaN(h) && !isNaN(m)) {
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+        }
       }
       return timeInput;
     } catch (e) {
@@ -158,7 +161,8 @@ export default function RequestDetailsPage() {
   }
 
   const getStatusInfo = (status: string) => {
-    switch (status) {
+    const s = (status || '').toUpperCase();
+    switch (s) {
       case 'PENDING':
         return {
           color: 'text-amber-700 bg-amber-100',
@@ -172,6 +176,7 @@ export default function RequestDetailsPage() {
           text: 'Nanny Assigned',
         };
       case 'ACCEPTED':
+      case 'CONFIRMED':
         return {
           color: 'text-primary-700 bg-primary-100',
           icon: <CheckCircle size={20} />,
@@ -347,17 +352,17 @@ export default function RequestDetailsPage() {
           <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 sticky top-24">
             <h2 className="text-lg font-bold text-neutral-900 mb-4">Actions</h2>
             <div className="space-y-3">
-              {request.status.toUpperCase() === 'PENDING' && (
+              {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                 <Button
                   variant="outline"
                   className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 rounded-xl"
                   onClick={() => setIsCancelModalOpen(true)}
                   isLoading={cancelling}
                 >
-                  Cancel Request
+                  Cancel {['ASSIGNED', 'ACCEPTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) ? 'Booking' : 'Request'}
                 </Button>
               )}
-              {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED'].includes(request.status.toUpperCase()) && (
+              {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                 <Button
                   variant="outline"
                   className="w-full border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-700 hover:border-stone-300 rounded-xl"
@@ -366,14 +371,14 @@ export default function RequestDetailsPage() {
                   Reschedule
                 </Button>
               )}
-              {request.status.toUpperCase() === 'CANCELLED' && (
+              {normalizeStatus(request.status) === 'CANCELLED' && (
                 <div className="p-4 bg-red-50 rounded-xl text-center">
                   <p className="text-red-700 font-medium">
                     This request has been cancelled.
                   </p>
                 </div>
               )}
-              {['ACCEPTED', 'IN_PROGRESS', 'CONFIRMED'].includes(request.status.toUpperCase()) && (
+              {['ACCEPTED', 'IN_PROGRESS', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                 <Button className="w-full rounded-xl shadow-lg hover:shadow-xl transition-all">
                   Message Nanny
                 </Button>

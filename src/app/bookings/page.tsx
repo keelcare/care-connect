@@ -67,6 +67,8 @@ export default function ParentBookingsPage() {
   // Socket Integration
   const { onNotification, offNotification } = useSocket();
 
+  const normalizeStatus = (s: any) => String(s || '').trim().toUpperCase();
+
   useEffect(() => {
     const handleNotification = (data: any) => {
       console.log('Bookings Page - Received Notification:', data);
@@ -337,7 +339,8 @@ export default function ParentBookingsPage() {
 
   const RequestDetailsView = ({ request }: { request: ServiceRequest }) => {
     const getStatusInfo = (status: string) => {
-      switch (status) {
+      const s = normalizeStatus(status);
+      switch (s) {
         case 'PENDING':
           return {
             color: 'text-amber-700 bg-amber-50 border border-amber-200',
@@ -350,11 +353,18 @@ export default function ParentBookingsPage() {
             icon: <CheckCircle size={16} />,
             text: 'Caregiver Assigned',
           };
+        case 'ACCEPTED':
         case 'CONFIRMED':
           return {
             color: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
             icon: <CheckCircle size={16} />,
             text: 'Booking Confirmed',
+          };
+        case 'IN_PROGRESS':
+          return {
+            color: 'text-stone-700 bg-stone-50 border border-stone-200',
+            icon: <Clock size={16} />,
+            text: 'Service In Progress',
           };
         default:
           return {
@@ -408,7 +418,7 @@ export default function ParentBookingsPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Time</label>
-                    <p className="text-primary-900 font-semibold text-lg">{request.start_time} <span className="text-slate-400 text-sm font-normal">({request.duration_hours} hours)</span></p>
+                    <p className="text-primary-900 font-semibold text-lg">{formatTime(request.start_time)} <span className="text-slate-400 text-sm font-normal">({request.duration_hours} hours)</span></p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -468,23 +478,23 @@ export default function ParentBookingsPage() {
               <h2 className="text-md font-bold text-primary-900 mb-4 font-display uppercase tracking-wider text-sm">Actions</h2>
               <div className="space-y-3">
                 {/* Reschedule Button */}
-                {(['CONFIRMED', 'REQUESTED'].includes(request.status.toUpperCase())) && (
+                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                   <Button
                     variant="outline"
                     className="w-full border-primary-100 text-primary-600 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 rounded-xl"
                     onClick={() => handleReschedule(request)}
                     disabled={actionLoading === request.id}
                   >
-                    Reschedule Booking
+                    Reschedule
                   </Button>
                 )}
                 {/* Single Cancel Button */}
-                {(['PENDING', 'ASSIGNED', 'REQUESTED', 'CONFIRMED'].includes(request.status.toUpperCase())) && (
+                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                   <Button
                     variant="outline"
                     className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 rounded-xl"
                     onClick={() => {
-                      const associatedBooking = bookings.find(b => b.job_id === request.id);
+                      const associatedBooking = bookings.find(b => b.job_id === request.id || (b as any).request_id === request.id);
                       if (associatedBooking) {
                         handleCancelBooking(associatedBooking);
                       } else {
@@ -495,7 +505,7 @@ export default function ParentBookingsPage() {
                     disabled={actionLoading === request.id || cancelling}
                     isLoading={cancelling}
                   >
-                    Cancel {['CONFIRMED', 'ASSIGNED'].includes(request.status.toUpperCase()) ? 'Booking' : 'Request'}
+                    Cancel {['ASSIGNED', 'ACCEPTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) ? 'Booking' : 'Request'}
                   </Button>
                 )}
               </div>
@@ -542,26 +552,31 @@ export default function ParentBookingsPage() {
   };
 
   const formatTime = (timeInput: string) => {
-    if (!timeInput) return '';
+    if (!timeInput) return '—';
     try {
-      // If full date string
-      if (timeInput.includes('T') || timeInput.includes('-')) {
+      // Handle ISO string or full date string
+      if (timeInput.includes('T')) {
         const date = new Date(timeInput);
-        return date.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        });
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+        }
       }
-      // If HH:MM format
-      const [hours, minutes] = timeInput.split(':').map(Number);
-      const date = new Date();
-      date.setHours(hours, minutes, 0);
-      return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
+      // Handle HH:mm (24h)
+      if (timeInput.includes(':')) {
+        const parts = timeInput.split(':');
+        let h = parseInt(parts[0], 10);
+        let m = parseInt(parts[1], 10);
+        if (!isNaN(h) && !isNaN(m)) {
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+        }
+      }
+      return timeInput;
     } catch (e) {
       return timeInput;
     }
