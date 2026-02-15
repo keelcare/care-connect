@@ -118,7 +118,7 @@ export default function ParentBookingsPage() {
             return { ...b, nanny: nannyMap.get(nId) };
           }
           return b;
-        });
+        }).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 
         const enrichedRequests = requestsData.map(r => {
           const nId = r.nanny_id || (r as any).nannyId;
@@ -126,6 +126,19 @@ export default function ParentBookingsPage() {
             return { ...r, nanny: nannyMap.get(nId) };
           }
           return r;
+        }).sort((a, b) => {
+          // Sort by date first, then by start_time if dates are equal
+          const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          if (dateComparison !== 0) return dateComparison;
+
+          // Helper to get minutes from HH:mm or ISO string
+          const getMinutes = (timeStr: string) => {
+            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+          };
+
+          return getMinutes(a.start_time) - getMinutes(b.start_time);
         });
 
         setBookings(enrichedBookings);

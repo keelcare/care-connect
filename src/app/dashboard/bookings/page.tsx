@@ -47,7 +47,7 @@ export default function BookingsPage() {
         ]);
 
         // Fetch parent details for bookings that don't have profile info
-        const enrichedBookings = await Promise.all(
+        const enrichedBookings = (await Promise.all(
           bookingsData.map(async (booking) => {
             if (booking.parent?.profiles?.first_name) {
               return booking;
@@ -66,10 +66,25 @@ export default function BookingsPage() {
             }
             return booking;
           })
-        );
+        )).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+        const sortedAssignments = [...assignmentsData].sort((a, b) => {
+          if (!a.request || !b.request) return 0;
+          const dateComparison = new Date(a.request.date).getTime() - new Date(b.request.date).getTime();
+          if (dateComparison !== 0) return dateComparison;
+
+          const getMinutes = (timeStr: string) => {
+            if (!timeStr) return 0;
+            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h || 0) * 60 + (m || 0);
+          };
+
+          return getMinutes(a.request.start_time) - getMinutes(b.request.start_time);
+        });
 
         setBookings(enrichedBookings);
-        setAssignments(assignmentsData);
+        setAssignments(sortedAssignments);
       } else if (user?.role === 'parent') {
         const [bookingsData, requestsData] = await Promise.all([
           api.bookings.getParentBookings(),
@@ -77,7 +92,7 @@ export default function BookingsPage() {
         ]);
 
         // Fetch nanny details for bookings that don't have profile info
-        const enrichedBookings = await Promise.all(
+        const enrichedBookings = (await Promise.all(
           bookingsData.map(async (booking) => {
             if (booking.nanny?.profiles?.first_name) {
               return booking;
@@ -96,10 +111,24 @@ export default function BookingsPage() {
             }
             return booking;
           })
-        );
+        )).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+        const sortedRequests = [...requestsData].sort((a, b) => {
+          const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          if (dateComparison !== 0) return dateComparison;
+
+          const getMinutes = (timeStr: string) => {
+            if (!timeStr) return 0;
+            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h || 0) * 60 + (m || 0);
+          };
+
+          return getMinutes(a.start_time) - getMinutes(b.start_time);
+        });
 
         setBookings(enrichedBookings);
-        setRequests(requestsData);
+        setRequests(sortedRequests);
       }
     } catch (err) {
       console.error('Failed to fetch data:', err);
