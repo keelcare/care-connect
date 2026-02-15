@@ -48,9 +48,9 @@ interface SocketContextType {
   offGeofenceAlert: (callback: (data: GeofenceAlertData) => void) => void;
   subscribeToGeofence: (bookingId: string) => void;
   unsubscribeFromGeofence: (bookingId: string) => void;
-  // General verification/system notifications
-  onNotification: (callback: (data: any) => void) => void;
-  offNotification: (callback: (data: any) => void) => void;
+  // Refresh events for data re-validation
+  onRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
+  offRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -94,12 +94,26 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     newSocket.on('notification', (notification: any) => {
       console.log('Socket notification received:', notification);
+
+      // Trigger toast
       addToast({
         type: notification.type || 'info',
         title: notification.title || 'Notification',
         message: notification.message || '',
         duration: 6000,
       });
+
+      // Also trigger refresh if category is present
+      if (notification.category) {
+        newSocket.emit('local:refresh', {
+          category: notification.category,
+          relatedId: notification.related_id
+        });
+      }
+    });
+
+    newSocket.on('local:refresh', (data: any) => {
+      // This is a local-only event to bridge notifications to refresh listeners
     });
 
     setSocket(newSocket);
@@ -216,6 +230,20 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     [socket]
   );
 
+  const onRefresh = useCallback(
+    (callback: (data: any) => void) => {
+      socket?.on('local:refresh', callback);
+    },
+    [socket]
+  );
+
+  const offRefresh = useCallback(
+    (callback: (data: any) => void) => {
+      socket?.off('local:refresh', callback);
+    },
+    [socket]
+  );
+
   const value = React.useMemo(
     () => ({
       socket,
@@ -235,6 +263,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       unsubscribeFromGeofence,
       onNotification,
       offNotification,
+      onRefresh,
+      offRefresh,
     }),
     [
       socket,
@@ -254,6 +284,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       unsubscribeFromGeofence,
       onNotification,
       offNotification,
+      onRefresh,
+      offRefresh,
     ]
   );
 

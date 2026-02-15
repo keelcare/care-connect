@@ -14,6 +14,7 @@ import {
 import { Bell, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Booking } from '@/types/api';
+import { useSocket } from '@/context/SocketProvider';
 
 type FilterType = 'all' | NotificationCategory;
 
@@ -31,7 +32,6 @@ export default function NannyNotificationsPage() {
   }, [user]);
 
   const fetchNotifications = async () => {
-    setLoading(true);
     try {
       const data = await api.enhancedNotifications.list();
       setNotifications(data);
@@ -41,6 +41,18 @@ export default function NannyNotificationsPage() {
       setLoading(false);
     }
   };
+
+  const { onRefresh, offRefresh } = useSocket();
+
+  useEffect(() => {
+    const handleRefresh = (data: any) => {
+      console.log('Real-time refresh triggered in Nanny Notifications Page:', data);
+      fetchNotifications();
+    };
+
+    onRefresh(handleRefresh);
+    return () => offRefresh(handleRefresh);
+  }, [onRefresh, offRefresh]);
 
   const handleMarkAsRead = async (id: string) => {
     try {

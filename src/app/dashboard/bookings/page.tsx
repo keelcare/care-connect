@@ -9,6 +9,7 @@ import { Plus, Calendar, Clock, MapPin, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
+import { useSocket } from '@/context/SocketProvider';
 import styles from './page.module.css';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
@@ -32,13 +33,9 @@ export default function BookingsPage() {
     null
   );
 
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    }
-  }, [user]);
+  const { onRefresh, offRefresh } = useSocket();
 
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -110,7 +107,25 @@ export default function BookingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user, fetchData]);
+
+  useEffect(() => {
+    const handleRefresh = (data: any) => {
+      console.log('Nanny/User Bookings Page - Received Refresh Event:', data);
+      if (data.category === 'booking' || data.category === 'request' || data.category === 'message') {
+        fetchData();
+      }
+    };
+
+    onRefresh(handleRefresh);
+    return () => offRefresh(handleRefresh);
+  }, [onRefresh, offRefresh, fetchData]);
 
   const handleStartBooking = async (bookingId: string) => {
     try {

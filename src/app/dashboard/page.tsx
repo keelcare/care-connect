@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketProvider';
 import { api } from '@/lib/api';
 import { Booking, Review } from '@/types/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -32,7 +33,7 @@ export default function DashboardPage() {
     }
   }, [user, authLoading]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = React.useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -85,7 +86,31 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    // Auth checks moved to ProtectedRoute
+    if (user && user.role === 'nanny') {
+      fetchDashboardData();
+    }
+  }, [user, authLoading, fetchDashboardData]);
+
+  // Real-time Refresh
+  const { onRefresh, offRefresh } = useSocket();
+
+  useEffect(() => {
+    const handleRefresh = (data: any) => {
+      console.log('Real-time refresh triggered in Nanny Dashboard:', data);
+      if (data.category === 'booking' || data.category === 'request') {
+        fetchDashboardData();
+      }
+    };
+
+    onRefresh(handleRefresh);
+    return () => offRefresh(handleRefresh);
+  }, [onRefresh, offRefresh, fetchDashboardData]);
 
   const handleMessageBooking = async (booking: Booking) => {
     try {

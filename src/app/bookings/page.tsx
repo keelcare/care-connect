@@ -65,41 +65,11 @@ export default function ParentBookingsPage() {
   const [bookingToReschedule, setBookingToReschedule] = useState<Booking | ServiceRequest | null>(null);
 
   // Socket Integration
-  const { onNotification, offNotification } = useSocket();
+  const { onRefresh, offRefresh } = useSocket();
 
   const normalizeStatus = (s: any) => String(s || '').trim().toUpperCase();
 
-  useEffect(() => {
-    const handleNotification = (data: any) => {
-      console.log('Bookings Page - Received Notification:', data);
-
-      // Refresh data on specific notifications
-      if (
-        data.title === 'Nanny Matched!' ||
-        data.title === 'Nanny Cancelled - Re-matching' ||
-        data.title === 'No Matches Found'
-      ) {
-        console.log('Refreshing bookings due to notification...');
-        fetchData();
-      }
-    };
-
-    onNotification(handleNotification);
-
-    return () => {
-      offNotification(handleNotification);
-    };
-  }, [onNotification, offNotification]);
-
-  // Load paid status from local storage
-  useEffect(() => {
-    const savedPaid = localStorage.getItem('paidBookingIds');
-    if (savedPaid) {
-      setPaidBookingIds(JSON.parse(savedPaid));
-    }
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -167,13 +137,33 @@ export default function ParentBookingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    const handleRefresh = (data: any) => {
+      console.log('Bookings Page - Received Refresh Event:', data);
+      if (data.category === 'booking' || data.category === 'request' || data.category === 'message') {
+        fetchData();
+      }
+    };
+
+    onRefresh(handleRefresh);
+    return () => offRefresh(handleRefresh);
+  }, [onRefresh, offRefresh, fetchData]);
+
+  // Load paid status from local storage
+  useEffect(() => {
+    const savedPaid = localStorage.getItem('paidBookingIds');
+    if (savedPaid) {
+      setPaidBookingIds(JSON.parse(savedPaid));
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, fetchData]);
 
   // Fetch missing request details if selectedRequestId is set but not in requests list
   useEffect(() => {

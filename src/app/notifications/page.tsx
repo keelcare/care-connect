@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Booking } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Notification, NotificationCategory } from '@/types/notification';
@@ -12,6 +14,7 @@ import {
 import { Bell, Loader2, CheckCheck } from 'lucide-react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { motion } from 'framer-motion';
+import { useSocket } from '@/context/SocketProvider';
 
 type FilterType = 'all' | NotificationCategory;
 
@@ -29,7 +32,6 @@ export default function NotificationsPage() {
   }, [user]);
 
   const fetchNotifications = async () => {
-    setLoading(true);
     try {
       const data = await api.enhancedNotifications.list();
       setNotifications(data);
@@ -39,6 +41,19 @@ export default function NotificationsPage() {
       setLoading(false);
     }
   };
+
+  const { onRefresh, offRefresh } = useSocket();
+
+  useEffect(() => {
+    const handleRefresh = (data: any) => {
+      console.log('Real-time refresh triggered in Notifications Page:', data);
+      // Refresh notifications for ANY refresh event (new message, new booking etc)
+      fetchNotifications();
+    };
+
+    onRefresh(handleRefresh);
+    return () => offRefresh(handleRefresh);
+  }, [onRefresh, offRefresh]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
@@ -105,8 +120,8 @@ export default function NotificationsPage() {
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
               className={`px-5 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
-                  ? 'bg-[#1B3022] text-white shadow-lg shadow-[#1B3022]/20'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                ? 'bg-[#1B3022] text-white shadow-lg shadow-[#1B3022]/20'
+                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                 }`}
             >
               {filter.label}
