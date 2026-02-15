@@ -30,7 +30,7 @@ export function UpcomingSchedule({ bookings = [], userRole = 'parent' }: Upcomin
         <div className="@container space-y-fluid-xs">
             <div className="flex items-center justify-between px-1 mb-2">
                 <h3 className="font-heading font-semibold text-fluid-lg text-dashboard-text-primary">Upcoming</h3>
-                <Link href={userRole === 'nanny' ? "/dashboard/schedule" : "/bookings"} className="text-[10px] font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
+                <Link href={userRole === 'nanny' ? "/dashboard/bookings" : "/bookings"} className="text-[10px] font-bold text-dashboard-sage hover:underline uppercase tracking-wide">
                     See All
                 </Link>
             </div>
