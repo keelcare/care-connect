@@ -48,6 +48,9 @@ interface SocketContextType {
   offGeofenceAlert: (callback: (data: GeofenceAlertData) => void) => void;
   subscribeToGeofence: (bookingId: string) => void;
   unsubscribeFromGeofence: (bookingId: string) => void;
+  // Notification events
+  onNotification: (callback: (data: any) => void) => void;
+  offNotification: (callback: (data: any) => void) => void;
   // Refresh events for data re-validation
   onRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
   offRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
