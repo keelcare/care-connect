@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './PriceRangeSlider.module.css';
+import { cn } from '@/lib/utils';
 
 export interface PriceRangeSliderProps {
   min: number;
@@ -10,6 +10,9 @@ export interface PriceRangeSliderProps {
   onChange: (range: [number, number]) => void;
   initialMin?: number;
   initialMax?: number;
+  currency?: string;
+  label?: string;
+  className?: string;
 }
 
 export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
@@ -19,6 +22,9 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
   onChange,
   initialMin,
   initialMax,
+  currency = '₹',
+  label = 'Price Range',
+  className,
 }) => {
   const [minValue, setMinValue] = useState(initialMin || min);
   const [maxValue, setMaxValue] = useState(initialMax || max);
@@ -37,7 +43,7 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
       rangeRef.current.style.left = `${minPercent}%`;
       rangeRef.current.style.width = `${maxPercent - minPercent}%`;
     }
-  }, [minValue, maxValue, min, max, getPercent]);
+  }, [minValue, maxValue, getPercent]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.min(Number(e.target.value), maxValue - step);
@@ -52,19 +58,25 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.label}>
-        <span>Price Range</span>
-        <span>
-          ₹{minValue} - ₹{maxValue}/hr
+    <div className={cn('w-full', className)}>
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-sm font-medium text-neutral-700">{label}</span>
+        <span className="text-sm font-semibold text-primary-900">
+          {currency}{minValue} - {currency}{maxValue}/hr
         </span>
       </div>
 
-      <div className={styles.sliderContainer}>
-        <div className={styles.track} />
-        <div ref={rangeRef} className={styles.range} />
+      <div className="relative h-12 flex items-center">
+        {/* Track */}
+        <div className="absolute w-full h-2 bg-neutral-200 rounded-full" />
+        
+        {/* Active Range */}
+        <div
+          ref={rangeRef}
+          className="absolute h-2 bg-primary-900 rounded-full"
+        />
 
-        {/* Native range inputs for accessibility and interaction */}
+        {/* Min Thumb Input */}
         <input
           type="range"
           min={min}
@@ -72,23 +84,24 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
           step={step}
           value={minValue}
           onChange={handleMinChange}
-          className={styles.thumb}
-          style={{
-            left: `${getPercent(minValue)}%`,
-            position: 'absolute',
-            zIndex: minValue > max - 100 ? 5 : 3,
-            width: '20px',
-            height: '20px',
-            opacity: 0, // Hide default appearance but keep interactive
-            cursor: 'pointer',
-          }}
+          className={cn(
+            'absolute w-full h-12 appearance-none bg-transparent pointer-events-none',
+            '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6',
+            '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white',
+            '[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-900',
+            '[&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto',
+            '[&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-all',
+            '[&::-webkit-slider-thumb]:hover:scale-110',
+            '[&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6',
+            '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white',
+            '[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-900',
+            '[&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md'
+          )}
+          style={{ zIndex: minValue > max - 100 ? 5 : 3 }}
           aria-label="Minimum price"
         />
-        <div
-          className={styles.thumb}
-          style={{ left: `${getPercent(minValue)}%` }}
-        />
 
+        {/* Max Thumb Input */}
         <input
           type="range"
           min={min}
@@ -96,25 +109,26 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
           step={step}
           value={maxValue}
           onChange={handleMaxChange}
-          className={styles.thumb}
-          style={{
-            left: `${getPercent(maxValue)}%`,
-            position: 'absolute',
-            zIndex: 4,
-            width: '20px',
-            height: '20px',
-            opacity: 0,
-            cursor: 'pointer',
-          }}
+          className={cn(
+            'absolute w-full h-12 appearance-none bg-transparent pointer-events-none',
+            '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6',
+            '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white',
+            '[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-900',
+            '[&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto',
+            '[&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-all',
+            '[&::-webkit-slider-thumb]:hover:scale-110',
+            '[&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6',
+            '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white',
+            '[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-900',
+            '[&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md'
+          )}
+          style={{ zIndex: 4 }}
           aria-label="Maximum price"
         />
-        <div
-          className={styles.thumb}
-          style={{ left: `${getPercent(maxValue)}%` }}
-        />
       </div>
-
-      <div className={styles.inputs}>
+    </div>
+  );
+};
         <div className={styles.inputWrapper}>
           <span className={styles.currency}>₹</span>
           <input

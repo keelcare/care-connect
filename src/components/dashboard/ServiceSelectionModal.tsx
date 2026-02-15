@@ -94,7 +94,7 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
         </button>
 
         <div className="p-8 md:p-10">
-            <h2 className="text-3xl font-display font-semibold text-center text-[#1B3022] mb-3">Which service do you need?</h2>
+            <h2 className="text-fluid-3xl font-display font-semibold text-center text-[#1B3022] mb-3">Which service do you need?</h2>
             <p className="text-gray-500 mb-10 text-center max-w-lg mx-auto leading-relaxed text-lg">
                 Select a service to get started. We'll connect you with verified professionals tailored to your needs.
             </p>

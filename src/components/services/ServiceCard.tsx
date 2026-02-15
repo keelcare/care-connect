@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { BadgePill } from '@/components/ui/BadgePill';
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 interface ServiceCardProps {
@@ -82,10 +82,10 @@ export function ServiceCard({
           )}
 
           {/* Button */}
-          <PrimaryButton size="sm" className="group-hover:brightness-110">
+          <Button variant="primary" size="sm" animated className="group-hover:brightness-110">
             Book Now
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </PrimaryButton>
+          </Button>
         </div>
       </div>
     </motion.div>

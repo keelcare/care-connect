@@ -453,7 +453,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                             <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
                                 
                                 {/* 1. Title */}
-                                <h1 className="text-3xl font-display font-medium text-primary-900">
+                                <h1 className="text-fluid-3xl font-display font-medium text-primary-900">
                                     Book a Child Care
                                 </h1>
 

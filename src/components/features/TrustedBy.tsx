@@ -58,7 +58,7 @@ export const TrustedBy: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <p className="text-4xl md:text-5xl font-bold text-stone-900">
+              <p className="text-fluid-4xl md:text-fluid-5xl font-bold text-stone-900">
                 {stat.value}
               </p>
               <p className="text-stone-500 mt-1">{stat.label}</p>
@@ -71,7 +71,7 @@ export const TrustedBy: React.FC = () => {
           <p className="text-sm font-semibold text-stone-400 uppercase tracking-widest mb-3">
             Testimonials
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-stone-900">
+          <h2 className="text-fluid-3xl md:text-fluid-4xl font-bold text-stone-900">
             Loved by families everywhere
           </h2>
         </div>

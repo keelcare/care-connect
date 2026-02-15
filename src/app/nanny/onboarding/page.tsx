@@ -201,7 +201,7 @@ export default function NannyOnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-dvh bg-neutral-50 flex items-center justify-center p-4 md:p-8">
       <div className="max-w-3xl w-full bg-white rounded-3xl shadow-xl overflow-hidden">
         <div className="bg-emerald-600 px-8 py-10 text-center text-white relative overflow-hidden">
           <div className="relative z-10">

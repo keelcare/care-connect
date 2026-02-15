@@ -26,7 +26,7 @@ export const FeaturedServices: React.FC = () => {
             {/* 1. Services Header / Intro Block (Top Left) */}
             <div className="lg:col-span-8 flex flex-col justify-center lg:pr-12 mb-8 lg:mb-0">
                 <p className="text-wellness-green font-bold uppercase tracking-widest text-xs mb-3">Our Services</p>
-                <h2 className="text-4xl md:text-5xl font-heading text-wellness-navy mb-4 leading-tight">
+                <h2 className="text-fluid-4xl md:text-fluid-5xl font-heading text-wellness-navy mb-4 leading-tight">
                     Professional care <br/>
                     <span className="text-wellness-terracotta">tailored to your needs.</span>
                 </h2>
@@ -45,7 +45,7 @@ export const FeaturedServices: React.FC = () => {
                         <Star className="text-white" size={24} fill="currentColor" />
                     </div>
                     <div>
-                        <h3 className="text-3xl font-heading text-wellness-navy mb-2">Quality Care</h3>
+                        <h3 className="text-fluid-3xl font-heading text-wellness-navy mb-2">Quality Care</h3>
                         <p className="text-wellness-navy/80 font-medium">For children 5 months to 6 years of age</p>
                     </div>
                 </div>

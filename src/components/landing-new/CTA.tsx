@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const CTA = () => {
   return (
-    <section className="h-screen flex items-center justify-center px-6">
+    <section className="h-dvh flex items-center justify-center px-6">
       <div className="max-w-7xl mx-auto">
         <div className="bg-primary-900 rounded-[60px] p-12 lg:p-24 relative overflow-hidden text-center">
           {/* Background decorations */}
@@ -17,7 +17,7 @@ export const CTA = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <h2 className="text-4xl lg:text-6xl font-bold text-white mb-8">
+            <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-white mb-8">
               Find the help your <br />
               <span className="text-terracotta">family deserves.</span>
             </h2>

@@ -27,7 +27,7 @@ export const BookingInterface: React.FC<BookingInterfaceProps> = ({
   const isDirectBooking = !!nanny;
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-20">
+    <div className="min-h-dvh bg-stone-50 pb-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

@@ -62,7 +62,7 @@ export const Hero: React.FC = () => {
                 <div className="order-1 lg:order-2 space-y-6">
                     <p className="font-bold text-wellness-navy/60 uppercase tracking-widest text-xs">Trusted Care Connections</p>
                     
-                    <h1 className="text-5xl lg:text-7xl font-heading text-wellness-navy leading-[1.1]">
+                    <h1 className="text-fluid-5xl font-heading text-wellness-navy leading-[1.1]">
                         Quickly Find a <br/>
                         <span className="text-wellness-terracotta">Trusted Nanny.</span>
                     </h1>

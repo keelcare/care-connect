@@ -39,7 +39,7 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
     } : null;
 
     return (
-        <div className="min-h-screen pb-10">
+        <div className="min-h-dvh pb-10">
             <GreetingHero
                 userName={user?.profiles?.first_name || 'Parent'}
             />

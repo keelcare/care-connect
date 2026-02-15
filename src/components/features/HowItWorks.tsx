@@ -68,7 +68,7 @@ export const HowItWorks: React.FC = () => {
           {/* Right: Content (Reference: "Kids Make it Special" Text Section) */}
           <div>
              <p className="text-wellness-green font-bold uppercase tracking-widest text-xs mb-3">How It Works</p>
-             <h2 className="text-4xl md:text-5xl font-heading text-wellness-navy mb-6 leading-tight">
+             <h2 className="text-fluid-4xl md:text-fluid-5xl font-heading text-wellness-navy mb-6 leading-tight">
                 Finding the perfect match <br/> 
                 <span className="text-wellness-terracotta">made simple.</span>
              </h2>

@@ -30,7 +30,7 @@ export const TrustSignals = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-primary-900 mb-8 leading-tight">
+            <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-primary-900 mb-8 leading-tight">
               Your safety is our <br />
               <span className="text-terracotta">absolute priority.</span>
             </h2>

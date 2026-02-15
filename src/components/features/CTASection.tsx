@@ -24,7 +24,7 @@ export const CTASection: React.FC = () => {
               <p className="text-sm font-semibold text-stone-500 uppercase tracking-widest mb-4">
                 Get Started Today
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
+              <h2 className="text-fluid-3xl md:text-fluid-4xl font-bold text-stone-900 mb-4">
                 Ready to find the perfect care for your family?
               </h2>
               <p className="text-stone-600 mb-8 text-lg">
