@@ -63,7 +63,7 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+      <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
         <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
           <div className="w-full h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12">
             <div className="w-full max-w-md mx-auto my-auto text-center">
@@ -91,7 +91,7 @@ function ResetPasswordForm() {
 
   if (isSubmitted) {
     return (
-      <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+      <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
         <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
           <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
             <div className="w-full max-w-md mx-auto my-auto text-center">
@@ -133,7 +133,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+    <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
       <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
         {/* Left Side - Form */}
         <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
@@ -254,7 +254,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-full flex items-center justify-center bg-neutral-50">
+        <div className="h-dvh w-full flex items-center justify-center bg-neutral-50">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       }

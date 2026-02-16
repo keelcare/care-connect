@@ -36,7 +36,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-[#F9F7F2]">
+    <div className="min-h-dvh w-full flex bg-[#F9F7F2]">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-12">
         <motion.div
@@ -169,7 +169,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Animation */}
-      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-screen bg-[#F0FDF4] overflow-hidden items-center justify-center">
+      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-dvh bg-[#F0FDF4] overflow-hidden items-center justify-center">
         <style jsx>{`
           @keyframes sway {
             0%,

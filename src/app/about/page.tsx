@@ -182,7 +182,7 @@ export default function AboutPage() {
       {/* Stats Section with Parallax Background */}
       <div className="relative py-24 bg-[#CC7A68] overflow-hidden">
         <div className="absolute inset-0 opacity-10 pattern-grid-lg" />
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, i) => (
             <StatItem key={i} stat={stat} index={i} />
           ))}
@@ -222,7 +222,7 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {team.map((member, i) => (
               <motion.div
                 key={i}

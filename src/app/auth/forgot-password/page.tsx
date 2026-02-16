@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+      <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
         <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
           <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
             <div className="w-full max-w-md mx-auto my-auto text-center">
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="h-screen w-full flex bg-neutral-50 justify-center overflow-hidden">
+    <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
       <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
         {/* Left Side - Form */}
         <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">

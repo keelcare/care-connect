@@ -446,7 +446,8 @@ export default function SearchPage() {
 
   return (
     <ParentLayout>
-      <div className="h-screen flex flex-col overflow-hidden bg-neutral-50">
+      {/* Account for pt-24 (96px) from ParentLayout */}
+      <div className="h-[calc(100dvh-6rem)] flex flex-col overflow-hidden bg-neutral-50">
         {/* Search Header */}
         <div className="flex-none z-30 bg-white border-b border-neutral-200">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">

@@ -226,7 +226,7 @@ function SignupContent() {
   const currentTheme = themes[role];
 
   return (
-    <div className="h-screen flex bg-neutral-50 justify-center transition-colors duration-500 overflow-hidden">
+    <div className="h-dvh flex bg-neutral-50 justify-center transition-colors duration-500 overflow-hidden">
       <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
         {/* Left Side - Branding (Desktop Only) */}
         <div
@@ -739,7 +739,7 @@ function SignupContent() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-stone-50"><Spinner /></div>}>
+    <Suspense fallback={<div className="h-dvh flex items-center justify-center bg-stone-50"><Spinner /></div>}>
       <SignupContent />
     </Suspense>
   );

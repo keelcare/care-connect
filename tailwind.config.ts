@@ -184,9 +184,9 @@ const config: Config = {
       fontFamily: {
         display: ['var(--font-fraunces)', 'serif'],
         heading: ['var(--font-fraunces)', 'serif'],
-        body: ['var(--font-lora)', 'sans-serif'],
-        sans: ['var(--font-lora)', 'sans-serif'],
-        serif: ['var(--font-fraunces)', 'serif'],
+        body: ['var(--font-lora)', 'serif'], // Fixed: Lora is a serif font
+        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        serif: ['var(--font-lora)', 'Georgia', 'serif'], // Lora as primary serif
         cormorant: ['var(--font-cormorant)', 'serif'],
       },
       
