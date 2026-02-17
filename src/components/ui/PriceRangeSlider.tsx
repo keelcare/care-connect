@@ -129,29 +129,3 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
     </div>
   );
 };
-        <div className={styles.inputWrapper}>
-          <span className={styles.currency}>₹</span>
-          <input
-            type="number"
-            value={minValue}
-            onChange={handleMinChange}
-            className={styles.numberInput}
-            min={min}
-            max={maxValue - step}
-          />
-        </div>
-        <div className={styles.inputWrapper}>
-          <span className={styles.currency}>₹</span>
-          <input
-            type="number"
-            value={maxValue}
-            onChange={handleMaxChange}
-            className={styles.numberInput}
-            min={minValue + step}
-            max={max}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
