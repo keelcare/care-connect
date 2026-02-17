@@ -172,6 +172,8 @@ export const Select: React.FC<SelectProps> = ({
           aria-invalid={!!error}
           aria-describedby={error ? errorId : undefined}
           aria-required={required}
+          aria-activedescendant={isOpen ? `${selectId}-option-${highlightedIndex}` : undefined}
+          aria-controls={isOpen ? `${selectId}-listbox` : undefined}
         >
           <span
             className={cn(
@@ -193,17 +195,20 @@ export const Select: React.FC<SelectProps> = ({
         {/* Dropdown */}
         {isOpen && (
           <div
+            id={`${selectId}-listbox`}
             className="absolute top-full left-0 w-full mt-2 bg-white border border-neutral-200 rounded-xl shadow-2xl shadow-primary/5 max-h-60 overflow-y-auto z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
             role="listbox"
-            aria-labelledby={selectId}
+            aria-labelledby={label ? undefined : selectId} // If label exists, it labels the button. If not, button labels itself. Actually button is labelled by label. Listbox should also be labelled.
           >
             {options.map((option, index) => {
               const isSelected = option.value === value;
               const isHighlighted = index === highlightedIndex;
+              const optionId = `${selectId}-option-${index}`;
 
               return (
                 <div
                   key={option.value}
+                  id={optionId}
                   ref={(el) => {
                     if (el) optionsRef.current[index] = el;
                   }}

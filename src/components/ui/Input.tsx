@@ -50,8 +50,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    // Generate unique ID if not provided
-    const inputId = id || `input-${React.useId()}`;
+    // Generate unique ID if not provided, ensuring consistency
+    const generatedId = React.useId();
+    const inputId = id || `input-${generatedId}`;
     const errorId = `${inputId}-error`;
     const helperId = `${inputId}-helper`;
 

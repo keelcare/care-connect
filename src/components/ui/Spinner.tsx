@@ -26,7 +26,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
   className,
 }) => {
   return (
-    <div className="inline-flex items-center justify-center" role="status">
+    <div className="inline-flex items-center justify-center" role="status" aria-live="polite">
       <div
         className={cn(
           'rounded-full animate-spin',
