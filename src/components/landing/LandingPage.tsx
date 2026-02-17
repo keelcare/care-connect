@@ -7,7 +7,7 @@ import { PromoSection } from './stacked/PromoSection';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen w-full relative bg-white font-sans antialiased text-childcare-text selection:bg-childcare-mint">
+    <div className="min-h-dvh w-full relative bg-white font-sans antialiased text-childcare-text selection:bg-childcare-mint">
       
       {/* Header Section */}
       <header className="w-full bg-childcare-primary relative z-50 shadow-sm">

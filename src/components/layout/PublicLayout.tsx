@@ -6,7 +6,7 @@ import { Footer } from '@/components/landing-new/Footer';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-dvh bg-background">
             <Navbar />
             <main>
                 {children}

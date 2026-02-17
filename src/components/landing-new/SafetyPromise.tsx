@@ -26,7 +26,7 @@ export const SafetyPromise = () => {
   return (
     <section 
       ref={containerRef} 
-      className="h-screen flex items-center justify-center px-6 bg-background relative overflow-hidden" 
+      className="h-dvh flex items-center justify-center px-6 bg-background relative overflow-hidden" 
     >
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -50,7 +50,7 @@ export const SafetyPromise = () => {
               <span>Uncompromised Safety</span>
             </div>
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-primary-900 mb-8 leading-[1.15]">
+            <h2 className="text-fluid-4xl md:text-fluid-5xl font-display font-medium text-primary-900 mb-8 leading-[1.15]">
               Peace of mind is <br/>
               <span className="italic text-primary-900">our promise to you.</span>
             </h2>

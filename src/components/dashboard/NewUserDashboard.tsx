@@ -89,7 +89,7 @@ export function NewUserDashboard() {
                             <span>Welcome</span>
                         </div>
                         
-                        <h1 className="text-2xl md:text-4xl font-display font-medium mb-3 leading-tight">
+                        <h1 className="text-fluid-2xl md:text-fluid-4xl font-display font-medium mb-3 leading-tight">
                             Welcome to the Keel family, {user?.profiles?.first_name || 'Friend'}
                         </h1>
                         

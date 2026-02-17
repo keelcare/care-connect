@@ -53,7 +53,7 @@ export function NextUpSession({ booking, onMessage, onCheckIn }: NextUpSessionPr
                                 Next Up
                             </div>
                         )}
-                        <h2 className="text-3xl font-display font-bold text-gray-900 mb-1">
+                        <h2 className="text-fluid-3xl font-display font-bold text-gray-900 mb-1">
                             Session with {booking.job?.title || 'Family'}
                         </h2>
                         <p className="text-gray-500 font-medium">The {parentName} Family</p>

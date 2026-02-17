@@ -9,7 +9,7 @@ export const MobileBottomNav = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { icon: Compass, label: 'Find Care', href: '/find-care' },
+    { icon: Search, label: 'Find Care', href: '/search' },
     { icon: Compass, label: 'Home', href: '/parent-dashboard' },
     { icon: Calendar, label: 'Bookings', href: '/bookings' },
     { icon: User, label: 'Profile', href: '/settings' },
@@ -23,9 +23,10 @@ export const MobileBottomNav = () => {
       <div className="relative flex items-center justify-around px-2 py-2 pb-safe">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive =
-            pathname === item.href ||
-            (item.href !== '/' && pathname.startsWith(item.href)); // Basic active check
+          // Exact match for root, startsWith for others to handle sub-routes
+          const isActive = item.href === '/parent-dashboard' 
+            ? pathname === item.href 
+            : pathname.startsWith(item.href);
 
           return (
             <Link

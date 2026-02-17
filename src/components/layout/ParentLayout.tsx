@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Navbar } from '@/components/layout/Navbar';
 import BottomNavBar from '@/components/layout/BottomNavBar';
+import { Container } from '@/components/layout/Container';
 
 export default function ParentLayout({
   children,
@@ -24,7 +25,7 @@ export default function ParentLayout({
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <div className="w-8 h-8 border-4 border-primary-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -36,15 +37,15 @@ export default function ParentLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Unified Navbar */}
       <Navbar />
 
       {/* Main Content Area */}
-      <main className="pt-24 pb-24 lg:pb-8 px-5 md:px-6">
-        <div className="max-w-7xl mx-auto">
+      <main className="pt-24 pb-24 lg:pb-8">
+        <Container padding="responsive">
           {children}
-        </div>
+        </Container>
       </main>
 
       {/* Bottom Navigation (Mobile Only) */}

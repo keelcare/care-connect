@@ -24,7 +24,7 @@ export const Navbar = () => {
           <Link href="/how-it-works" className="text-sm font-bold font-body text-[#1B3022]/70 hover:text-[#1B3022] transition-colors">
             How it Works
           </Link>
-          <Link href="/book-service" className="text-sm font-bold font-body text-[#1B3022]/70 hover:text-[#1B3022] transition-colors">
+          <Link href="/search" className="text-sm font-bold font-body text-[#1B3022]/70 hover:text-[#1B3022] transition-colors">
             Find Care
           </Link>
         </div>

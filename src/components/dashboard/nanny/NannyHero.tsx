@@ -7,7 +7,7 @@ export function NannyHero() {
 
     return (
         <div className="mb-6 mt-3">
-            <h1 className="text-4xl font-heading font-medium text-wellness-navy mb-1.5 tracking-tight">
+            <h1 className="text-fluid-4xl font-heading font-medium text-wellness-navy mb-1.5 tracking-tight">
                 Good morning, {firstName}
             </h1>
             <p className="text-base text-gray-500 font-medium opacity-80">

@@ -149,17 +149,11 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-3 md:gap-4">
             
             {/* Location Selector - Desktop */}
-            <div 
-              className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 transition-colors cursor-pointer"
+            <button 
+              className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none"
               onClick={() => setIsLocationModalOpen(true)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setIsLocationModalOpen(true);
-                }
-              }}
-              role="button"
-              tabIndex={0}
               aria-label="Set location"
+              type="button"
             >
               <MapPin size={16} className="text-neutral-500" />
               <span className="text-xs font-bold truncate max-w-[120px]">
@@ -168,14 +162,15 @@ export const Navbar: React.FC = () => {
                   'Set Location'}
               </span>
               <ChevronDown size={14} className="text-neutral-400" />
-            </div>
+            </button>
 
             {user ? (
               <div className="flex items-center gap-2 md:gap-4">
                 {/* Notifications */}
                 <button
                     onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
-                    className="relative p-2 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50"
+                    className="relative p-2 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
+                    aria-label="Notifications"
                   >
                     <Bell size={20} />
                     {hasUnread && (
@@ -184,10 +179,16 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {/* Profile Dropdown */}
-                <div className="relative">
+                <div className="relative" onKeyDown={(e) => {
+                  if (e.key === 'Escape') setIsProfileOpen(false);
+                }}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-2 focus:outline-none"
+                    className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
+                    aria-haspopup="true"
+                    aria-expanded={isProfileOpen}
+                    aria-label="User menu"
+                    id="user-menu-button"
                   >
                      <Avatar
                         src={user.profiles?.profile_image_url || undefined}
@@ -220,6 +221,9 @@ export const Navbar: React.FC = () => {
                           exit={{ opacity: 0, y: 10, scale: 0.95 }}
                           transition={{ duration: 0.1 }}
                           className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-neutral-100 py-2 z-40"
+                          role="menu"
+                          aria-orientation="vertical"
+                          aria-labelledby="user-menu-button"
                         >
                            <div className="px-5 py-3 border-b border-neutral-50 mb-1">
                             <p className="text-sm font-bold text-primary-900 truncate">
@@ -238,7 +242,8 @@ export const Navbar: React.FC = () => {
                                   ? '/admin'
                                   : '/parent-dashboard'
                             }
-                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors"
+                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
+                             role="menuitem"
                           >
                             <LayoutDashboard size={18} />
                             <span>Dashboard</span>
@@ -246,7 +251,8 @@ export const Navbar: React.FC = () => {
 
                           <Link
                             href="/settings"
-                            className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
+                            role="menuitem"
                           >
                             <Settings size={18} />
                             <span>Settings</span>
@@ -257,7 +263,8 @@ export const Navbar: React.FC = () => {
                               setIsProfileOpen(false);
                               handleLogout();
                             }}
-                             className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                             className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors focus:bg-red-50 focus:outline-none"
+                             role="menuitem"
                           >
                             <LogOut size={18} />
                             <span>Log Out</span>
@@ -282,7 +289,12 @@ export const Navbar: React.FC = () => {
             )}
 
              {/* Mobile Menu Button */}
-             <button className="md:hidden text-primary-900 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+             <button 
+               className="md:hidden text-primary-900 p-2" 
+               onClick={() => setIsMenuOpen(!isMenuOpen)}
+               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+               aria-expanded={isMenuOpen}
+              >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
              </button>
           </div>
@@ -298,28 +310,20 @@ export const Navbar: React.FC = () => {
               className="md:hidden mt-4 bg-white/95 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl mx-auto pointer-events-auto"
             >
                {/* Location Mobile */}
-               <div 
-                  className="flex items-center gap-2 px-3 py-3 bg-neutral-50 rounded-xl mb-4 border border-neutral-100"
+               <button
+                  className="w-full flex items-center gap-2 px-3 py-3 bg-neutral-50 rounded-xl mb-4 border border-neutral-100"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setIsLocationModalOpen(true);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setIsMenuOpen(false);
-                      setIsLocationModalOpen(true);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
                   aria-label="Set location"
                 >
                   <MapPin size={18} className="text-neutral-500" />
-                  <span className="text-sm font-medium text-neutral-700 truncate flex-1">
+                  <span className="text-sm font-medium text-neutral-700 truncate flex-1 text-left">
                     {preferences.location?.address || user?.profiles?.address || 'Set Location'}
                   </span>
                   <ChevronDown size={14} className="text-neutral-400" />
-                </div>
+                </button>
 
               <div className="flex flex-col gap-4">
                  {!user && (

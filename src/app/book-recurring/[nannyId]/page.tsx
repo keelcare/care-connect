@@ -183,7 +183,7 @@ function LegacyBookRecurringPage() {
   if (loading) {
     return (
       <ParentLayout>
-        <div className="flex items-center justify-center min-h-screen bg-stone-50">
+        <div className="flex items-center justify-center min-h-dvh bg-stone-50">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
       </ParentLayout>
@@ -193,7 +193,7 @@ function LegacyBookRecurringPage() {
   if (!nanny) {
     return (
       <ParentLayout>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50">
+        <div className="flex flex-col items-center justify-center min-h-dvh bg-stone-50">
           <h2 className="text-xl font-bold text-stone-900">
             Caregiver not found
           </h2>
@@ -210,7 +210,7 @@ function LegacyBookRecurringPage() {
 
   return (
     <ParentLayout>
-      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-50 pb-20">
+      <div className="min-h-dvh bg-gradient-to-br from-stone-50 via-white to-stone-50 pb-20">
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
           {/* Header */}
           <div className="mb-8">

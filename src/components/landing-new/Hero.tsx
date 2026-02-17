@@ -29,7 +29,7 @@ export const Hero = () => {
   const physicsY3 = useSpring(y3, { stiffness: 100, damping: 20 });
 
   return (
-    <section ref={containerRef} className="pt-40 pb-20 overflow-hidden relative min-h-screen">
+    <section ref={containerRef} className="pt-40 pb-20 overflow-hidden relative min-h-dvh">
       <div className="max-w-4xl mx-auto px-6 text-center relative z-10 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 10 }}

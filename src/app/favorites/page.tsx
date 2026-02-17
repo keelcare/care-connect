@@ -38,7 +38,7 @@ export default function FavoritesPage() {
   if (isLoading) {
     return (
       <ParentLayout>
-        <div className="min-h-screen bg-stone-50 pt-24 pb-12">
+        <div className="min-h-dvh bg-stone-50 pt-24 pb-12">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="animate-pulse space-y-6">
               <div className="h-10 bg-stone-200 rounded-lg w-48" />
@@ -56,7 +56,7 @@ export default function FavoritesPage() {
 
   return (
     <ParentLayout>
-      <div className="min-h-screen bg-stone-50 pt-24 pb-12">
+      <div className="min-h-dvh bg-stone-50 pt-24 pb-12">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
           <div className="mb-8">

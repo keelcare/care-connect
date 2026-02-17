@@ -30,7 +30,7 @@ export default function WelcomePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-stone-50">
+            <div className="min-h-dvh flex items-center justify-center bg-stone-50">
                 <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
