@@ -101,9 +101,9 @@
     --radius-full: 9999px;
 
     /* Typography */
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-heading: 'DM Sans', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-display: 'Satoshi', sans-serif;
+    --font-heading: 'Satoshi', sans-serif;
+    --font-body: 'Satoshi', sans-serif;
     --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
     --font-weight-normal: 400;
