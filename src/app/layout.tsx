@@ -8,6 +8,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketProvider';
 import { Chatbot } from '@/components/ai/Chatbot';
 import { Fraunces, Lora, Cormorant_Garamond } from 'next/font/google';
+import localFont from 'next/font/local';
 import 'lineicons/dist/lineicons.css';
 import './globals.css';
 
@@ -27,6 +28,38 @@ const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   variable: '--font-cormorant',
   weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const satoshi = localFont({
+  src: [
+    {
+      path: './fonts/Satoshi-Light.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Satoshi-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Satoshi-Medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Satoshi-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Satoshi-Black.woff2',
+      weight: '900',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-satoshi',
   display: 'swap',
 });
 
@@ -70,7 +103,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/favorites');
 
   return (
-    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} font-body bg-background text-primary-900`}>
+    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} ${satoshi.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
@@ -112,7 +145,6 @@ export default function RootLayout({
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <link rel="icon" href="/logo.jpeg" />
-        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>

@@ -101,9 +101,9 @@
     --radius-full: 9999px;
 
     /* Typography */
-    --font-display: 'Satoshi', sans-serif;
-    --font-heading: 'Satoshi', sans-serif;
-    --font-body: 'Satoshi', sans-serif;
+    --font-display: var(--font-satoshi), sans-serif;
+    --font-heading: var(--font-satoshi), sans-serif;
+    --font-body: var(--font-satoshi), sans-serif;
     --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
     --font-weight-normal: 400;
