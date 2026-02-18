@@ -113,7 +113,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
           <h1 className="text-5xl font-display font-bold text-white tracking-tight">
             Keel
           </h1>
-          <p className="text-[#CC7A68] font-medium tracking-wide">
+          <p className="text-white font-medium tracking-wide">
             The backbone of Care
           </p>
         </div>
@@ -124,7 +124,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
             className="h-full rounded-full transition-all ease-linear"
             style={{
               width: startAnimation ? '100%' : '0%',
-              backgroundColor: '#CC7A68',
+              backgroundColor: 'white',
               transitionDuration: '2500ms',
             }}
           />

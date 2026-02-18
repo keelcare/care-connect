@@ -3,7 +3,7 @@
 import { LandingPage } from '@/components/landing-new/LandingPage';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { SplashLoader } from '@/components/ui/SplashLoader';
 
 export default function WelcomePage() {
@@ -24,9 +24,9 @@ export default function WelcomePage() {
         }
     }, [user, loading, router]);
 
-    const handleSplashFinish = () => {
+    const handleSplashFinish = useCallback(() => {
         setShowSplash(false);
-    };
+    }, []);
 
     if (loading) {
         return (

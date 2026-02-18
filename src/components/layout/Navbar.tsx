@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-  Menu, 
-  X, 
-  Bell, 
-  ChevronDown, 
-  MapPin, 
-  LogOut, 
-  Settings, 
+import {
+  Menu,
+  X,
+  Bell,
+  ChevronDown,
+  MapPin,
+  LogOut,
+  Settings,
   LayoutDashboard,
   User
 } from 'lucide-react';
@@ -20,6 +20,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import { Avatar } from '@/components/ui/avatar';
 import { usePreferences } from '@/hooks/usePreferences';
 import { LocationModal } from '@/components/features/LocationModal';
+import { LocationSelector } from './Navbar/LocationSelector';
 import { useSocket } from '@/context/SocketProvider';
 
 
@@ -82,15 +83,15 @@ export const Navbar: React.FC = () => {
       addToast({ message: 'Logged out successfully', type: 'success' });
       router.push('/auth/login');
     } catch (error) {
-        console.error('Logout failed', error);
-        addToast({ message: 'Failed to log out', type: 'error' });
+      console.error('Logout failed', error);
+      addToast({ message: 'Failed to log out', type: 'error' });
     }
   };
 
   // Helper to determine active state
   const isActive = (href: string) => {
-      if (href === '/parent-dashboard' || href === '/dashboard') return pathname === href;
-      return pathname?.startsWith(href);
+    if (href === '/parent-dashboard' || href === '/dashboard') return pathname === href;
+    return pathname?.startsWith(href);
   };
 
   const navItems = user?.role === 'nanny' ? NAV_ITEMS_NANNY : (user?.role === 'parent' ? NAV_ITEMS_PARENT : []);
@@ -102,7 +103,7 @@ export const Navbar: React.FC = () => {
     <>
       <div className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
         <nav className={`max-w-7xl mx-auto bg-white/20 backdrop-blur-2xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-3 md:px-4 py-2 flex items-center pointer-events-auto ${!user ? 'justify-between' : 'justify-between'}`}>
-          
+
           {/* Logo - Always on Left */}
           <Link href={user ? (user.role === 'nanny' ? '/dashboard' : '/parent-dashboard') : "/"} className="flex items-center gap-2 group">
             <div className="w-8 h-8 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
@@ -129,21 +130,20 @@ export const Navbar: React.FC = () => {
           {/* Desktop Navigation - Logged In Users */}
           <div className="hidden md:flex items-center gap-1">
             {user && (
-               <div className="flex items-center p-1 bg-neutral-100/50 rounded-full border border-neutral-200/50">
+              <div className="flex items-center p-1 bg-neutral-100/50 rounded-full border border-neutral-200/50">
                 {navItems.map((item) => (
-                    <Link 
-                        key={item.href}
-                        href={item.href}
-                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                            isActive(item.href) 
-                            ? 'bg-white text-primary-900 shadow-sm' 
-                            : 'text-neutral-500 hover:text-primary-900 hover:bg-white/50'
-                        }`}
-                    >
-                        {item.label}
-                    </Link>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${isActive(item.href)
+                      ? 'bg-white text-primary-900 shadow-sm'
+                      : 'text-neutral-500 hover:text-primary-900 hover:bg-white/50'
+                      }`}
+                  >
+                    {item.label}
+                  </Link>
                 ))}
-               </div>
+              </div>
             )}
           </div>
 
@@ -151,17 +151,18 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 md:gap-3">
 
             {user ? (
-               <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
+                <LocationSelector onClick={() => setIsLocationModalOpen(true)} />
                 {/* Notifications */}
                 <button
-                    onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
-                    className="relative p-1.5 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
-                    aria-label="Notifications"
-                  >
-                    <Bell size={18} />
-                    {hasUnread && (
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    )}
+                  onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
+                  className="relative p-1.5 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
+                  aria-label="Notifications"
+                >
+                  <Bell size={18} />
+                  {hasUnread && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                  )}
                 </button>
 
                 {/* Profile Dropdown */}
@@ -176,32 +177,32 @@ export const Navbar: React.FC = () => {
                     aria-label="User menu"
                     id="user-menu-button"
                   >
-                     <Avatar
-                        src={user.profiles?.profile_image_url || undefined}
-                        alt={user.profiles?.first_name || 'User'}
-                        fallback={
-                          user.profiles?.first_name?.[0] ||
-                          user.email?.[0]?.toUpperCase() ||
-                          'U'
-                        }
-                        size="sm"
-                        ringColor="bg-neutral-50"
-                      />
-                      <ChevronDown
+                    <Avatar
+                      src={user.profiles?.profile_image_url || undefined}
+                      alt={user.profiles?.first_name || 'User'}
+                      fallback={
+                        user.profiles?.first_name?.[0] ||
+                        user.email?.[0]?.toUpperCase() ||
+                        'U'
+                      }
+                      size="sm"
+                      ringColor="bg-neutral-50"
+                    />
+                    <ChevronDown
                       size={14}
                       className={`text-neutral-400 transition-transform duration-200 hidden sm:block ${isProfileOpen ? 'rotate-180' : ''}`}
                     />
                   </button>
 
-                   {/* Dropdown Menu */}
-                   <AnimatePresence>
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
                     {isProfileOpen && (
                       <>
                         <div
                           className="fixed inset-0 z-30 cursor-default"
                           onClick={() => setIsProfileOpen(false)}
                         />
-                         <motion.div 
+                        <motion.div
                           initial={{ opacity: 0, y: 10, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -211,7 +212,7 @@ export const Navbar: React.FC = () => {
                           aria-orientation="vertical"
                           aria-labelledby="user-menu-button"
                         >
-                           <div className="px-5 py-3 border-b border-neutral-50 mb-1">
+                          <div className="px-5 py-3 border-b border-neutral-50 mb-1">
                             <p className="text-sm font-bold text-primary-900 truncate">
                               {user.profiles?.first_name || 'User'}
                             </p>
@@ -228,8 +229,8 @@ export const Navbar: React.FC = () => {
                                   ? '/admin'
                                   : '/parent-dashboard'
                             }
-                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
-                             role="menuitem"
+                            className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
+                            role="menuitem"
                           >
                             <LayoutDashboard size={18} />
                             <span>Dashboard</span>
@@ -244,13 +245,13 @@ export const Navbar: React.FC = () => {
                             <span>Settings</span>
                           </Link>
 
-                           <button
+                          <button
                             onClick={() => {
                               setIsProfileOpen(false);
                               handleLogout();
                             }}
-                             className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors focus:bg-red-50 focus:outline-none"
-                             role="menuitem"
+                            className="w-full flex items-center gap-3 px-5 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors focus:bg-red-50 focus:outline-none"
+                            role="menuitem"
                           >
                             <LogOut size={18} />
                             <span>Log Out</span>
@@ -258,11 +259,11 @@ export const Navbar: React.FC = () => {
                         </motion.div>
                       </>
                     )}
-                   </AnimatePresence>
+                  </AnimatePresence>
                 </div>
               </div>
             ) : (
-               <div className="hidden sm:flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-4">
                 <Link href="/auth/login" className="text-sm font-bold text-primary-900 hover:text-primary-900/70 transition-colors">
                   Log In
                 </Link>
@@ -274,15 +275,15 @@ export const Navbar: React.FC = () => {
               </div>
             )}
 
-             {/* Mobile Menu Button */}
-             <button 
-               className="md:hidden text-primary-900 p-2" 
-               onClick={() => setIsMenuOpen(!isMenuOpen)}
-               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-               aria-expanded={isMenuOpen}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-             </button>
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-primary-900 p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </nav>
 
@@ -297,69 +298,69 @@ export const Navbar: React.FC = () => {
             >
 
               <div className="flex flex-col gap-4">
-                 {!user && (
-                    <>
-                      <Link href="/about" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
-                        About
-                      </Link>
-                      <Link href="/how-it-works" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
-                        How it Works
-                      </Link>
-                       <Link href="/search" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
-                        Find Care
-                      </Link>
-                      <div className="h-px bg-neutral-100 my-2" />
-                      <Link href="/auth/login" className="text-lg font-bold text-primary-900" onClick={() => setIsMenuOpen(false)}>
-                        Log In
-                      </Link>
-                       <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-                        <button className="w-full bg-primary-900 text-white px-8 py-3 rounded-full font-bold shadow-md">
-                          Sign Up
-                        </button>
-                      </Link>
-                    </>
-                 )}
+                {!user && (
+                  <>
+                    <Link href="/about" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
+                      About
+                    </Link>
+                    <Link href="/how-it-works" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
+                      How it Works
+                    </Link>
+                    <Link href="/search" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
+                      Find Care
+                    </Link>
+                    <div className="h-px bg-neutral-100 my-2" />
+                    <Link href="/auth/login" className="text-lg font-bold text-primary-900" onClick={() => setIsMenuOpen(false)}>
+                      Log In
+                    </Link>
+                    <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+                      <button className="w-full bg-primary-900 text-white px-8 py-3 rounded-full font-bold shadow-md">
+                        Sign Up
+                      </button>
+                    </Link>
+                  </>
+                )}
 
-                 {user && (
-                    <>
-                        {navItems.map((item) => (
-                             <Link 
-                                key={item.href}
-                                href={item.href} 
-                                className={`text-lg font-bold p-2 rounded-lg -ml-2 ${isActive(item.href) ? 'text-primary-900 bg-neutral-50' : 'text-neutral-600'}`}
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                {item.label}
-                            </Link>
-                        ))}
-                       
-                      <div className="h-px bg-neutral-100 my-2" />
-                      
-                      <Link 
-                        href="/settings" 
-                         className="text-lg font-bold text-primary-900 hover:bg-neutral-50 p-2 rounded-lg -ml-2"
+                {user && (
+                  <>
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`text-lg font-bold p-2 rounded-lg -ml-2 ${isActive(item.href) ? 'text-primary-900 bg-neutral-50' : 'text-neutral-600'}`}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                         Settings
+                        {item.label}
                       </Link>
-                       <button
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          handleLogout();
-                        }}
-                        className="text-left text-lg font-bold text-red-600 hover:bg-red-50 p-2 rounded-lg -ml-2"
-                      >
-                         Log Out
-                      </button>
-                    </>
-                 )}
+                    ))}
+
+                    <div className="h-px bg-neutral-100 my-2" />
+
+                    <Link
+                      href="/settings"
+                      className="text-lg font-bold text-primary-900 hover:bg-neutral-50 p-2 rounded-lg -ml-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleLogout();
+                      }}
+                      className="text-left text-lg font-bold text-red-600 hover:bg-red-50 p-2 rounded-lg -ml-2"
+                    >
+                      Log Out
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-       <LocationModal
+      <LocationModal
         isOpen={isLocationModalOpen}
         onClose={() => setIsLocationModalOpen(false)}
       />
