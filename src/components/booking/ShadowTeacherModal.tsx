@@ -312,7 +312,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         )}
                         <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
                              <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL</span>
-                            <span className="text-xl font-bold text-[#1B3022]">₹{pricing.totalCost.toLocaleString()}</span>
+                            <span className="text-xl font-bold text-primary">₹{pricing.totalCost.toLocaleString()}</span>
                         </div>
                     </>
                 ) : (
@@ -394,7 +394,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
                             
                             {/* Title */}
-                            <h1 className="text-3xl font-display font-medium text-[#1B3022]">
+                            <h1 className="text-3xl font-display font-medium text-primary">
                                 Book a Shadow Teacher
                             </h1>
 
@@ -412,8 +412,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, planType: plan.id })}
                                                 className={`relative p-5 rounded-2xl border transition-all text-left group ${isSelected
-                                                    ? 'bg-[#1B3022] text-white border-[#1B3022] shadow-lg shadow-[#1B3022]/10'
-                                                    : 'bg-white border-gray-200 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/10'
+                                                    : 'bg-white border-gray-200 hover:border-primary hover:bg-gray-50'
                                                     }`}
                                             >
                                                 {plan.popular && (
@@ -462,8 +462,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, date: dateStr })}
                                                 className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border transition-all min-w-[70px] ${isSelected
-                                                    ? 'bg-[#1B3022] text-white border-[#1B3022] shadow-md'
-                                                    : 'bg-white border-gray-200 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    ? 'bg-primary text-white border-primary shadow-md'
+                                                    : 'bg-white border-gray-200 hover:border-primary hover:bg-gray-50'
                                                     }`}
                                             >
                                                 <span className={`text-[10px] font-bold uppercase mb-1 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
@@ -495,8 +495,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, startTime: time })}
                                                 className={`py-2 px-1 rounded-xl text-sm font-medium border transition-all ${isSelected
-                                                    ? 'bg-[#1B3022] text-white border-[#1B3022]'
-                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#1B3022] hover:bg-gray-50'
+                                                    ? 'bg-primary text-white border-primary'
+                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-primary hover:bg-gray-50'
                                                     }`}
                                             >
                                                 {time}
@@ -565,8 +565,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                                     type="button"
                                                     onClick={() => setFormData({ ...formData, numStudents: num })}
                                                     className={`w-12 h-12 rounded-xl font-bold border transition-all ${isSelected
-                                                        ? 'bg-[#1B3022] text-white border-[#1B3022]'
-                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#1B3022]'
+                                                        ? 'bg-primary text-white border-primary'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-primary'
                                                         }`}
                                                 >
                                                     {num}
@@ -586,7 +586,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                     value={formData.specialRequirements}
                                     onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
                                     placeholder="Learning needs, educational goals, specific support required..."
-                                    className="w-full h-28 px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022] focus:outline-none resize-none text-sm bg-gray-50/50"
+                                    className="w-full h-28 px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none resize-none text-sm bg-gray-50/50"
                                 />
                             </div>
 
@@ -596,7 +596,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                 <button
                                     type="submit"
                                     disabled={loading || missingLocation || !formData.date || !formData.duration}
-                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                    className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
                                 >
                                     {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
                                 </button>
@@ -614,7 +614,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                     type="submit"
                                     onClick={handleSubmit}
                                     disabled={loading || missingLocation || !formData.date || !formData.duration}
-                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                    className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
                                 >
                                     {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
                                 </button>

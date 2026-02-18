@@ -38,15 +38,15 @@ export function ChildSelector({
               onClick={() => toggleChild(child.id)}
               className={`relative group flex flex-col items-center p-4 rounded-2xl border-2 transition-all w-28 ${
                 isSelected
-                  ? 'bg-[#1B3022] border-[#1B3022] text-white'
-                  : 'bg-white border-gray-100 hover:border-[#1B3022] hover:bg-gray-50'
+                  ? 'bg-primary border-primary text-white'
+                  : 'bg-white border-gray-100 hover:border-primary hover:bg-gray-50'
               }`}
             >
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 font-bold text-lg ${
                   isSelected
                     ? 'bg-white/20 text-white'
-                    : 'bg-[#F2F7F4] text-[#1B3022]'
+                    : 'bg-background text-primary'
                 }`}
               >
                 {child.first_name[0]}
@@ -67,12 +67,12 @@ export function ChildSelector({
         <button
           type="button"
           onClick={onAddNew}
-          className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-dashed border-gray-300 hover:border-[#1B3022] hover:bg-[#F2F7F4] transition-all w-28 group"
+          className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-dashed border-gray-300 hover:border-primary hover:bg-background transition-all w-28 group"
         >
-          <div className="w-12 h-12 rounded-full bg-gray-50 group-hover:bg-white flex items-center justify-center mb-2 text-gray-400 group-hover:text-[#1B3022] transition-colors">
+          <div className="w-12 h-12 rounded-full bg-gray-50 group-hover:bg-white flex items-center justify-center mb-2 text-gray-400 group-hover:text-primary transition-colors">
             <Plus size={24} />
           </div>
-          <span className="text-sm font-medium text-gray-500 group-hover:text-[#1B3022]">Add New</span>
+          <span className="text-sm font-medium text-gray-500 group-hover:text-primary">Add New</span>
         </button>
       </div>
 

@@ -5,48 +5,51 @@
 @layer base {
   :root {
     /* =========================================
-       CareConnect Blue & White Design System
-       Based on Logo: Deep Navy Blue + Crisp White
+       CareConnect Navy & Sky Blue Design System
+       Primary: Deep Navy (#0D2B45)
+       Accent: Pastel Sky Blue (#D0E7EF)
+       Background: Soft Cream (#F9FBFB)
+       Text: Charcoal Navy (#1E293B)
        ========================================= */
 
     /* Background & Foreground */
-    --background: 40 20% 96%; /* Warm Cream-ish #F9F7F2 */
-    --foreground: 156 7% 19%; /* Charcoal Green #2C3330 */
+    --background: 180 20% 98%; /* Soft Cream #F9FBFB */
+    --foreground: 217 33% 17%; /* Charcoal Navy #1E293B */
 
-    /* Primary - Deep Forest (#1B3022) -> HSL ~ 156 28% 15% */
-    --primary: 156 28% 15%;
+    /* Primary - Deep Navy (#0D2B45) -> HSL 208 67% 16% */
+    --primary: 208 67% 16%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-50: 150 20% 96%;
-    --primary-100: 150 20% 90%;
-    --primary-600: 156 28% 25%;
-    --primary-700: 156 28% 20%;
-    --primary-800: 156 28% 15%;
-    --primary-900: 156 28% 10%;
+    --primary-50: 208 67% 96%;
+    --primary-100: 208 67% 90%;
+    --primary-600: 208 67% 25%;
+    --primary-700: 208 67% 20%;
+    --primary-800: 208 67% 15%;
+    --primary-900: 208 67% 10%;
 
-    /* Secondary - Muted Sage (#8DA399) -> HSL ~ 153 11% 60% */
-    --secondary: 153 11% 60%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - Pastel Sky Blue (#D0E7EF) -> HSL 195 53% 88% */
+    --secondary: 195 53% 88%;
+    --secondary-foreground: 217 33% 17%; /* Charcoal Navy for contrast */
 
-    /* Accent - Warm Cream (#F9F7F2) -> HSL ~ 40 20% 96% */
-    --accent: 40 20% 96%;
-    --accent-foreground: 156 7% 19%; /* Charcoal Green for contrast */
+    /* Accent - Same as Secondary or slightly adjusted for interaction */
+    --accent: 195 53% 88%;
+    --accent-foreground: 217 33% 17%;
 
-    /* Muted - Sage Tint */
-    --muted: 150 10% 94%;
-    --muted-foreground: 156 5% 40%;
+    /* Muted - Cool Slate/Gray */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    /* Neutral Grays - Shifted slightly warm/green */
-    --neutral-50: 40 20% 98%;
-    --neutral-100: 40 10% 96%;
-    --neutral-200: 150 5% 92%;
-    --neutral-300: 150 5% 88%;
-    --neutral-400: 150 5% 75%;
-    --neutral-500: 150 5% 60%;
-    --neutral-600: 150 5% 50%;
-    --neutral-700: 156 5% 35%;
-    --neutral-800: 156 7% 25%;
-    --neutral-900: 156 7% 19%;
+    /* Neutral Grays - Cool/Slate Tones */
+    --neutral-50: 210 20% 98%;
+    --neutral-100: 210 20% 96%;
+    --neutral-200: 214 32% 91%;
+    --neutral-300: 213 27% 84%;
+    --neutral-400: 215 20% 65%;
+    --neutral-500: 215 16% 47%;
+    --neutral-600: 215 19% 35%;
+    --neutral-700: 215 25% 27%;
+    --neutral-800: 217 33% 17%; /* Charcoal Navy */
+    --neutral-900: 222 47% 11%;
 
     /* Success */
     --success-50: 152 76% 90%;
@@ -70,20 +73,20 @@
     --error-700: 0 70% 45%;
 
     /* Border & Input */
-    --border: 210 16% 93%;
-    /* #e9ecef */
-    --input: 210 17% 95%;
-    /* #f1f3f5 */
-    --ring: 210 52% 25%;
-    /* #1e3a5f */
+    --border: 214 32% 91%;
+    /* #e2e8f0 */
+    --input: 214 32% 91%;
+    /* #e2e8f0 */
+    --ring: 208 67% 16%;
+    /* Deep Navy */
 
     /* Card */
-    --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --card: 0 0% 100%; /* Pure White */
+    --card-foreground: 217 33% 17%;
 
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover-foreground: 217 33% 17%;
 
     /* Destructive */
     --destructive: 0 72% 59%;
@@ -129,7 +132,7 @@
 
   /* Base Styles */
   * {
-    border-color: hsl(var(--neutral-200));
+    border-color: hsl(var(--border));
   }
 
   body {
@@ -157,16 +160,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: hsl(var(--neutral-100));
+    background-color: hsl(215, 40%, 10%);
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--neutral-300));
+    background-color: hsl(215, 30%, 28%);
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--neutral-400));
+    background-color: hsl(215, 30%, 40%);
   }
 }
 
@@ -357,4 +360,31 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+}
+
+/* ===== CIRCULAR TEXT COMPONENT ===== */
+.circular-text {
+  margin: 0 auto;
+  border-radius: 50%;
+  width: 200px;
+  position: relative;
+  height: 200px;
+  font-weight: bold;
+  color: #fff;
+  font-weight: 900;
+  text-align: center;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  -webkit-transform-origin: 50% 50%;
+}
+
+.circular-text span {
+  position: absolute;
+  display: inline-block;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-size: 24px;
+  transition: all 0.5s cubic-bezier(0, 0, 0, 1);
 }

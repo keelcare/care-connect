@@ -53,12 +53,12 @@ export const RightPreviewPanel = () => {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-childcare-mustard rounded-2xl p-5 flex flex-col justify-between hover:scale-[1.02] transition-transform cursor-pointer overflow-hidden relative text-white">
+          <div className="bg-childcare-secondary rounded-2xl p-5 flex flex-col justify-between hover:scale-[1.02] transition-transform cursor-pointer overflow-hidden relative text-primary-900">
             <h3 className="font-bold text-lg relative z-10">Quality Care</h3>
             <div className="absolute bottom-[-10px] right-[-10px] opacity-20 rotate-[-15deg]">
               <Heart size={80} fill="currentColor" />
             </div>
-            <div className="mt-4 relative z-10 bg-white/20 w-max px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+            <div className="mt-4 relative z-10 bg-white/40 w-max px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm text-primary-900">
               Verified Profiles
             </div>
           </div>

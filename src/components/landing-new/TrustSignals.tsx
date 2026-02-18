@@ -8,7 +8,7 @@ const trustItems = [
     desc: 'Every provider undergoes a rigorous identity and criminal background verification.'
   },
   {
-    icon: <UserCheck className="w-10 h-10 text-terracotta" />,
+    icon: <UserCheck className="w-10 h-10 text-primary" />,
     title: 'Reference Verified',
     desc: 'We speak with previous employers to ensure reliable and compassionate care.'
   },
@@ -32,7 +32,7 @@ export const TrustSignals = () => {
           <div>
             <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-primary-900 mb-8 leading-tight">
               Your safety is our <br />
-              <span className="text-terracotta">absolute priority.</span>
+              <span className="text-primary">absolute priority.</span>
             </h2>
             <p className="text-xl text-gray-700 mb-12 leading-relaxed">
               We go beyond just matching names. Our trust and safety team works around the clock to ensure every connection you make on Keel is safe, professional, and reliable.

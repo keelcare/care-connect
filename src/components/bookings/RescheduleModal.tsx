@@ -315,7 +315,7 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
                 <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
                     <div className="flex-1 overflow-y-auto scrollbar-hide">
                         <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
-                            <h1 className="text-3xl font-display font-medium text-[#1B3022]">Choose New Timing</h1>
+                            <h1 className="text-3xl font-display font-medium text-primary">Choose New Timing</h1>
 
                             {/* Calendar */}
                             <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
@@ -395,7 +395,7 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
                                     <button
                                         type="submit"
                                         disabled={loading || !selectedDate}
-                                        className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                        className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
                                     >
                                         {loading ? 'Rescheduling...' : 'Confirm Reschedule'}
                                     </button>
@@ -412,7 +412,7 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
                                     type="button"
                                     onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
                                     disabled={loading || !selectedDate}
-                                    className="w-full bg-[#1B3022] hover:bg-[#15231b] text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 shadow-xl shadow-[#1B3022]/20"
+                                    className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
                                 >
                                     {loading ? 'Rescheduling...' : 'Confirm Reschedule'}
                                 </button>

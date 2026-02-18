@@ -54,7 +54,7 @@ interface SocketContextType {
   // Refresh events for data re-validation
   onRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
   offRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
-}
+
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 

@@ -106,7 +106,7 @@ export default function NotificationsPage() {
           <button
             onClick={handleMarkAllAsRead}
             disabled={notifications.every((n) => n.is_read)}
-            className="flex items-center gap-2 text-[#1B3022] hover:text-[#15231b] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 text-primary hover:text-primary-800 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCheck className="w-5 h-5" />
             Mark all as read
@@ -120,7 +120,7 @@ export default function NotificationsPage() {
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
               className={`px-5 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all ${activeFilter === filter.value
-                ? 'bg-[#1B3022] text-white shadow-lg shadow-[#1B3022]/20'
+                ? 'bg-primary text-white shadow-lg shadow-primary/20'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                 }`}
             >
@@ -132,7 +132,7 @@ export default function NotificationsPage() {
         {/* Content */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 text-[#1B3022] animate-spin mb-4" />
+            <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
             <p className="text-gray-500 font-body">Loading notifications...</p>
           </div>
         ) : groupedNotifications.length === 0 ? (
@@ -141,8 +141,8 @@ export default function NotificationsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-[32px] p-12 text-center shadow-sm border border-gray-100"
           >
-            <div className="w-20 h-20 bg-[#F2F7F4] rounded-full flex items-center justify-center mx-auto mb-6">
-              <Bell className="w-10 h-10 text-[#1B3022]" />
+            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mx-auto mb-6">
+              <Bell className="w-10 h-10 text-primary" />
             </div>
             <h3 className="text-xl font-bold text-[#0F172A] mb-2 font-display">
               No notifications yet

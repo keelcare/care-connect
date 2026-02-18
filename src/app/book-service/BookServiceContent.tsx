@@ -34,7 +34,7 @@ export default function BookServiceContent() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#F9F7F2] pb-20">
+    <div className="min-h-dvh bg-background pb-20">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-2 pt-5 pb-5">
         <motion.div

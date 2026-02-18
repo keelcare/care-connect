@@ -30,14 +30,14 @@ export const Hero: React.FC = () => {
                     <div className="relative z-10 w-full max-w-sm">
                         {/* Main Character Shape */}
                         <div className="w-64 h-64 bg-wellness-navy rounded-t-full rounded-b-[40px] mx-auto relative overflow-hidden flex items-end justify-center">
-                            <div className="w-40 h-40 bg-wellness-mustard/20 rounded-full mb-8" /> 
+                            <div className="w-40 h-40 bg-wellness-secondary/20 rounded-full mb-8" /> 
                             {/* Stylized Face placeholder */}
                             <div className="absolute top-16 w-20 h-24 bg-wellness-peach rounded-2xl" />
                         </div>
                         
                         {/* Interactive Elements Floating Around */}
                         <div className="absolute top-0 right-0 bg-white p-4 rounded-2xl shadow-premium rotate-6 animate-slide-up">
-                            <HeartHandshake className="text-wellness-terracotta w-8 h-8" />
+                            <HeartHandshake className="text-wellness-primary w-8 h-8" />
                         </div>
                         
                         <div className="absolute bottom-10 -left-4 bg-white p-4 rounded-2xl shadow-premium -rotate-3 animate-slide-up" style={{ animationDelay: '0.2s' }}>
@@ -64,7 +64,7 @@ export const Hero: React.FC = () => {
                     
                     <h1 className="text-fluid-5xl font-heading text-wellness-navy leading-[1.1]">
                         Quickly Find a <br/>
-                        <span className="text-wellness-terracotta">Trusted Nanny.</span>
+                        <span className="text-wellness-primary">Trusted Nanny.</span>
                     </h1>
                     
                     <p className="text-lg text-neutral-600 max-w-md leading-relaxed">

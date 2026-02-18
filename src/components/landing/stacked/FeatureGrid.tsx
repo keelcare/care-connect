@@ -21,11 +21,11 @@ export const FeatureGrid = () => {
       </div>
 
       {/* CARD 2 - Quality Care */}
-      <div className="bg-childcare-mustard p-10 flex flex-col items-center justify-center text-center hover:scale-[1.02] transition-transform duration-300 shadow-sm z-10">
-        <h3 className="font-serif text-2xl font-bold text-white mb-6">Quality Care</h3>
+      <div className="bg-childcare-secondary p-10 flex flex-col items-center justify-center text-center hover:scale-[1.02] transition-transform duration-300 shadow-sm z-10">
+        <h3 className="font-serif text-2xl font-bold text-primary-900 mb-6">Quality Care</h3>
         {/* Simple Handshake Icon Representation */}
-        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-             <Heart size={32} className="text-white fill-white" />
+        <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center">
+             <Heart size={32} className="text-primary-900 fill-primary-900" />
         </div>
       </div>
 

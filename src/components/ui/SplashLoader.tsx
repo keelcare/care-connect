@@ -45,7 +45,7 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-[#1B3022] transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-primary transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
     >
       <div className="relative flex flex-col items-center">

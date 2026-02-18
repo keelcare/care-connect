@@ -11,7 +11,7 @@ const services = [
     desc: 'Specialized educational support for unique learning needs.',
     icon: <BookOpen className="w-6 h-6" />,
     color: 'bg-secondary',
-    textColor: 'text-white',
+    textColor: 'text-primary-900', // Fixed contrast for Sky Blue background
   },
   {
     title: 'Child Care',
@@ -24,7 +24,7 @@ const services = [
     title: 'Special Needs',
     desc: 'Professional support for unique requirements.',
     icon: <HeartPulse className="w-6 h-6" />,
-    color: 'bg-terracotta',
+    color: 'bg-primary',
     textColor: 'text-white',
   }
 ];
@@ -33,7 +33,7 @@ export const BentoServices = () => {
   return (
     <section className="h-dvh flex items-center justify-center px-6 bg-white relative overflow-hidden">
         {/* Background blobs */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-terracotta rounded-full mix-blend-multiply filter blur-[120px] opacity-10 translate-x-1/2 -z-10" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary rounded-full mix-blend-multiply filter blur-[120px] opacity-10 translate-x-1/2 -z-10" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary-900 rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />
 
       <div className="container max-w-7xl">
@@ -59,7 +59,7 @@ export const BentoServices = () => {
                     transition={{ duration: 1.0, ease: [0.2, 0.8, 0.2, 1] }}
                     className="mb-10"
                 >
-                    <span className="text-terracotta font-bold uppercase tracking-wider text-fluid-sm mb-2 block">Our Expertise</span>
+                    <span className="text-primary font-bold uppercase tracking-wider text-fluid-sm mb-2 block">Our Expertise</span>
                     <h2 className="text-fluid-4xl font-display font-medium text-primary-900 mb-6 leading-tight">
                         Compassionate care <br/>
                         <span className="text-gray-400">for every stage.</span>
