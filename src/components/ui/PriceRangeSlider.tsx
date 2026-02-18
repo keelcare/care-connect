@@ -129,7 +129,4 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
     </div>
   );
 };
-<<<<<<< HEAD
-=======
-  
->>>>>>> feat/redesign
+
