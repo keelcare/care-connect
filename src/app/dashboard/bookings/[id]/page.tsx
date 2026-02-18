@@ -450,7 +450,7 @@ export default function BookingDetailsPage() {
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         title="Write a Review"
-        maxWidth="500px"
+        maxWidth="lg"
       >
         <ReviewForm
           bookingId={bookingId}

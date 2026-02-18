@@ -41,19 +41,19 @@ export default function BottomNavBar() {
                                 >
                                     <div className="relative">
                                         <Icon
-                                            className={`w-6 h-6 transition-colors ${active ? 'text-[#1B3022]' : 'text-gray-400'
+                                            className={`w-6 h-6 transition-colors ${active ? 'text-primary' : 'text-gray-400'
                                                 }`}
                                         />
                                         {active && (
                                             <motion.div
                                                 layoutId="activeBottomTab"
-                                                className="absolute -inset-2 bg-[#F2F7F4] rounded-full -z-10"
+                                                className="absolute -inset-2 bg-background rounded-full -z-10"
                                                 transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
                                     </div>
                                     <span
-                                        className={`text-xs font-medium transition-colors ${active ? 'text-[#1B3022]' : 'text-gray-500'
+                                        className={`text-xs font-medium transition-colors ${active ? 'text-primary' : 'text-gray-500'
                                             }`}
                                     >
                                         {item.label}

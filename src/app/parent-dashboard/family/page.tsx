@@ -91,12 +91,12 @@ export default function FamilyPage() {
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#1B3022] font-display">My Family</h1>
+            <h1 className="text-3xl font-bold text-primary font-display">My Family</h1>
             <p className="text-gray-500 mt-1">Manage profiles for your children to personalize their care.</p>
           </div>
           <Button 
             onClick={openAddModal}
-            className="bg-[#1B3022] hover:bg-[#15231b] text-white rounded-xl px-6 py-6 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+            className="bg-primary hover:bg-primary-800 text-white rounded-xl px-6 py-6 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
             Add Child Profile
@@ -111,14 +111,14 @@ export default function FamilyPage() {
           </div>
         ) : children.length === 0 ? (
           <div className="bg-white rounded-[32px] p-12 text-center border border-gray-100 shadow-sm">
-            <div className="w-20 h-20 bg-[#F2F7F4] rounded-full flex items-center justify-center mx-auto mb-6">
-              <User className="w-10 h-10 text-[#1B3022]" />
+            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mx-auto mb-6">
+              <User className="w-10 h-10 text-primary" />
             </div>
-            <h3 className="text-xl font-bold text-[#1B3022] mb-2">No profiles added yet</h3>
+            <h3 className="text-xl font-bold text-primary mb-2">No profiles added yet</h3>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">
               Add profiles for your children to help us match you with the perfect caregivers and ensure all their needs are met.
             </p>
-            <Button onClick={openAddModal} variant="outline" className="border-[#1B3022] text-[#1B3022]">
+            <Button onClick={openAddModal} variant="outline" className="border-primary text-primary">
               Create First Profile
             </Button>
           </div>
@@ -132,14 +132,14 @@ export default function FamilyPage() {
                 className={`group relative bg-white rounded-[24px] border-2 transition-all duration-300 hover:shadow-xl overflow-hidden ${
                   child.profile_type === 'SPECIAL_NEEDS' 
                     ? 'border-[#FDF3F1] hover:border-[#CC7A68]/30' 
-                    : 'border-[#F2F7F4] hover:border-[#1B3022]/30'
+                    : 'border-background hover:border-primary/30'
                 }`}
               >
                 {/* Header Pattern */}
                 <div className={`h-24 ${
                   child.profile_type === 'SPECIAL_NEEDS' 
                     ? 'bg-[#FDF3F1]' 
-                    : 'bg-[#F2F7F4]'
+                    : 'bg-background'
                 }`} />
 
                 <div className="px-6 pb-6">
@@ -149,7 +149,7 @@ export default function FamilyPage() {
                       <div className={`w-24 h-24 rounded-full border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold ${
                          child.profile_type === 'SPECIAL_NEEDS'
                            ? 'bg-[#CC7A68] text-white'
-                           : 'bg-[#1B3022] text-white'
+                           : 'bg-primary text-white'
                       }`}>
                         {child.first_name[0]}
                       </div>
@@ -177,7 +177,7 @@ export default function FamilyPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-[#1B3022]">{child.first_name} {child.last_name}</h3>
+                    <h3 className="text-xl font-bold text-primary">{child.first_name} {child.last_name}</h3>
                     <p className="text-gray-500 text-sm font-medium">
                       {calculateAge(child.dob)} years old • {format(new Date(child.dob), 'MMM d, yyyy')}
                     </p>

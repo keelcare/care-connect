@@ -94,7 +94,7 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
         </button>
 
         <div className="p-8 md:p-10">
-            <h2 className="text-fluid-3xl font-display font-semibold text-center text-[#1B3022] mb-3">Which service do you need?</h2>
+            <h2 className="text-fluid-3xl font-display font-semibold text-center text-primary mb-3">Which service do you need?</h2>
             <p className="text-gray-500 mb-10 text-center max-w-lg mx-auto leading-relaxed text-lg">
                 Select a service to get started. We'll connect you with verified professionals tailored to your needs.
             </p>
@@ -112,18 +112,18 @@ export function ServiceSelectionModal({ isOpen, onClose }: ServiceSelectionModal
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleSelect('CHILD_CARE')}
-                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-[#1B3022]/10 hover:shadow-xl bg-gradient-to-br from-[#F2F7F4] to-white group relative overflow-hidden"
+                className="flex flex-col items-center p-6 rounded-[24px] transition-all duration-300 border border-transparent hover:border-primary/10 hover:shadow-xl bg-gradient-to-br from-background to-white group relative overflow-hidden"
             >
-                <div className="absolute inset-0 bg-[#F2F7F4] opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-background opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-[#1B3022]">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 text-primary">
                 <Baby strokeWidth={1.5} className="w-8 h-8" />
                 </div>
-                <span className="font-heading font-semibold text-lg text-[#1B3022] mb-1 relative z-10">Child Care</span>
-                <span className="text-xs text-[#1B3022]/70 font-medium tracking-wide uppercase relative z-10 mb-3">0-6 Years</span>
+                <span className="font-heading font-semibold text-lg text-primary mb-1 relative z-10">Child Care</span>
+                <span className="text-xs text-primary/70 font-medium tracking-wide uppercase relative z-10 mb-3">0-6 Years</span>
 
-                <div className="mt-auto w-8 h-8 rounded-full bg-[#1B3022]/10 flex items-center justify-center relative z-10 group-hover:bg-[#1B3022] group-hover:text-white transition-colors duration-300">
+                <div className="mt-auto w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center relative z-10 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                     <ChevronRight size={16} />
                 </div>
             </motion.button>

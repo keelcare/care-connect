@@ -53,8 +53,8 @@ const typeStyles = {
   },
   error: {
     bg: 'bg-red-50', // Terracotta tint
-    text: 'text-terracotta', // Terracotta
-    border: 'border-terracotta/20',
+    text: 'text-primary', // Terracotta
+    border: 'border-primary/20',
     icon: AlertCircle
   },
 };
@@ -105,7 +105,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
               {notification.title}
             </h3>
             {!notification.is_read && (
-              <span className="flex-shrink-0 w-2.5 h-2.5 bg-terracotta rounded-full mt-2 animate-pulse" />
+              <span className="flex-shrink-0 w-2.5 h-2.5 bg-primary rounded-full mt-2 animate-pulse" />
             )}
           </div>
 

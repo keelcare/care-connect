@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-export interface ToggleProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface ToggleProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
 }

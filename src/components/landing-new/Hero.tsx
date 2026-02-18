@@ -17,108 +17,134 @@ const illustrations = [
 export const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { scrollY } = useScroll();
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
 
-  // Parallax transforms - creating different speeds for depth
-  const y1 = useTransform(scrollY, [0, 500], [0, -150]); // Moves fastest
-  const y2 = useTransform(scrollY, [0, 500], [0, -80]);  // Moves medium
-  const y3 = useTransform(scrollY, [0, 500], [0, -220]); // Moves very fast
+  // Apple-style scroll transforms
+  // Scale down slightly as user scrolls to create "receding" depth
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
+  
+  // Round corners to look like a closing app window
+  const borderRadius = useTransform(scrollYProgress, [0, 1], [0, 60]);
+  
+  // Add a blur and dimming effect for focus management
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const filter = useTransform(scrollYProgress, [0, 1], ["blur(0px) brightness(1)", "blur(10px) brightness(0.9)"]);
+
+  // Internal parallax for elements (keeping original logic but linked to scrollYProgress for consistency)
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -150]); 
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -80]); 
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -220]);
 
   const physicsY1 = useSpring(y1, { stiffness: 100, damping: 20 });
   const physicsY2 = useSpring(y2, { stiffness: 100, damping: 20 });
   const physicsY3 = useSpring(y3, { stiffness: 100, damping: 20 });
 
   return (
-    <section ref={containerRef} className="pt-40 pb-20 overflow-hidden relative min-h-dvh">
-      <div className="max-w-4xl mx-auto px-6 text-center relative z-10 mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-8 max-w-lg mx-auto"
+    <section ref={containerRef} className="relative min-h-[120vh] flex flex-col items-center">
+      {/* Sticky container that stays in view while we scroll/transform it */}
+      <div className="sticky top-0 w-full h-dvh overflow-hidden flex items-center justify-center">
+        
+        <motion.div 
+            style={{ scale, borderRadius, opacity, filter }}
+            className="relative w-full h-full bg-white overflow-hidden shadow-2xl origin-top"
         >
-          <div className="w-6 h-6 rounded-full bg-primary-900/10 flex items-center justify-center shrink-0">
-            <Quote size={12} className="text-primary-900 fill-current" />
-          </div>
-          <p className="text-fluid-xs md:text-fluid-sm font-medium text-primary-900 italic">
-            "It is not how much we do, but how much love we put in the doing."
-            <span className="block text-[10px] text-gray-400 not-italic mt-0.5 font-semibold tracking-wide uppercase">— Mother Teresa</span>
-          </p>
-        </motion.div>
+            <div className="pt-40 pb-20 px-6 h-full flex flex-col justify-between">
+                
+                {/* Main Content */}
+                <div className="max-w-4xl mx-auto text-center relative z-10">
+                    <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-8 max-w-lg mx-auto"
+                    >
+                    <div className="w-6 h-6 rounded-full bg-primary-900/10 flex items-center justify-center shrink-0">
+                        <Quote size={12} className="text-primary-900 fill-current" />
+                    </div>
+                    <p className="text-fluid-xs md:text-fluid-sm font-medium text-primary-900 italic">
+                        "It is not how much we do, but how much love we put in the doing."
+                        <span className="block text-[10px] text-gray-400 not-italic mt-0.5 font-semibold tracking-wide uppercase">— Mother Teresa</span>
+                    </p>
+                    </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.1 }}
-          className="text-fluid-5xl font-display font-medium text-primary-900 leading-[1.1] mb-8"
-        >
-          Where Big Needs <br />
-          Meet Gentle Care
-        </motion.h1>
+                    <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.1 }}
+                    className="text-fluid-5xl font-display font-medium text-primary-900 leading-[1.1] mb-8"
+                    >
+                    Where Big Needs <br />
+                    Meet Gentle Care
+                    </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.2 }}
-          className="text-fluid-xl text-gray-500 mb-12 max-w-2xl mx-auto font-medium font-body"
-        >
-          Inclusive, compassionate care that strengthens both <br className="hidden md:block" /> children and families through verified connections.
-        </motion.p>
+                    <motion.p
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.2 }}
+                    className="text-fluid-xl text-gray-500 mb-12 max-w-2xl mx-auto font-medium font-body"
+                    >
+                    Inclusive, compassionate care that strengthens both <br className="hidden md:block" /> children and families through verified connections.
+                    </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-6 justify-center"
-        >
-          <Link href="/book-service">
-            <button className="min-h-tap bg-primary-900 text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-primary/10">
-              Book a Session
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-terracotta transition-colors duration-300">
-                <ArrowUpRight size={18} />
-              </div>
-            </button>
-          </Link>
-          <Link href="/services">
-            <button className="min-h-tap bg-terracotta text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-terracotta/20">
-              Our Services
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-primary-900 transition-colors duration-300">
-                <ArrowUpRight size={18} />
-              </div>
-            </button>
-          </Link>
+                    <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1], delay: 0.3 }}
+                    className="flex flex-col sm:flex-row gap-6 justify-center"
+                    >
+                    <Link href="/book-service">
+                        <button className="min-h-tap bg-primary-900 text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-primary/10">
+                        Book a Session
+                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-primary transition-colors duration-300">
+                            <ArrowUpRight size={18} />
+                        </div>
+                        </button>
+                    </Link>
+                    <Link href="/services">
+                        <button className="min-h-tap bg-primary text-white px-10 py-5 rounded-full font-bold text-fluid-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group shadow-2xl shadow-primary/20">
+                        Our Services
+                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-primary-900 transition-colors duration-300">
+                            <ArrowUpRight size={18} />
+                        </div>
+                        </button>
+                    </Link>
+                    </motion.div>
+                </div>
+
+                {/* Illustrative Masonry Grid with Parallax */}
+                <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-center items-end gap-6 md:gap-8 pb-10">
+                    {illustrations.map((ill, idx) => {
+                    const yAnim = idx % 3 === 0 ? physicsY1 : idx % 2 === 0 ? physicsY2 : physicsY3;
+
+                    return (
+                        <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        style={{ y: yAnim }}
+                        transition={{ delay: 0.4 + (idx * 0.1), duration: 1.0, ease: [0.2, 0.8, 0.2, 1] }}
+                        className={`rounded-4xl overflow-hidden ${ill.size} w-40 md:w-52 shadow-xl hover:shadow-2xl transition-shadow duration-500 hover:scale-105 relative z-0`}
+                        >
+                        <ImageWithFallback
+                            src={ill.url}
+                            alt="Care Illustration"
+                            className="w-full h-full object-cover grayscale-0"
+                        />
+                         {/* Subtle sheen on hover/interaction */}
+                         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+                    );
+                    })}
+                </div>
+
+                {/* Decorative background blobs - enclosed in the motion div so they move with it */}
+                <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary-900 rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />
+                <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-primary rounded-full mix-blend-multiply filter blur-[120px] opacity-20 translate-x-1/2 -z-10" />
+            </div>
         </motion.div>
       </div>
-
-      {/* Illustrative Masonry Grid with Parallax */}
-      <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-center items-end gap-6 md:gap-8 min-h-[400px]">
-        {illustrations.map((ill, idx) => {
-          // Distribute parallax speeds based on index
-          const yAnim = idx % 3 === 0 ? physicsY1 : idx % 2 === 0 ? physicsY2 : physicsY3;
-
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9, y: 100 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              style={{ y: yAnim }}
-              transition={{ delay: 0.4 + (idx * 0.1), duration: 1.0, ease: [0.2, 0.8, 0.2, 1] }}
-              className={`rounded-4xl overflow-hidden ${ill.size} w-40 md:w-52 shadow-xl hover:shadow-2xl transition-shadow duration-500 hover:scale-105 relative z-0`}
-            >
-              <ImageWithFallback
-                src={ill.url}
-                alt="Care Illustration"
-                className="w-full h-full object-cover grayscale-0"
-              />
-              {/* Subtle sheen on hover/interaction */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Decorative background blobs */}
-      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary-900 rounded-full mix-blend-multiply filter blur-[120px] opacity-10 -translate-x-1/2 -z-10" />
-      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-terracotta rounded-full mix-blend-multiply filter blur-[120px] opacity-20 translate-x-1/2 -z-10" />
     </section>
   );
 };

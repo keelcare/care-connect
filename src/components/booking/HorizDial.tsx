@@ -15,7 +15,7 @@ export function HorizDial({
   ticks, 
   current, 
   onChange, 
-  accent = "#1B3022", 
+  accent = "#0D2B45", 
   label, 
   subLabel 
 }: HorizDialProps) {

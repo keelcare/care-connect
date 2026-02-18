@@ -100,33 +100,35 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed top-6 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
-        <nav className="max-w-7xl mx-auto bg-white/90 backdrop-blur-xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-4 md:px-6 py-3 flex items-center justify-between pointer-events-auto">
+      <div className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
+        <nav className={`max-w-7xl mx-auto bg-white/20 backdrop-blur-2xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-3 md:px-4 py-2 flex items-center pointer-events-auto ${!user ? 'justify-between' : 'justify-between'}`}>
           
-          {/* Logo */}
+          {/* Logo - Always on Left */}
           <Link href={user ? (user.role === 'nanny' ? '/dashboard' : '/parent-dashboard') : "/"} className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
-              <img src="/logo.svg" alt="Keel Logo" className="h-6 w-auto" />
+            <div className="w-8 h-8 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
+              <img src="/logo.svg" alt="Keel Logo" className="h-5 w-auto" />
             </div>
-            <span className="text-xl font-bold font-display text-primary-900 tracking-tight">Keel</span>
+            <span className="text-lg font-bold font-display text-primary-900 tracking-tight">Keel</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Center Navigation - Landing Page */}
+          {!user && (
+            <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+              <Link href="/about" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
+                About
+              </Link>
+              <Link href="/how-it-works" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
+                How it Works
+              </Link>
+              <Link href="/search" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
+                Find Care
+              </Link>
+            </div>
+          )}
+
+          {/* Desktop Navigation - Logged In Users */}
           <div className="hidden md:flex items-center gap-1">
-            {!user && (
-              <div className="flex items-center gap-6 mr-4">
-                 <Link href="/about" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
-                  About
-                </Link>
-                <Link href="/how-it-works" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
-                  How it Works
-                </Link>
-                <Link href="/search" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
-                  Find Care
-                </Link>
-              </div>
-            )}
-             {user && (
+            {user && (
                <div className="flex items-center p-1 bg-neutral-100/50 rounded-full border border-neutral-200/50">
                 {navItems.map((item) => (
                     <Link 
@@ -146,35 +148,19 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-3 md:gap-4">
-            
-            {/* Location Selector - Desktop */}
-            <button 
-              className="hidden md:flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-full border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none"
-              onClick={() => setIsLocationModalOpen(true)}
-              aria-label="Set location"
-              type="button"
-            >
-              <MapPin size={16} className="text-neutral-500" />
-              <span className="text-xs font-bold truncate max-w-[120px]">
-                {preferences.location?.address ||
-                  user?.profiles?.address ||
-                  'Set Location'}
-              </span>
-              <ChevronDown size={14} className="text-neutral-400" />
-            </button>
+          <div className="flex items-center gap-2 md:gap-3">
 
             {user ? (
-              <div className="flex items-center gap-2 md:gap-4">
+               <div className="flex items-center gap-2 md:gap-3">
                 {/* Notifications */}
                 <button
                     onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
-                    className="relative p-2 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
+                    className="relative p-1.5 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
                     aria-label="Notifications"
                   >
-                    <Bell size={20} />
+                    <Bell size={18} />
                     {hasUnread && (
-                      <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                      <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                     )}
                 </button>
 
@@ -307,23 +293,8 @@ export const Navbar: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="md:hidden mt-4 bg-white/95 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl mx-auto pointer-events-auto"
+              className="md:hidden mt-4 bg-white/20 backdrop-blur-2xl rounded-3xl p-6 border border-white/20 shadow-2xl mx-auto pointer-events-auto"
             >
-               {/* Location Mobile */}
-               <button
-                  className="w-full flex items-center gap-2 px-3 py-3 bg-neutral-50 rounded-xl mb-4 border border-neutral-100"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsLocationModalOpen(true);
-                  }}
-                  aria-label="Set location"
-                >
-                  <MapPin size={18} className="text-neutral-500" />
-                  <span className="text-sm font-medium text-neutral-700 truncate flex-1 text-left">
-                    {preferences.location?.address || user?.profiles?.address || 'Set Location'}
-                  </span>
-                  <ChevronDown size={14} className="text-neutral-400" />
-                </button>
 
               <div className="flex flex-col gap-4">
                  {!user && (

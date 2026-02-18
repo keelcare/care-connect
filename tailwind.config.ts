@@ -38,42 +38,32 @@ const config: Config = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
 
-        // Primary - Deep Forest (Trust)
+        // Primary - Deep Navy (Reliability)
         primary: {
-          DEFAULT: '#1B3022',
-          50: '#f2f7f4',
-          100: '#e1ebe4',
-          200: '#c5d9cd',
-          300: '#9ebfad',
-          400: '#759f8a',
-          500: '#52806a',
-          600: '#3d6350',
-          700: '#324f41',
-          800: '#2a4036',
-          900: '#1B3022', // Base
-          foreground: '#ffffff',
+          DEFAULT: 'hsl(var(--primary))',
+          50: 'hsl(var(--primary-50))',
+          100: 'hsl(var(--primary-100))',
+          200: 'hsl(var(--primary-200))', // Note: Make sure these vars exist in globals or fallback
+          300: 'hsl(var(--primary-300))',
+          400: 'hsl(var(--primary-400))',
+          500: 'hsl(var(--primary-500))', // Main
+          600: 'hsl(var(--primary-600))',
+          700: 'hsl(var(--primary-700))',
+          800: 'hsl(var(--primary-800))',
+          900: 'hsl(var(--primary-900))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
 
-        // Accent - Warm Cream (Comfort)
+        // Accent - Pastel Sky Blue (Calm)
         accent: {
-          DEFAULT: '#F9F7F2',
-          50: '#ffffff',
-          100: '#ffffff',
-          200: '#F9F7F2', // Base
-          300: '#ebe5d5',
-          400: '#dbcfb0',
-          500: '#c3ae85',
-          600: '#a38b5f',
-          700: '#826d46',
-          800: '#68563b',
-          900: '#564733',
-          foreground: '#2C3330', // Charcoal Green text for contrast
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
         },
 
-        // Secondary - Muted Sage (Calm)
+        // Secondary - Pastel Sky Blue (Same as Accent for now)
         secondary: {
-          DEFAULT: '#8DA399',
-          foreground: '#ffffff',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
 
         // Muted - Light Gray
@@ -145,24 +135,19 @@ const config: Config = {
         },
         
         // Wellness Theme Tokens (Redesign)
-          navy: '#1B3022',    // Deep Forest
-          terracotta: '#CC7A68', // Adjusted slightly to harmonize (optional, keeping close) or keep as is? 
-                                 // Keeping terracotta but maybe mapping it? 
-                                 // Let's stick to the requested main palette.
-                                 // User only gave 4 main colors. 
-                                 // I will update 'navy' to match Primary as described in 'Old' config it was Brand Blue.
-          mustard: '#EEDC82',
-          text: '#2C3330',    // Charcoal Green
+          navy: '#0D2B45',    // Deep Navy
+          text: '#1E293B',    // Charcoal Navy
 
         childcare: {
-          primary: '#1F6F5B',    // Primary Green
-          mint: '#E5F1EC',       // Mint Background
-          lavender: '#C9C6E5',   // Lavender
-          mustard: '#F1B92B',    // Mustard
-          coral: '#D85A4F',      // Coral
-          teal: '#184C4A',       // Deep Teal
-          neutral: '#F4F4F4',    // Neutral Background
-          text: '#1F1F1F',
+          primary: 'hsl(var(--primary))',    // Deep Navy
+          mint: 'hsl(var(--background))',    // Soft Cream
+          lavender: 'hsl(var(--secondary))', // Sky Blue
+          secondary: 'hsl(var(--secondary))', // Sky Blue (was mustard)
+          mustard: 'hsl(var(--secondary))',   // Keep purely as alias if needed, or remove? Keeping for safety.
+          coral: 'hsl(var(--primary-700))',  // Variation of Navy
+          teal: 'hsl(var(--primary-600))',   // Variation of Navy
+          neutral: 'hsl(var(--muted))',      // Muted Gray
+          text: 'hsl(var(--foreground))',
         },
         dashboard: {
           bg: '#F3F2EF',
@@ -182,11 +167,11 @@ const config: Config = {
 
       // Typography
       fontFamily: {
-        display: ['var(--font-fraunces)', 'serif'],
-        heading: ['var(--font-fraunces)', 'serif'],
-        body: ['var(--font-lora)', 'serif'], // Fixed: Lora is a serif font
-        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        serif: ['var(--font-lora)', 'Georgia', 'serif'], // Lora as primary serif
+        display: ['Satoshi', 'var(--font-fraunces)', 'serif'],
+        heading: ['Satoshi', 'var(--font-fraunces)', 'serif'],
+        body: ['Satoshi', 'var(--font-lora)', 'serif'],
+        sans: ['Satoshi', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        serif: ['var(--font-lora)', 'Georgia', 'serif'],
         cormorant: ['var(--font-cormorant)', 'serif'],
       },
       

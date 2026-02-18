@@ -33,7 +33,7 @@ export const LeftPreviewPanel = () => {
           <h3 className="text-lg font-medium text-childcare-text leading-tight">
             Babycare is a specialist Nanny Public Liability
           </h3>
-          <button className="bg-childcare-mustard text-white text-xs px-4 py-2 rounded-full font-medium hover:brightness-105 transition-all">
+          <button className="bg-childcare-secondary text-primary-900 text-xs px-4 py-2 rounded-full font-bold hover:brightness-105 transition-all">
             Learn More
           </button>
         </div>
@@ -60,7 +60,7 @@ export const LeftPreviewPanel = () => {
             <span className="w-2 h-2 rounded-full bg-childcare-primary"></span> Verified
           </div>
           <div className="flex items-center gap-1 text-[10px] text-gray-500 font-medium">
-            <span className="w-2 h-2 rounded-full bg-childcare-mustard"></span> Insured
+            <span className="w-2 h-2 rounded-full bg-childcare-secondary"></span> Insured
           </div>
           <div className="flex items-center gap-1 text-[10px] text-gray-500 font-medium">
             <span className="w-2 h-2 rounded-full bg-childcare-coral"></span> Certified

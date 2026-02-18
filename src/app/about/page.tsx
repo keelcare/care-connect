@@ -24,7 +24,7 @@ const ValueCard = ({ value, index }: { value: any, index: number }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="group p-8 rounded-[32px] bg-white border border-gray-100 hover:shadow-xl hover:shadow-[#1B3022]/5 transition-all duration-300 relative overflow-hidden"
+      className="group p-8 rounded-[32px] bg-white border border-gray-100 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-8 opacity-5 transform translate-x-1/2 -translate-y-1/2">
         <Icon size={120} />
@@ -52,7 +52,7 @@ const StatItem = ({ stat, index }: { stat: any, index: number }) => (
     <div className="text-4xl md:text-6xl font-bold font-display text-white mb-2">
       {stat.value}
     </div>
-    <div className="text-[#F2F7F4] font-medium text-lg uppercase tracking-wide opacity-80">
+    <div className="text-background font-medium text-lg uppercase tracking-wide opacity-80">
       {stat.label}
     </div>
   </motion.div>
@@ -80,7 +80,7 @@ export default function AboutPage() {
       icon: Users,
       title: 'Community Driven',
       description: 'Building meaningful relationships between families and caregivers that go beyond just services.',
-      color: "bg-[#1B3022]"
+      color: "bg-primary"
     },
     {
       icon: Award,
@@ -148,7 +148,7 @@ export default function AboutPage() {
             </p>
             <div className="flex gap-4">
               <Link href="/book-service">
-                <button className="bg-[#1B3022] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#15231b] transition-all shadow-lg hover:translate-y-[-2px]">
+                <button className="bg-primary text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-primary-800 transition-all shadow-lg hover:translate-y-[-2px]">
                   Find Care
                 </button>
               </Link>
@@ -173,7 +173,7 @@ export default function AboutPage() {
                 className="object-cover w-full h-[600px]"
               />
             </motion.div>
-            <div className="absolute -bottom-10 -left-10 w-full h-full bg-[#F2F7F4] rounded-[40px] -z-10 transform rotate-3" />
+            <div className="absolute -bottom-10 -left-10 w-full h-full bg-background rounded-[40px] -z-10 transform rotate-3" />
             <div className="absolute top-10 -right-10 w-full h-full bg-[#F5F8F6] rounded-[40px] -z-10 transform -rotate-2" />
           </div>
         </div>
@@ -213,9 +213,9 @@ export default function AboutPage() {
       <div className="py-32 px-6 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 bg-[#F2F7F4] px-4 py-2 rounded-full mb-6">
-              <Users className="w-4 h-4 text-[#1B3022]" />
-              <span className="text-sm font-bold text-[#1B3022]">The Team</span>
+            <div className="inline-flex items-center gap-2 bg-background px-4 py-2 rounded-full mb-6">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="text-sm font-bold text-primary">The Team</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-[#0F172A] mb-6 font-display">
               Meet the visionaries
@@ -255,20 +255,20 @@ export default function AboutPage() {
       </div>
 
       {/* Mission / Quote */}
-      <div className="py-24 px-6 bg-[#F2F7F4] overflow-hidden relative">
+      <div className="py-24 px-6 bg-background overflow-hidden relative">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <Quote className="w-16 h-16 text-[#1B3022] mx-auto mb-8 opacity-30" />
+          <Quote className="w-16 h-16 text-primary mx-auto mb-8 opacity-30" />
           <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] leading-tight font-display italic mb-8">
             "We started Keel because we knew there had to be a better way to find care. Today, we're proud to be that better way for thousands of families."
           </h2>
           <div className="flex items-center justify-center gap-4">
             <div className="text-left">
               <div className="font-bold text-[#0F172A] text-lg">Sarah Johnson</div>
-              <div className="text-[#1B3022]">Founder & CEO</div>
+              <div className="text-primary">Founder & CEO</div>
             </div>
           </div>
         </div>
-        <div className="absolute top-1/2 left-0 w-64 h-64 bg-[#1B3022] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
+        <div className="absolute top-1/2 left-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
         <div className="absolute top-1/2 right-0 w-64 h-64 bg-[#8DA399] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
       </div>
     </PublicLayout>

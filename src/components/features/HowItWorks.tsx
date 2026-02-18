@@ -70,7 +70,7 @@ export const HowItWorks: React.FC = () => {
              <p className="text-wellness-green font-bold uppercase tracking-widest text-xs mb-3">How It Works</p>
              <h2 className="text-fluid-4xl md:text-fluid-5xl font-heading text-wellness-navy mb-6 leading-tight">
                 Finding the perfect match <br/> 
-                <span className="text-wellness-terracotta">made simple.</span>
+                <span className="text-wellness-primary">made simple.</span>
              </h2>
              <p className="text-lg text-neutral-600 mb-10 leading-relaxed">
                 We've streamlined the process to help you find trusted care in minutes, not days. Here's how you can get started.

@@ -57,7 +57,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
         >
           {/* Header */}
           <div className="sticky top-0 bg-white z-10 p-6 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-2xl font-display font-bold text-[#1B3022]">
+            <h2 className="text-2xl font-display font-bold text-primary">
               {initialData ? 'Edit Child Profile' : 'Add Child Profile'}
             </h2>
             <button
@@ -71,7 +71,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
           <form onSubmit={handleSubmit} className="p-6 space-y-8">
             {/* Step 1: Basic Info */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-[#1B3022] flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                 <span className="w-8 h-8 rounded-full bg-[#E5F1EC] flex items-center justify-center text-[#1F6F5B] text-sm">1</span>
                 Basic Information
               </h3>
@@ -129,7 +129,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
 
             {/* Step 2: Profile Type */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-[#1B3022] flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                 <span className="w-8 h-8 rounded-full bg-[#E5F1EC] flex items-center justify-center text-[#1F6F5B] text-sm">2</span>
                 Care Profile Type
               </h3>
@@ -139,13 +139,13 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                   type="button"
                   onClick={() => updateField('profile_type', 'STANDARD')}
                   className={`p-4 rounded-2xl border-2 text-left transition-all ${formData.profile_type === 'STANDARD'
-                      ? 'border-[#1F6F5B] bg-[#F2F7F4]'
+                      ? 'border-[#1F6F5B] bg-background'
                       : 'border-gray-100 hover:border-gray-200'
                     }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <User className={`w-5 h-5 ${formData.profile_type === 'STANDARD' ? 'text-[#1F6F5B]' : 'text-gray-400'}`} />
-                    <span className={`font-bold ${formData.profile_type === 'STANDARD' ? 'text-[#1B3022]' : 'text-gray-900'}`}>Standard Care</span>
+                    <span className={`font-bold ${formData.profile_type === 'STANDARD' ? 'text-primary' : 'text-gray-900'}`}>Standard Care</span>
                   </div>
                   <p className="text-sm text-gray-500">For standard babysitting and nanny services.</p>
                 </button>
@@ -169,7 +169,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
 
             {/* Step 3: Specifics */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-[#1B3022] flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                 <span className="w-8 h-8 rounded-full bg-[#E5F1EC] flex items-center justify-center text-[#1F6F5B] text-sm">3</span>
                 Specific Details
               </h3>
@@ -262,7 +262,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-8 py-3 bg-[#1B3022] hover:bg-[#15231b] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                className="px-8 py-3 bg-primary hover:bg-primary-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
                 Save Profile
               </button>

@@ -25,9 +25,9 @@ const SERVICES = [
         tagline: 'Nurturing care for your little ones',
         description: 'Professional nannies and babysitters who provide loving, attentive care for children aged 5 months to 6+ years.',
         icon: Baby,
-        color: 'bg-[#1B3022]',
-        lightBg: 'bg-[#F2F7F4]',
-        textColor: 'text-[#1B3022]',
+        color: 'bg-primary',
+        lightBg: 'bg-background',
+        textColor: 'text-primary',
         image: '/babysitter_playing.png',
         features: [
             'Background-verified caregivers',
@@ -101,7 +101,7 @@ export default function ServicesPage() {
                         transition={{ delay: 0.2 }}
                         className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-100 mb-6"
                     >
-                        <Sparkles className="w-4 h-4 text-[#1B3022]" />
+                        <Sparkles className="w-4 h-4 text-primary" />
                         <span className="text-sm font-semibold text-[#0F172A]">Premium Care Services</span>
                     </motion.div>
 
@@ -232,7 +232,7 @@ export default function ServicesPage() {
                     className="bg-[#CC7A68] rounded-[40px] p-12 md:p-16 text-center relative overflow-hidden"
                 >
                     <motion.div style={{ y: physicsY1 }} className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20" />
-                    <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-96 h-96 bg-[#1B3022] rounded-full mix-blend-multiply filter blur-3xl opacity-10" />
+                    <motion.div style={{ y: physicsY1 }} className="absolute bottom-0 left-0 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10" />
 
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-12 font-display">
                         Why Choose Keel?
@@ -285,7 +285,7 @@ export default function ServicesPage() {
                     </p>
                     <Link
                         href="/book-service"
-                        className="inline-flex items-center gap-2 bg-[#1B3022] hover:bg-[#15231b] text-white px-10 py-5 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl group"
+                        className="inline-flex items-center gap-2 bg-primary hover:bg-primary-800 text-white px-10 py-5 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl group"
                     >
                         Book a Service
                         <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

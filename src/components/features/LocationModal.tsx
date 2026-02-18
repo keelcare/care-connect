@@ -157,7 +157,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Select Location"
-      maxWidth="500px"
+      maxWidth="lg"
     >
       <div className="space-y-6">
         <Button

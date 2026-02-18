@@ -4,125 +4,139 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ShieldCheck, UserCheck, CheckCircle, FileCheck } from "lucide-react";
 
+const cards = [
+  {
+    id: 1,
+    icon: <UserCheck className="w-8 h-8 text-white" />,
+    title: "Identity Verified",
+    desc: "Government-issued ID checks for every caregiver.",
+    color: "bg-primary-900",
+  },
+  {
+    id: 2,
+    icon: <FileCheck className="w-8 h-8 text-white" />,
+    title: "Background Checks",
+    desc: "Comprehensive criminal & registry scanning.",
+    color: "bg-emerald-600",
+  },
+  {
+    id: 3,
+    icon: <CheckCircle className="w-8 h-8 text-white" />,
+    title: "Reference Checked",
+    desc: "Verified employment history and character references.",
+    color: "bg-stone-500",
+  },
+];
+
+const warmBg = "linear-gradient(160deg, hsl(38, 60%, 97%) 0%, hsl(30, 50%, 95%) 50%, hsl(45, 55%, 96%) 100%)";
+
+const SafetyCard = ({ card }: { card: typeof cards[0] }) => (
+  <div className="p-8 flex flex-col items-center justify-center text-center bg-white/90 backdrop-blur-md border border-stone-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[280px]">
+    <div className={`w-20 h-20 ${card.color} rounded-3xl flex items-center justify-center shrink-0 shadow-lg shadow-primary-900/5 mb-8 ring-4 ring-white`}>
+      {card.icon}
+    </div>
+    <h3 className="text-2xl font-bold text-primary-900 mb-4 tracking-tight">{card.title}</h3>
+    <p className="text-stone-500 font-medium leading-relaxed">{card.desc}</p>
+  </div>
+);
+
 export const SafetyPromise = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"],
+    offset: ["start start", "end end"],
   });
 
-  // Parallax / Scroll Animations
-  const leftX = useTransform(scrollYProgress, [0.1, 0.4], [-100, 0]);
-  const leftOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
+  const textScale = useTransform(scrollYProgress, [0, 0.4], [1, 0.7]);
+  const textY = useTransform(scrollYProgress, [0, 0.4], ["0%", "-25%"]);
+  const subtextOpacity = useTransform(scrollYProgress, [0.05, 0.2], [1, 0]);
+  const subtextY = useTransform(scrollYProgress, [0.05, 0.2], [0, -20]);
 
-  const rightX = useTransform(scrollYProgress, [0.1, 0.4], [100, 0]);
-  const rightOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
-  
-  // Center fade up
-  // Removed scroll-mapped opacity for content to prefer smooth entry
-  
-  const SMOOTH_EASE = [0.2, 0.8, 0.2, 1];
+  const card1X = useTransform(scrollYProgress, [0.3, 0.5], ["-120%", "0%"]);
+  const card1Opacity = useTransform(scrollYProgress, [0.3, 0.4], [0, 1]);
+  const card2X = useTransform(scrollYProgress, [0.45, 0.65], ["120%", "0%"]);
+  const card2Opacity = useTransform(scrollYProgress, [0.45, 0.55], [0, 1]);
+  const card3X = useTransform(scrollYProgress, [0.6, 0.8], ["-120%", "0%"]);
+  const card3Opacity = useTransform(scrollYProgress, [0.6, 0.7], [0, 1]);
 
   return (
-    <section 
-      ref={containerRef} 
-      className="h-dvh flex items-center justify-center px-6 bg-background relative overflow-hidden" 
+    <section
+      ref={containerRef}
+      className="relative z-10 h-auto md:h-[250vh]"
+      style={{ background: warmBg }}
     >
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-[10%] left-[-5%] w-96 h-96 bg-primary-900/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-[10%] right-[-5%] w-96 h-96 bg-terracotta/5 rounded-full blur-[100px]" />
+      {/* ── MOBILE: normal flow layout ── */}
+      <div className="md:hidden py-16 px-5">
+        <div className="max-w-sm mx-auto flex flex-col items-center text-center gap-6">
+          <div className="inline-flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-full text-amber-900/90 text-sm font-bold tracking-wide uppercase shadow-sm border border-amber-100/50">
+            <ShieldCheck className="w-4 h-4 text-amber-600" />
+            <span>Uncompromised Safety</span>
+          </div>
+          <h2 className="text-3xl font-display font-medium text-primary-900 leading-[1.1] tracking-tight">
+            Peace of mind is <br />
+            <span className="italic">our promise to you.</span>
+          </h2>
+          <p className="text-base text-stone-600 leading-relaxed">
+            Every professional on Keel undergoes a rigorous, multi-step verification before entering your home.
+          </p>
+          <div className="flex flex-col gap-4 w-full">
+            {cards.map((card) => (
+              <SafetyCard key={card.id} card={card} />
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col items-center justify-center text-center">
-          
-          {/* Header Block */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.0, ease: SMOOTH_EASE }}
-            className="max-w-3xl mx-auto mb-20"
+      {/* ── DESKTOP: sticky scroll animation ── */}
+      <div
+        className="hidden md:flex sticky top-0 h-screen overflow-hidden flex-col items-center pt-24 lg:pt-32 px-6"
+        style={{ background: warmBg }}
+      >
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[10%] left-[-5%] w-96 h-96 bg-primary-900/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+        </div>
+
+        <div className="relative w-full max-w-7xl mx-auto flex flex-col items-center">
+          <motion.div
+            style={{ scale: textScale, y: textY }}
+            className="text-center z-10 w-full max-w-4xl origin-center"
           >
-            <div className="inline-flex items-center gap-2 bg-primary-900/10 px-4 py-1.5 rounded-full text-primary-900 text-sm font-semibold tracking-wide uppercase mb-6">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-full text-amber-900/90 text-sm font-bold tracking-wide uppercase mb-6 shadow-sm border border-amber-100/50">
+              <ShieldCheck className="w-4 h-4 text-amber-600" />
               <span>Uncompromised Safety</span>
             </div>
-            
-            <h2 className="text-fluid-4xl md:text-fluid-5xl font-display font-medium text-primary-900 mb-8 leading-[1.15]">
-              Peace of mind is <br/>
-              <span className="italic text-primary-900">our promise to you.</span>
+            <h2 className="text-5xl md:text-fluid-5xl lg:text-fluid-6xl font-display font-medium text-primary-900 mb-4 md:mb-6 leading-[1.1] tracking-tight">
+              Peace of mind is <br />
+              <span className="italic text-primary-900 relative">
+                our promise to you.
+                <svg className="absolute w-full h-3 -bottom-1 left-0 text-amber-200/60 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                </svg>
+              </span>
             </h2>
-            
-            <p className="text-xl text-stone-600 leading-relaxed font-body">
-              We believe trust is the foundation of care. That's why every professional on Keel undergoes a rigorous, multi-step verification process before they can ever accept a booking.
-            </p>
+            <motion.p
+              style={{ opacity: subtextOpacity, y: subtextY }}
+              className="text-2xl text-stone-600 leading-relaxed font-body max-w-2xl mx-auto"
+            >
+              We believe trust is the foundation of care. That's why every professional on Keel undergoes a rigorous, multi-step verification process before they ever step foot in your home.
+            </motion.p>
           </motion.div>
 
-          {/* Animated Badges Container */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 w-full max-w-5xl items-center">
-            
-            {/* Left Column - Flying In From Left */}
-            <motion.div 
-              initial={{ x: -100, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.2, ease: SMOOTH_EASE, delay: 0.2 }}
-              className="space-y-6"
-            >
-              <SafetyCard 
-                icon={<UserCheck className="w-8 h-8 text-white" />}
-                title="Identity Verified"
-                desc="Government-issued ID checks for every caregiver."
-                color="bg-primary-900"
-              />
-              <SafetyCard 
-                icon={<FileCheck className="w-8 h-8 text-white" />}
-                title="Background Checks"
-                desc="Comprehensive criminal & registry scanning."
-                color="bg-terracotta"
-                delay={0.1}
-              />
+          <div className="absolute top-[40%] w-full max-w-6xl flex flex-row items-center justify-between gap-6 lg:gap-8">
+            <motion.div style={{ x: card1X, opacity: card1Opacity }} className="w-full max-w-sm">
+              <SafetyCard card={cards[0]} />
             </motion.div>
-
-            {/* Right Column - Flying In From Right */}
-            <motion.div 
-               initial={{ x: 100, opacity: 0 }}
-               whileInView={{ x: 0, opacity: 1 }}
-               viewport={{ once: true, margin: "-100px" }}
-               transition={{ duration: 1.2, ease: SMOOTH_EASE, delay: 0.4 }}
-               className="space-y-6 md:mt-12" // Staggered visual offset
-            >
-              <SafetyCard 
-                icon={<CheckCircle className="w-8 h-8 text-white" />}
-                title="Reference Checked"
-                desc="Verified employment history and character references."
-                color="bg-secondary"
-                delay={0.2}
-              />
-              <div className="hidden md:block p-8 rounded-3xl bg-white shadow-xl shadow-emerald-900/5 border border-white/50 backdrop-blur-sm opacity-80 scale-95">
-                 <p className="font-display text-2xl text-primary-900 mb-2">100%</p>
-                 <p className="text-stone-500 font-medium">Verified Professionals</p>
-              </div>
+            <motion.div style={{ x: card2X, opacity: card2Opacity }} className="w-full max-w-sm mt-12">
+              <SafetyCard card={cards[1]} />
             </motion.div>
-
+            <motion.div style={{ x: card3X, opacity: card3Opacity }} className="w-full max-w-sm">
+              <SafetyCard card={cards[2]} />
+            </motion.div>
           </div>
-
         </div>
       </div>
     </section>
   );
 };
-
-const SafetyCard = ({ icon, title, desc, color, delay = 0 }: { icon: React.ReactNode, title: string, desc: string, color: string, delay?: number }) => (
-  <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-stone-200/40 border border-white flex items-center text-left gap-6 hover:scale-[1.02] transition-transform duration-300">
-    <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center shrink-0 shadow-lg`}>
-      {icon}
-    </div>
-    <div>
-      <h3 className="text-xl font-bold text-primary-900 mb-1">{title}</h3>
-      <p className="text-stone-500 text-sm font-medium leading-relaxed">{desc}</p>
-    </div>
-  </div>
-);

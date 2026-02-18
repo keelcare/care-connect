@@ -93,7 +93,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Leave a Review"
-      maxWidth="500px"
+      maxWidth="lg"
     >
       {checkingEligibility ? (
         <div className="flex justify-center py-8">
