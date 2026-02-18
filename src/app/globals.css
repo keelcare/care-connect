@@ -12,6 +12,8 @@
        Text: Charcoal Navy (#1E293B)
        ========================================= */
 
+    color-scheme: light;
+
     /* Background & Foreground */
     --background: 180 20% 98%; /* Soft Cream #F9FBFB */
     --foreground: 217 33% 17%; /* Charcoal Navy #1E293B */

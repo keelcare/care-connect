@@ -144,6 +144,7 @@ export default function RootLayout({
           name="keywords"
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
+        <meta name="color-scheme" content="light" />
         <link rel="icon" href="/logo.jpeg" />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
