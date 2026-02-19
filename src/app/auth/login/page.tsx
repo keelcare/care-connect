@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { Input } from '@/components/ui/Input';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -14,16 +15,24 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({ email: '', password: '' });
     setIsLoading(true);
     try {
       const response = await api.auth.login(formData);
       await login(response.user);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
-      alert('Login failed. Please check your credentials.');
+      setErrors((prev) => ({
+        ...prev,
+        password: error?.message || 'Login failed. Please check your credentials.',
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -72,26 +81,21 @@ export default function LoginPage() {
           {/* Form */}
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Email Input */}
-            <div>
-              <label className="block text-sm font-medium text-[#0F172A] mb-2 font-body">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
-                />
-              </div>
-            </div>
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="Enter your email"
+              leftIcon={<Mail className="w-5 h-5" />}
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              error={errors.email}
+              className="bg-white border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all rounded-[20px]"
+            />
 
             {/* Password Input */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between mb-1">
                 <label className="block text-sm font-medium text-[#0F172A] font-body">
                   Password
                 </label>
@@ -102,24 +106,23 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                  className="w-full pl-12 pr-4 py-4 rounded-[20px] border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
-                />
-              </div>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                leftIcon={<Lock className="w-5 h-5" />}
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+                error={errors.password}
+                className="bg-white border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all rounded-[20px]"
+              />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+              className="w-full btn-auth-blue text-white py-4 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
               {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}

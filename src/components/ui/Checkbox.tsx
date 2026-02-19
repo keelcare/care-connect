@@ -4,10 +4,11 @@ import { cn } from '@/lib/utils';
 
 export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string | React.ReactNode;
+  inputClassName?: string;
 }
 
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, className, disabled, id, ...props }, ref) => {
+  ({ label, className, inputClassName, disabled, id, ...props }, ref) => {
     const checkboxId = id || `checkbox-${React.useId()}`;
 
     return (
@@ -23,7 +24,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           <input
             type="checkbox"
             id={checkboxId}
-            className="peer sr-only"
+            className={cn('peer sr-only', inputClassName)}
             disabled={disabled}
             ref={ref}
             {...props}

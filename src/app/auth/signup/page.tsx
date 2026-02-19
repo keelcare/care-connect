@@ -92,11 +92,12 @@ function SignupContent() {
       isValid = false;
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!formData.password) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!passwordRegex.test(formData.password)) {
+      newErrors.password = 'Your password must be at least 8 characters long, contain at least one number and have a mixture of uppercase and lowercase letters.';
       isValid = false;
     }
 
@@ -121,7 +122,7 @@ function SignupContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -136,9 +137,12 @@ function SignupContent() {
       });
       // Auto login or redirect to login
       window.location.href = '/auth/login';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup failed:', error);
-      alert('Signup failed. Please try again.');
+      setErrors((prev) => ({
+        ...prev,
+        password: error?.message || 'Signup failed. Please try again.',
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -632,6 +636,7 @@ function SignupContent() {
                     </span>
                   }
                   checked={formData.agreeToTerms}
+                  inputClassName="checkbox-auth-blue"
                   onChange={() =>
                     setFormData({
                       ...formData,
@@ -646,7 +651,7 @@ function SignupContent() {
                 type="submit"
                 size="lg"
                 isLoading={isLoading}
-                className={`w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium ${currentTheme.button}`}
+                className="w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium btn-auth-blue"
               >
                 Create Account
               </Button>
@@ -665,12 +670,15 @@ function SignupContent() {
               onClick={() => {
                 // Validate categories for nannies
                 if (role === 'caregiver' && formData.categories.length === 0) {
-                  alert('Please select at least one category before signing up with Google.');
+                  setErrors((prev) => ({
+                    ...prev,
+                    categories: 'Please select at least one category before signing up with Google.',
+                  }));
                   return;
                 }
 
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
-                 const apiUrl =
+                const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
                 const origin = window.location.origin;
 
