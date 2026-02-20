@@ -29,10 +29,23 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const origin = window.location.origin;
-    window.location.href = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}`;
+    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+    const origin = isCapacitor
+      ? 'careconnect://auth/callback'
+      : `${window.location.origin}/auth/callback`;
+
+    const url = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}${
+      isCapacitor ? '&platform=mobile' : ''
+    }`;
+
+    if (isCapacitor) {
+      const { Browser } = await import('@capacitor/browser');
+      await Browser.open({ url });
+    } else {
+      window.location.href = url;
+    }
   };
 
   return (

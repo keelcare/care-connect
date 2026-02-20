@@ -1,8 +1,11 @@
 import type { NextConfig } from 'next';
 
+const isCapacitor = process.env.BUILD_TARGET === 'capacitor';
+
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  ...(isCapacitor && { output: 'export' }),
   images: {
     remotePatterns: [
       {

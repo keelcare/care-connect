@@ -19,7 +19,8 @@ export default function Home() {
           router.push('/admin');
         }
       } else {
-        router.push('/welcome');
+        const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
+        router.push(isCapacitor ? '/auth/login' : '/welcome');
       }
     }
   }, [user, loading, router]);

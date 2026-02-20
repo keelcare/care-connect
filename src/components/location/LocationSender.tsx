@@ -5,6 +5,12 @@ import { MapPin, Navigation, Power, AlertCircle } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { registerPlugin } from '@capacitor/core';
+import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
+
+const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
+
+const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
 
 interface LocationSenderProps {
   bookingId: string;
@@ -26,7 +32,7 @@ export function LocationSender({
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [permissionDenied, setPermissionDenied] = useState(false);
-  const watchIdRef = useRef<number | null>(null);
+  const watchIdRef = useRef<string | number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Only allow sharing when booking is en route or in progress
@@ -76,76 +82,112 @@ export function LocationSender({
   );
 
   // Start sharing location
-  const startSharing = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      return;
-    }
-
+  const startSharing = useCallback(async () => {
     setError(null);
     setPermissionDenied(false);
 
-    // Get initial position
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setCurrentLocation({ lat: latitude, lng: longitude });
-        sendLocationUpdate(latitude, longitude);
-        setIsSharing(true);
-        onStatusChange?.(true);
-      },
-      (err) => {
-        if (err.code === err.PERMISSION_DENIED) {
-          setPermissionDenied(true);
-          setError(
-            'Location permission denied. Please enable location access.'
-          );
-        } else {
-          setError('Failed to get your location');
-        }
-      },
-      { enableHighAccuracy: true }
-    );
-
-    // Watch position changes
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setCurrentLocation({ lat: latitude, lng: longitude });
-      },
-      (err) => {
-        console.error('Watch position error:', err);
-      },
-      { enableHighAccuracy: true, maximumAge: 5000 }
-    );
-
-    // Send location updates every 10 seconds
-    intervalRef.current = setInterval(() => {
-      if (currentLocation) {
-        sendLocationUpdate(currentLocation.lat, currentLocation.lng);
-      } else {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
+    if (isCapacitor) {
+      try {
+        const watchId = await BackgroundGeolocation.addWatcher(
+          {
+            backgroundMessage: 'Care Connect is tracking your location for the active booking.',
+            backgroundTitle: 'Location Sharing Active',
+            requestPermissions: true,
+            stale: false,
+            distanceFilter: 10, // only emit if nanny moves 10+ metres
+          },
+          (location: any, error: any) => {
+            if (error) {
+              if (error.code === 'NOT_AUTHORIZED') setPermissionDenied(true);
+              return;
+            }
+            if (!location) return;
+            const { latitude, longitude } = location;
             setCurrentLocation({ lat: latitude, lng: longitude });
             sendLocationUpdate(latitude, longitude);
-          },
-          () => { },
-          { enableHighAccuracy: true }
+          }
         );
+        watchIdRef.current = watchId;
+        setIsSharing(true);
+        onStatusChange?.(true);
+      } catch (err) {
+        setError('Failed to start background location sharing');
       }
-    }, 10000);
+    } else {
+      if (!navigator.geolocation) {
+        setError('Geolocation is not supported by your browser');
+        return;
+      }
+
+      // Existing web implementation — unchanged
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+          sendLocationUpdate(latitude, longitude);
+          setIsSharing(true);
+          onStatusChange?.(true);
+        },
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            setPermissionDenied(true);
+            setError(
+              'Location permission denied. Please enable location access.'
+            );
+          } else {
+            setError('Failed to get your location');
+          }
+        },
+        { enableHighAccuracy: true }
+      );
+
+      // Watch position changes
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+        },
+        (err) => {
+          console.error('Watch position error:', err);
+        },
+        { enableHighAccuracy: true, maximumAge: 5000 }
+      );
+
+      // Send location updates every 10 seconds
+      intervalRef.current = setInterval(() => {
+        if (currentLocation) {
+          sendLocationUpdate(currentLocation.lat, currentLocation.lng);
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setCurrentLocation({ lat: latitude, lng: longitude });
+              sendLocationUpdate(latitude, longitude);
+            },
+            () => { },
+            { enableHighAccuracy: true }
+          );
+        }
+      }, 10000);
+    }
   }, [currentLocation, sendLocationUpdate, onStatusChange]);
 
   // Stop sharing location
-  const stopSharing = useCallback(() => {
-    if (watchIdRef.current !== null) {
-      navigator.geolocation.clearWatch(watchIdRef.current);
-      watchIdRef.current = null;
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+  const stopSharing = useCallback(async () => {
+    if (isCapacitor) {
+      if (watchIdRef.current !== null) {
+        await BackgroundGeolocation.removeWatcher({ id: watchIdRef.current as string });
+        watchIdRef.current = null;
+      }
+    } else {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current as number);
+        watchIdRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
     setIsSharing(false);
     onStatusChange?.(false);

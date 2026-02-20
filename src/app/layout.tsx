@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ToastProvider } from '@/components/ui/ToastProvider';
@@ -65,6 +66,76 @@ const satoshi = localFont({
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Handle deep-link returns from Capacitor in-app browser (Google OAuth mobile flow)
+  useEffect(() => {
+    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
+    if (!isCapacitor) return;
+
+    let cleanup: (() => void) | undefined;
+
+    (async () => {
+      const { App } = await import('@capacitor/app');
+      const { Browser } = await import('@capacitor/browser');
+
+      const handle = await App.addListener('appUrlOpen', async (event) => {
+        const url = event.url;
+        if (url.startsWith('careconnect://auth/callback')) {
+          await Browser.close();
+          const tokenMatch = url.match(/[?&]token=([^&]+)/);
+          if (tokenMatch) {
+            router.push(`/auth/callback?token=${tokenMatch[1]}`);
+          } else {
+            router.push('/auth/login?error=oauth_failed');
+          }
+        } else if (url.startsWith('careconnect://payment/callback')) {
+          await Browser.close();
+          const statusMatch = url.match(/[?&]status=([^&]+)/);
+          const errorMatch = url.match(/[?&]error=([^&]+)/);
+          window.dispatchEvent(
+            new CustomEvent('careconnect-payment-result', {
+              detail: {
+                status: statusMatch?.[1] ?? 'failed',
+                error: errorMatch ? decodeURIComponent(errorMatch[1]) : undefined,
+              },
+            })
+          );
+        }
+      });
+
+      cleanup = () => handle.remove();
+    })();
+
+    return () => cleanup?.();
+  }, [router]);
+
+  // Native Status Bar & Splash Screen config
+  useEffect(() => {
+    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+    if (!isCapacitor) return;
+
+    const setupNative = async () => {
+      const { StatusBar, Style } = await import('@capacitor/status-bar');
+      const { SplashScreen } = await import('@capacitor/splash-screen');
+
+      await StatusBar.setStyle({ style: Style.Light });
+      await StatusBar.setBackgroundColor({ color: '#0D2B45' }); // primary navy
+      await SplashScreen.hide({ fadeOutDuration: 300 });
+    };
+
+    setupNative();
+  }, []);
+
+  // Load Razorpay SDK on web only (Capacitor uses Browser.open instead)
+  useEffect(() => {
+    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
+    if (isCapacitor) return;
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }, []);
 
   // Don't show Header/Footer on auth pages (they have their own layout)
   // Don't show Header/Footer on dashboard pages (they have their own layout)
@@ -145,8 +216,11 @@ export default function RootLayout({
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <meta name="color-scheme" content="light" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <link rel="icon" href="/logo.jpeg" />
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>
     </html>

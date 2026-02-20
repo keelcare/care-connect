@@ -662,7 +662,7 @@ function SignupContent() {
             </div>
 
             <button
-              onClick={() => {
+              onClick={async () => {
                 // Validate categories for nannies
                 if (role === 'caregiver' && formData.categories.length === 0) {
                   alert('Please select at least one category before signing up with Google.');
@@ -670,12 +670,17 @@ function SignupContent() {
                 }
 
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
-                 const apiUrl =
+                const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-                const origin = window.location.origin;
+                const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+                const origin = isCapacitor
+                  ? 'careconnect://auth/callback'
+                  : `${window.location.origin}/auth/callback`;
 
-                // Build URL with role and origin
-                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}`;
+                // Build URL with role, origin, and platform flag
+                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${
+                  isCapacitor ? '&platform=mobile' : ''
+                }`;
 
                 // Add categories for nannies
                 if (role === 'caregiver' && formData.categories.length > 0) {
@@ -683,7 +688,12 @@ function SignupContent() {
                   oauthUrl += `&categories=${encodeURIComponent(categoriesParam)}`;
                 }
 
-                window.location.href = oauthUrl;
+                if (isCapacitor) {
+                  const { Browser } = await import('@capacitor/browser');
+                  await Browser.open({ url: oauthUrl });
+                } else {
+                  window.location.href = oauthUrl;
+                }
               }}
               type="button"
               disabled={role === 'caregiver' && formData.categories.length === 0}

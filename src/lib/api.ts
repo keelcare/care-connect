@@ -171,6 +171,7 @@ export async function fetchApi<T>(
       // or we can redirect here
       if (
         !skipRedirect &&
+        typeof window !== 'undefined' &&
         window.location.pathname !== '/auth/login' &&
         !window.location.pathname.startsWith('/auth/')
       ) {
@@ -243,6 +244,11 @@ export const api = {
       fetchApi<User>('/users/upload-image', {
         method: 'POST',
         body: JSON.stringify({ userId, imageUrl }),
+      }),
+    registerPushToken: (token: string) =>
+      fetchApi<{ success: boolean }>('/users/push-token', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
       }),
   },
   nanny: {

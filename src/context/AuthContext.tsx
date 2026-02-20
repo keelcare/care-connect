@@ -11,6 +11,8 @@ import React, {
 import { useRouter, usePathname } from 'next/navigation';
 import { api, setTokenRefresher, fetchApi } from '@/lib/api';
 import { User } from '@/types/api';
+import { App } from '@capacitor/app';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 
 
@@ -29,6 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Initialize native push notifications (only active if Capacitor and authenticated)
+  usePushNotifications();
 
   // With cookie-based auth, we rely on the API 401 response to trigger logout.
   // We register a simple refresher that just calls the refresh endpoint (cookies handled automatically)
@@ -91,6 +96,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
+  }, [router]);
+
+  // Deep linking Capacitor Listener
+  useEffect(() => {
+    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+    if (!isCapacitor) return;
+
+    const listener = App.addListener('appUrlOpen', (data) => {
+      if (data && data.url) {
+        // e.g. careconnect://auth/callback?token=XYZ
+        const url = new URL(data.url.replace('careconnect://', 'https://careconnect.app/'));
+        const path = url.pathname + url.search;
+        router.push(path);
+      }
+    });
+
+    return () => { listener.then(l => l.remove()); };
   }, [router]);
 
   // Initial Auth Check
