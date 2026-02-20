@@ -7,6 +7,8 @@ import { Mail, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
+import { Capacitor } from '@capacitor/core';
+
 export default function LoginPage() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,16 +33,19 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
-    const origin = isCapacitor
+    let isNative = false;
+    if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
+      isNative = Capacitor.isNativePlatform();
+    }
+    const origin = isNative
       ? 'careconnect://auth/callback'
-      : `${window.location.origin}/auth/callback`;
+      : window.location.origin;
 
     const url = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}${
-      isCapacitor ? '&platform=mobile' : ''
+      isNative ? '&platform=mobile' : ''
     }`;
 
-    if (isCapacitor) {
+    if (isNative) {
       const { Browser } = await import('@capacitor/browser');
       await Browser.open({ url });
     } else {

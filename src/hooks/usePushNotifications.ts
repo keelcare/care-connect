@@ -4,12 +4,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 
+import { Capacitor } from '@capacitor/core';
+
 export function usePushNotifications() {
   const router = useRouter();
 
   useEffect(() => {
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
-    if (!isCapacitor) return;
+    // Only run this on actual native platforms (iOS/Android)
+    if (!Capacitor.isNativePlatform()) return;
 
     const setup = async () => {
       // Dynamic import — avoids errors on web where the plugin doesn't exist

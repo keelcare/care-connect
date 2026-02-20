@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Capacitor } from '@capacitor/core';
 import React from 'react';
 
 export default function Home() {
@@ -19,8 +20,8 @@ export default function Home() {
           router.push('/admin');
         }
       } else {
-        const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
-        router.push(isCapacitor ? '/auth/login' : '/welcome');
+        const isNative = Capacitor.isNativePlatform();
+        router.push(isNative ? '/auth/login' : '/welcome');
       }
     }
   }, [user, loading, router]);

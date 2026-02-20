@@ -70,7 +70,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
   // Handle deep-link returns from Capacitor in-app browser (Google OAuth mobile flow)
   useEffect(() => {
-    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
+    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
     if (!isCapacitor) return;
 
     let cleanup: (() => void) | undefined;
@@ -116,6 +116,10 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     if (!isCapacitor) return;
 
     const setupNative = async () => {
+      // Check if actually on native device before trying to style status bar
+      const { Capacitor } = await import('@capacitor/core');
+      if (!Capacitor.isNativePlatform()) return;
+
       const { StatusBar, Style } = await import('@capacitor/status-bar');
       const { SplashScreen } = await import('@capacitor/splash-screen');
 
@@ -129,7 +133,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
   // Load Razorpay SDK on web only (Capacitor uses Browser.open instead)
   useEffect(() => {
-    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
+    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
     if (isCapacitor) return;
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';

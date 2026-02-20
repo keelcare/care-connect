@@ -32,6 +32,9 @@ function CallbackContent() {
         const token = searchParams.get('token');
         
         if (token) {
+          // Instantly wipe the massive token from the user's URL bar for a cleaner experience
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
           console.log('Exchanging token for session...');
           await api.auth.setSession(token);
         }

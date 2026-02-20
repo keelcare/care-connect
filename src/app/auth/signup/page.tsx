@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { api } from '@/lib/api';
+import { Capacitor } from '@capacitor/core';
 
 type Role = 'family' | 'caregiver';
 
@@ -672,14 +673,17 @@ function SignupContent() {
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
                 const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-                const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
-                const origin = isCapacitor
+                let isNative = false;
+                if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
+                   isNative = Capacitor.isNativePlatform();
+                }
+                const origin = isNative
                   ? 'careconnect://auth/callback'
-                  : `${window.location.origin}/auth/callback`;
+                  : window.location.origin;
 
                 // Build URL with role, origin, and platform flag
                 let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${
-                  isCapacitor ? '&platform=mobile' : ''
+                  isNative ? '&platform=mobile' : ''
                 }`;
 
                 // Add categories for nannies
@@ -688,7 +692,7 @@ function SignupContent() {
                   oauthUrl += `&categories=${encodeURIComponent(categoriesParam)}`;
                 }
 
-                if (isCapacitor) {
+                if (isNative) {
                   const { Browser } = await import('@capacitor/browser');
                   await Browser.open({ url: oauthUrl });
                 } else {
