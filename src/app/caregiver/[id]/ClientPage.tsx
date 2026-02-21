@@ -48,12 +48,12 @@ export default function CaregiverProfilePage() {
 
   useEffect(() => {
     const fetchCaregiver = async () => {
-      if (!params.id) return;
+      if (!params?.id) return;
 
       try {
         setLoading(true);
         // Cast params.id to string as useParams can return string | string[]
-        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        const id = Array.isArray(params?.id) ? params?.id[0] : params?.id;
 
         const [userData, reviewsData] = await Promise.all([
           api.users.get(id),
@@ -70,7 +70,7 @@ export default function CaregiverProfilePage() {
     };
 
     fetchCaregiver();
-  }, [params.id]);
+  }, [params?.id]);
 
   /*
   useEffect(() => {

@@ -24,9 +24,11 @@ export const MobileBottomNav = () => {
         {navItems.map((item) => {
           const Icon = item.icon;
           // Exact match for root, startsWith for others to handle sub-routes
-          const isActive = item.href === '/parent-dashboard' 
-            ? pathname === item.href 
-            : pathname.startsWith(item.href);
+          const isActive = pathname
+            ? (item.href === '/parent-dashboard'
+              ? pathname === item.href
+              : pathname.startsWith(item.href))
+            : false;
 
           return (
             <Link

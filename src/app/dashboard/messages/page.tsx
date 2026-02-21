@@ -51,7 +51,7 @@ function MessagesContent() {
     offTyping,
   } = useSocket();
   const searchParams = useSearchParams();
-  const bookingIdParam = searchParams.get('booking');
+  const bookingIdParam = searchParams?.get('booking');
 
   const [chats, setChats] = useState<ChatWithDetails[]>([]);
   const [activeChat, setActiveChat] = useState<ChatWithDetails | null>(null);
@@ -74,8 +74,8 @@ function MessagesContent() {
       if (chat) {
         setActiveChat(chat);
       }
-    } else if (searchParams.get('chatId') && chats.length > 0) {
-      const chat = chats.find((c) => c.id === searchParams.get('chatId'));
+    } else if (searchParams?.get('chatId') && chats.length > 0) {
+      const chat = chats.find((c) => c.id === searchParams?.get('chatId'));
       if (chat) {
         setActiveChat(chat);
       }

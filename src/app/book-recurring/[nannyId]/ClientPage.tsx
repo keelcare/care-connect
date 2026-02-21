@@ -87,11 +87,11 @@ function LegacyBookRecurringPage() {
 
   useEffect(() => {
     const fetchNanny = async () => {
-      if (!params.nannyId) return;
+      if (!params?.nannyId) return;
       try {
-        const id = Array.isArray(params.nannyId)
-          ? params.nannyId[0]
-          : params.nannyId;
+        const id = Array.isArray(params?.nannyId)
+          ? params?.nannyId[0]
+          : params?.nannyId;
         const data = await api.users.get(id);
         setNanny(data);
       } catch (error) {
@@ -106,7 +106,7 @@ function LegacyBookRecurringPage() {
     };
 
     fetchNanny();
-  }, [params.nannyId]);
+  }, [params?.nannyId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

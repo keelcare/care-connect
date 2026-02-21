@@ -17,7 +17,7 @@ export default function BookServiceContent() {
   const [selectedService, setSelectedService] = useState<ServiceType>(null);
 
   useEffect(() => {
-    const serviceParam = searchParams.get('service');
+    const serviceParam = searchParams?.get('service');
     if (serviceParam) {
       if (['CHILD_CARE', 'SHADOW_TEACHER', 'SPECIAL_NEEDS'].includes(serviceParam)) {
         setSelectedService(serviceParam as ServiceType);

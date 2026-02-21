@@ -1,6 +1,6 @@
-# CareConnect Mobile App Development Guide
+# Keel Mobile App Development Guide
 
-This guide will walk you through building, running, and maintaining the CareConnect mobile application on iOS and Android using Capacitor.
+This guide will walk you through building, running, and maintaining the Keel mobile application on iOS and Android using Capacitor.
 
 ---
 
@@ -27,20 +27,18 @@ npm run dev
 ### 2. Native Development (Live Reload)
 Run the app on a physical device or emulator with **Live Reload** enabled.
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
+> **Live Reload Requirement**: You MUST have `npm run dev` running in a separate terminal for live reload to work. The app connects to your machine's IP address to fetch the latest changes.
+
+> [!TIP]
 > Since you just added iOS, you **must** run `npm run build` once before the first run so Capacitor can find your web assets.
 
 ```bash
-# First time setup or after adding platforms
-npm run build
-npx cap sync
+# 1. Start the web dev server
+npm run dev
 
-# Run with live reload
-# For Android
-npm run cap:run:android
-
-# For iOS
-npm run cap:run:ios
+# 2. In a NEW terminal, run the native app
+npm run cap:run:ios  # or cap:run:android
 ```
 
 ---

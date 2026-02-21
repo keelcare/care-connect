@@ -90,7 +90,7 @@ export function LocationSender({
       try {
         const watchId = await BackgroundGeolocation.addWatcher(
           {
-            backgroundMessage: 'Care Connect is tracking your location for the active booking.',
+            backgroundMessage: 'Keel is tracking your location for the active booking.',
             backgroundTitle: 'Location Sharing Active',
             requestPermissions: true,
             stale: false,
@@ -221,8 +221,8 @@ export function LocationSender({
       {/* Header */}
       <div
         className={`px-5 py-4 border-b ${isSharing
-            ? 'bg-gradient-to-r from-primary-50 to-green-50 border-primary-100'
-            : 'bg-stone-50 border-stone-100'
+          ? 'bg-gradient-to-r from-primary-50 to-green-50 border-primary-100'
+          : 'bg-stone-50 border-stone-100'
           }`}
       >
         <div className="flex items-center justify-between">
@@ -281,8 +281,8 @@ export function LocationSender({
         <Button
           onClick={isSharing ? stopSharing : startSharing}
           className={`w-full rounded-xl h-12 font-medium ${isSharing
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-primary-900 hover:bg-primary-800 text-white'
+            ? 'bg-red-500 hover:bg-red-600 text-white'
+            : 'bg-primary-900 hover:bg-primary-800 text-white'
             }`}
           disabled={permissionDenied}
         >

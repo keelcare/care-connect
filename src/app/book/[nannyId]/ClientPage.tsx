@@ -34,11 +34,11 @@ export default function DirectBookingPage() {
 
   useEffect(() => {
     const fetchNanny = async () => {
-      if (!params.nannyId) return;
+      if (!params?.nannyId) return;
       try {
-        const id = Array.isArray(params.nannyId)
-          ? params.nannyId[0]
-          : params.nannyId;
+        const id = Array.isArray(params?.nannyId)
+          ? params?.nannyId[0]
+          : params?.nannyId;
         const data = await api.users.get(id);
         setNanny(data);
       } catch (error) {
@@ -50,7 +50,7 @@ export default function DirectBookingPage() {
     };
 
     fetchNanny();
-  }, [params.nannyId]);
+  }, [params?.nannyId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,7 +158,7 @@ export default function DirectBookingPage() {
         <p className="text-stone-500 mb-8 max-w-md">
           Direct booking is currently unavailable. Please use our matching service to find the best caregiver for your needs.
         </p>
-       
+
       </div>
     </ParentLayout>
   );

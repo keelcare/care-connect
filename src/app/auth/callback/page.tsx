@@ -20,7 +20,7 @@ function CallbackContent() {
       setHasProcessed(true);
 
       // Check for errors in query params
-      const error = searchParams.get('error');
+      const error = searchParams?.get('error');
       if (error) {
         console.error('Auth error:', error);
         router.push(`/auth/login?error=${encodeURIComponent(error)}`);
@@ -29,12 +29,12 @@ function CallbackContent() {
 
       try {
         // Check for token from backend (Token Exchange Flow)
-        const token = searchParams.get('token');
-        
+        const token = searchParams?.get('token');
+
         if (token) {
           // Instantly wipe the massive token from the user's URL bar for a cleaner experience
           window.history.replaceState({}, document.title, window.location.pathname);
-          
+
           console.log('Exchanging token for session...');
           await api.auth.setSession(token);
         }

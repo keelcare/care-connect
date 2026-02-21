@@ -81,7 +81,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
       const handle = await App.addListener('appUrlOpen', async (event) => {
         const url = event.url;
-        if (url.startsWith('careconnect://auth/callback')) {
+        if (url.startsWith('keel://auth/callback')) {
           await Browser.close();
           const tokenMatch = url.match(/[?&]token=([^&]+)/);
           if (tokenMatch) {
@@ -89,7 +89,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
           } else {
             router.push('/auth/login?error=oauth_failed');
           }
-        } else if (url.startsWith('careconnect://payment/callback')) {
+        } else if (url.startsWith('keel://payment/callback')) {
           await Browser.close();
           const statusMatch = url.match(/[?&]status=([^&]+)/);
           const errorMatch = url.match(/[?&]error=([^&]+)/);

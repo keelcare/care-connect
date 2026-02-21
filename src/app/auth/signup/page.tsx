@@ -30,7 +30,7 @@ import { Spinner } from '@/components/ui/Spinner';
 
 function SignupContent() {
   const searchParams = useSearchParams();
-  const roleParam = searchParams.get('role');
+  const roleParam = searchParams?.get('role');
 
   // Map 'parent' -> 'family' and 'nanny' -> 'caregiver'
   const initialRole: Role = roleParam === 'nanny' ? 'caregiver' : 'family';
@@ -122,7 +122,7 @@ function SignupContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -673,18 +673,15 @@ function SignupContent() {
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
                 const apiUrl =
                   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-                let isNative = false;
+                let isCapacitor = false;
                 if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
-                   isNative = Capacitor.isNativePlatform();
+                  isCapacitor = Capacitor.isNativePlatform();
                 }
-                const origin = isNative
-                  ? 'careconnect://auth/callback'
-                  : window.location.origin;
+                const origin = isCapacitor ? 'keel://auth/callback' : `${window.location.origin}/auth/callback`;
 
                 // Build URL with role, origin, and platform flag
-                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${
-                  isNative ? '&platform=mobile' : ''
-                }`;
+                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${isCapacitor ? '&platform=mobile' : ''
+                  }`;
 
                 // Add categories for nannies
                 if (role === 'caregiver' && formData.categories.length > 0) {
@@ -692,7 +689,7 @@ function SignupContent() {
                   oauthUrl += `&categories=${encodeURIComponent(categoriesParam)}`;
                 }
 
-                if (isNative) {
+                if (isCapacitor) {
                   const { Browser } = await import('@capacitor/browser');
                   await Browser.open({ url: oauthUrl });
                 } else {

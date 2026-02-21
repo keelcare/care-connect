@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Care Connect</string>
+        <string>Keel</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,17 +49,17 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.keelcare.careconnect</string>
+			<string>com.keel.careconnect</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>careconnect</string>
+				<string>keel</string>
 			</array>
 		</dict>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Care Connect needs your location to share it with parents during active bookings.</string>
+	<string>Keel needs your location to share it with parents during active bookings.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Care Connect needs your location in the background to continue sharing with parents when the app is minimized.</string>
+	<string>Keel needs your location in the background to continue sharing with parents when the app is minimized.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

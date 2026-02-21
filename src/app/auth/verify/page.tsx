@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams?.get('token');
 
   const [status, setStatus] = useState<
     'loading' | 'success' | 'error' | 'no-token'

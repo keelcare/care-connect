@@ -38,12 +38,11 @@ export default function LoginPage() {
       isNative = Capacitor.isNativePlatform();
     }
     const origin = isNative
-      ? 'careconnect://auth/callback'
-      : window.location.origin;
+      ? 'keel://auth/callback'
+      : `${window.location.origin}/auth/callback`;
 
-    const url = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}${
-      isNative ? '&platform=mobile' : ''
-    }`;
+    const url = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}${isNative ? '&platform=mobile' : ''
+      }`;
 
     if (isNative) {
       const { Browser } = await import('@capacitor/browser');

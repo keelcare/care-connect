@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.keelcare.careconnect"
+    namespace "com.keel.careconnect"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.keelcare.careconnect"
+        applicationId "com.keel.careconnect"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

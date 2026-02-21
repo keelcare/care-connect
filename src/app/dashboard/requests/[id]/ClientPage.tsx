@@ -38,11 +38,11 @@ export default function RequestDetailsPage() {
   const { onRefresh, offRefresh } = useSocket();
 
   const fetchRequestDetails = React.useCallback(async () => {
-    if (!params.id) return;
+    if (!params?.id) return;
 
     try {
       setLoading(true);
-      const id = Array.isArray(params.id) ? params.id[0] : params.id;
+      const id = Array.isArray(params?.id) ? params?.id[0] : params?.id;
       const data = await api.requests.get(id);
       setRequest(data);
 
@@ -56,7 +56,7 @@ export default function RequestDetailsPage() {
     } finally {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [params?.id]);
 
   useEffect(() => {
     fetchRequestDetails();
@@ -66,14 +66,14 @@ export default function RequestDetailsPage() {
     const handleRefresh = (data: any) => {
       console.log('Request Details Page - Received Refresh Event:', data);
       // Refresh if it's a booking/request update OR if it specifically matches this request ID
-      if (data.category === 'booking' || data.category === 'request' || data.relatedId === params.id) {
+      if (data.category === 'booking' || data.category === 'request' || data.relatedId === params?.id) {
         fetchRequestDetails();
       }
     };
 
     onRefresh(handleRefresh);
     return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh, fetchRequestDetails, params.id]);
+  }, [onRefresh, offRefresh, fetchRequestDetails, params?.id]);
 
   const handleCancel = async (reason: string) => {
     if (!request) return;

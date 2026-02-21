@@ -9,7 +9,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export default function VerificationDetailPage() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const id = params?.id as string;
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);

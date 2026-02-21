@@ -70,12 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = useCallback(async () => {
     try {
       console.log('AuthContext: Verifying session...');
-      
+
       // If user explicitly logged out, skip check to prevent "zombie" cookie login
       if (typeof window !== 'undefined' && localStorage.getItem('is_logged_out')) {
-         console.log('AuthContext: User explicitly logged out, skipping session check.');
-         setUser(null);
-         return;
+        console.log('AuthContext: User explicitly logged out, skipping session check.');
+        setUser(null);
+        return;
       }
 
       // Just call /users/me. If we have valid cookies, it returns the user.
@@ -105,8 +105,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const listener = App.addListener('appUrlOpen', (data) => {
       if (data && data.url) {
-        // e.g. careconnect://auth/callback?token=XYZ
-        const url = new URL(data.url.replace('careconnect://', 'https://careconnect.app/'));
+        // e.g. keel://auth/callback?token=XYZ
+        const url = new URL(data.url.replace('keel://', 'https://careconnect.app/'));
         const path = url.pathname + url.search;
         router.push(path);
       }
@@ -120,8 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Skip auth check on callback page to prevent race conditions
     // (Callback page handles the session exchange and login manually)
     if (pathname?.startsWith('/auth/callback')) {
-        setLoading(false); 
-        return;
+      setLoading(false);
+      return;
     }
     checkAuth();
   }, [checkAuth, pathname]);

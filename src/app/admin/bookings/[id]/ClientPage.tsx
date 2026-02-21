@@ -36,7 +36,7 @@ export default function AdminBookingDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const bookingId = params.id as string;
+  const bookingId = params?.id as string;
 
   const [booking, setBooking] = useState<AdminBooking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ export default function AdminBookingDetailsPage() {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    if (user && user.role !== 'admin') {
+    if (params?.id && user && user.role !== 'admin') {
       router.push('/dashboard');
       return;
     }
@@ -52,7 +52,7 @@ export default function AdminBookingDetailsPage() {
     if (bookingId) {
       fetchBooking();
     }
-  }, [bookingId, user]);
+  }, [params?.id, user]);
 
   const fetchBooking = async () => {
     try {

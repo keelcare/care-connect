@@ -30,7 +30,7 @@ export default function BookingDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const bookingId = params.id as string;
+  const bookingId = params?.id as string;
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [review, setReview] = useState<Review | null>(null);

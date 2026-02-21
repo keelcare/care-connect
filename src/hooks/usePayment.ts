@@ -37,7 +37,7 @@ export const usePayment = () => {
       if (isCapacitor) {
         // --- Capacitor: open Razorpay hosted checkout in native in-app browser ---
         const { Browser } = await import('@capacitor/browser');
-        const callbackUrl = encodeURIComponent('careconnect://payment/callback');
+        const callbackUrl = encodeURIComponent('keel://payment/callback');
         const checkoutUrl =
           `https://checkout.razorpay.com/v1/checkout?` +
           `order_id=${orderData.orderId}&key=${orderData.key}&callback_url=${callbackUrl}`;
