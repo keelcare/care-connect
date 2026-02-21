@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
+import { API_URL } from '@/lib/api';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { api } from '@/lib/api';
@@ -93,14 +94,16 @@ function SignupContent() {
       isValid = false;
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
     if (!formData.password) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (!passwordRegex.test(formData.password)) {
-      newErrors.password = 'Your password must be at least 8 characters long, contain at least one number and have a mixture of uppercase and lowercase letters.';
-      isValid = false;
     }
+    // else if (!passwordRegex.test(formData.password)) {
+    //   newErrors.password =
+    //     'Your password must be at least 8 characters long and contain at least one letter and one number.';
+    //   isValid = false;
+    // }
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
@@ -444,7 +447,10 @@ function SignupContent() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 md:p-12 overflow-y-auto">
+        <div
+          className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 md:p-12 overflow-y-auto"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}
+        >
           <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 my-auto">
             <div className="text-center lg:text-left">
               <Link
@@ -505,6 +511,7 @@ function SignupContent() {
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <Input
+                  id="firstName"
                   label="First Name"
                   placeholder="Jane"
                   value={formData.firstName}
@@ -521,6 +528,7 @@ function SignupContent() {
                   }
                 />
                 <Input
+                  id="lastName"
                   label="Last Name"
                   placeholder="Doe"
                   value={formData.lastName}
@@ -539,9 +547,13 @@ function SignupContent() {
               </div>
 
               <Input
+                id="email"
                 label="Email Address"
                 type="email"
                 placeholder="you@example.com"
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="email"
                 leftIcon={<Mail size={18} />}
                 value={formData.email}
                 onChange={(e) =>
@@ -558,6 +570,7 @@ function SignupContent() {
               />
 
               <Input
+                id="password"
                 label="Password"
                 type="password"
                 placeholder="Create a password"
@@ -577,6 +590,7 @@ function SignupContent() {
               />
 
               <Input
+                id="confirmPassword"
                 label="Confirm Password"
                 type="password"
                 placeholder="Confirm your password"
@@ -679,8 +693,6 @@ function SignupContent() {
                 }
 
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
-                const apiUrl =
-                  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
                 let isCapacitor = false;
                 if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
                   isCapacitor = Capacitor.isNativePlatform();
@@ -688,7 +700,7 @@ function SignupContent() {
                 const origin = isCapacitor ? 'keel://auth/callback' : `${window.location.origin}/auth/callback`;
 
                 // Build URL with role, origin, and platform flag
-                let oauthUrl = `${apiUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${isCapacitor ? '&platform=mobile' : ''
+                let oauthUrl = `${API_URL}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${isCapacitor ? '&platform=mobile' : ''
                   }`;
 
                 // Add categories for nannies

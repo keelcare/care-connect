@@ -8,19 +8,15 @@ interface SplashLoaderProps {
 
 export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
   const [isFading, setIsFading] = useState(false);
-  const [startAnimation, setStartAnimation] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
   useEffect(() => {
-    // Start animation shortly after mount
-    const startTimer = setTimeout(() => setStartAnimation(true), 100);
-
-    // Start filling the logo after drawing is complete (2.5s + 100ms)
+    // Start filling the logo after drawing is complete (~2.5s)
     const fillTimer = setTimeout(() => {
       setIsFilled(true);
     }, 2600);
 
-    // Start fading out after fill is visible for a bit
+    // Start fading out
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
     }, 3300);
@@ -31,7 +27,6 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
     }, 3800);
 
     return () => {
-      clearTimeout(startTimer);
       clearTimeout(fillTimer);
       clearTimeout(fadeTimer);
       clearTimeout(finishTimer);
@@ -45,30 +40,62 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-primary transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#0D2B45',
+        opacity: isFading ? 0 : 1,
+        pointerEvents: isFading ? 'none' : 'auto',
+        transition: 'opacity 500ms ease',
+      }}
     >
-      <div className="relative flex flex-col items-center">
-        {/* Animation Container */}
-        <div className="relative w-40 h-40">
-          <svg viewBox="0 0 200 210" className="w-full h-full overflow-visible">
-            {/* Background Trace (Optional, faint) */}
+      {/* Keyframe animations — compatible with WKWebView & Android WebView */}
+      <style>{`
+        @keyframes keel-draw {
+          from { stroke-dashoffset: 1; }
+          to   { stroke-dashoffset: 0; }
+        }
+        @keyframes keel-bar {
+          from { width: 0%; }
+          to   { width: 100%; }
+        }
+        .keel-path {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: keel-draw 2500ms linear 150ms forwards;
+        }
+        .keel-bar {
+          width: 0%;
+          animation: keel-bar 2500ms linear 150ms forwards;
+        }
+      `}</style>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* SVG Logo Animation */}
+        <div style={{ width: 160, height: 160 }}>
+          <svg
+            viewBox="0 0 200 210"
+            style={{ width: '100%', height: '100%', overflow: 'visible' }}
+          >
+            {/* Faint background trace */}
             <path
               d={PATH_LEFT}
               fill="none"
-              stroke="rgba(255,255,255,0.2)"
+              stroke="rgba(255,255,255,0.15)"
               strokeWidth="9"
-              className="opacity-30"
             />
             <path
               d={PATH_RIGHT}
               fill="none"
-              stroke="rgba(255,255,255,0.2)"
+              stroke="rgba(255,255,255,0.15)"
               strokeWidth="9"
-              className="opacity-30"
             />
 
-            {/* The Drawing Logo Left */}
+            {/* Animated left stroke */}
             <path
               d={PATH_LEFT}
               fill={isFilled ? 'white' : 'transparent'}
@@ -77,17 +104,11 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
               strokeLinecap="round"
               strokeLinejoin="miter"
               pathLength={1}
-              className="transition-[stroke-dashoffset,fill] ease-linear"
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: startAnimation ? 0 : 1,
-                transitionProperty: 'stroke-dashoffset, fill',
-                transitionDuration: '2500ms, 500ms',
-                transitionDelay: '0ms, 0ms',
-              }}
+              className="keel-path"
+              style={{ transition: 'fill 500ms ease' }}
             />
 
-            {/* The Drawing Logo Right */}
+            {/* Animated right stroke */}
             <path
               d={PATH_RIGHT}
               fill={isFilled ? 'white' : 'transparent'}
@@ -96,36 +117,57 @@ export const SplashLoader: React.FC<SplashLoaderProps> = ({ onFinish }) => {
               strokeLinecap="round"
               strokeLinejoin="miter"
               pathLength={1}
-              className="transition-[stroke-dashoffset,fill] ease-linear"
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: startAnimation ? 0 : 1,
-                transitionProperty: 'stroke-dashoffset, fill',
-                transitionDuration: '2500ms, 500ms',
-                transitionDelay: '0ms, 0ms',
-              }}
+              className="keel-path"
+              style={{ transition: 'fill 500ms ease' }}
             />
           </svg>
         </div>
 
         {/* Brand Name */}
-        <div className="mt-8 text-center space-y-2">
-          <h1 className="text-5xl font-display font-bold text-white tracking-tight">
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <h1
+            style={{
+              fontSize: 48,
+              fontWeight: 700,
+              color: 'white',
+              letterSpacing: '-0.5px',
+              margin: 0,
+              fontFamily: 'sans-serif',
+            }}
+          >
             Keel
           </h1>
-          <p className="text-white font-medium tracking-wide">
+          <p
+            style={{
+              color: 'rgba(255,255,255,0.75)',
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              marginTop: 8,
+              fontSize: 14,
+              fontFamily: 'sans-serif',
+            }}
+          >
             The backbone of Care
           </p>
         </div>
 
-        {/* Loading Bar */}
-        <div className="w-48 h-1.5 bg-white/20 rounded-full overflow-hidden mt-8">
+        {/* Progress Bar */}
+        <div
+          style={{
+            width: 192,
+            height: 6,
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            borderRadius: 999,
+            overflow: 'hidden',
+            marginTop: 32,
+          }}
+        >
           <div
-            className="h-full rounded-full transition-all ease-linear"
+            className="keel-bar"
             style={{
-              width: startAnimation ? '100%' : '0%',
+              height: '100%',
               backgroundColor: 'white',
-              transitionDuration: '2500ms',
+              borderRadius: 999,
             }}
           />
         </div>

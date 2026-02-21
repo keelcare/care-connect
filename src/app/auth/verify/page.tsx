@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, AlertCircle, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { API_URL } from '@/lib/api';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -23,9 +24,7 @@ function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-        const response = await fetch(`${apiUrl}/auth/verify?token=${token}`);
+        const response = await fetch(`${API_URL}/auth/verify?token=${token}`);
 
         if (!response.ok) {
           const data = await response.json();
@@ -94,7 +93,6 @@ function VerifyEmailContent() {
                   <button
                     onClick={async () => {
                       try {
-                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
                         // Since we don't have the email here easily without a token, 
                         // this button usually works after a signup attempt or from a login failure.
                         // For now, let's assume we can't resend without knowing WHO to resend to.

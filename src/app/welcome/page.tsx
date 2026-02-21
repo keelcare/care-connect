@@ -3,13 +3,11 @@
 import { LandingPage } from '@/components/landing-new/LandingPage';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import React, { useState, useCallback } from 'react';
-import { SplashLoader } from '@/components/ui/SplashLoader';
+import React from 'react';
 
 export default function WelcomePage() {
     const { user, loading } = useAuth();
     const router = useRouter();
-    const [showSplash, setShowSplash] = useState(true);
 
     // Redirect logged-in users
     React.useEffect(() => {
@@ -24,10 +22,6 @@ export default function WelcomePage() {
         }
     }, [user, loading, router]);
 
-    const handleSplashFinish = useCallback(() => {
-        setShowSplash(false);
-    }, []);
-
     if (loading) {
         return (
             <div className="min-h-dvh flex items-center justify-center bg-stone-50">
@@ -40,9 +34,6 @@ export default function WelcomePage() {
     if (user) return null;
 
     return (
-        <>
-            {showSplash && <SplashLoader onFinish={handleSplashFinish} />}
-            <LandingPage />
-        </>
+        <LandingPage />
     );
 }

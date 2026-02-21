@@ -59,7 +59,7 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+import { API_URL } from '@/lib/api';
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();

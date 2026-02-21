@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
 
 
   // --- Content Security Policy ---
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://care-connect-backend-ok23.onrender.com';
   const wsUrl = apiUrl.replace(/^http/, 'ws');
 
   const cspHeader = `

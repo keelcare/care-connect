@@ -44,8 +44,7 @@ import {
   Service,
 } from '@/types/api';
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Token refresh callback - will be set by AuthContext
 // NOTE: With cookie-based auth, refresh is simpler but we still need to handle 401s

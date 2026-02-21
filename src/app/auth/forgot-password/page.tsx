@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
+import { API_URL } from '@/lib/api';
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +19,7 @@ export default function ForgotPasswordPage() {
     setError('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const response = await fetch(`${apiUrl}/auth/forgot-password`, {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -94,7 +94,10 @@ export default function ForgotPasswordPage() {
     <div className="h-dvh w-full flex bg-neutral-50 justify-center overflow-hidden">
       <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
         {/* Left Side - Form */}
-        <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto">
+        <div
+          className="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 py-12 overflow-y-auto"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 3rem)' }}
+        >
           <div className="w-full max-w-md mx-auto my-auto">
             <Link
               href="/auth/login"

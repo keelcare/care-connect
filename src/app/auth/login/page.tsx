@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, ArrowRight, Settings } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/Input';
+import { API_URL } from '@/lib/api';
 
 import { Capacitor } from '@capacitor/core';
 
@@ -41,7 +42,6 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
     let isNative = false;
     if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
       isNative = Capacitor.isNativePlatform();
@@ -50,7 +50,7 @@ export default function LoginPage() {
       ? 'keel://auth/callback'
       : `${window.location.origin}/auth/callback`;
 
-    const url = `${apiUrl}/auth/google?origin=${encodeURIComponent(origin)}${isNative ? '&platform=mobile' : ''
+    const url = `${API_URL}/auth/google?origin=${encodeURIComponent(origin)}${isNative ? '&platform=mobile' : ''
       }`;
 
     if (isNative) {
@@ -64,7 +64,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-dvh w-full flex bg-background">
       {/* Left Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-12">
+      <div
+        className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-12"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 3rem)' }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,9 +102,13 @@ export default function LoginPage() {
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Email Input */}
             <Input
+              id="email"
               label="Email Address"
               type="email"
               placeholder="Enter your email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="email"
               leftIcon={<Mail className="w-5 h-5" />}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -124,6 +131,7 @@ export default function LoginPage() {
                 </Link>
               </div>
               <Input
+                id="password"
                 type="password"
                 placeholder="••••••••"
                 leftIcon={<Lock className="w-5 h-5" />}
@@ -173,7 +181,6 @@ export default function LoginPage() {
             Continue with Google
           </button>
 
-          {/* Sign Up Link */}
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm font-body">
               Don't have an account?{' '}
@@ -317,7 +324,7 @@ export default function LoginPage() {
             </svg>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
