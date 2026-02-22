@@ -183,20 +183,18 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
         try {
             const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === formData.planType);
 
+            const numStudents = formData.numStudents === '5+' ? 5 : Number(formData.numStudents);
+
             const payload = {
                 category: 'ST',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
-                num_children: Number(formData.numStudents),
+                num_children: numStudents,
+                child_ids: [],
                 children_ages: [],
-
                 required_skills: ['shadow_teacher', 'special_education'],
                 special_requirements: formData.specialRequirements,
-                plan_type: formData.planType as any,
-                plan_duration_months: selectedPlan?.duration || 0,
-                monthly_rate: pricing?.monthlyCost || 0,
-                discount_percentage: selectedPlan?.discount || 0,
                 max_hourly_rate: hourlyRate,
             };
 
@@ -253,7 +251,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
         <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
 
-             {/* Service Info */}
+            {/* Service Info */}
             <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200">
                 <div className="w-12 h-12 rounded-full bg-[#E8F2EC] flex items-center justify-center text-2xl">
                     🎓
@@ -279,7 +277,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         </span>
                     </div>
                 )}
-                 {formData.startTime && (
+                {formData.startTime && (
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Time</span>
                         <span className="font-medium text-gray-900">{formData.startTime}</span>
@@ -289,7 +287,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     <span className="text-gray-600">Duration</span>
                     <span className="font-medium text-gray-900">{formData.duration || 0} hours</span>
                 </div>
-                
+
                 <div className="border-t border-gray-200 my-4" />
 
                 {pricing ? (
@@ -311,12 +309,12 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                             </div>
                         )}
                         <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
-                             <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL</span>
+                            <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL</span>
                             <span className="text-xl font-bold text-primary">₹{pricing.totalCost.toLocaleString()}</span>
                         </div>
                     </>
                 ) : (
-                     <div className="text-center text-sm text-gray-400 py-2">
+                    <div className="text-center text-sm text-gray-400 py-2">
                         Pricing calculated based on duration
                     </div>
                 )}
@@ -342,14 +340,14 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[90vh] shadow-2xl relative overflow-hidden flex flex-col"
             >
                 {/* Header */}
-                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
-                     <div className="flex items-center gap-4">
-                        <button 
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
+                    <div className="flex items-center gap-4">
+                        <button
                             onClick={onClose}
                             className="w-8 h-8 -ml-2 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </button>
                         <div>
@@ -357,13 +355,13 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                            <button
+                        <button
                             onClick={onClose}
                             className="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 items-center justify-center transition-colors text-gray-500"
                         >
                             <X size={18} />
                         </button>
-                            <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
+                        <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
                             <span className="font-bold text-gray-900 text-xl tracking-widest pb-2">...</span>
                         </button>
                     </div>
@@ -388,11 +386,11 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
 
                 {/* Responsive Layout Container */}
                 <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                    
+
                     {/* LEFT Panel (Form) */}
                     <div className="flex-1 overflow-y-auto scrollbar-hide">
                         <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
-                            
+
                             {/* Title */}
                             <h1 className="text-3xl font-display font-medium text-primary">
                                 Book a Shadow Teacher
@@ -435,9 +433,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                                     )}
                                                 </div>
                                                 {plan.discount > 0 && (
-                                                    <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${
-                                                        isSelected ? 'bg-white/20 text-white' : 'bg-green-100 text-green-800'
-                                                    }`}>
+                                                    <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-green-100 text-green-800'
+                                                        }`}>
                                                         Save {plan.discount}%
                                                     </div>
                                                 )}
@@ -601,13 +598,13 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                     {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
                                 </button>
                             </div>
-                        
+
                         </form>
                     </div>
 
                     {/* RIGHT Panel (Desktop Only) */}
                     <div className="hidden lg:flex w-[400px] border-l border-gray-100 bg-white flex-col p-8 shrink-0">
-                         <div className="sticky top-0">
+                        <div className="sticky top-0">
                             <ServiceSummary />
                             <div className="mt-6">
                                 <button
@@ -618,13 +615,13 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                 >
                                     {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
                                 </button>
-                                 {(!formData.date || !formData.duration) && (
+                                {(!formData.date || !formData.duration) && (
                                     <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
                                         Please select date and duration
                                     </p>
                                 )}
                             </div>
-                         </div>
+                        </div>
                     </div>
                 </div>
             </motion.div>

@@ -145,17 +145,20 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 formData.specialRequirements,
             ].filter(Boolean).join('. ');
 
+            const numChildren = selectedChildIds.length > 0
+                ? selectedChildIds.length
+                : Math.max(1, Number(formData.numPeople) || 1);
+
             const payload = {
                 category: 'SN',
                 date: formData.date,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
-                num_children: selectedChildIds.length > 0 ? selectedChildIds.length : Number(formData.numPeople),
+                num_children: numChildren,
                 child_ids: selectedChildIds,
                 children_ages: [],
                 required_skills: ['special_needs_care', 'compassionate_care'],
                 special_requirements: requirements,
-                service_type: 'SPECIAL_NEEDS' as const,
                 max_hourly_rate: hourlyRate || undefined,
             };
 
@@ -201,7 +204,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
 
-             {/* Service Info */}
+            {/* Service Info */}
             <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200">
                 <div className="w-12 h-12 rounded-full bg-[#FDF3F1] flex items-center justify-center text-2xl">
                     💝
@@ -213,7 +216,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             </div>
 
             <div className="space-y-3">
-                 {formData.date && (
+                {formData.date && (
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Date</span>
                         <span className="font-medium text-gray-900">
@@ -221,7 +224,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                         </span>
                     </div>
                 )}
-                 {formData.startTime && (
+                {formData.startTime && (
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Time</span>
                         <span className="font-medium text-gray-900">{formData.startTime}</span>
@@ -231,13 +234,13 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                     <span className="text-gray-600">Duration</span>
                     <span className="font-medium text-gray-900">{formData.duration || 0} hours</span>
                 </div>
-                 <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm">
                     <span className="text-gray-600">People</span>
                     <span className="font-medium text-gray-900">
-                         {selectedChildIds.length > 0 ? selectedChildIds.length : formData.numPeople}
+                        {selectedChildIds.length > 0 ? selectedChildIds.length : formData.numPeople}
                     </span>
                 </div>
-                
+
                 <div className="border-t border-gray-200 my-4" />
 
                 {(hourlyRate && formData.duration) ? (
@@ -247,14 +250,14 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                             <span className="font-medium">₹{hourlyRate.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
-                             <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL EST.</span>
+                            <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL EST.</span>
                             <span className="text-xl font-bold text-[#CC7A68]">
                                 ₹{(hourlyRate * Number(formData.duration)).toLocaleString()}
                             </span>
                         </div>
                     </>
                 ) : (
-                     <div className="text-center text-sm text-gray-400 py-2">
+                    <div className="text-center text-sm text-gray-400 py-2">
                         Pricing calculated based on duration
                     </div>
                 )}
@@ -280,15 +283,15 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                     onClick={(e) => e.stopPropagation()}
                     className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[90vh] shadow-2xl relative overflow-hidden flex flex-col"
                 >
-                     {/* Header */}
-                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
-                         <div className="flex items-center gap-4">
-                            <button 
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
+                        <div className="flex items-center gap-4">
+                            <button
                                 onClick={onClose}
                                 className="w-8 h-8 -ml-2 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden"
                             >
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M15 19L8 12L15 5" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </button>
                             <div>
@@ -296,13 +299,13 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                                <button
+                            <button
                                 onClick={onClose}
                                 className="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 items-center justify-center transition-colors text-gray-500"
                             >
                                 <X size={18} />
                             </button>
-                                <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
+                            <button className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors sm:hidden">
                                 <span className="font-bold text-gray-900 text-xl tracking-widest pb-2">...</span>
                             </button>
                         </div>
@@ -327,11 +330,11 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
 
                     {/* Responsive Layout Container */}
                     <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                        
+
                         {/* LEFT Panel (Form) */}
                         <div className="flex-1 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
-                                
+
                                 {/* Title */}
                                 <h1 className="text-3xl font-display font-medium text-[#CC7A68]">
                                     Special Needs Care
@@ -421,13 +424,13 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     </div>
                                 </div>
 
-                                 {/* Whom For (Children/People) */}
+                                {/* Whom For (Children/People) */}
                                 <div>
                                     <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
                                         Who is this for?
                                     </div>
-                                    
-                                     {/* Fallback Manual Counter if no children */}
+
+                                    {/* Fallback Manual Counter if no children */}
                                     {children.length === 0 && (
                                         <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
                                             <p className="text-xs text-gray-600 mb-3">
@@ -512,13 +515,13 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                         {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
                                     </button>
                                 </div>
-                            
+
                             </form>
                         </div>
 
                         {/* RIGHT Panel (Desktop Only) */}
                         <div className="hidden lg:flex w-[400px] border-l border-gray-100 bg-white flex-col p-8 shrink-0">
-                             <div className="sticky top-0">
+                            <div className="sticky top-0">
                                 <ServiceSummary />
                                 <div className="mt-6">
                                     <button
@@ -529,13 +532,13 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     >
                                         {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
                                     </button>
-                                     {(!formData.date || !formData.duration) && (
+                                    {(!formData.date || !formData.duration) && (
                                         <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
                                             Please select date and duration
                                         </p>
                                     )}
                                 </div>
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
