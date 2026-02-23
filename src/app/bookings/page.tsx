@@ -760,7 +760,7 @@ export default function ParentBookingsPage() {
           </div>
         </div>
 
-        <div className="flex border-b border-slate-200 overflow-x-auto">
+        <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
           {['requests', 'upcoming', 'completed', 'cancelled'].map((tab) => (
             <button
               key={tab}

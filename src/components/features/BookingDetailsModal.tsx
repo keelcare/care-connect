@@ -70,7 +70,7 @@ export const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-[32px] w-full max-w-lg p-8 relative shadow-strong animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[32px] w-full max-w-lg p-8 relative shadow-strong animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto no-scrollbar">
         <button
           onClick={onClose}
           className="absolute top-6 right-6 p-2 hover:bg-neutral-100 rounded-full transition-colors"

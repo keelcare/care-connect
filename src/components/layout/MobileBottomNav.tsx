@@ -12,7 +12,6 @@ export const MobileBottomNav = () => {
     { icon: Search, label: 'Find Care', href: '/search' },
     { icon: Compass, label: 'Home', href: '/parent-dashboard' },
     { icon: Calendar, label: 'Bookings', href: '/bookings' },
-    { icon: User, label: 'Profile', href: '/settings' },
   ];
 
   return (

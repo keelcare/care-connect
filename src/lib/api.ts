@@ -44,7 +44,8 @@ import {
   Service,
 } from '@/types/api';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+export const API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 // Token refresh callback - will be set by AuthContext
 // NOTE: With cookie-based auth, refresh is simpler but we still need to handle 401s
@@ -245,7 +246,7 @@ export const api = {
         body: JSON.stringify({ userId, imageUrl }),
       }),
     registerPushToken: (token: string) =>
-      fetchApi<{ success: boolean }>('/users/push-token', {
+      fetchApi<void>('/users/push-token', {
         method: 'POST',
         body: JSON.stringify({ token }),
       }),

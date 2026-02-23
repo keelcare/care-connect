@@ -70,7 +70,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
   // Handle deep-link returns from Capacitor in-app browser (Google OAuth mobile flow)
   useEffect(() => {
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
     if (!isCapacitor) return;
 
     let cleanup: (() => void) | undefined;
@@ -110,30 +110,9 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     return () => cleanup?.();
   }, [router]);
 
-  // Native Status Bar & Splash Screen config
-  useEffect(() => {
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
-    if (!isCapacitor) return;
-
-    const setupNative = async () => {
-      // Check if actually on native device before trying to style status bar
-      const { Capacitor } = await import('@capacitor/core');
-      if (!Capacitor.isNativePlatform()) return;
-
-      const { StatusBar, Style } = await import('@capacitor/status-bar');
-      const { SplashScreen } = await import('@capacitor/splash-screen');
-
-      await StatusBar.setStyle({ style: Style.Light });
-      await StatusBar.setBackgroundColor({ color: '#0D2B45' }); // primary navy
-      await SplashScreen.hide({ fadeOutDuration: 300 });
-    };
-
-    setupNative();
-  }, []);
-
   // Load Razorpay SDK on web only (Capacitor uses Browser.open instead)
   useEffect(() => {
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
+    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
     if (isCapacitor) return;
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -220,10 +199,6 @@ export default function RootLayout({
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <meta name="color-scheme" content="light" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
         <link rel="icon" href="/logo.jpeg" />
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "450214844586",
+    "project_id": "keel-55c3f",
+    "storage_bucket": "keel-55c3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:450214844586:android:2762c0f33ca742644298d3",
+        "android_client_info": {
+          "package_name": "com.keel.careconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD14ajtnX1jg4SU-KNLiV72nH59YQLAXR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

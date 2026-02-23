@@ -22,7 +22,6 @@ import { API_URL } from '@/lib/api';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { api } from '@/lib/api';
-import { Capacitor } from '@capacitor/core';
 
 type Role = 'family' | 'caregiver';
 
@@ -695,12 +694,15 @@ function SignupContent() {
                 const backendRole = role === 'family' ? 'parent' : 'nanny';
                 let isCapacitor = false;
                 if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
-                  isCapacitor = Capacitor.isNativePlatform();
+                  isCapacitor = (window as any).Capacitor.isNativePlatform();
                 }
                 const origin = isCapacitor ? 'keel://auth/callback' : `${window.location.origin}/auth/callback`;
 
+                // Safely remove trailing slash from API_URL if it exists
+                const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+
                 // Build URL with role, origin, and platform flag
-                let oauthUrl = `${API_URL}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${isCapacitor ? '&platform=mobile' : ''
+                let oauthUrl = `${baseUrl}/auth/google?role=${backendRole}&origin=${encodeURIComponent(origin)}${isCapacitor ? '&platform=mobile' : ''
                   }`;
 
                 // Add categories for nannies

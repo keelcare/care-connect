@@ -9,8 +9,6 @@ import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/Input';
 import { API_URL } from '@/lib/api';
 
-import { Capacitor } from '@capacitor/core';
-
 export default function LoginPage() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,13 +42,14 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     let isNative = false;
     if (typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined') {
-      isNative = Capacitor.isNativePlatform();
+      isNative = (window as any).Capacitor.isNativePlatform();
     }
     const origin = isNative
       ? 'keel://auth/callback'
       : `${window.location.origin}/auth/callback`;
 
-    const url = `${API_URL}/auth/google?origin=${encodeURIComponent(origin)}${isNative ? '&platform=mobile' : ''
+    const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+    const url = `${baseUrl}/auth/google?origin=${encodeURIComponent(origin)}${isNative ? '&platform=mobile' : ''
       }`;
 
     if (isNative) {

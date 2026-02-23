@@ -1,4 +1,4 @@
-package com.keelcare.careconnect;
+package com.keel.careconnect;
 
 import com.getcapacitor.BridgeActivity;
 

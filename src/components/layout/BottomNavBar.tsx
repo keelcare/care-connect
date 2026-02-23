@@ -11,7 +11,6 @@ const NAV_ITEMS = [
     { href: '/bookings', label: 'Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book', icon: Sparkles },
     { href: '/parent-dashboard/family', label: 'My Family', icon: User },
-    { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 
 export default function BottomNavBar() {
