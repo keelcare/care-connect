@@ -346,33 +346,28 @@ export default function ParentBookingsPage() {
       switch (s) {
         case 'PENDING':
           return {
-            color: 'text-amber-700 bg-amber-50 border border-amber-200',
-            icon: <Clock size={16} />,
+            color: 'border-amber-500 text-amber-700',
             text: 'Pending Assignment',
           };
         case 'ASSIGNED':
           return {
-            color: 'text-primary-700 bg-primary-50 border border-primary-200',
-            icon: <CheckCircle size={16} />,
+            color: 'border-slate-900 text-slate-900',
             text: 'Caregiver Assigned',
           };
         case 'ACCEPTED':
         case 'CONFIRMED':
           return {
-            color: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
-            icon: <CheckCircle size={16} />,
+            color: 'border-emerald-500 text-emerald-700',
             text: 'Booking Confirmed',
           };
         case 'IN_PROGRESS':
           return {
-            color: 'text-stone-700 bg-stone-50 border border-stone-200',
-            icon: <Clock size={16} />,
+            color: 'border-slate-900 text-slate-900',
             text: 'Service In Progress',
           };
         default:
           return {
-            color: 'text-slate-700 bg-slate-50 border border-slate-200',
-            icon: <AlertTriangle size={16} />,
+            color: 'border-slate-900 text-slate-900',
             text: status,
           };
       }
@@ -381,121 +376,93 @@ export default function ParentBookingsPage() {
     const statusInfo = getStatusInfo(request.status);
 
     return (
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-300">
         <Button
           variant="ghost"
           onClick={() => setSelectedRequestId(null)}
-          className="pl-0 hover:bg-transparent hover:text-primary-700 text-slate-500 mb-6 group transition-colors"
+          className="pl-0 hover:bg-transparent hover:text-slate-900 text-slate-400 mb-2 font-sans uppercase tracking-widest text-xs transition-colors rounded-none"
         >
-          <ChevronLeft size={20} className="mr-1 group-hover:-translate-x-1 transition-transform" /> Back to Requests
+          <ChevronLeft size={16} className="mr-2" /> Back
         </Button>
 
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-8">
           <div>
-            <h1 className="text-3xl font-display font-bold text-primary-900">Request Details</h1>
-            <p className="text-slate-500 mt-1 font-mono text-xs uppercase tracking-wider">ID: {request.id}</p>
+            <h1 className="text-5xl font-serif text-slate-900 tracking-tight mb-2">Service Details</h1>
+            <p className="text-slate-400 font-sans text-xs uppercase tracking-[0.2em]">REF: {request.id.slice(0, 8)}</p>
           </div>
-          <div className={`px-4 py-2 rounded-full flex items-center gap-2 font-medium text-sm shadow-sm ${statusInfo.color}`}>
-            {statusInfo.icon}
+          <div className={`px-3 py-1 border text-[10px] uppercase tracking-widest ${statusInfo.color}`}>
             <span>{statusInfo.text}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
-              <h2 className="text-lg font-bold text-primary-900 mb-6 font-display border-b border-slate-100 pb-4">Service Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
-                    <Calendar size={20} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Date</label>
-                    <p className="text-primary-900 font-semibold text-lg">{new Date(request.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                </div >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Time</label>
-                    <p className="text-primary-900 font-semibold text-lg">{formatTime(request.start_time)} <span className="text-slate-400 text-sm font-normal">({request.duration_hours} hours)</span></p>
-                  </div>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-16">
+          <div className="xl:col-span-2 space-y-12">
+            <div>
+              <h2 className="text-sm font-sans uppercase tracking-widest text-slate-400 mb-8 border-b border-slate-200 pb-2">Schedule & Location</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-12">
+                <div>
+                  <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-2">Date</label>
+                  <p className="font-serif text-2xl text-slate-900">{new Date(request.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Children</label>
-                    <p className="text-primary-900 font-semibold text-lg">{request.num_children} <span className="text-slate-400 text-sm font-normal">(Ages: {request.children_ages.join(', ')})</span></p>
-                  </div>
+                <div>
+                  <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-2">Time</label>
+                  <p className="font-serif text-2xl text-slate-900">{formatTime(request.start_time)} <span className="font-sans text-sm text-slate-400 tracking-widest uppercase">({request.duration_hours} hrs)</span></p>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 flex-shrink-0 shadow-sm">
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Location</label>
-                    <p className="text-primary-900 font-semibold text-lg">{request.location?.address || 'No location specified'}</p>
-                  </div>
+                <div>
+                  <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-2">Children</label>
+                  <p className="font-serif text-2xl text-slate-900">{request.num_children} <span className="font-sans text-sm text-slate-400 tracking-widest uppercase">(Ages: {request.children_ages.join(', ')})</span></p>
                 </div>
-              </div >
+                <div>
+                  <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-2">Location</label>
+                  <p className="font-serif text-xl text-slate-900 leading-snug">{request.location?.address || 'No location specified'}</p>
+                </div>
+              </div>
 
-              {
-                request.special_requirements && (
-                  <div className="mt-8 pt-8 border-t border-slate-100">
-                    <label className="block text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Special Requirements</label>
-                    <p className="text-slate-700 bg-slate-50 p-5 rounded-xl border border-slate-100 leading-relaxed">{request.special_requirements}</p>
-                  </div>
-                )
-              }
-            </div >
-
-            {
-              request.nanny && (
-                <div className="space-y-4">
-                  <h2 className="text-lg font-bold text-primary-900 font-display">Assigned Caregiver</h2>
-                  <ProfileCard
-                    name={getNannyName(request.nanny)}
-                    rating={4.9}
-                    reviewCount={12}
-                    location={(request.nanny as any).profiles?.address || ''}
-                    description={(request.nanny as any).nanny_details?.bio || ''}
-                    hourlyRate={Number((request.nanny as any).nanny_details?.hourly_rate) || 0}
-                    experience={`${(request.nanny as any).nanny_details?.experience_years} years`}
-                    isVerified={request.nanny.is_verified}
-                    onViewProfile={() => (window.location.href = `/caregiver/${request.nanny?.id}`)}
-                    // onBook={() => { }}
-                    hideBookButton={true}
-                  />
+              {request.special_requirements && (
+                <div className="mt-12 pt-8 border-t border-slate-200">
+                  <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-4">Special Notes</label>
+                  <p className="font-serif text-lg text-slate-800 leading-relaxed italic border-l-2 border-slate-900 pl-6 my-6">"{request.special_requirements}"</p>
                 </div>
-              )
-            }
-          </div >
+              )}
+            </div>
 
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-24">
-              <h2 className="text-md font-bold text-primary-900 mb-4 font-display uppercase tracking-wider text-sm">Actions</h2>
-              <div className="space-y-3">
-                {/* Reschedule Button */}
+            {request.nanny && (
+              <div className="pt-8 border-t border-slate-200">
+                <h2 className="text-sm font-sans uppercase tracking-widest text-slate-400 mb-8 border-b border-slate-200 pb-2">Assigned Personnel</h2>
+                <ProfileCard
+                  name={getNannyName(request.nanny)}
+                  rating={4.9}
+                  reviewCount={12}
+                  location={(request.nanny as any).profiles?.address || ''}
+                  description={(request.nanny as any).nanny_details?.bio || ''}
+                  hourlyRate={Number((request.nanny as any).nanny_details?.hourly_rate) || 0}
+                  experience={`${(request.nanny as any).nanny_details?.experience_years} years`}
+                  isVerified={request.nanny.is_verified}
+                  onViewProfile={() => (window.location.href = `/caregiver/${request.nanny?.id}`)}
+                  hideBookButton={true}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="xl:col-span-1">
+            <div className="sticky top-24 pt-2">
+              <h2 className="text-sm font-sans uppercase tracking-widest text-slate-400 mb-8 border-b border-slate-200 pb-2">Management</h2>
+              <div className="space-y-4">
                 {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                   <Button
                     variant="outline"
-                    className="w-full border-primary-100 text-primary-600 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 rounded-xl"
+                    className="w-full rounded-none border border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-colors duration-300 font-sans uppercase tracking-widest text-xs h-12"
                     onClick={() => handleReschedule(request)}
                     disabled={actionLoading === request.id}
                   >
                     Reschedule
                   </Button>
                 )}
-                {/* Single Cancel Button */}
                 {['PENDING', 'ASSIGNED', 'ACCEPTED', 'REQUESTED', 'CONFIRMED'].includes(normalizeStatus(request.status)) && (
                   <Button
                     variant="outline"
-                    className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 rounded-xl"
+                    className="w-full rounded-none border border-slate-200 text-slate-500 hover:border-red-600 hover:text-red-600 hover:bg-transparent transition-colors duration-300 font-sans uppercase tracking-widest text-xs h-12"
                     onClick={() => {
                       const associatedBooking = bookings.find(b => b.job_id === request.id || (b as any).request_id === request.id);
                       if (associatedBooking) {
@@ -656,9 +623,9 @@ export default function ParentBookingsPage() {
               e.stopPropagation();
               router.push(`/messages?booking=${booking.id}`);
             }}
-            className="rounded-xl border-accent-100 text-accent-600 hover:bg-accent-50 hover:text-accent-700 hover:border-accent-200"
+            className="rounded-none border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 transition-colors font-sans uppercase tracking-widest text-[10px]"
           >
-            <MessageSquare size={14} className="mr-1" />
+            <MessageSquare size={12} className="mr-2" />
             Chat
           </Button>
         );
@@ -672,7 +639,7 @@ export default function ParentBookingsPage() {
             e.stopPropagation();
             handleCancelBooking(booking);
           }}
-          className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
+          className="rounded-none border-slate-200 text-slate-500 hover:border-red-600 hover:text-red-600 hover:bg-transparent transition-colors font-sans uppercase tracking-widest text-[10px]"
         >
           Cancel
         </Button>
@@ -690,15 +657,15 @@ export default function ParentBookingsPage() {
               handlePayNow(booking);
             }}
             disabled={paymentLoading}
-            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm"
+            className="rounded-none bg-slate-900 hover:bg-slate-800 text-white font-sans uppercase tracking-widest text-[10px]"
           >
             {paymentLoading ? 'Processing...' : 'Pay Now'}
           </Button>
         );
       } else {
         buttons.push(
-          <div key="paid" className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium text-sm mr-2" onClick={(e) => e.stopPropagation()}>
-            <Check size={14} />
+          <div key="paid" className="flex items-center gap-2 px-3 py-1 border border-emerald-500 text-emerald-700 font-sans uppercase tracking-widest text-[10px] mr-2" onClick={(e) => e.stopPropagation()}>
+            <Check size={12} />
             Paid
           </div>
         );
@@ -711,7 +678,7 @@ export default function ParentBookingsPage() {
             e.stopPropagation();
             handleOpenReview(booking.id);
           }}
-          className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+          className="rounded-none bg-emerald-700 hover:bg-emerald-800 text-white font-sans uppercase tracking-widest text-[10px]"
           disabled={!isPaid}
         >
           Leave Review
@@ -752,52 +719,49 @@ export default function ParentBookingsPage() {
 
   return (
     <ParentLayout>
-      <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-4xl font-bold font-display text-primary-900">My Bookings</h1>
-            <p className="text-slate-500 mt-2 text-lg">Manage your appointments and requests</p>
+            <h1 className="text-5xl font-serif text-slate-900 tracking-tight">My Bookings</h1>
+            <p className="text-slate-500 mt-4 font-sans text-sm tracking-widest uppercase">Manage your appointments & requests</p>
           </div>
         </div>
 
-        <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
+        <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-8">
           {['requests', 'upcoming', 'completed', 'cancelled'].map((tab) => (
             <button
               key={tab}
-              className={`px-6 py-4 font-medium text-sm transition-all relative whitespace-nowrap capitalize ${activeTab === tab ? 'text-primary-900 font-bold' : 'text-slate-500 hover:text-primary-700'}`}
+              className={`pb-4 pt-2 font-sans uppercase tracking-[0.2em] text-[10px] font-semibold transition-all relative whitespace-nowrap ${activeTab === tab ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
               onClick={() => setActiveTab(tab as any)}
             >
               {tab}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-900 rounded-t-full"></div>}
+              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-slate-900"></div>}
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
+          <div className="flex justify-center py-24">
             <Spinner />
           </div>
         ) : error ? (
-          <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchData} className="bg-primary-900 hover:bg-primary-800">Retry</Button>
+          <div className="border border-red-200 p-8 text-center bg-red-50/50">
+            <p className="text-red-600 mb-6 font-serif italic text-xl">{error}</p>
+            <Button onClick={fetchData} className="rounded-none bg-slate-900 hover:bg-slate-800 font-sans uppercase tracking-widest text-[10px]">Retry</Button>
           </div>
         ) : activeTab === 'requests' ? (
           <div className="space-y-6">
             {fetchLoading ? (
-              <div className="flex justify-center py-20">
+              <div className="flex justify-center py-32">
                 <Spinner />
               </div>
             ) : selectedRequest ? (
               <RequestDetailsView request={selectedRequest} />
             ) : (
-              <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-sm border-dashed">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
-                  <Calendar size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-primary-900 mb-2 font-display">No Request Selected</h3>
-                <p className="text-slate-500 max-w-sm mx-auto">
-                  Select a booking from the <span className="font-semibold text-primary-700">Upcoming</span> tab to view its full request and assignment details here.
+              <div className="text-center py-32 border-y border-slate-100 my-12">
+                <h3 className="text-2xl font-serif text-slate-400 mb-4 italic">No Request Selected</h3>
+                <p className="text-slate-500 font-sans text-[10px] tracking-[0.2em] uppercase">
+                  Select a booking from <span className="text-slate-900 font-bold">Upcoming</span> to view details.
                 </p>
               </div>
             )}
@@ -809,9 +773,9 @@ export default function ParentBookingsPage() {
 
             if (!hasItems) {
               return (
-                <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                  <p className="text-slate-500 mb-6 text-lg">No {activeTab} bookings found.</p>
-                  <Button onClick={() => (window.location.href = '/book-service')} className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-6 h-auto text-lg">Find Care</Button>
+                <div className="text-center py-32 border-y border-slate-100 my-12">
+                  <p className="text-slate-400 mb-8 font-serif italic text-2xl">No {activeTab} bookings found.</p>
+                  <Button onClick={() => (window.location.href = '/book-service')} className="rounded-none bg-slate-900 hover:bg-slate-800 text-white font-sans uppercase tracking-widest text-[10px] px-8 py-6">Find Care</Button>
                 </div>
               );
             }
@@ -821,44 +785,41 @@ export default function ParentBookingsPage() {
                 {assignedRequests.map((request) => (
                   <div
                     key={request.id}
-                    className="block group cursor-pointer"
+                    className="block group cursor-pointer border-b border-slate-200 py-8 hover:bg-slate-50 transition-colors duration-300"
                     onClick={() => {
                       setSelectedRequestId(request.id);
                       setActiveTab('requests');
                     }}
                   >
-                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden group-hover:translate-x-1">
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-500 rounded-l-2xl"></div>
-                      <div className="flex items-center gap-6 flex-1 ml-2">
-                        <div className="flex-shrink-0 w-20 h-20 bg-accent-50 rounded-2xl flex flex-col items-center justify-center text-accent-700 shadow-inner">
-                          <span className="text-xs font-bold uppercase tracking-wider">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
-                          <span className="text-2xl font-bold font-display">{new Date(request.date).getDate()}</span>
+                    <div className="flex flex-col md:flex-row md:items-center gap-8 px-4">
+                      <div className="flex items-center gap-8 flex-1">
+                        <div className="flex flex-col items-center md:items-start w-24 border-r border-slate-200 pr-6">
+                          <span className="font-serif text-5xl font-light text-slate-800 leading-none mb-2">{new Date(request.date).getDate()}</span>
+                          <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400">{new Date(request.date).toLocaleString('default', { month: 'short' })}</span>
                         </div>
                         <div>
-                          <div className="flex items-center gap-3 mb-1">
-                            <h3 className="text-xl font-bold text-primary-900 group-hover:text-accent-600 transition-colors">{getOtherPartyName(request)}</h3>
-                            <span className="px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-700 text-[10px] font-bold uppercase tracking-wider border border-accent-200">Assignment</span>
+                          <div className="flex items-center gap-4 mb-3">
+                            <h3 className="font-display text-2xl text-slate-900 group-hover:text-slate-600 transition-colors">{getOtherPartyName(request)}</h3>
+                            <span className="px-2 py-0.5 border border-slate-900 text-slate-900 text-[10px] uppercase tracking-widest">Assignment</span>
                           </div>
-                          <p className="text-slate-600 text-sm mb-1 font-medium">Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}</p>
-                          <p className="text-slate-400 text-xs flex items-center gap-1">
-                            <Clock size={12} />
-                            {formatTime(request.start_time)} ({request.duration_hours} hrs)
+                          <p className="font-sans text-xs uppercase tracking-[0.2em] text-slate-500 mb-1">Care for {request.num_children} Child{request.num_children !== 1 ? 'ren' : ''}</p>
+                          <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                            {formatTime(request.start_time)} · {request.duration_hours} HRS
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4 mt-6 md:mt-0">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-xl border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          className="rounded-none border-slate-200 text-slate-500 hover:border-red-600 hover:text-red-600 hover:bg-transparent transition-colors font-sans uppercase tracking-widest text-[10px]"
                           onClick={(e) => {
                             e.stopPropagation();
                             const associatedBooking = bookings.find(b => b.job_id === request.id);
                             if (associatedBooking) {
                               handleCancelBooking(associatedBooking);
                             } else {
-                              // We need to set selectedRequestId for handleCancelRequest to work
                               setSelectedRequestId(request.id);
                               setIsCancelModalOpen(true);
                             }
@@ -880,7 +841,7 @@ export default function ParentBookingsPage() {
                   return (
                     <div
                       key={booking.id}
-                      className={`bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 ${activeTab === 'upcoming' ? 'cursor-pointer hover:border-primary-100 group hover:translate-x-1' : ''}`}
+                      className={`border-b border-slate-200 py-8 flex flex-col md:flex-row md:items-center gap-8 ${activeTab === 'upcoming' ? 'cursor-pointer hover:bg-slate-50 transition-colors duration-300 group' : ''}`}
                       onClick={() => {
                         if (activeTab === 'upcoming') {
                           setSelectedRequestId(booking.job_id || booking.id);
@@ -888,40 +849,42 @@ export default function ParentBookingsPage() {
                         }
                       }}
                     >
-                      <div className="flex items-center gap-6 flex-1">
-                        <div className={`flex-shrink-0 w-20 h-20 rounded-2xl flex flex-col items-center justify-center transition-colors shadow-inner ${activeTab === 'upcoming' ? 'bg-primary-50 text-primary-900' : 'bg-slate-50 text-slate-500'}`}>
-                          <span className="text-xs font-bold uppercase tracking-wider">{month}</span>
-                          <span className="text-2xl font-bold font-display">{day}</span>
+                      <div className="flex items-center gap-8 flex-1 px-4">
+                        <div className="flex flex-col items-center md:items-start w-24 border-r border-slate-200 pr-6">
+                          <span className={`font-serif text-5xl font-light leading-none mb-2 ${activeTab === 'upcoming' ? 'text-slate-800' : 'text-slate-400'}`}>{day}</span>
+                          <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400">{month}</span>
                         </div>
                         <div>
-                          <h3 className={`text-xl font-bold text-primary-900 transition-colors ${activeTab === 'upcoming' ? 'group-hover:text-primary-700' : ''}`}>{getOtherPartyName(booking)}</h3>
-                          <p className="text-slate-600 text-sm mb-1 font-medium">
+                          <h3 className={`font-display text-2xl transition-colors mb-3 ${activeTab === 'upcoming' ? 'text-slate-900 group-hover:text-slate-600' : 'text-slate-600'}`}>{getOtherPartyName(booking)}</h3>
+                          <p className="font-sans text-xs uppercase tracking-[0.2em] text-slate-500 mb-1">
                             Care for {(booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || (booking as any).job?.num_children || 1) !== 1 ? 'ren' : ''}
                           </p>
-                          <p className="text-slate-400 text-xs flex items-center gap-1">
-                            <Clock size={12} />
-                            {formatTime(booking.start_time)}{booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                          <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                            {formatTime(booking.start_time)}{booking.end_time && ` — ${formatTime(booking.end_time)}`}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
-                        <div className="flex flex-col items-end gap-2">
-                          <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${booking.tags?.includes('noshow') || (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired')) || isTechnicallyExpired
-                            ? getStatusBadgeStyles('EXPIRED')
-                            : getStatusBadgeStyles(booking.status)
+                      <div className="flex items-center justify-between md:justify-end gap-8 w-full md:w-auto px-4 mt-6 md:mt-0">
+                        <div className="flex flex-col items-end gap-3 w-32">
+                          <span className={`px-2 py-1 border text-[10px] uppercase tracking-widest text-center w-full ${booking.tags?.includes('noshow') || (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired')) || isTechnicallyExpired
+                            ? 'border-amber-500 text-amber-700'
+                            : booking.status === 'CONFIRMED' ? 'border-emerald-500 text-emerald-700'
+                              : booking.status === 'CANCELLED' ? 'border-red-300 text-red-600'
+                                : booking.status === 'COMPLETED' ? 'border-slate-300 text-slate-600'
+                                  : 'border-slate-900 text-slate-900'
                             }`}>
                             {booking.tags?.includes('noshow')
                               ? 'no show'
                               : (booking.status === 'CANCELLED' && booking.cancellation_reason?.toLowerCase().includes('expired')) || isTechnicallyExpired
                                 ? 'expired'
-                                : booking.status.toLowerCase().replace('_', ' ')}
+                                : booking.status.replace('_', ' ')}
                           </span>
                           {(booking.status === 'CANCELLED' && booking.cancellation_reason) ? (
-                            <p className="text-[10px] text-slate-400 italic max-w-[200px] text-right leading-tight">
+                            <p className="text-[10px] text-slate-400 italic max-w-full text-center leading-tight">
                               {booking.cancellation_reason}
                             </p>
                           ) : (booking.tags?.includes('noshow') || isTechnicallyExpired) && (
-                            <p className="text-[10px] text-amber-500 italic max-w-[200px] text-right leading-tight">
+                            <p className="text-[10px] text-amber-500 italic max-w-full text-center leading-tight">
                               {booking.tags?.includes('noshow') ? 'Patient No Show' : 'Expired (No Show)'}
                             </p>
                           )}

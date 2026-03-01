@@ -148,7 +148,7 @@
     font-family: var(--font-body);
     font-feature-settings: 'rlig' 1, 'calt' 1;
     font-size: var(--text-base);
-    
+
     /* iOS notch / Dynamic Island / home bar safe areas */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
@@ -194,6 +194,7 @@
       width: 0;
       height: 0;
     }
+
     * {
       scrollbar-width: none;
     }
@@ -418,8 +419,10 @@
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
 
