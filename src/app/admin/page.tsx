@@ -205,11 +205,11 @@ export default function AdminDashboard() {
             Verify Nannies
           </Button>
           <Button
-            className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100"
-            onClick={() => router.push('/admin/category-requests')}
+            className="h-auto py-6 text-lg justify-start px-8 rounded-2xl shadow-md hover:shadow-lg transition-all bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100"
+            onClick={() => router.push('/admin/manual-assignment')}
           >
-            <CheckCircle className="mr-3" size={24} />
-            Manage Categories
+            <Users className="mr-3" size={24} />
+            Manual Assignment
           </Button>
         </div>
       </div>

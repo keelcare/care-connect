@@ -619,3 +619,20 @@ export interface AdminCategoryRequest extends CategoryRequest {
     } | null;
   };
 }
+
+export interface AdminManualAssignmentDto {
+  requestId: string;
+  nannyId: string;
+}
+
+export interface ManualAssignmentNanny extends User {
+  distance: number;
+  matchScore: number;
+  matchingDetails?: {
+    skillsMatched: string[];
+    experienceScore: number;
+    acceptanceRate: number;
+    isFavorite: boolean;
+  };
+}
+
