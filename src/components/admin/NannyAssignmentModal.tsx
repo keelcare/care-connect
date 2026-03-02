@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { ManualAssignmentNanny, ServiceRequest } from '@/types/api';
+import { AdminManualNanny, AdminManualRequest } from '@/types/api';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/badge';
-import { Star, MapPin, CheckCircle, User, Award } from 'lucide-react';
+import { Star, MapPin, CheckCircle, User, Award, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 
 interface NannyAssignmentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    request: ServiceRequest | null;
+    request: AdminManualRequest | null;
     onAssigned: () => void;
 }
 
@@ -24,7 +24,7 @@ export function NannyAssignmentModal({
     onAssigned,
 }: NannyAssignmentModalProps) {
     const { addToast } = useToast();
-    const [nannies, setNannies] = useState<ManualAssignmentNanny[]>([]);
+    const [nannies, setNannies] = useState<AdminManualNanny[]>([]);
     const [loading, setLoading] = useState(false);
     const [assigningLoading, setAssigningLoading] = useState<string | null>(null);
 
@@ -42,7 +42,7 @@ export function NannyAssignmentModal({
             const data = await api.admin.manualAssignment.getAvailableNannies(request.id);
             console.log(`[ManualAssignment] Received ${data.length} nannies:`, data);
             // Sort by match score descending
-            setNannies(data.sort((a, b) => b.matchScore - a.matchScore));
+            setNannies(data.sort((a, b) => b.match_details.total_score - a.match_details.total_score));
         } catch (error) {
             console.error('[ManualAssignment] Failed to fetch nannies:', error);
             addToast({ type: 'error', message: 'Failed to load available nannies' });
@@ -136,7 +136,7 @@ export function NannyAssignmentModal({
                         </div>
                         <div className="text-right">
                             <Badge variant="secondary" className="bg-primary-50 text-primary-700">
-                                {request.location?.address.split(',')[0]}
+                                {request.address.split(',')[0]}
                             </Badge>
                         </div>
                     </div>
@@ -163,36 +163,27 @@ export function NannyAssignmentModal({
                                 >
                                     <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
                                         <div className="flex-shrink-0 w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center text-neutral-400 overflow-hidden relative">
-                                            {nanny.profiles?.profile_image_url ? (
+                                            {nanny.profile_image_url ? (
                                                 <img
-                                                    src={nanny.profiles.profile_image_url}
-                                                    alt={nanny.profiles.first_name || 'Nanny'}
+                                                    src={nanny.profile_image_url}
+                                                    alt={nanny.first_name || 'Nanny'}
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
                                                 <User size={32} />
-                                            )}
-                                            {nanny.is_verified && (
-                                                <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
-                                                    <CheckCircle size={16} className="text-green-500 fill-green-50" />
-                                                </div>
                                             )}
                                         </div>
 
                                         <div className="flex-grow space-y-2">
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <h5 className="font-bold text-neutral-900 text-lg">
-                                                    {nanny.profiles?.first_name} {nanny.profiles?.last_name}
+                                                    {nanny.first_name} {nanny.last_name}
                                                 </h5>
-                                                <Badge className="bg-amber-50 text-amber-700 border-amber-100 flex items-center gap-1">
-                                                    <Star size={12} className="fill-amber-500 text-amber-500" />
-                                                    {nanny.averageRating?.toFixed(1) || 'New'}
-                                                </Badge>
                                                 <Badge className="bg-blue-50 text-blue-700 border-blue-100 flex items-center gap-1">
                                                     <Award size={12} />
-                                                    {nanny.matchScore}% Match
+                                                    {nanny.match_details.total_score}% Match
                                                 </Badge>
-                                                {nanny.matchingDetails?.isFavorite && (
+                                                {nanny.match_details.score_breakdown.favorite_bonus > 0 && (
                                                     <Badge className="bg-pink-50 text-pink-700 border-pink-100">
                                                         Parent's Favorite
                                                     </Badge>
@@ -202,32 +193,35 @@ export function NannyAssignmentModal({
                                             <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-neutral-600">
                                                 <span className="flex items-center gap-1">
                                                     <MapPin size={14} className="text-neutral-400" />
-                                                    {nanny.distance.toFixed(1)} km away
+                                                    {nanny.distance_km.toFixed(1)} km away
                                                 </span>
                                                 <span className="flex items-center gap-1">
                                                     <Award size={14} className="text-neutral-400" />
-                                                    {nanny.nanny_details?.experience_years || 0} years exp.
-                                                </span>
-                                                <span className="flex items-center gap-1 font-medium text-emerald-600">
-                                                    ₹{nanny.nanny_details?.hourly_rate}/hr
-                                                </span>
-                                                <span className="flex items-center gap-1 text-neutral-500">
-                                                    {nanny.matchingDetails?.acceptanceRate || 0}% Acc. rate
+                                                    {nanny.experience_years || 0} years exp.
                                                 </span>
                                             </div>
 
                                             <div className="flex flex-wrap gap-1 mt-1">
-                                                {nanny.nanny_details?.skills.slice(0, 4).map((skill) => (
+                                                {nanny.match_details.matching_skills.slice(0, 4).map((skill) => (
                                                     <span
                                                         key={skill}
-                                                        className={`text-[10px] px-2 py-0.5 rounded-full border ${nanny.matchingDetails?.skillsMatched.includes(skill)
-                                                            ? 'bg-green-50 text-green-700 border-green-100'
-                                                            : 'bg-neutral-50 text-neutral-600 border-neutral-100'
-                                                            }`}
+                                                        className="text-[10px] px-2 py-0.5 rounded-full border bg-green-50 text-green-700 border-green-100"
                                                     >
                                                         {skill}
                                                     </span>
                                                 ))}
+                                            </div>
+
+                                            <div className="pt-2 flex items-start gap-4 text-[11px] text-neutral-400">
+                                                <div className="flex items-center gap-1" title="Skills Score">
+                                                    <span className="font-semibold text-neutral-600">Skills:</span> {nanny.match_details.score_breakdown.skills}
+                                                </div>
+                                                <div className="flex items-center gap-1" title="Experience Score">
+                                                    <span className="font-semibold text-neutral-600">Exp:</span> {nanny.match_details.score_breakdown.experience}
+                                                </div>
+                                                <div className="flex items-center gap-1" title="Acceptance Rate Score">
+                                                    <span className="font-semibold text-neutral-600">Acc:</span> {nanny.match_details.score_breakdown.acceptance_rate}
+                                                </div>
                                             </div>
                                         </div>
 

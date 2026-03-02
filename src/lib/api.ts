@@ -43,7 +43,8 @@ import {
   CategoryRequestStatus,
   Service,
   AdminManualAssignmentDto,
-  ManualAssignmentNanny,
+  AdminManualRequest,
+  AdminManualNanny,
 } from '@/types/api';
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -411,9 +412,9 @@ export const api = {
       }),
     manualAssignment: {
       getRequests: () =>
-        fetchApi<ServiceRequest[]>('/admin/manual-assignment/requests'),
+        fetchApi<AdminManualRequest[]>('/admin/manual-assignment/requests'),
       getAvailableNannies: (requestId: string) =>
-        fetchApi<ManualAssignmentNanny[]>(
+        fetchApi<AdminManualNanny[]>(
           `/admin/manual-assignment/nannies/${requestId}`
         ),
       assignNanny: (body: AdminManualAssignmentDto) =>

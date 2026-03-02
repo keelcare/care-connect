@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { ServiceRequest } from '@/types/api';
+import { AdminManualRequest } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/badge';
@@ -16,10 +16,10 @@ export default function ManualAssignmentPage() {
     const { user } = useAuth();
     const { addToast } = useToast();
     const router = useRouter();
-    const [requests, setRequests] = useState<ServiceRequest[]>([]);
+    const [requests, setRequests] = useState<AdminManualRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+    const [selectedRequest, setSelectedRequest] = useState<AdminManualRequest | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
@@ -43,14 +43,14 @@ export default function ManualAssignmentPage() {
         }
     };
 
-    const handleOpenAssignModal = (request: ServiceRequest) => {
+    const handleOpenAssignModal = (request: AdminManualRequest) => {
         setSelectedRequest(request);
         setIsModalOpen(true);
     };
 
     const filteredRequests = requests.filter(req =>
         req.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        req.location?.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        req.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
         req.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -197,7 +197,7 @@ export default function ManualAssignmentPage() {
                                                 <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest">Location</p>
                                                 <div className="flex items-start gap-2 text-neutral-700 font-medium">
                                                     <MapPin size={16} className="text-neutral-300 mt-1 shrink-0" />
-                                                    <span className="line-clamp-2">{request.location?.address}</span>
+                                                    <span className="line-clamp-2">{request.address}</span>
                                                 </div>
                                             </div>
 
@@ -205,10 +205,10 @@ export default function ManualAssignmentPage() {
                                                 <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest">Parent / Child</p>
                                                 <div className="flex items-center gap-2 text-neutral-700 font-medium">
                                                     <User size={16} className="text-neutral-300" />
-                                                    {request.parent?.profiles?.first_name} {request.parent?.profiles?.last_name}
+                                                    {request.parent_name}
                                                 </div>
                                                 <div className="text-neutral-500 text-sm pl-6">
-                                                    {request.num_children} {request.num_children === 1 ? 'Child' : 'Children'}
+                                                    {request.children_count} {request.children_count === 1 ? 'Child' : 'Children'} ({request.children_names})
                                                 </div>
                                             </div>
                                         </div>

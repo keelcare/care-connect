@@ -625,14 +625,38 @@ export interface AdminManualAssignmentDto {
   nannyId: string;
 }
 
-export interface ManualAssignmentNanny extends User {
-  distance: number;
-  matchScore: number;
-  matchingDetails?: {
-    skillsMatched: string[];
-    experienceScore: number;
-    acceptanceRate: number;
-    isFavorite: boolean;
+export interface AdminManualRequest {
+  id: string;
+  category: string;
+  date: string;
+  start_time: string;
+  duration_hours: string;
+  status: string;
+  address: string;
+  parent_name: string;
+  children_count: number;
+  children_names: string;
+  special_requirements: string;
+  location_lat: number;
+  location_lng: number;
+}
+
+export interface AdminManualNanny {
+  id: string;
+  first_name: string;
+  last_name: string;
+  profile_image_url: string;
+  distance_km: number;
+  experience_years: number;
+  match_details: {
+    total_score: number;
+    matching_skills: string[];
+    score_breakdown: {
+      skills: number;
+      experience: number;
+      acceptance_rate: number;
+      favorite_bonus: number;
+    };
   };
 }
 
