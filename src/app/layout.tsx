@@ -9,6 +9,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketProvider';
 import { Chatbot } from '@/components/ai/Chatbot';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Toaster } from 'sonner';
 import { Fraunces, Lora, Cormorant_Garamond } from 'next/font/google';
 import localFont from 'next/font/local';
 import 'lineicons/dist/lineicons.css';
@@ -178,6 +179,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
           </SocketProvider>
         </AuthProvider>
       </ToastProvider>
+      <Toaster position="top-right" richColors closeButton />
       <SpeedInsights />
     </body>
   );

@@ -660,3 +660,47 @@ export interface AdminManualNanny {
   };
 }
 
+// Support Ticket Types
+export type SupportCategory = 'payment' | 'technical' | 'grievance' | 'account' | 'other';
+export type SupportPriority = 'low' | 'medium' | 'high' | 'critical';
+export type SupportStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+
+export interface SupportTicket {
+  id: string;
+  ticket_number: string;
+  user_id: string;
+  role: 'parent' | 'nanny';
+  subject: string;
+  description: string;
+  category: SupportCategory | string;
+  priority: SupportPriority;
+  status: SupportStatus;
+  admin_notes: string | null;
+  resolved_at: string | null; // ISO Date string
+  created_at: string;
+  updated_at: string;
+
+  // Included in Admin responses
+  users?: {
+    email: string;
+    identity_verification_status?: string;
+    profiles: {
+      first_name: string | null;
+      last_name: string | null;
+      phone: string | null;
+    } | null;
+  };
+}
+
+export interface CreateTicketDto {
+  subject: string;
+  description: string;
+  category: SupportCategory | string;
+  priority?: SupportPriority;
+}
+
+export interface UpdateTicketDto {
+  status?: SupportStatus;
+  priority?: SupportPriority;
+  admin_notes?: string;
+}

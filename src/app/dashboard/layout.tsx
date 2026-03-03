@@ -18,6 +18,7 @@ import {
   X,
   ChevronDown,
   MapPin,
+  HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { GeofenceAlertBanner } from '@/components/location/GeofenceAlertBanner';
@@ -43,6 +44,7 @@ export default function DashboardLayout({
       href: '/dashboard/availability',
     },
     { icon: User, label: 'Profile', href: '/dashboard/profile' },
+    { icon: HelpCircle, label: 'Support', href: '/support' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ];
 
@@ -98,27 +100,27 @@ export default function DashboardLayout({
   // Strict Guard: Prevent rendering for non-nanny/non-admin users
   // This prevents the "flash" of dashboard content before the useEffect redirect kicks in
   if (!loading && user && user.role !== 'nanny' && user.role !== 'admin') {
-      return null; 
+    return null;
   }
 
   // --- NEW LOGIC: If Nanny, render special layout without sidebar ---
   if (user?.role === 'nanny') {
-      return (
-          <div className="min-h-dvh bg-neutral-50">
-              <Navbar />
-              <main className="pt-24 min-h-dvh">
-                  <div className="max-w-7xl mx-auto p-4 md:p-8">
-                      {children}
-                  </div>
-              </main>
-              
-               <GeofenceAlertBanner
-                position="top" // Or customized position
-                autoDismiss={true}
-                autoDismissTimeout={15000}
-              />
+    return (
+      <div className="min-h-dvh bg-neutral-50">
+        <Navbar />
+        <main className="pt-24 min-h-dvh">
+          <div className="max-w-7xl mx-auto p-4 md:p-8">
+            {children}
           </div>
-      );
+        </main>
+
+        <GeofenceAlertBanner
+          position="top" // Or customized position
+          autoDismiss={true}
+          autoDismissTimeout={15000}
+        />
+      </div>
+    );
   }
 
   // --- EXISTING LAYOUT FOR ADMIN (or generic fallback) ---

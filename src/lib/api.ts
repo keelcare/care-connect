@@ -45,6 +45,9 @@ import {
   AdminManualAssignmentDto,
   AdminManualRequest,
   AdminManualNanny,
+  SupportTicket,
+  CreateTicketDto,
+  UpdateTicketDto,
 } from '@/types/api';
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -627,5 +630,23 @@ export const api = {
   },
   services: {
     list: () => fetchApi<Service[]>('/services'),
+  },
+  support: {
+    createTicket: (body: CreateTicketDto) =>
+      fetchApi<SupportTicket>('/support/tickets', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    getUserTickets: () => fetchApi<SupportTicket[]>('/support/tickets'),
+    getTicket: (id: string) => fetchApi<SupportTicket>(`/support/tickets/${id}`),
+    // Admin Support Endpoints
+    admin: {
+      listAll: () => fetchApi<SupportTicket[]>('/support/admin/tickets'),
+      update: (id: string, body: UpdateTicketDto) =>
+        fetchApi<SupportTicket>(`/support/admin/tickets/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(body),
+        }),
+    },
   },
 };
