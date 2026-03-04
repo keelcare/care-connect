@@ -407,10 +407,11 @@ export interface CreateReviewDto {
 export type NotificationType = 'email' | 'push' | 'sms';
 
 export interface SendNotificationDto {
-  type: NotificationType;
-  to: string;
-  subject?: string;
-  content: string;
+  target: 'user' | 'parents' | 'nannies';
+  userId?: string;
+  title: string;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
 }
 
 // Admin Types
