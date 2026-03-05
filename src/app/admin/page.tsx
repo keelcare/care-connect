@@ -140,16 +140,11 @@ export default function AdminOverview() {
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    if (user && user.role !== 'admin') {
-      router.push('/dashboard');
-      return;
-    }
-    if (user) {
-      fetchStats();
-      const id = setInterval(() => fetchStats(true), 30_000);
-      return () => clearInterval(id);
-    }
-  }, [user]);
+    // AdminLayout handles auth/role enforcement, so we just fetch on mount and poll
+    fetchStats();
+    const id = setInterval(() => fetchStats(true), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   const fetchStats = async (isPolling = false) => {
     try {

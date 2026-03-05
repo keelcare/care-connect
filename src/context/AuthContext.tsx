@@ -13,6 +13,7 @@ import { api, setTokenRefresher, fetchApi } from '@/lib/api';
 import { User } from '@/types/api';
 import { App } from '@capacitor/app';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { BannedModal } from '@/components/banned/BannedModal';
 
 
 
@@ -82,13 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData = await fetchApi<User>('/users/me', {}, false, true);
       console.log('AuthContext: User verified', userData.email);
 
-      // Handle Ban Check
-      if (userData.is_active === false) {
-        console.log('User is banned, redirecting to /nanny/help');
-        router.push('/nanny/help');
-        // We still set the user so the UI knows who they are.
-      }
-
+      // BannedModal is shown globally when user.is_active === false — no redirect needed.
       setUser(userData);
     } catch (error: any) {
       console.log('AuthContext: No active session / Guest mode');
@@ -133,10 +128,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
     console.log('Logged in user:', userData);
 
-    // Check if user is banned - redirect to help page
+    // If user is banned, BannedModal will render — don't route them to any dashboard.
     if (userData.is_active === false) {
-      console.log('User is banned, redirecting to /nanny/help');
-      router.push('/nanny/help');
       return;
     }
 
@@ -170,6 +163,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
       {children}
+      {/* Blocking ban overlay — renders above everything when user is suspended */}
+      {user && user.is_active === false && (
+        <BannedModal user={user} onLogout={logout} />
+      )}
     </AuthContext.Provider>
   );
 }

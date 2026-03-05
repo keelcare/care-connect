@@ -19,15 +19,9 @@ export default function AdminUsersPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user && user.role !== 'admin') {
-      router.push('/dashboard');
-      return;
-    }
-
-    if (user) {
-      fetchUsers();
-    }
-  }, [user]);
+    // AdminLayout handles auth/role enforcement, so we just fetch once on mount.
+    fetchUsers();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -117,14 +111,7 @@ export default function AdminUsersPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin')}
-          className="rounded-xl"
-        >
-          ← Back to Dashboard
-        </Button>
+        
         <h1 className="text-3xl font-bold text-primary-900 font-display">
           User Management
         </h1>
