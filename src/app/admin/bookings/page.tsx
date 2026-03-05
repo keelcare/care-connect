@@ -209,7 +209,7 @@ export default function AdminBookingsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="w-full space-y-8">
       <div className="flex items-center gap-4">
         <Button
           variant="outline"
@@ -224,11 +224,10 @@ export default function AdminBookingsPage() {
         </h1>
       </div>
 
-      <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-neutral-50 border-b border-neutral-100">
-              <tr>
+      <div className="w-full overflow-x-auto">
+        <table className="w-full whitespace-nowrap">
+          <thead className="border-b border-neutral-200">
+            <tr>
                 <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
                   Job Title
                 </th>
@@ -291,7 +290,6 @@ export default function AdminBookingsPage() {
             </tbody>
           </table>
         </div>
-      </div>
     </div>
   );
 }
