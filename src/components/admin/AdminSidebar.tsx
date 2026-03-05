@@ -17,7 +17,12 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useRouter } from 'next/navigation';
+import { Avatar } from '@/components/ui/avatar';
 
 interface NavItem {
   icon: React.ElementType;
@@ -40,18 +45,18 @@ const NAV_SECTIONS: NavSection[] = [
   {
     label: 'Management',
     items: [
-      { icon: Users,       label: 'Users',          href: '/admin/users' },
-      { icon: Calendar,    label: 'Bookings',        href: '/admin/bookings' },
-      { icon: ShieldCheck, label: 'Verify Nannies',  href: '/admin/verifications' },
-      { icon: UserCog,     label: 'Manual Assign',   href: '/admin/manual-assignment' },
+      { icon: Users, label: 'Users', href: '/admin/users' },
+      { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
+      { icon: ShieldCheck, label: 'Verify Nannies', href: '/admin/verifications' },
+      { icon: UserCog, label: 'Manual Assign', href: '/admin/manual-assignment' },
     ],
   },
   {
     label: 'Moderation',
     items: [
-      { icon: AlertTriangle, label: 'Disputes',      href: '/admin/disputes' },
-      { icon: Star,          label: 'Reviews',       href: '/admin/reviews' },
-      { icon: Bell,          label: 'Notifications', href: '/admin/notifications' },
+      { icon: AlertTriangle, label: 'Disputes', href: '/admin/disputes' },
+      { icon: Star, label: 'Reviews', href: '/admin/reviews' },
+      { icon: Bell, label: 'Notifications', href: '/admin/notifications' },
     ],
   },
   {
@@ -78,8 +83,24 @@ function SidebarContent({
   isCollapsed: boolean;
   onToggle: () => void;
   onMobileClose: () => void;
-  pathname: string;
+  pathname: string | null;
 }) {
+  const { user, logout } = useAuth();
+  const { addToast } = useToast();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      sessionStorage.removeItem('locationChecked');
+      addToast({ message: 'Logged out successfully', type: 'success' });
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Logout failed', error);
+      addToast({ message: 'Failed to log out', type: 'error' });
+    }
+  };
+
   const isActive = (href: string) => {
     if (href === '/admin') return pathname === '/admin';
     return pathname?.startsWith(href);
@@ -89,9 +110,8 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Brand */}
       <div
-        className={`flex items-center h-16 border-b border-white/8 shrink-0 transition-all duration-300 ${
-          isCollapsed ? 'px-4 justify-center' : 'px-5'
-        }`}
+        className={`flex items-center h-16 border-b border-white/8 shrink-0 transition-all duration-300 ${isCollapsed ? 'px-4 justify-center' : 'px-5'
+          }`}
       >
         {isCollapsed ? (
           <Image src="/logo.svg" alt="Keel" width={28} height={28} className="rounded-md" />
@@ -131,22 +151,19 @@ function SidebarContent({
                     href={item.href}
                     onClick={onMobileClose}
                     title={isCollapsed ? item.label : undefined}
-                    className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${
-                      isCollapsed ? 'px-3 py-3 justify-center' : 'px-3 py-2.5'
-                    } ${
-                      active
+                    className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-3 py-2.5'
+                      } ${active
                         ? 'bg-white/12 text-white'
                         : 'text-white/50 hover:text-white/90 hover:bg-white/6'
-                    }`}
+                      }`}
                   >
                     {active && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
                     )}
                     <Icon
                       size={18}
-                      className={`shrink-0 transition-colors ${
-                        active ? 'text-white' : 'text-white/40 group-hover:text-white/80'
-                      }`}
+                      className={`shrink-0 transition-colors ${active ? 'text-white' : 'text-white/40 group-hover:text-white/80'
+                        }`}
                     />
                     {!isCollapsed && (
                       <span className={`text-sm ${active ? 'font-semibold' : 'font-medium'}`}>
@@ -161,21 +178,64 @@ function SidebarContent({
         ))}
       </nav>
 
-      {/* Collapse Toggle (desktop only) */}
-      <div className="hidden md:flex p-3 border-t border-white/6 shrink-0">
+      {/* User & Logout Section */}
+      <div className="p-3 border-t border-white/6 shrink-0 space-y-1">
+        {!isCollapsed && user && (
+          <div className="flex items-center gap-3 px-3 py-3 mb-1">
+            <Avatar
+              src={user.profiles?.profile_image_url || undefined}
+              alt={user.profiles?.first_name || 'User'}
+              fallback={user.profiles?.first_name?.[0] || 'A'}
+              size="sm"
+            />
+            <div className="flex flex-col min-w-0">
+              <p className="text-sm font-semibold text-white truncate">
+                {user.profiles?.first_name || 'Admin'}
+              </p>
+              <p className="text-[10px] text-white/40 truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isCollapsed && user && (
+          <div className="flex justify-center py-2 mb-1">
+            <Avatar
+              src={user.profiles?.profile_image_url || undefined}
+              alt={user.profiles?.first_name || 'User'}
+              fallback={user.profiles?.first_name?.[0] || 'A'}
+              size="sm"
+            />
+          </div>
+        )}
+
         <button
-          onClick={onToggle}
-          className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-white/40 hover:text-white/80 hover:bg-white/6 transition-all duration-150"
+          onClick={handleLogout}
+          className={`flex items-center gap-3 w-full rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-2.5'
+            }`}
+          title={isCollapsed ? 'Log Out' : undefined}
         >
-          {isCollapsed ? (
-            <ChevronRight size={16} />
-          ) : (
-            <>
-              <ChevronLeft size={16} />
-              <span className="text-xs font-medium">Collapse</span>
-            </>
-          )}
+          <LogOut size={18} />
+          {!isCollapsed && <span className="text-sm font-medium">Log Out</span>}
         </button>
+
+        {/* Collapse Toggle (desktop only) */}
+        <div className="hidden md:block pt-1">
+          <button
+            onClick={onToggle}
+            className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-white/40 hover:text-white/80 hover:bg-white/6 transition-all duration-150"
+          >
+            {isCollapsed ? (
+              <ChevronRight size={16} />
+            ) : (
+              <>
+                <ChevronLeft size={16} />
+                <span className="text-xs font-medium">Collapse</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -195,9 +255,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-[hsl(208,67%,8%)] transition-all duration-300 ${
-          isCollapsed ? 'w-[68px]' : 'w-60'
-        }`}
+        className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-[hsl(208,67%,8%)] transition-all duration-300 ${isCollapsed ? 'w-[68px]' : 'w-60'
+          }`}
       >
         <SidebarContent {...sharedProps} />
       </aside>
