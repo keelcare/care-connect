@@ -18,6 +18,7 @@ import {
   ChevronRight,
   X,
   LogOut,
+  LifeBuoy,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -57,6 +58,7 @@ const NAV_SECTIONS: NavSection[] = [
       { icon: AlertTriangle, label: 'Disputes', href: '/admin/disputes' },
       { icon: Star, label: 'Reviews', href: '/admin/reviews' },
       { icon: Bell, label: 'Notifications', href: '/admin/notifications' },
+      { icon: LifeBuoy, label: 'Support', href: '/admin/support' },
     ],
   },
   {
