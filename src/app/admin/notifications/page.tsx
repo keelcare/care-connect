@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Bell, Send, Mail, MessageSquare, Smartphone } from 'lucide-react';
 
+
+
+
 export default function AdminNotificationsPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -17,6 +20,7 @@ export default function AdminNotificationsPage() {
 
   const [formData, setFormData] = useState({
     type: 'email',
+    target: 'user',
     to: '',
     subject: '',
     content: '',
@@ -44,15 +48,20 @@ export default function AdminNotificationsPage() {
     setSuccess(null);
 
     try {
+      let target = formData.target as 'user' | 'parents' | 'nannies';
+      let userId = target === 'user' ? formData.to.trim() : '';
+
       await api.notifications.send({
-        type: formData.type as 'email' | 'push' | 'sms',
-        to: formData.to,
-        subject: formData.subject,
-        content: formData.content,
+        target,
+        ...(userId ? { userId } : {}),
+        title: formData.subject || 'Notification',
+        message: formData.content,
+        type: 'info', // Backend expects info/success/warning/error
       });
       setSuccess('Notification sent successfully!');
       setFormData({
         type: 'email',
+        target: 'user',
         to: '',
         subject: '',
         content: '',
@@ -137,20 +146,63 @@ export default function AdminNotificationsPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4 md:col-span-2">
               <label className="text-sm font-bold text-neutral-700">
-                Recipient (User ID or Email)
+                Recipient Target
               </label>
-              <input
-                type="text"
-                name="to"
-                value={formData.to}
-                onChange={handleChange}
-                placeholder="user@example.com"
-                required
-                className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
-              />
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="target"
+                    value="user"
+                    checked={formData.target === 'user'}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-stone-600 focus:ring-stone-500 border-neutral-300"
+                  />
+                  <span className="text-neutral-700">Specific User</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="target"
+                    value="parents"
+                    checked={formData.target === 'parents'}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-stone-600 focus:ring-stone-500 border-neutral-300"
+                  />
+                  <span className="text-neutral-700">All Parents</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="target"
+                    value="nannies"
+                    checked={formData.target === 'nannies'}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-stone-600 focus:ring-stone-500 border-neutral-300"
+                  />
+                  <span className="text-neutral-700">All Nannies</span>
+                </label>
+              </div>
             </div>
+
+            {formData.target === 'user' && (
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-bold text-neutral-700">
+                  Recipient (User ID or Email)
+                </label>
+                <input
+                  type="text"
+                  name="to"
+                  value={formData.to}
+                  onChange={handleChange}
+                  placeholder="user@example.com"
+                  required={formData.target === 'user'}
+                  className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
+                />
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

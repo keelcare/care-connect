@@ -407,10 +407,11 @@ export interface CreateReviewDto {
 export type NotificationType = 'email' | 'push' | 'sms';
 
 export interface SendNotificationDto {
-  type: NotificationType;
-  to: string;
-  subject?: string;
-  content: string;
+  target: 'user' | 'parents' | 'nannies';
+  userId?: string;
+  title: string;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
 }
 
 // Admin Types
@@ -618,4 +619,89 @@ export interface AdminCategoryRequest extends CategoryRequest {
       last_name: string | null;
     } | null;
   };
+}
+
+export interface AdminManualAssignmentDto {
+  requestId: string;
+  nannyId: string;
+}
+
+export interface AdminManualRequest {
+  id: string;
+  category: string;
+  date: string;
+  start_time: string;
+  duration_hours: string;
+  status: string;
+  address: string;
+  parent_name: string;
+  children_count: number;
+  children_names: string;
+  special_requirements: string;
+  location_lat: number;
+  location_lng: number;
+}
+
+export interface AdminManualNanny {
+  id: string;
+  first_name: string;
+  last_name: string;
+  profile_image_url: string;
+  distance_km: number;
+  experience_years: number;
+  match_details: {
+    total_score: number;
+    matching_skills: string[];
+    score_breakdown: {
+      skills: number;
+      experience: number;
+      acceptance_rate: number;
+      favorite_bonus: number;
+    };
+  };
+}
+
+// Support Ticket Types
+export type SupportCategory = 'payment' | 'technical' | 'grievance' | 'account' | 'other';
+export type SupportPriority = 'low' | 'medium' | 'high' | 'critical';
+export type SupportStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+
+export interface SupportTicket {
+  id: string;
+  ticket_number: string;
+  user_id: string;
+  role: 'parent' | 'nanny';
+  subject: string;
+  description: string;
+  category: SupportCategory | string;
+  priority: SupportPriority;
+  status: SupportStatus;
+  admin_notes: string | null;
+  resolved_at: string | null; // ISO Date string
+  created_at: string;
+  updated_at: string;
+
+  // Included in Admin responses
+  users?: {
+    email: string;
+    identity_verification_status?: string;
+    profiles: {
+      first_name: string | null;
+      last_name: string | null;
+      phone: string | null;
+    } | null;
+  };
+}
+
+export interface CreateTicketDto {
+  subject: string;
+  description: string;
+  category: SupportCategory | string;
+  priority?: SupportPriority;
+}
+
+export interface UpdateTicketDto {
+  status?: SupportStatus;
+  priority?: SupportPriority;
+  admin_notes?: string;
 }

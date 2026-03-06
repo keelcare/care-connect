@@ -12,7 +12,8 @@ import {
   LogOut,
   Settings,
   LayoutDashboard,
-  User
+  User,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -30,6 +31,7 @@ const NAV_ITEMS_PARENT = [
   { href: '/book-service', label: 'Book a Service', icon: Settings }, // Helper to fix icons later
   { href: '/parent-dashboard/family', label: 'My Family', icon: User },
   { href: '/contact', label: 'Contact', icon: MapPin }, // Icon placeholder
+  { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
 const NAV_ITEMS_NANNY = [
@@ -37,6 +39,7 @@ const NAV_ITEMS_NANNY = [
   { href: '/dashboard/bookings', label: 'Bookings', icon: LayoutDashboard },
   { href: '/dashboard/availability', label: 'Availability', icon: Settings },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
+  { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
 export const Navbar: React.FC = () => {
