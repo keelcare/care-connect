@@ -410,73 +410,42 @@ export default function BookingsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-primary-900 font-display">
-            My Bookings
-          </h1>
-          <p className="text-neutral-500 mt-1">
-            Manage your appointments and requests
-          </p>
+          <h1 className="text-4xl font-bold font-display text-primary-900 tracking-tight">My Bookings</h1>
+          <p className="text-slate-500 mt-2 text-lg">Manage your assignments and professional schedule</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-neutral-200 overflow-x-auto">
-        <button
-          className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'requests' ? 'text-primary-900' : 'text-neutral-500 hover:text-neutral-700'}`}
-          onClick={() => setActiveTab('requests')}
-        >
-          Requests
-          {activeTab === 'requests' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
-          )}
-        </button>
-        <button
-          className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'upcoming' ? 'text-primary-900' : 'text-neutral-500 hover:text-neutral-700'}`}
-          onClick={() => setActiveTab('upcoming')}
-        >
-          Upcoming
-          {activeTab === 'upcoming' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
-          )}
-        </button>
-        <button
-          className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'completed' ? 'text-primary-900' : 'text-neutral-500 hover:text-neutral-700'}`}
-          onClick={() => setActiveTab('completed')}
-        >
-          Completed
-          {activeTab === 'completed' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
-          )}
-        </button>
-        <button
-          className={`px-6 py-3 font-medium text-sm transition-colors relative whitespace-nowrap ${activeTab === 'cancelled' ? 'text-primary-900' : 'text-neutral-500 hover:text-neutral-700'}`}
-          onClick={() => setActiveTab('cancelled')}
-        >
-          Cancelled
-          {activeTab === 'cancelled' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-t-full"></div>
-          )}
-        </button>
+      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
+        {['requests', 'upcoming', 'completed', 'cancelled'].map((tab) => (
+          <button
+            key={tab}
+            className={`px-6 py-4 font-medium text-sm transition-all relative whitespace-nowrap capitalize ${activeTab === tab ? 'text-primary-900 font-bold' : 'text-slate-500 hover:text-primary-700'}`}
+            onClick={() => setActiveTab(tab as any)}
+          >
+            {tab}
+            {activeTab === tab && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-900 rounded-t-full"></div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Content */}
-      {activeTab === 'requests' ? (
-        <div className="space-y-6">
-          {user?.role === 'nanny' ? (
-            // Nanny Assignments View
-            assignments.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-                <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3 text-primary-900">
-                  <Calendar size={24} />
+      <div className="mt-8">
+        {activeTab === 'requests' ? (
+          <div className="space-y-6">
+            {assignments.length === 0 ? (
+              <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Calendar size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-primary-900 mb-1">
-                  No New Requests
-                </h3>
-                <p className="text-stone-500 text-sm">
-                  You don't have any pending service requests.
+                <h3 className="text-xl font-bold text-primary-900 mb-2">No New Requests</h3>
+                <p className="text-slate-500 max-w-sm mx-auto">
+                  You don't have any pending service requests at the moment.
                 </p>
               </div>
             ) : (
@@ -487,171 +456,85 @@ export default function BookingsPage() {
                   return (
                     <div
                       key={assignment.id}
-                      className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden"
+                      className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 overflow-hidden flex flex-col"
                     >
-                      <div className="p-6">
+                      <div className="p-6 flex-1">
                         <div className="flex items-center justify-between mb-4">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(assignment.status)}`}
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusBadgeStyles(assignment.status)}`}
                           >
-                            {assignment.status.toUpperCase()}
+                            {assignment.status}
                           </span>
-                          <span className="text-xs text-neutral-400 font-medium">
-                            {new Date(
-                              assignment.assigned_at
-                            ).toLocaleDateString()}
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            {new Date(assignment.assigned_at).toLocaleDateString()}
                           </span>
                         </div>
 
-                        <h3 className="text-lg font-bold text-primary-900 mb-4">
-                          Request from{' '}
-                          {request.parent?.profiles?.first_name || 'Parent'}
+                        <h3 className="text-lg font-bold text-primary-900 mb-4 font-display">
+                          Request from {request.parent?.profiles?.first_name || 'Parent'}
                         </h3>
 
-                        <div className="space-y-3 text-sm text-neutral-600">
+                        <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                              <Calendar size={16} />
+                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-primary-600 transition-colors shadow-inner">
+                              <Calendar size={14} />
                             </div>
-                            <span>
-                              {new Date(request.date).toLocaleDateString()}
+                            <span className="text-slate-700 text-sm font-medium">
+                              {new Date(request.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                              <Clock size={16} />
+                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-amber-600 transition-colors shadow-inner">
+                              <Clock size={14} />
                             </div>
-                            <span>
-                              {request.start_time} ({request.duration_hours}{' '}
-                              hrs)
+                            <span className="text-slate-700 text-sm font-medium">
+                              {request.start_time} ({request.duration_hours} hrs)
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                              <MapPin size={16} />
+                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-emerald-600 transition-colors shadow-inner">
+                              <MapPin size={14} />
                             </div>
-                            <span className="truncate">
-                              {request.parent?.profiles?.address ||
-                                'Location hidden'}
+                            <span className="text-slate-700 text-sm font-medium truncate">
+                              {request.parent?.profiles?.address || 'Location hidden'}
                             </span>
                           </div>
                         </div>
-
-                        {assignment.status === 'pending' && (
-                          <div className="mt-6 grid grid-cols-2 gap-3">
-                            <Button
-                              variant="outline"
-                              className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                              onClick={() =>
-                                handleRejectAssignment(assignment.id)
-                              }
-                              disabled={actionLoading === assignment.id}
-                            >
-                              Reject
-                            </Button>
-                            <Button
-                              className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                              onClick={() =>
-                                handleAcceptAssignment(assignment.id)
-                              }
-                              disabled={actionLoading === assignment.id}
-                            >
-                              {actionLoading === assignment.id
-                                ? '...'
-                                : 'Accept'}
-                            </Button>
-                          </div>
-                        )}
                       </div>
+
+                      {assignment.status === 'pending' && (
+                        <div className="p-6 pt-0 grid grid-cols-2 gap-3">
+                          <Button
+                            variant="outline"
+                            className="h-10 rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 transition-all font-bold text-xs"
+                            onClick={() => handleRejectAssignment(assignment.id)}
+                            disabled={actionLoading === assignment.id}
+                          >
+                            Decline
+                          </Button>
+                          <Button
+                            className="h-10 rounded-xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-sm text-xs"
+                            onClick={() => handleAcceptAssignment(assignment.id)}
+                            disabled={actionLoading === assignment.id}
+                          >
+                            {actionLoading === assignment.id ? '...' : 'Accept'}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-            )
-          ) : // Parent Requests View
-            requests.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-                <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-900">
-                  <Plus size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-primary-900 mb-2">
-                  No Requests Yet
-                </h3>
-                <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                  You haven't created any service requests yet.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {requests.map((request) => (
-                  <Link
-                    href={`/dashboard/requests/${request.id}`}
-                    key={request.id}
-                    className="group block bg-white rounded-[24px] border border-neutral-100 shadow-soft hover:shadow-md transition-all duration-200 overflow-hidden"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${getStatusBadgeStyles(request.status)}`}
-                        >
-                          {request.status.replace('_', ' ')}
-                        </span>
-                        <span className="text-xs text-neutral-400 font-medium">
-                          {new Date(request.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-bold text-primary-900 mb-4 group-hover:text-primary-700 transition-colors">
-                        Care for {request.num_children} Child
-                        {request.num_children !== 1 ? 'ren' : ''}
-                      </h3>
-
-                      <div className="space-y-3 text-sm text-neutral-600">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                            <Calendar size={16} />
-                          </div>
-                          <span>
-                            {new Date(request.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                            <Clock size={16} />
-                          </div>
-                          <span>
-                            {request.start_time} ({request.duration_hours} hrs)
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400">
-                            <MapPin size={16} />
-                          </div>
-                          <span className="truncate">
-                            {request.location?.address || 'No location specified'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
             )}
-        </div>
-      ) : // Bookings List (Upcoming, Completed, Cancelled)
-        filteredBookings.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-[24px] border border-neutral-100 shadow-soft">
-            <p className="text-neutral-500 mb-6">
-              No {activeTab} bookings found.
-            </p>
+          </div>
+        ) : filteredBookings.length === 0 ? (
+          <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <p className="text-slate-500 mb-8 text-lg">No {activeTab} bookings found.</p>
             <Button
-              onClick={() =>
-              (window.location.href =
-                user?.role === 'nanny' ? '/dashboard' : '/search')
-              }
-              className="rounded-xl"
+              onClick={() => (window.location.href = '/dashboard')}
+              className="rounded-2xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-4 h-auto text-base font-bold"
             >
-              {user?.role === 'nanny' ? 'View Jobs' : 'Find Care'}
+              View New Jobs
             </Button>
           </div>
         ) : (
@@ -661,50 +544,52 @@ export default function BookingsPage() {
               return (
                 <div
                   key={booking.id}
-                  className="bg-white p-6 rounded-[24px] border border-neutral-100 shadow-soft flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow"
+                  className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary-100 group hover:translate-x-1"
+                  onClick={() => router.push(`/dashboard/bookings/${booking.id}`)}
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="flex-shrink-0 w-16 h-16 bg-neutral-100 rounded-2xl flex flex-col items-center justify-center text-primary-900">
-                      <span className="text-xs font-bold uppercase">{month}</span>
-                      <span className="text-xl font-bold">{day}</span>
+                  <div className="flex items-center gap-6 flex-1">
+                    <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-primary-50 text-primary-900 flex flex-col items-center justify-center transition-colors shadow-inner group-hover:bg-primary-100">
+                      <span className="text-xs font-bold uppercase tracking-wider">{month}</span>
+                      <span className="text-2xl font-bold font-display">{day}</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-primary-900">
+                      <h3 className="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors font-display">
                         {getOtherPartyName(booking)}
                       </h3>
-                      <p className="text-neutral-500 text-sm mb-1">
+                      <p className="text-slate-600 text-sm mb-1 font-medium">
                         Care for {(booking as any).num_children || (booking.job as any)?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || 1) !== 1 ? 'ren' : ''}
                       </p>
-                      <p className="text-neutral-400 text-xs">
+                      <p className="text-slate-400 text-xs flex items-center gap-1">
+                        <Clock size={12} />
                         {formatTime(booking.start_time)}
-                        {booking.end_time && ` - ${formatTime(booking.end_time)}`}
+                        {booking.end_time && ` — ${formatTime(booking.end_time)}`}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-neutral-100 pt-4 md:pt-0">
+                  <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(booking.status)}`}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusBadgeStyles(booking.status)}`}
                     >
                       {booking.status.toLowerCase().replace('_', ' ')}
                     </span>
-                    {renderActionButtons(booking)}
+                    <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
+                      {renderActionButtons(booking)}
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         )}
+      </div>
 
       {selectedBookingId && (
         <ReviewModal
           isOpen={isReviewModalOpen}
           onClose={() => setIsReviewModalOpen(false)}
           bookingId={selectedBookingId}
-          onSuccess={() => {
-            // Optional: Refresh data or show success message
-            fetchData();
-          }}
+          onSuccess={() => fetchData()}
         />
       )}
     </div>
