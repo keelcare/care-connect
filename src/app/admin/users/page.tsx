@@ -72,144 +72,116 @@ function UserTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full whitespace-nowrap">
-        <thead className="border-b border-neutral-100">
-          <tr>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Email
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Verified
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Joined
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-neutral-400 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-neutral-50">
-          {users.map((u) => (
-            <tr key={u.id} className="hover:bg-neutral-50/60 transition-colors group">
-              {/* Avatar + Name */}
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${accentClass}`}
+    <div className="divide-y divide-neutral-50">
+      {users.map((u) => {
+        const name =
+          u.profiles?.first_name && u.profiles?.last_name
+            ? `${u.profiles.first_name} ${u.profiles.last_name}`
+            : 'N/A';
+
+        return (
+          <div
+            key={u.id}
+            className="flex flex-wrap items-center gap-x-4 gap-y-3 px-6 py-4 hover:bg-neutral-50/60 transition-colors"
+          >
+            {/* Avatar + Name + Email */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${accentClass}`}
+              >
+                {u.profiles?.first_name?.[0]?.toUpperCase() ?? '?'}
+              </div>
+              <div className="min-w-0">
+                {onNameClick ? (
+                  <button
+                    onClick={() => onNameClick(u.id)}
+                    className="font-medium text-neutral-900 hover:text-violet-600 hover:underline underline-offset-2 transition-colors text-left truncate block max-w-full"
                   >
-                    {u.profiles?.first_name?.[0]?.toUpperCase() ?? '?'}
-                  </div>
-                  {onNameClick ? (
-                    <button
-                      onClick={() => onNameClick(u.id)}
-                      className="font-medium text-neutral-900 hover:text-violet-600 hover:underline underline-offset-2 transition-colors text-left"
-                    >
-                      {u.profiles?.first_name && u.profiles?.last_name
-                        ? `${u.profiles.first_name} ${u.profiles.last_name}`
-                        : 'N/A'}
-                    </button>
-                  ) : (
-                    <span className="font-medium text-neutral-900">
-                      {u.profiles?.first_name && u.profiles?.last_name
-                        ? `${u.profiles.first_name} ${u.profiles.last_name}`
-                        : 'N/A'}
-                    </span>
-                  )}
-                </div>
-              </td>
-
-              {/* Email */}
-              <td className="px-6 py-4 text-neutral-500 text-sm">{u.email}</td>
-
-              {/* Active / Banned */}
-              <td className="px-6 py-4">
-                {u.is_active !== false ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Active
-                  </span>
+                    {name}
+                  </button>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600">
-                    <ShieldAlert size={11} />
-                    Banned
-                  </span>
+                  <span className="font-medium text-neutral-900 truncate block">{name}</span>
                 )}
-              </td>
+                <span className="text-xs text-neutral-400 truncate block">{u.email}</span>
+              </div>
+            </div>
 
-              {/* Verified */}
-              <td className="px-6 py-4">
-                {u.is_verified ? (
-                  <div className="flex items-center gap-1.5 text-green-600">
-                    <CheckCircle size={17} />
-                    <span className="text-xs font-medium">Verified</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 text-neutral-400">
-                    <XCircle size={17} />
-                    <span className="text-xs font-medium">Unverified</span>
-                  </div>
-                )}
-              </td>
+            {/* Badges */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {u.is_active !== false ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600">
+                  <ShieldAlert size={11} />
+                  Banned
+                </span>
+              )}
 
-              {/* Joined */}
-              <td className="px-6 py-4 text-neutral-400 text-sm">
+              {u.is_verified ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700">
+                  <CheckCircle size={12} />
+                  Verified
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-400">
+                  <XCircle size={12} />
+                  Unverified
+                </span>
+              )}
+
+              <span className="text-xs text-neutral-400 hidden sm:block">
                 {new Date(u.created_at).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
                 })}
-              </td>
+              </span>
+            </div>
 
-              {/* Actions */}
-              <td className="px-6 py-4">
-                {actionLoading === u.id ? (
-                  <Spinner />
-                ) : (
-                  <div className="flex items-center gap-2">
-                    {!u.is_verified && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onVerify(u.id)}
-                        className="rounded-lg text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
-                      >
-                        Verify
-                      </Button>
-                    )}
-                    {u.is_active !== false ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onBan(u.id)}
-                        className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                      >
-                        Ban
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onUnban(u.id)}
-                        className="rounded-lg text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300"
-                      >
-                        Unban
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            {/* Actions */}
+            <div className="flex-shrink-0">
+              {actionLoading === u.id ? (
+                <Spinner />
+              ) : (
+                <div className="flex items-center gap-2">
+                  {!u.is_verified && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onVerify(u.id)}
+                      className="rounded-lg text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
+                    >
+                      Verify
+                    </Button>
+                  )}
+                  {u.is_active !== false ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onBan(u.id)}
+                      className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                    >
+                      Ban
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onUnban(u.id)}
+                      className="rounded-lg text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300"
+                    >
+                      Unban
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -251,7 +223,7 @@ export default function AdminUsersPage() {
     try {
       setActionLoading(userId);
       const updated = await api.admin.verifyUser(userId);
-      setUsers(users.map((u) => (u.id === userId ? updated : u)));
+      setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, profiles: u.profiles } : u)));
     } catch (err) {
       console.error('Failed to verify user:', err);
       alert(err instanceof Error ? err.message : 'Failed to verify user');
@@ -266,7 +238,7 @@ export default function AdminUsersPage() {
     try {
       setActionLoading(userId);
       const updated = await api.admin.banUser(userId, reason || undefined);
-      setUsers(users.map((u) => (u.id === userId ? { ...updated, is_active: false } : u)));
+      setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, is_active: false, profiles: u.profiles } : u)));
     } catch (err) {
       console.error('Failed to ban user:', err);
       alert(err instanceof Error ? err.message : 'Failed to ban user');
@@ -280,7 +252,7 @@ export default function AdminUsersPage() {
     try {
       setActionLoading(userId);
       const updated = await api.admin.unbanUser(userId);
-      setUsers(users.map((u) => (u.id === userId ? { ...updated, is_active: true } : u)));
+      setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, is_active: true, profiles: u.profiles } : u)));
     } catch (err) {
       console.error('Failed to unban user:', err);
       alert(err instanceof Error ? err.message : 'Failed to unban user');
