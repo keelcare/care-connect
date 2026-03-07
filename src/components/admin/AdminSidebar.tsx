@@ -112,7 +112,7 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Brand */}
       <div
-        className={`flex items-center h-16 border-b border-white/8 shrink-0 transition-all duration-300 ${isCollapsed ? 'px-4 justify-center' : 'px-5'
+        className={`flex items-center h-16 border-b border-neutral-200/60 shrink-0 transition-all duration-300 ${isCollapsed ? 'px-4 justify-center' : 'px-8'
           }`}
       >
         {isCollapsed ? (
@@ -121,9 +121,9 @@ function SidebarContent({
           <div className="flex items-center gap-2.5">
             <Image src="/logo.svg" alt="Keel" width={30} height={30} className="rounded-md" />
             <div>
-              <p className="text-white font-bold text-sm leading-none">Keel</p>
-              <p className="text-white/40 text-[10px] font-medium tracking-widest uppercase leading-none mt-0.5">
-                Admin
+              <p className="text-primary-900 font-bold text-lg leading-none font-display">Keel</p>
+              <p className="text-neutral-400 text-[9px] font-bold tracking-[0.2em] uppercase leading-none mt-1">
+                Admin Console
               </p>
             </div>
           </div>
@@ -135,12 +135,12 @@ function SidebarContent({
         {NAV_SECTIONS.map((section, sectionIndex) => (
           <div key={sectionIndex}>
             {section.label && !isCollapsed && (
-              <p className="text-[10px] font-semibold text-white/30 uppercase tracking-[0.12em] px-3 mb-2">
+              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em] px-4 mb-2">
                 {section.label}
               </p>
             )}
             {section.label && isCollapsed && (
-              <div className="h-px bg-white/6 mx-2 mb-2" />
+              <div className="h-px bg-neutral-100 mx-4 mb-2" />
             )}
             <div className="space-y-0.5">
               {section.items.map((item) => {
@@ -153,18 +153,15 @@ function SidebarContent({
                     href={item.href}
                     onClick={onMobileClose}
                     title={isCollapsed ? item.label : undefined}
-                    className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-3 py-2.5'
+                    className={`flex items-center gap-3 rounded-xl transition-all duration-200 group relative ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'
                       } ${active
-                        ? 'bg-white/12 text-white'
-                        : 'text-white/50 hover:text-white/90 hover:bg-white/6'
+                        ? 'bg-primary-900 text-white shadow-lg shadow-primary-900/10'
+                        : 'text-neutral-600 hover:text-primary-900 hover:bg-neutral-100'
                       }`}
                   >
-                    {active && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
-                    )}
                     <Icon
                       size={18}
-                      className={`shrink-0 transition-colors ${active ? 'text-white' : 'text-white/40 group-hover:text-white/80'
+                      className={`shrink-0 transition-colors ${active ? 'text-white' : 'text-neutral-400 group-hover:text-primary-900'
                         }`}
                     />
                     {!isCollapsed && (
@@ -181,9 +178,9 @@ function SidebarContent({
       </nav>
 
       {/* User & Logout Section */}
-      <div className="p-3 border-t border-white/6 shrink-0 space-y-1">
+      <div className="p-4 border-t border-neutral-100 shrink-0 space-y-2">
         {!isCollapsed && user && (
-          <div className="flex items-center gap-3 px-3 py-3 mb-1">
+          <div className="flex items-center gap-3 px-3 py-3 mb-1 bg-neutral-50 rounded-2xl border border-neutral-100">
             <Avatar
               src={user.profiles?.profile_image_url || undefined}
               alt={user.profiles?.first_name || 'User'}
@@ -191,10 +188,10 @@ function SidebarContent({
               size="sm"
             />
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-bold text-neutral-900 truncate">
                 {user.profiles?.first_name || 'Admin'}
               </p>
-              <p className="text-[10px] text-white/40 truncate">
+              <p className="text-[10px] text-neutral-500 truncate">
                 {user.email}
               </p>
             </div>
@@ -214,26 +211,26 @@ function SidebarContent({
 
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-3 w-full rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150 ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-2.5'
+          className={`flex items-center gap-3 w-full rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200 ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'
             }`}
           title={isCollapsed ? 'Log Out' : undefined}
         >
           <LogOut size={18} />
-          {!isCollapsed && <span className="text-sm font-medium">Log Out</span>}
+          {!isCollapsed && <span className="text-sm font-semibold">Log Out</span>}
         </button>
 
         {/* Collapse Toggle (desktop only) */}
         <div className="hidden md:block pt-1">
           <button
             onClick={onToggle}
-            className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-white/40 hover:text-white/80 hover:bg-white/6 transition-all duration-150"
+            className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-xl text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 transition-all duration-200"
           >
             {isCollapsed ? (
               <ChevronRight size={16} />
             ) : (
               <>
                 <ChevronLeft size={16} />
-                <span className="text-xs font-medium">Collapse</span>
+                <span className="text-xs font-bold uppercase tracking-wider">Collapse</span>
               </>
             )}
           </button>
@@ -257,7 +254,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-[hsl(208,67%,8%)] transition-all duration-300 ${isCollapsed ? 'w-[68px]' : 'w-60'
+        className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-white/95 backdrop-blur-xl border-r border-neutral-200/60 transition-all duration-300 shadow-md ${isCollapsed ? 'w-20' : 'w-72'
           }`}
       >
         <SidebarContent {...sharedProps} />
@@ -268,20 +265,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="md:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
             onClick={onMobileClose}
           />
           {/* Drawer */}
-          <aside className="relative flex flex-col w-60 h-full bg-[hsl(208,67%,8%)] shadow-2xl">
+          <aside className="relative flex flex-col w-72 h-full bg-white shadow-2xl transition-transform duration-300 ease-out">
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                onClick={onMobileClose}
+                className="p-2 rounded-xl bg-neutral-100 text-neutral-500 hover:text-neutral-900 transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
             <SidebarContent {...sharedProps} />
           </aside>
-          {/* Close button */}
-          <button
-            onClick={onMobileClose}
-            className="absolute top-4 right-4 text-white/60 hover:text-white p-1.5 rounded-lg bg-white/10"
-          >
-            <X size={18} />
-          </button>
         </div>
       )}
     </>
