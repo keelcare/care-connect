@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Baby, GraduationCap, Heart } from 'lucide-react';
 import { ServiceCard } from '@/components/services/ServiceCard';
@@ -9,12 +9,21 @@ import { BadgePill } from '@/components/ui/BadgePill';
 import ChildCareModal from '@/components/booking/ChildCareModal';
 import ShadowTeacherModal from '@/components/booking/ShadowTeacherModal';
 import SpecialNeedsModal from '@/components/booking/SpecialNeedsModal';
+import { useAuth } from '@/context/AuthContext';
 
 type ServiceType = 'CHILD_CARE' | 'SHADOW_TEACHER' | 'SPECIAL_NEEDS' | null;
 
 export default function BookServiceContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useAuth();
   const [selectedService, setSelectedService] = useState<ServiceType>(null);
+
+  useEffect(() => {
+    if (user === null) {
+      router.push('/auth/login');
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const serviceParam = searchParams?.get('service');

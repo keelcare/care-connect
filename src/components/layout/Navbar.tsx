@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
       await logout();
       sessionStorage.removeItem('locationChecked'); // Clear location check flag
       addToast({ message: 'Logged out successfully', type: 'success' });
-      router.push('/auth/login');
+      router.push('/');
     } catch (error) {
       console.error('Logout failed', error);
       addToast({ message: 'Failed to log out', type: 'error' });
@@ -97,7 +97,20 @@ export const Navbar: React.FC = () => {
     return pathname?.startsWith(href);
   };
 
-  const navItems = user?.role === 'nanny' ? NAV_ITEMS_NANNY : (user?.role === 'parent' ? NAV_ITEMS_PARENT : []);
+  const navItems = user?.role === 'nanny'
+    ? NAV_ITEMS_NANNY
+    : (user?.role === 'parent' || !user ? NAV_ITEMS_PARENT : []);
+
+  // Protected routes for unauthenticated users
+  const PROTECTED_ROUTES = ['/bookings', '/book-service', '/parent-dashboard/family'];
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    if (!user && PROTECTED_ROUTES.some(route => href.startsWith(route))) {
+      e.preventDefault();
+      router.push('/auth/login');
+      addToast({ message: 'Please log in to access this feature', type: 'info' });
+    }
+  };
 
   // Don't show header on auth pages if they are handled by layout logic
   if (pathname?.startsWith('/auth')) return null;
@@ -105,18 +118,21 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <div className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
-        <nav className={`max-w-7xl mx-auto bg-white/20 backdrop-blur-2xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-3 md:px-4 py-2 flex items-center pointer-events-auto ${!user ? 'justify-between' : 'justify-between'}`}>
+        <nav className={`max-w-7xl mx-auto bg-white/20 backdrop-blur-2xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-3 md:px-4 py-2 flex items-center pointer-events-auto justify-between`}>
 
           {/* Logo - Always on Left */}
-          <Link href={user ? (user.role === 'nanny' ? '/dashboard' : '/parent-dashboard') : "/"} className="flex items-center gap-2 group">
+          <Link
+            href={user ? (user.role === 'nanny' ? '/dashboard' : '/parent-dashboard') : "/parent-dashboard"}
+            className="flex items-center gap-2 group"
+          >
             <div className="w-8 h-8 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
               <img src="/logo.svg" alt="Keel Logo" className="h-5 w-auto" />
             </div>
             <span className="text-lg font-bold font-display text-primary-900 tracking-tight">Keel</span>
           </Link>
 
-          {/* Center Navigation - Landing Page */}
-          {!user && (
+          {/* Center Navigation - Landing Page (Only if not in dashboard flow) */}
+          {!user && pathname === '/' && (
             <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
               <Link href="/about" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
                 About
@@ -130,14 +146,15 @@ export const Navbar: React.FC = () => {
             </div>
           )}
 
-          {/* Desktop Navigation - Logged In Users */}
+          {/* Desktop Navigation - Logged In or Dashboard Browsing */}
           <div className="hidden md:flex items-center gap-1">
-            {user && (
+            {(user || pathname?.startsWith('/parent-dashboard') || pathname?.startsWith('/bookings') || pathname?.startsWith('/book') || pathname?.startsWith('/support')) && (
               <div className="flex items-center p-1 bg-neutral-100/50 rounded-full border border-neutral-200/50">
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${isActive(item.href)
                       ? 'bg-white text-primary-900 shadow-sm'
                       : 'text-neutral-500 hover:text-primary-900 hover:bg-white/50'

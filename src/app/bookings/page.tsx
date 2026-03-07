@@ -173,8 +173,10 @@ export default function ParentBookingsPage() {
   useEffect(() => {
     if (user) {
       fetchData();
+    } else if (user === null) {
+      router.push('/auth/login');
     }
-  }, [user, fetchData]);
+  }, [user, fetchData, router]);
 
   // Fetch missing request details if selectedRequestId is set but not in requests list
   // Details selection logic - actual fetching is now handled in the dedicated [id] page

@@ -25,6 +25,7 @@ export default function HomePage() {
 
     const fetchDashboardData = React.useCallback(async () => {
         if (authLoading || !user) {
+            // If not loading and no user, we just set loading to false to show the empty/landing state
             if (!authLoading && !user) setLoading(false);
             return;
         }

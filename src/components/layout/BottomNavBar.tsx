@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Home, Calendar, Sparkles, User } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
@@ -15,12 +17,24 @@ const NAV_ITEMS = [
 
 export default function BottomNavBar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user } = useAuth();
 
     const isActive = (href: string) => {
         if (href === '/parent-dashboard') {
             return pathname === '/parent-dashboard';
         }
         return pathname?.startsWith(href);
+    };
+
+    const PROTECTED_ROUTES = ['/bookings', '/book-service', '/parent-dashboard/family'];
+
+    const handleNavClick = (e: React.MouseEvent, href: string) => {
+        if (!user && PROTECTED_ROUTES.some(route => href.startsWith(route))) {
+            e.preventDefault();
+            router.push('/auth/login');
+            // We don't have toast context here easily, but the redirect is primary
+        }
     };
 
     return (
@@ -36,6 +50,7 @@ export default function BottomNavBar() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
+                                    onClick={(e) => handleNavClick(e, item.href)}
                                     className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-2xl transition-all"
                                 >
                                     <div className="relative">

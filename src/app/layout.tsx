@@ -142,7 +142,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/settings') ||
     pathname?.startsWith('/notifications') ||
     pathname?.startsWith('/caregiver') ||
-    pathname?.startsWith('/book');
+    pathname?.startsWith('/book') ||
+    pathname?.startsWith('/welcome-mobile');
 
   const hideFooter =
     hideHeader ||
@@ -156,10 +157,11 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/notifications') ||
     pathname?.startsWith('/recurring-bookings') ||
     pathname?.startsWith('/book-recurring') ||
-    pathname?.startsWith('/favorites');
+    pathname?.startsWith('/favorites') ||
+    pathname?.startsWith('/welcome-mobile');
 
   return (
-    <body className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} ${satoshi.variable} font-body bg-background text-primary-900`}>
+    <body suppressHydrationWarning className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} ${satoshi.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
           <SocketProvider>
@@ -191,7 +193,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>Keel - Find Trusted Caregivers</title>
         <meta

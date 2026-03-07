@@ -42,7 +42,7 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+      <div className="min-h-screen flex items-center justify-center bg-background font-body">
         <Spinner />
       </div>
     );
@@ -53,7 +53,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-neutral-50 overflow-hidden font-sans">
+    <div className="flex h-screen bg-background overflow-hidden font-body">
       <AdminSidebar
         isCollapsed={isCollapsed}
         onToggle={() => setIsCollapsed((c) => !c)}
@@ -64,24 +64,24 @@ export default function AdminLayout({
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden relative">
         {/* Mobile top bar */}
-        <header className="md:hidden flex items-center justify-between h-16 px-6 bg-white/80 backdrop-blur-xl border-b border-neutral-200/60 sticky top-0 z-20 shadow-sm shrink-0">
+        <header className="md:hidden flex items-center justify-between h-16 px-6 bg-[#0B1221] border-b border-white/5 sticky top-0 z-20 shadow-sm shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-2.5 -ml-2 rounded-xl hover:bg-neutral-100 text-neutral-600 transition-all active:scale-95"
+              className="p-2.5 -ml-2 rounded-xl hover:bg-white/5 text-white/70 transition-all active:scale-95"
               aria-label="Open menu"
             >
               <Menu size={20} />
             </button>
             <div className="flex flex-col">
-              <span className="font-bold text-primary-900 text-sm leading-tight">Keel</span>
-              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider leading-tight">Admin</span>
+              <span className="font-bold text-white text-sm leading-tight">Keel</span>
+              <span className="text-[10px] text-white/40 font-bold uppercase tracking-wider leading-tight">Admin</span>
             </div>
           </div>
 
           <button
             onClick={handleLogout}
-            className="p-2.5 rounded-xl hover:bg-red-50 text-red-500 transition-all active:scale-95"
+            className="p-2.5 rounded-xl hover:bg-red-400/10 text-red-400 transition-all active:scale-95"
             aria-label="Log Out"
           >
             <LogOut size={20} />

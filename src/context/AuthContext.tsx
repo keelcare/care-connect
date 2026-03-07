@@ -93,22 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
-  // Deep linking Capacitor Listener
-  useEffect(() => {
-    const isCapacitor = typeof window !== 'undefined' && typeof (window as any).Capacitor !== 'undefined';
-    if (!isCapacitor) return;
-
-    const listener = App.addListener('appUrlOpen', (data) => {
-      if (data && data.url) {
-        // e.g. keel://auth/callback?token=XYZ
-        const url = new URL(data.url.replace('keel://', 'https://careconnect.app/'));
-        const path = url.pathname + url.search;
-        router.push(path);
-      }
-    });
-
-    return () => { listener.then(l => l.remove()); };
-  }, [router]);
+  // Removed duplicate deep-link listener as it's handled in layout.tsx for better app-wide consistency
 
   // Initial Auth Check
   useEffect(() => {
@@ -152,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== 'undefined') localStorage.setItem('is_logged_out', 'true');
       // ALWAYS cleanup client state
       setUser(null);
-      router.push('/auth/login');
+      router.push('/');
     }
   };
 

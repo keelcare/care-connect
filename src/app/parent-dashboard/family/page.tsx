@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, Edit2, Trash2, User, Heart, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ParentLayout from '@/components/layout/ParentLayout';
@@ -36,9 +37,15 @@ export default function FamilyPage() {
     }
   };
 
+  const router = useRouter();
+
   useEffect(() => {
-    fetchChildren();
-  }, []);
+    if (user) {
+      fetchChildren();
+    } else if (user === null) {
+      router.push('/auth/login');
+    }
+  }, [user, router]);
 
   const handleSaveChild = async (childData: Partial<Child>) => {
     try {
@@ -94,7 +101,7 @@ export default function FamilyPage() {
             <h1 className="text-3xl font-bold text-primary font-display">My Family</h1>
             <p className="text-gray-500 mt-1">Manage profiles for your children to personalize their care.</p>
           </div>
-          <Button 
+          <Button
             onClick={openAddModal}
             className="bg-primary hover:bg-primary-800 text-white rounded-xl px-6 py-6 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
           >
@@ -129,28 +136,25 @@ export default function FamilyPage() {
                 key={child.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`group relative bg-white rounded-[24px] border-2 transition-all duration-300 hover:shadow-xl overflow-hidden ${
-                  child.profile_type === 'SPECIAL_NEEDS' 
-                    ? 'border-[#FDF3F1] hover:border-[#CC7A68]/30' 
-                    : 'border-background hover:border-primary/30'
-                }`}
+                className={`group relative bg-white rounded-[24px] border-2 transition-all duration-300 hover:shadow-xl overflow-hidden ${child.profile_type === 'SPECIAL_NEEDS'
+                  ? 'border-[#FDF3F1] hover:border-[#CC7A68]/30'
+                  : 'border-background hover:border-primary/30'
+                  }`}
               >
                 {/* Header Pattern */}
-                <div className={`h-24 ${
-                  child.profile_type === 'SPECIAL_NEEDS' 
-                    ? 'bg-[#FDF3F1]' 
-                    : 'bg-background'
-                }`} />
+                <div className={`h-24 ${child.profile_type === 'SPECIAL_NEEDS'
+                  ? 'bg-[#FDF3F1]'
+                  : 'bg-background'
+                  }`} />
 
                 <div className="px-6 pb-6">
                   {/* Avatar & Name */}
                   <div className="relative -mt-12 mb-4 flex justify-between items-end">
                     <div className="relative">
-                      <div className={`w-24 h-24 rounded-full border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold ${
-                         child.profile_type === 'SPECIAL_NEEDS'
-                           ? 'bg-[#CC7A68] text-white'
-                           : 'bg-primary text-white'
-                      }`}>
+                      <div className={`w-24 h-24 rounded-full border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold ${child.profile_type === 'SPECIAL_NEEDS'
+                        ? 'bg-[#CC7A68] text-white'
+                        : 'bg-primary text-white'
+                        }`}>
                         {child.first_name[0]}
                       </div>
                       {child.profile_type === 'SPECIAL_NEEDS' && (
@@ -159,15 +163,15 @@ export default function FamilyPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex gap-2">
-                      <button 
+                      <button
                         onClick={() => openEditModal(child)}
                         className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDeleteChild(child.id)}
                         className="p-2 hover:bg-red-50 rounded-full text-gray-400 hover:text-red-500 transition-colors"
                       >
@@ -211,8 +215,8 @@ export default function FamilyPage() {
           </div>
         )}
 
-        <ChildProfileModal 
-          isOpen={isModalOpen} 
+        <ChildProfileModal
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveChild}
           initialData={selectedChild}

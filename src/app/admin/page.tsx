@@ -206,8 +206,8 @@ export default function AdminOverview() {
       icon: Users,
       iconBg: 'bg-blue-50',
       iconColor: 'text-blue-600',
-      barColor: '#3b82f6',
-      trackColor: '#eff6ff',
+      barColor: '#0D2B45', // brand navy
+      trackColor: '#E2E8F0', // subtle gray track
       trendUp: true,
     },
     {
@@ -217,8 +217,8 @@ export default function AdminOverview() {
       icon: Calendar,
       iconBg: 'bg-emerald-50',
       iconColor: 'text-emerald-600',
-      barColor: '#10b981',
-      trackColor: '#ecfdf5',
+      barColor: '#D0E7EF', // sky blue
+      trackColor: '#E2E8F0',
       trendUp: true,
     },
     {
@@ -228,8 +228,8 @@ export default function AdminOverview() {
       icon: CheckCircle,
       iconBg: 'bg-amber-50',
       iconColor: 'text-amber-600',
-      barColor: '#f59e0b',
-      trackColor: '#fffbeb',
+      barColor: '#D0E7EF',
+      trackColor: '#E2E8F0',
       trendUp: stats.activeBookings > 0,
     },
   ];
@@ -293,11 +293,10 @@ export default function AdminOverview() {
                   {card.value}
                 </p>
                 <span
-                  className={`flex items-center gap-0.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                    isUp
-                      ? 'bg-emerald-50 text-emerald-600'
-                      : 'bg-red-50 text-red-500'
-                  }`}
+                  className={`flex items-center gap-0.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${isUp
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : 'bg-red-50 text-red-500'
+                    }`}
                 >
                   {isUp ? (
                     <ArrowUpRight size={11} />
@@ -403,9 +402,9 @@ export default function AdminOverview() {
           {/* Summary row */}
           <div className="grid grid-cols-3 divide-x divide-neutral-100 border-b border-neutral-100">
             {([
-              { label: 'Open',          status: 'open',          color: 'text-red-500',    bg: 'bg-red-50' },
-              { label: 'Investigating', status: 'investigating', color: 'text-amber-500',  bg: 'bg-amber-50' },
-              { label: 'Resolved',      status: 'resolved',      color: 'text-emerald-600', bg: 'bg-emerald-50' },
+              { label: 'Open', status: 'open', color: 'text-red-500', bg: 'bg-red-50' },
+              { label: 'Investigating', status: 'investigating', color: 'text-amber-500', bg: 'bg-amber-50' },
+              { label: 'Resolved', status: 'resolved', color: 'text-emerald-600', bg: 'bg-emerald-50' },
             ] as const).map(({ label, status, color, bg }) => {
               const count = disputes.filter((d) => d.status === status).length;
               return (
@@ -426,9 +425,8 @@ export default function AdminOverview() {
                 <li key={d.id} className="flex items-start gap-3 px-5 py-3">
                   <CircleDot
                     size={13}
-                    className={`mt-0.5 shrink-0 ${
-                      d.status === 'open' ? 'text-red-400' : 'text-amber-400'
-                    }`}
+                    className={`mt-0.5 shrink-0 ${d.status === 'open' ? 'text-red-400' : 'text-amber-400'
+                      }`}
                   />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-medium text-neutral-700 truncate">{d.reason}</p>
@@ -439,11 +437,10 @@ export default function AdminOverview() {
                     </p>
                   </div>
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                      d.status === 'open'
-                        ? 'bg-red-50 text-red-500'
-                        : 'bg-amber-50 text-amber-600'
-                    }`}
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${d.status === 'open'
+                      ? 'bg-red-50 text-red-500'
+                      : 'bg-amber-50 text-amber-600'
+                      }`}
                   >
                     {d.status}
                   </span>
@@ -458,7 +455,7 @@ export default function AdminOverview() {
           </ul>
         </div>
 
-       {/* /* Recent Bookings 
+        {/* /* Recent Bookings 
         <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100">
             <div className="flex items-center gap-2">
