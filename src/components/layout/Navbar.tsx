@@ -168,10 +168,10 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-3">
 
             {user ? (
-              <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex items-center gap-1.5 md:gap-3">
                 <LocationSelector onClick={() => setIsLocationModalOpen(true)} />
                 {/* Notifications */}
                 <button

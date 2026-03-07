@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Calendar, Sparkles, User } from 'lucide-react';
+import { Home, Calendar, Sparkles, User, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -12,7 +12,8 @@ const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book', icon: Sparkles },
-    { href: '/parent-dashboard/family', label: 'My Family', icon: User },
+    { href: '/parent-dashboard/family', label: 'Family', icon: User },
+    { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
 export default function BottomNavBar() {
