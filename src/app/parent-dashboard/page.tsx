@@ -32,8 +32,7 @@ export default function HomePage() {
 
         try {
             // Fetch all data in parallel for better performance
-            const [activeResponse, allBookings, notifs] = await Promise.all([
-                api.bookings.getActive(),
+            const [allBookings, notifs] = await Promise.all([
                 api.bookings.getParentBookings(),
                 api.enhancedNotifications.list().catch(() => []) // Gracefully handle notification errors
             ]);
