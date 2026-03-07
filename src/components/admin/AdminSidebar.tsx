@@ -116,10 +116,14 @@ function SidebarContent({
           }`}
       >
         {isCollapsed ? (
-          <Image src="/logo.svg" alt="Keel" width={28} height={28} className="rounded-md brightness-0 invert" />
+          <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+            <img src="/logo.svg" alt="Keel" className="h-4 w-auto brightness-0 invert" />
+          </div>
         ) : (
-          <div className="flex items-center gap-2.5">
-            <Image src="/logo.svg" alt="Keel" width={30} height={30} className="rounded-md brightness-0 invert" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <img src="/logo.svg" alt="Keel" className="h-5 w-auto" />
+            </div>
             <div>
               <p className="text-white font-bold text-lg leading-none font-display">Keel</p>
               <p className="text-white/40 text-[9px] font-bold tracking-[0.2em] uppercase leading-none mt-1">
