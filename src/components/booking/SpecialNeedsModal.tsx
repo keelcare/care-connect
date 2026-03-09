@@ -30,6 +30,17 @@ const TIME_SLOTS = [
     '18:00', '19:00', '20:00',
 ];
 
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+function getDaysInMonth(y: number, m: number): number {
+    return new Date(y, m + 1, 0).getDate();
+}
+
+function getFirstDay(y: number, m: number): number {
+    return new Date(y, m, 1).getDay();
+}
+
 export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
     const router = useRouter();
     const { user } = useAuth();
@@ -54,17 +65,11 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         specialRequirements: '',
     });
 
-    const getNextDays = () => {
-        const days = [];
-        for (let i = 0; i < 14; i++) {
-            const date = new Date();
-            date.setDate(date.getDate() + i);
-            days.push(date);
-        }
-        return days;
-    };
-
-    const availableDates = getNextDays();
+    // Calendar state
+    const today = new Date();
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+    const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchChildren = async () => {
@@ -131,7 +136,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             return;
         }
 
-        if (!formData.date || !formData.startTime || !formData.duration) {
+        if (!selectedDate || !formData.startTime || !formData.duration) {
             addToast({ message: 'Please fill in all required fields', type: 'error' });
             return;
         }
@@ -145,13 +150,14 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 formData.specialRequirements,
             ].filter(Boolean).join('. ');
 
+            const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
             const numChildren = selectedChildIds.length > 0
                 ? selectedChildIds.length
                 : Math.max(1, Number(formData.numPeople) || 1);
 
             const payload = {
                 category: 'SN',
-                date: formData.date,
+                date: dateStr,
                 start_time: formData.startTime,
                 duration_hours: Number(formData.duration),
                 num_children: numChildren,
@@ -173,9 +179,57 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         }
     };
 
-    const formatDate = (date: Date) => date.toISOString().split('T')[0];
-    const isToday = (date: Date) => date.toDateString() === new Date().toDateString();
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const firstDay = getFirstDay(currentYear, currentMonth);
 
+    const prevMonth = () => {
+        if (currentMonth === 0) {
+            setCurrentMonth(11);
+            setCurrentYear(y => y - 1);
+        } else {
+            setCurrentMonth(m => m - 1);
+        }
+        setSelectedDate(null);
+    };
+
+    const nextMonth = () => {
+        if (currentMonth === 11) {
+            setCurrentMonth(0);
+            setCurrentYear(y => y + 1);
+        } else {
+            setCurrentMonth(m => m + 1);
+        }
+        setSelectedDate(null);
+    };
+
+    const formattedDate = selectedDate
+        ? `${MONTH_NAMES[currentMonth].slice(0, 3)} ${selectedDate}, ${currentYear}`
+        : "—";
+
+    const getAvailableTimeSlots = () => {
+        if (!selectedDate) return TIME_SLOTS;
+
+        const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
+        const todayStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+
+        if (dateStr === todayStr) {
+            const currentTimePlus30 = new Date(today.getTime() + 30 * 60000);
+            const currentHours = currentTimePlus30.getHours();
+            const currentMinutes = currentTimePlus30.getMinutes();
+            
+            return TIME_SLOTS.filter(time => {
+                const [slotHours, slotMinutes] = time.split(':').map(Number);
+                if (slotHours > currentHours) return true;
+                if (slotHours === currentHours && slotMinutes >= currentMinutes) return true;
+                return false;
+            });
+        }
+        return TIME_SLOTS;
+    };
+
+    const calCells: (number | null)[] = [];
+    for (let i = 0; i < firstDay; i++) calCells.push(null);
+    for (let d = 1; d <= daysInMonth; d++) calCells.push(d);
 
     // Animation Variants
     const overlayVars = {
@@ -216,11 +270,11 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             </div>
 
             <div className="space-y-3">
-                {formData.date && (
+                {selectedDate && (
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Date</span>
                         <span className="font-medium text-gray-900">
-                            {new Date(formData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {formattedDate}
                         </span>
                     </div>
                 )}
@@ -341,34 +395,62 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                 </h1>
 
                                 {/* Date Selection */}
-                                <div>
-                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
-                                        Select Date
+                                <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <span className="font-display font-medium text-xl text-gray-800">
+                                            {MONTH_NAMES[currentMonth]} {currentYear}
+                                        </span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={prevMonth}
+                                                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"
+                                            >
+                                                ‹
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={nextMonth}
+                                                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"
+                                            >
+                                                ›
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
-                                        {availableDates.map((date) => {
-                                            const dateStr = formatDate(date);
-                                            const isSelected = formData.date === dateStr;
+                                    <div className="grid grid-cols-7 mb-2">
+                                        {DAYS.map(d => (
+                                            <div key={d} className="text-center text-xs font-bold text-gray-400 py-2">
+                                                {d}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-7 gap-y-2">
+                                        {calCells.map((day, idx) => {
+                                            if (!day) return <div key={`e${idx}`} />;
+                                            const isSel = day === selectedDate;
+                                            
+                                            const dateObj = new Date(currentYear, currentMonth, day);
+                                            const todayStart = new Date();
+                                            todayStart.setHours(0, 0, 0, 0);
+                                            const isPast = dateObj < todayStart;
+
                                             return (
-                                                <button
-                                                    key={dateStr}
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, date: dateStr })}
-                                                    className={`flex-shrink-0 flex flex-col items-center p-4 rounded-2xl border transition-all min-w-[70px] ${isSelected
-                                                        ? 'bg-[#CC7A68] text-white border-[#CC7A68] shadow-md'
-                                                        : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-gray-50'
+                                                <div key={day} className="flex justify-center">
+                                                    <button
+                                                        type="button"
+                                                        disabled={isPast}
+                                                        onClick={() => !isPast && setSelectedDate(day)}
+                                                        className={`w-10 h-10 rounded-full text-sm font-medium transition flex items-center justify-center ${
+                                                            isPast 
+                                                                ? 'text-gray-300 cursor-not-allowed'
+                                                                : isSel
+                                                                    ? 'bg-[#CC7A68] text-white shadow-md shadow-[#CC7A68]/20'
+                                                                    : 'text-gray-700 hover:bg-gray-100'
                                                         }`}
-                                                >
-                                                    <span className={`text-[10px] font-bold uppercase mb-1 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
-                                                        {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                                                    </span>
-                                                    <span className="text-xl font-bold mb-1">
-                                                        {date.getDate()}
-                                                    </span>
-                                                    <span className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
-                                                        {date.toLocaleDateString('en-US', { month: 'short' })}
-                                                    </span>
-                                                </button>
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                </div>
                                             );
                                         })}
                                     </div>
@@ -380,7 +462,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                         Start Time
                                     </div>
                                     <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2">
-                                        {TIME_SLOTS.map((time) => {
+                                        {getAvailableTimeSlots().map((time) => {
                                             const isSelected = formData.startTime === time;
                                             return (
                                                 <button
@@ -396,6 +478,11 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                                 </button>
                                             );
                                         })}
+                                        {getAvailableTimeSlots().length === 0 && (
+                                            <div className="col-span-full text-sm text-gray-500 py-2">
+                                                No time slots available for today.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -509,7 +596,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     <ServiceSummary />
                                     <button
                                         type="submit"
-                                        disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                        disabled={loading || missingLocation || !selectedDate || !formData.duration}
                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
                                     >
                                         {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
@@ -527,12 +614,12 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     <button
                                         type="submit"
                                         onClick={handleSubmit}
-                                        disabled={loading || missingLocation || !formData.date || !formData.duration}
+                                        disabled={loading || missingLocation || !selectedDate || !formData.duration}
                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
                                     >
                                         {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
                                     </button>
-                                    {(!formData.date || !formData.duration) && (
+                                    {(!selectedDate || !formData.duration) && (
                                         <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
                                             Please select date and duration
                                         </p>

@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child } from '@/types/api';
-import { HorizDial } from './HorizDial';
 
 interface ChildCareModalProps {
     onClose: () => void;
@@ -20,37 +19,19 @@ interface ChildCareModalProps {
 const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-// Time: 7:00 AM – 9:00 PM in 30-min steps
-const START_HOUR = 7;
-const END_HOUR = 21;
-const STEP_MINS = 30;
-const TIME_SLOTS = ((END_HOUR - START_HOUR) * 60) / STEP_MINS; // 28 slots
+const TIME_SLOTS = [
+    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+    '18:00', '19:00', '20:00', '21:00',
+];
 
-function slotToLabel(i: number): string {
-    const mins = START_HOUR * 60 + i * STEP_MINS;
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    const ampm = h < 12 ? "AM" : "PM";
-    const h12 = h % 12 === 0 ? 12 : h % 12;
-    return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
-}
-
-function slotToTime24(i: number): string {
-    const mins = START_HOUR * 60 + i * STEP_MINS;
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-}
-
-function endTimeLabel(startSlot: number, durationHrs: number): string {
-    const totalMins = START_HOUR * 60 + startSlot * STEP_MINS + durationHrs * 60;
-    const h = Math.floor(totalMins / 60);
-    const m = totalMins % 60;
-    if (h > 23) return "—";
-    const ampm = h < 12 ? "AM" : "PM";
-    const h12 = h % 12 === 0 ? 12 : h % 12;
-    return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
-}
+const DURATION_OPTIONS = [
+    { value: '2', label: '2 hours' },
+    { value: '4', label: '4 hours' },
+    { value: '6', label: '6 hours' },
+    { value: '8', label: '8 hours' },
+    { value: '12', label: '12 hours' },
+];
 
 function getDaysInMonth(y: number, m: number): number {
     return new Date(y, m + 1, 0).getDate();
@@ -81,8 +62,9 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
     // Time and duration state
-    const [timeSlot, setTimeSlot] = useState(8); // default 11:00 AM
-    const [durationIdx, setDurationIdx] = useState(3); // default 2h
+    const [startTime, setStartTime] = useState<string>('');
+    const [durationStr, setDurationStr] = useState<string>('');
+    const [numPeople, setNumPeople] = useState('1');
 
     const [specialRequirements, setSpecialRequirements] = useState('');
 
@@ -127,6 +109,9 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
     const handleChildSelect = (ids: string[]) => {
         setSelectedChildIds(ids);
+        if (ids.length > 0) {
+            setNumPeople(ids.length.toString());
+        }
     };
 
     const handleChildSave = async (childData: Partial<Child>) => {
@@ -143,41 +128,29 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     };
 
     // Time slots generation
-    const timeSlots = Array.from({ length: 28 }, (_, i) => {
-        const mins = START_HOUR * 60 + i * STEP_MINS;
-        const h = Math.floor(mins / 60);
-        const m = mins % 60;
-        const ampm = h < 12 ? "AM" : "PM";
-        const h12 = h % 12 === 0 ? 12 : h % 12;
-        
-        const timeString = `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
-        
-        // Dynamic labeling: Only show label every 2 hours (4 slots) to prevent cramping
-        // Slot 0 (7am), 4 (9am), 8 (11am)...
-        const showLabel = i % 4 === 0;
-        
-        return {
-            value: i,
-            // Main big display text
-            display: timeString, 
-            // Small tick label
-            label: showLabel ? `${h12} ${ampm}` : '', 
-            mins: mins
-        };
-    });
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    
+    const getAvailableTimeSlots = () => {
+        if (!selectedDate) return TIME_SLOTS;
 
-    // Duration options
-    const durationOptions = [
-        { label: '2 hours', value: 2 },
-        { label: '4 hours', value: 4 },
-        { label: '6 hours', value: 6 },
-        { label: '8 hours', value: 8 },
-        { label: '12 hours', value: 12 },
-    ];
+        const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
+        const todayStr = formatDate(new Date());
 
-    const durValues = durationOptions.map(d => d.value);
-    const durationHrs = durationOptions[Math.max(0, Math.min(durationIdx, durationOptions.length - 1))]?.value ?? 2;
-    const duration = durationHrs;
+        if (dateStr === todayStr) {
+            const today = new Date();
+            const currentTimePlus30 = new Date(today.getTime() + 30 * 60000);
+            const currentHours = currentTimePlus30.getHours();
+            const currentMinutes = currentTimePlus30.getMinutes();
+            
+            return TIME_SLOTS.filter(time => {
+                const [slotHours, slotMinutes] = time.split(':').map(Number);
+                if (slotHours > currentHours) return true;
+                if (slotHours === currentHours && slotMinutes >= currentMinutes) return true;
+                return false;
+            });
+        }
+        return TIME_SLOTS;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -209,7 +182,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
         }
 
         // Validate time and duration
-        if (timeSlot === null || timeSlot === undefined || !durationHrs) {
+        if (!startTime || !durationStr) {
             addToast({
                 message: 'Please select start time and duration',
                 type: 'error',
@@ -221,14 +194,17 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
         try {
             const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
-            const startTime = slotToTime24(timeSlot);
+            
+            const numChildren = selectedChildIds.length > 0
+                ? selectedChildIds.length
+                : Math.max(1, Number(numPeople) || 1);
 
             const payload = {
                 category: 'CC',
                 date: dateStr,
                 start_time: startTime,
-                duration_hours: durationHrs,
-                num_children: selectedChildIds.length,
+                duration_hours: Number(durationStr),
+                num_children: numChildren,
                 child_ids: selectedChildIds,
                 children_ages: [],
                 max_hourly_rate: hourlyRate || undefined,
@@ -284,8 +260,10 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     
     // Calculate end time
     const getEndTime = () => {
-        if (timeSlot === null) return "—";
-        const totalMins = START_HOUR * 60 + timeSlot * STEP_MINS + duration * 60;
+        if (!startTime || !durationStr) return "—";
+        const [hStr, mStr] = startTime.split(':');
+        const startMins = Number(hStr) * 60 + Number(mStr);
+        const totalMins = startMins + Number(durationStr) * 60;
         let h = Math.floor(totalMins / 60);
         const nextDay = h >= 24 ? " (Next Day)" : "";
         h = h % 24; // Normalize to 24-hour format
@@ -300,7 +278,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const selectedChild = selectedChildIds.length > 0 ? children.find(c => c.id === selectedChildIds[0]) : null;
 
     // Check if form is complete
-    const isFormComplete = selectedChildIds.length > 0 && selectedDate !== null && timeSlot !== null && duration > 0;
+    const isFormComplete = selectedDate !== null && startTime !== '' && durationStr !== '';
 
     const calCells: (number | null)[] = [];
     for (let i = 0; i < firstDay; i++) calCells.push(null);
@@ -357,14 +335,20 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Time</span>
                     <span className="font-medium text-gray-900">
-                        {timeSlot !== null ? timeSlots.find(t => t.value === timeSlot)?.display : '—'} 
+                        {startTime !== '' ? startTime : '—'} 
                         {' - '} 
                         {endTime}
                     </span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Duration</span>
-                    <span className="font-medium text-gray-900">{durationHrs} hours</span>
+                    <span className="font-medium text-gray-900">{durationStr || 0} hours</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Children</span>
+                    <span className="font-medium text-gray-900">
+                        {selectedChildIds.length > 0 ? selectedChildIds.length : numPeople}
+                    </span>
                 </div>
             </div>
 
@@ -373,7 +357,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 <div className="flex justify-between items-baseline mb-1">
                     <span className="text-xs font-bold tracking-wider text-gray-500">ESTIMATED TOTAL</span>
                     <span className={`text-xl font-bold ${hourlyRate ? 'text-primary-900' : 'text-gray-300'}`}>
-                        {hourlyRate ? `₹${(hourlyRate * durationHrs).toFixed(0)}` : '—'}
+                        {hourlyRate ? `₹${(hourlyRate * Number(durationStr || 0)).toFixed(0)}` : '—'}
                     </span>
                 </div>
                 <div className="text-right text-[10px] text-gray-400">
@@ -462,15 +446,40 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                     <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
                                         Who is this booking for?
                                     </div>
+                                    
+                                    {/* Fallback Manual Counter if no children */}
+                                    {children.length === 0 && (
+                                        <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                            <p className="text-xs text-gray-600 mb-3">
+                                                No profiles found. You can select the number of children below, or add a profile for better matching.
+                                            </p>
+                                            <div className="flex gap-3">
+                                                {['1', '2', '3'].map((num) => {
+                                                    const isSelected = numPeople === num;
+                                                    return (
+                                                        <button
+                                                            key={num}
+                                                            type="button"
+                                                            onClick={() => setNumPeople(num)}
+                                                            className={`w-12 h-12 rounded-xl font-bold border transition-all ${isSelected
+                                                                ? 'bg-primary-900 text-white border-primary-900'
+                                                                : 'bg-white border-gray-200 text-gray-700 hover:border-primary-900'
+                                                                }`}
+                                                        >
+                                                            {num}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <ChildSelector
                                         childrenMap={children}
                                         selectedIds={selectedChildIds}
                                         onChange={handleChildSelect}
                                         onAddNew={() => setIsAddChildModalOpen(true)}
                                     />
-                                    {selectedChildIds.length === 0 && (
-                                         <p className="text-xs text-amber-600 mt-2 font-medium">Please select a child profile</p>
-                                    )}
                                 </div>
 
                                 {/* 3. Calendar */}
@@ -538,15 +547,30 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                 {/* 4. Time Slots */}
                                 <div>
                                     <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
-                                        Available Time Slots
+                                        Start Time
                                     </div>
-                                    <div className="py-2">
-                                        <HorizDial
-                                            label="START TIME"
-                                            ticks={timeSlots}
-                                            current={timeSlot ?? 0}
-                                            onChange={(val) => setTimeSlot(val)}
-                                        />
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                                        {getAvailableTimeSlots().map((time) => {
+                                            const isSelected = startTime === time;
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    type="button"
+                                                    onClick={() => setStartTime(time)}
+                                                    className={`py-2 px-1 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-primary-900 text-white border-primary-900'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-primary-900 hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            );
+                                        })}
+                                        {getAvailableTimeSlots().length === 0 && (
+                                            <div className="col-span-full text-sm text-gray-500 py-2">
+                                                No time slots available for selected date.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -555,18 +579,23 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                     <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
                                         Duration
                                     </div>
-                                    <div className="py-2">
-                                        <HorizDial
-                                            label="DURATION"
-                                            ticks={durationOptions.map((opt, i) => ({
-                                                value: i,
-                                                label: opt.value + 'h',
-                                                display: opt.label,
-                                            }))}
-                                            current={durationIdx}
-                                            onChange={(idx) => setDurationIdx(idx)}
-                                            accent="#6b5b3d"
-                                        />
+                                    <div className="flex flex-wrap gap-2">
+                                        {DURATION_OPTIONS.map((option) => {
+                                            const isSelected = durationStr === option.value;
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type="button"
+                                                    onClick={() => setDurationStr(option.value)}
+                                                    className={`flex-1 min-w-[80px] py-3 rounded-xl text-sm font-medium border transition-all ${isSelected
+                                                        ? 'bg-[#6b5b3d] text-white border-[#6b5b3d]'
+                                                        : 'bg-white border-gray-200 text-gray-700 hover:border-[#6b5b3d]'
+                                                        }`}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
