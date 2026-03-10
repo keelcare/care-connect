@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Search, Filter, Calendar, MapPin, User, Clock, ChevronRight } from 'lucide-react';
 import { NannyAssignmentModal } from '@/components/admin/NannyAssignmentModal';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 export default function ManualAssignmentPage() {
     const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function ManualAssignmentPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRequest, setSelectedRequest] = useState<AdminManualRequest | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { subscribe } = useSSE();
 
     useEffect(() => {
         if (user && user.role !== 'admin') {
@@ -29,6 +31,22 @@ export default function ManualAssignmentPage() {
         }
         fetchPendingRequests();
     }, [user]);
+
+    useEffect(() => {
+        // Admin SSE real-time refresh
+        const handleRefresh = () => {
+            console.log('Manual Assignment Page - SSE Refresh Triggered');
+            fetchPendingRequests();
+        };
+
+        const unsubscribers = [
+            subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
+            subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+            subscribe(SSE_EVENT_TYPES.REQUEST_CANCELLED, handleRefresh),
+        ];
+
+        return () => unsubscribers.forEach((unsub) => unsub());
+    }, [subscribe]);
 
     const fetchPendingRequests = async () => {
         setLoading(true);

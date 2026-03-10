@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketProvider';
+import { SSEProvider } from '@/context/SSEProvider';
 import { Chatbot } from '@/components/ai/Chatbot';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
@@ -164,21 +165,23 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     <body suppressHydrationWarning className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} ${satoshi.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
-          <SocketProvider>
-            {!hideHeader && <Navbar />}
-            <main
-              className={!hideHeader ? 'pt-24' : ''}
-              style={{
-                minHeight: hideHeader
-                  ? '100vh'
-                  : 'calc(100vh - 96px-400px)',
-              }}
-            >
-              {children}
-            </main>
-            {/* <Chatbot /> */}
-            {!hideFooter && <Footer />}
-          </SocketProvider>
+          <SSEProvider>
+            <SocketProvider>
+              {!hideHeader && <Navbar />}
+              <main
+                className={!hideHeader ? 'pt-24' : ''}
+                style={{
+                  minHeight: hideHeader
+                    ? '100vh'
+                    : 'calc(100vh - 96px-400px)',
+                }}
+              >
+                {children}
+              </main>
+              {/* <Chatbot /> */}
+              {!hideFooter && <Footer />}
+            </SocketProvider>
+          </SSEProvider>
         </AuthProvider>
       </ToastProvider>
       <Toaster position="top-right" richColors closeButton />
