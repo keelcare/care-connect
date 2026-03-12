@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 /* ─── helpers ───────────────────────────────────────────────── */
 
@@ -111,13 +112,28 @@ export default function AdminSupportDashboard() {
     const [tickets, setTickets] = useState<SupportTicket[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const { subscribe } = useSSE();
 
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState<string>('all');
     const [priorityFilter, setPriorityFilter] = useState('all');
     const [categoryFilter, setCategoryFilter] = useState('all');
 
-    useEffect(() => { fetchTickets(); }, []);
+    useEffect(() => {
+        fetchTickets();
+        
+        const handleRefresh = () => {
+            console.log('Admin Support Dashboard - Received SSE Refresh Event');
+            fetchTickets(true);
+        };
+        
+        const unsubscribers = [
+            subscribe('ticket:created' as keyof typeof SSE_EVENT_TYPES, handleRefresh),
+            subscribe('ticket:updated' as keyof typeof SSE_EVENT_TYPES, handleRefresh),
+        ];
+        
+        return () => unsubscribers.forEach(unsub => unsub());
+    }, [subscribe]);
 
     const fetchTickets = async (silent = false) => {
         try {

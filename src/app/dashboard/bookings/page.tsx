@@ -9,7 +9,7 @@ import { Plus, Calendar, Clock, MapPin, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import styles from './page.module.css';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
@@ -33,7 +33,7 @@ export default function BookingsPage() {
     null
   );
 
-  const { onRefresh, offRefresh } = useSocket();
+  const { subscribe } = useSSE();
 
   const fetchData = React.useCallback(async () => {
     try {
@@ -145,16 +145,27 @@ export default function BookingsPage() {
   }, [user, fetchData]);
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Nanny/User Bookings Page - Received Refresh Event:', data);
-      if (data.category === 'booking' || data.category === 'request' || data.category === 'message') {
-        fetchData();
-      }
+    const handleRefresh = () => {
+      console.log('Nanny/User Bookings Page - Received SSE Refresh Event');
+      fetchData();
     };
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh, fetchData]);
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_REJECTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CANCELLED, handleRefresh),
+    ];
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe, fetchData]);
 
   const handleStartBooking = async (bookingId: string) => {
     try {

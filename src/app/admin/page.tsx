@@ -21,6 +21,7 @@ import {
   CircleDot,
   Search,
 } from 'lucide-react';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -138,13 +139,32 @@ export default function AdminOverview() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [disputes, setDisputes] = useState<AdminDispute[]>([]);
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
+  const { subscribe } = useSSE();
 
   useEffect(() => {
     // AdminLayout handles auth/role enforcement, so we just fetch on mount and poll
     fetchStats();
+    
+    const handleRefresh = () => {
+      console.log('Admin Dashboard Overview - Received SSE Refresh Event');
+      fetchStats(true);
+    };
+
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+      // Future-proofing
+      subscribe('user:registered' as keyof typeof SSE_EVENT_TYPES, handleRefresh),
+    ];
+
     const id = setInterval(() => fetchStats(true), 30_000);
-    return () => clearInterval(id);
-  }, []);
+    return () => {
+      clearInterval(id);
+      unsubscribers.forEach((unsub) => unsub());
+    };
+  }, [subscribe]);
 
   const fetchStats = async (isPolling = false) => {
     try {

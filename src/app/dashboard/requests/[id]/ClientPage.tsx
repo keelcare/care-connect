@@ -16,7 +16,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { api } from '@/lib/api';
@@ -35,7 +35,7 @@ export default function RequestDetailsPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
 
-  const { onRefresh, offRefresh } = useSocket();
+  const { subscribe } = useSSE();
 
   const fetchRequestDetails = React.useCallback(async () => {
     if (!params?.id) return;
@@ -63,17 +63,28 @@ export default function RequestDetailsPage() {
   }, [fetchRequestDetails]);
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Request Details Page - Received Refresh Event:', data);
-      // Refresh if it's a booking/request update OR if it specifically matches this request ID
-      if (data.category === 'booking' || data.category === 'request' || data.relatedId === params?.id) {
-        fetchRequestDetails();
-      }
+    const handleRefresh = () => {
+      console.log('Request Details Page - Received SSE Refresh Event');
+      // In this specific page, any mutation might be relevant (assign, cancel, new booking, etc)
+      fetchRequestDetails();
     };
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh, fetchRequestDetails, params?.id]);
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_REJECTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CANCELLED, handleRefresh),
+    ];
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe, fetchRequestDetails]);
 
   const handleCancel = async (reason: string) => {
     if (!request) return;

@@ -14,7 +14,7 @@ import {
 import { Bell, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Booking } from '@/types/api';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 type FilterType = 'all' | NotificationCategory;
 
@@ -42,17 +42,17 @@ export default function NannyNotificationsPage() {
     }
   };
 
-  const { onRefresh, offRefresh } = useSocket();
+  const { subscribe } = useSSE();
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Real-time refresh triggered in Nanny Notifications Page:', data);
+    const handleRefresh = () => {
+      console.log('Real-time refresh triggered in Nanny Notifications Page via SSE');
       fetchNotifications();
     };
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh]);
+    const unsubscribe = subscribe(SSE_EVENT_TYPES.NOTIFICATION, handleRefresh);
+    return () => unsubscribe();
+  }, [subscribe]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
