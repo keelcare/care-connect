@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePayment } from '@/hooks/usePayment';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
@@ -62,8 +62,8 @@ export default function ParentBookingsPage() {
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [bookingToReschedule, setBookingToReschedule] = useState<Booking | ServiceRequest | null>(null);
 
-  // Socket Integration
-  const { onRefresh, offRefresh } = useSocket();
+  // SSE Integration
+  const { subscribe } = useSSE();
 
   const normalizeStatus = (s: any) => String(s || '').trim().toUpperCase();
 
@@ -151,16 +151,26 @@ export default function ParentBookingsPage() {
   }, [user]);
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Bookings Page - Received Refresh Event:', data);
-      if (data.category === 'booking' || data.category === 'request' || data.category === 'message') {
-        fetchData();
-      }
+    const handleRefresh = () => {
+      console.log('Bookings Page - SSE Refresh Triggered');
+      fetchData();
     };
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh, fetchData]);
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_MATCHED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_CANCELLED, handleRefresh),
+    ];
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe, fetchData]);
 
   // Load paid status from local storage
   useEffect(() => {

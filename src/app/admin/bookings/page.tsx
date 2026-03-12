@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import styles from './page.module.css';
 
 // Extended booking type to handle Prisma relation names from backend
@@ -37,6 +38,7 @@ export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { subscribe } = useSSE();
 
   useEffect(() => {
     if (user && user.role !== 'admin') {
@@ -48,6 +50,26 @@ export default function AdminBookingsPage() {
       fetchBookings();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Admin SSE real-time refresh
+    const handleRefresh = () => {
+      console.log('Admin Bookings Page - SSE Refresh Triggered');
+      fetchBookings();
+    };
+
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+    ];
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe]);
 
   const fetchBookings = async () => {
     try {
@@ -228,68 +250,68 @@ export default function AdminBookingsPage() {
         <table className="w-full whitespace-nowrap">
           <thead className="border-b border-neutral-200">
             <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Job Title
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Parent
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Nanny
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Start Time
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                  Actions
-                </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Job Title
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Parent
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Nanny
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Start Time
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-100">
+            {bookings.map((booking) => (
+              <tr
+                key={booking.id}
+                className="hover:bg-neutral-50/50 transition-colors"
+              >
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">
+                  {getJobTitle(booking)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
+                  {getParentName(booking)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
+                  {getNannyName(booking)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-neutral-500">
+                  {new Date(booking.start_time).toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusClass(booking.status)}`}
+                  >
+                    {booking.status.toLowerCase().replace('_', ' ')}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      router.push(`/admin/bookings/${booking.id}`)
+                    }
+                    className="rounded-lg hover:bg-neutral-50"
+                  >
+                    View Details
+                  </Button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {bookings.map((booking) => (
-                <tr
-                  key={booking.id}
-                  className="hover:bg-neutral-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">
-                    {getJobTitle(booking)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                    {getParentName(booking)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                    {getNannyName(booking)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-neutral-500">
-                    {new Date(booking.start_time).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusClass(booking.status)}`}
-                    >
-                      {booking.status.toLowerCase().replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        router.push(`/admin/bookings/${booking.id}`)
-                      }
-                      className="rounded-lg hover:bg-neutral-50"
-                    >
-                      View Details
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

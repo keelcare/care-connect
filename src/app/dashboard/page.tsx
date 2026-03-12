@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { api } from '@/lib/api';
 import { Booking, Review } from '@/types/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -97,20 +97,31 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, fetchDashboardData]);
 
-  // Real-time Refresh
-  const { onRefresh, offRefresh } = useSocket();
+  // Real-time Refresh via SSE
+  const { subscribe } = useSSE();
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Real-time refresh triggered in Nanny Dashboard:', data);
-      if (data.category === 'booking' || data.category === 'request') {
-        fetchDashboardData();
-      }
-    };
+    const nannyEvents = [
+      SSE_EVENT_TYPES.BOOKING_CREATED,
+      SSE_EVENT_TYPES.BOOKING_UPDATED,
+      SSE_EVENT_TYPES.BOOKING_STARTED,
+      SSE_EVENT_TYPES.BOOKING_COMPLETED,
+      SSE_EVENT_TYPES.BOOKING_CANCELLED,
+      SSE_EVENT_TYPES.BOOKING_RESCHEDULED,
+      SSE_EVENT_TYPES.ASSIGNMENT_CREATED,
+      SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED,
+      SSE_EVENT_TYPES.ASSIGNMENT_REJECTED,
+    ];
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh, fetchDashboardData]);
+    const unsubscribers = nannyEvents.map((eventType) =>
+      subscribe(eventType, () => {
+        console.log('[SSE] Nanny dashboard refreshing on event:', eventType);
+        fetchDashboardData();
+      })
+    );
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe, fetchDashboardData]);
 
   const handleMessageBooking = async (booking: Booking) => {
     try {

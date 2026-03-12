@@ -51,9 +51,6 @@ interface SocketContextType {
   // Notification events
   onNotification: (callback: (data: any) => void) => void;
   offNotification: (callback: (data: any) => void) => void;
-  // Refresh events for data re-validation
-  onRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
-  offRefresh: (callback: (data: { category: string; relatedId?: string }) => void) => void;
 }
 
 
@@ -106,18 +103,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         message: notification.message || '',
         duration: 6000,
       });
-
-      // Also trigger refresh if category is present
-      if (notification.category) {
-        newSocket.emit('local:refresh', {
-          category: notification.category,
-          relatedId: notification.related_id
-        });
-      }
-    });
-
-    newSocket.on('local:refresh', (data: any) => {
-      // This is a local-only event to bridge notifications to refresh listeners
     });
 
     setSocket(newSocket);
@@ -234,20 +219,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     [socket]
   );
 
-  const onRefresh = useCallback(
-    (callback: (data: any) => void) => {
-      socket?.on('local:refresh', callback);
-    },
-    [socket]
-  );
-
-  const offRefresh = useCallback(
-    (callback: (data: any) => void) => {
-      socket?.off('local:refresh', callback);
-    },
-    [socket]
-  );
-
   const value = React.useMemo(
     () => ({
       socket,
@@ -267,8 +238,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       unsubscribeFromGeofence,
       onNotification,
       offNotification,
-      onRefresh,
-      offRefresh,
     }),
     [
       socket,
@@ -288,8 +257,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       unsubscribeFromGeofence,
       onNotification,
       offNotification,
-      onRefresh,
-      offRefresh,
     ]
   );
 

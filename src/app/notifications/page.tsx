@@ -14,7 +14,7 @@ import {
 import { Bell, Loader2, CheckCheck } from 'lucide-react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { motion } from 'framer-motion';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 type FilterType = 'all' | NotificationCategory;
 
@@ -42,18 +42,27 @@ export default function NotificationsPage() {
     }
   };
 
-  const { onRefresh, offRefresh } = useSocket();
+  const { subscribe } = useSSE();
 
   useEffect(() => {
-    const handleRefresh = (data: any) => {
-      console.log('Real-time refresh triggered in Notifications Page:', data);
-      // Refresh notifications for ANY refresh event (new message, new booking etc)
+    const handleRefresh = () => {
+      console.log('Real-time refresh triggered in Notifications Page');
       fetchNotifications();
     };
 
-    onRefresh(handleRefresh);
-    return () => offRefresh(handleRefresh);
-  }, [onRefresh, offRefresh]);
+    const unsubscribers = [
+      subscribe(SSE_EVENT_TYPES.NOTIFICATION, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
+      subscribe(SSE_EVENT_TYPES.REQUEST_MATCHED, handleRefresh),
+    ];
+
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [subscribe]);
 
   const handleMarkAsRead = async (id: string) => {
     try {

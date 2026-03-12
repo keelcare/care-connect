@@ -7,7 +7,7 @@ import { ReturningUserDashboard } from '@/components/dashboard/ReturningUserDash
 import { NewUserDashboard } from '@/components/dashboard/NewUserDashboard';
 import { api } from '@/lib/api';
 import { Spinner } from '@/components/ui/Spinner';
-import { useSocket } from '@/context/SocketProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 
 export default function HomePage() {
     const { user, loading: authLoading } = useAuth();
@@ -105,21 +105,32 @@ export default function HomePage() {
         fetchDashboardData();
     }, [fetchDashboardData]);
 
-    // 2. Real-time Refresh
-    const { onRefresh, offRefresh } = useSocket();
+    // 2. Real-time Refresh via SSE
+    const { subscribe } = useSSE();
 
     useEffect(() => {
-        const handleRefresh = (data: any) => {
-            console.log('Real-time refresh triggered in Parent Dashboard:', data);
-            // Re-fetch everything if a booking changes
-            if (data.category === 'booking' || data.category === 'request') {
-                fetchDashboardData();
-            }
-        };
+        // Refetch when any booking-related event arrives for this parent
+        const bookingEvents = [
+            SSE_EVENT_TYPES.BOOKING_CREATED,
+            SSE_EVENT_TYPES.BOOKING_UPDATED,
+            SSE_EVENT_TYPES.BOOKING_STARTED,
+            SSE_EVENT_TYPES.BOOKING_COMPLETED,
+            SSE_EVENT_TYPES.BOOKING_CANCELLED,
+            SSE_EVENT_TYPES.BOOKING_RESCHEDULED,
+            SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED,
+            SSE_EVENT_TYPES.REQUEST_MATCHED,
+            SSE_EVENT_TYPES.REQUEST_CANCELLED,
+        ];
 
-        onRefresh(handleRefresh);
-        return () => offRefresh(handleRefresh);
-    }, [onRefresh, offRefresh, fetchDashboardData]);
+        const unsubscribers = bookingEvents.map((eventType) =>
+            subscribe(eventType, () => {
+                console.log('[SSE] Parent dashboard refreshing on event:', eventType);
+                fetchDashboardData();
+            })
+        );
+
+        return () => unsubscribers.forEach((unsub) => unsub());
+    }, [subscribe, fetchDashboardData]);
 
     if (authLoading || loading) {
         return (
