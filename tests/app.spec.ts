@@ -7,7 +7,7 @@ test.describe('Application Smoke Tests', () => {
     // Check for a key element on the home page (e.g., CTA or Hero text)
     // We look for a "Get Started" or similar button, or just ensure the body is visible
     await expect(page.locator('body')).toBeVisible();
-    await expect(page).toHaveTitle(/CareConnect|Home/i);
+    await expect(page).toHaveTitle(/Keel/i);
   });
 
   test('Browse page loads', async ({ page }) => {
