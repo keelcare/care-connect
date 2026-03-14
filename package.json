@@ -17,6 +17,7 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write ."
+
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.26",
@@ -81,5 +82,11 @@
     "prettier": "^3.8.0",
     "sharp": "^0.34.5",
     "typescript": "^5"
+  },
+  "overrides": {
+    "minimatch": "^5.0.0",
+    "tar": "^6.2.0",
+    "yauzl": "^3.2.1"
   }
+  
 }
