@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { api, setTokenRefresher, fetchApi } from '@/lib/api';
-import { User } from '@/types/api';
+import { User, AuthResponse } from '@/types/api';
 import { App } from '@capacitor/app';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { BannedModal } from '@/components/banned/BannedModal';
@@ -20,7 +20,7 @@ import { BannedModal } from '@/components/banned/BannedModal';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (userData: User) => Promise<void>;
+  login: (data: User | AuthResponse) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -106,11 +106,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, [checkAuth, pathname]);
 
-  const login = async (userData: User) => {
-    if (typeof window !== 'undefined') localStorage.removeItem('is_logged_out');
-    // Standard login: user data provided, set immediately
-    setUser(userData);
+  const login = async (data: User | AuthResponse) => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('is_logged_out');
+
+      // Check if data is AuthResponse and store tokens
+      if ('access_token' in data) {
+        if (data.access_token) localStorage.setItem('access_token', data.access_token);
+        if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token);
+        setUser(data.user);
+      } else {
+        setUser(data);
+      }
+    } else {
+      setUser('user' in data ? (data as any).user : data);
+    }
+
     setLoading(false);
+    const userData = 'user' in data ? data.user : data;
     console.log('Logged in user:', userData);
 
     // If user is banned, BannedModal will render — don't route them to any dashboard.
@@ -134,7 +147,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Logout failed silently', error);
     } finally {
-      if (typeof window !== 'undefined') localStorage.setItem('is_logged_out', 'true');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('is_logged_out', 'true');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
       // ALWAYS cleanup client state
       setUser(null);
       router.push('/');

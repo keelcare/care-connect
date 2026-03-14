@@ -8,6 +8,7 @@ import {
   NearbyJob,
   NearbySearchResponse,
   ApiResponse,
+  AuthResponse,
   CreateServiceRequestDto,
   ServiceRequest,
   Booking,
@@ -69,12 +70,21 @@ export async function fetchApi<T>(
   skipRefresh = false,
   skipRedirect = false
 ): Promise<T> {
-  // With Cookie-based auth, we MUST send credentials
+  // Fallback: Add Authorization header if token exists in localStorage
+  let authHeaders = {};
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      authHeaders = { Authorization: `Bearer ${token}` };
+    }
+  }
+
   const fetchOptions: RequestInit = {
     ...options,
     credentials: 'include', // This sends cookies with the request
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders,
       ...options.headers,
     },
   };
@@ -198,9 +208,9 @@ export async function fetchApi<T>(
 
 export const api = {
   auth: {
-    // Login now returns just the user, tokens are in cookies
+    // Login now returns AuthResponse (user + tokens)
     login: (body: LoginDto) =>
-      fetchApi<{ user: User }>('/auth/login', {
+      fetchApi<AuthResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify(body),
       }),
@@ -230,9 +240,9 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ token, newPassword }),
       }),
-    // Exchange a temporary token for a session (cookies)
+    // Exchange a temporary token for a session
     setSession: (token: string) =>
-      fetchApi<User>('/auth/session', {
+      fetchApi<AuthResponse>('/auth/session', {
         method: 'POST',
         body: JSON.stringify({ token }),
       }),
@@ -541,6 +551,9 @@ export const api = {
         credentials: 'include', // Send HttpOnly cookies
         headers: {
           'Content-Type': 'application/json',
+          ...(typeof window !== 'undefined' && localStorage.getItem('access_token')
+            ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
+            : {}),
         },
         body: JSON.stringify({ message }),
       });
@@ -560,6 +573,11 @@ export const api = {
       return fetch(`${API_URL}/verification/upload`, {
         method: 'POST',
         credentials: 'include', // CRITICAL: Send cookies with request
+        headers: {
+          ...(typeof window !== 'undefined' && localStorage.getItem('access_token')
+            ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
+            : {}),
+        },
         // Content-Type is intentionally omitted to let the browser set it with boundary
         body: formData,
       }).then(async (res) => {

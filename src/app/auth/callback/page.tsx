@@ -35,18 +35,13 @@ function CallbackContent() {
           // Instantly wipe the massive token from the user's URL bar for a cleaner experience
           window.history.replaceState({}, document.title, window.location.pathname);
 
-          console.log('Exchanging token for session...');
-          await api.auth.setSession(token);
+          const response = await api.auth.setSession(token);
+          await login(response);
+        } else {
+          // If no token, we might still have a session cookie
+          const user = await api.users.me();
+          await login(user);
         }
-
-        // With cookie-based auth, we just fetch the user.
-        // The cookies are already set by the backend (via setSession or redirect)
-        console.log('Fetching user data for callback...');
-        const user = await api.users.me();
-
-        // If we get here, we are logged in
-        await login(user);
-        // AuthContext login will handle the redirect
       } catch (err) {
         console.error('Failed to verify session during callback:', err);
         router.push('/auth/login?error=auth_failed');

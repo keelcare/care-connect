@@ -27,7 +27,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const response = await api.auth.login(formData);
-      await login(response.user);
+      await login(response);
     } catch (error: any) {
       console.error('Login failed:', error);
       setErrors((prev) => ({
