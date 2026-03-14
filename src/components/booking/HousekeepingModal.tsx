@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Home, FileText, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, Home, FileText, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ServiceInfoModal } from './ServiceInfoModal';
 
 interface HousekeepingModalProps {
     onClose: () => void;
@@ -43,6 +44,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
     const [missingLocation, setMissingLocation] = useState(false);
     const [hourlyRate, setHourlyRate] = useState<number | null>(null);
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         date: '',
@@ -162,7 +164,16 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 <div className="sticky top-0 bg-gradient-to-r from-[#0F172A] to-[#1e293b] text-white p-8 rounded-t-[40px] z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-3xl font-bold font-display mb-2">Housekeeping Booking</h2>
+                            <h2 className="text-fluid-3xl font-bold font-display mb-2 flex items-center gap-3">
+                                Housekeeping Booking
+                                <button
+                                    type="button"
+                                    onClick={() => setIsInfoModalOpen(true)}
+                                    className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                                >
+                                    <Info size={18} />
+                                </button>
+                            </h2>
                             <p className="text-gray-300 font-body">Professional home cleaning services</p>
                         </div>
                         <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
@@ -317,6 +328,12 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                     </button>
                 </form>
             </motion.div>
+
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Housekeeping"
+            />
         </motion.div>
     );
 }

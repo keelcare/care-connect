@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, PawPrint, FileText, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, PawPrint, FileText, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ServiceInfoModal } from './ServiceInfoModal';
 
 interface PetCareModalProps {
     onClose: () => void;
@@ -38,6 +39,7 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
     const [missingLocation, setMissingLocation] = useState(false);
     const [hourlyRate, setHourlyRate] = useState<number | null>(null);
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         date: '',
@@ -149,7 +151,16 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                 <div className="sticky top-0 bg-gradient-to-r from-[#C9C6E5] to-[#b8b4d9] text-[#0F172A] p-8 rounded-t-[40px] z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-3xl font-bold font-display mb-2">Pet Care Booking</h2>
+                            <h2 className="text-3xl font-bold font-display mb-2 flex items-center gap-3">
+                                Pet Care Booking
+                                <button
+                                    type="button"
+                                    onClick={() => setIsInfoModalOpen(true)}
+                                    className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center hover:bg-black/20 transition-colors"
+                                >
+                                    <Info size={18} />
+                                </button>
+                            </h2>
                             <p className="text-gray-700 font-body">Professional care for your furry friends</p>
                         </div>
                         <button onClick={onClose} className="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors">
@@ -315,6 +326,12 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                     </button>
                 </form>
             </motion.div>
+
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Pet Care"
+            />
         </motion.div>
     );
 }

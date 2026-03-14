@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Users, FileText, AlertCircle, Check, Sparkles } from 'lucide-react';
+import { X, Calendar, Clock, Users, FileText, AlertCircle, Check, Sparkles, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ServiceInfoModal } from './ServiceInfoModal';
 
 interface ShadowTeacherModalProps {
     onClose: () => void;
@@ -86,6 +87,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const [missingLocation, setMissingLocation] = useState(false);
     const [hourlyRate, setHourlyRate] = useState<number>(500); // Default to 500 until fetched
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         planType: 'ONE_TIME',
@@ -450,8 +452,15 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
 
                             {/* Title */}
-                            <h1 className="text-3xl font-display font-medium text-primary">
+                            <h1 className="text-3xl font-display font-medium text-primary flex items-center gap-3">
                                 Book a Shadow Teacher
+                                <button
+                                    type="button"
+                                    onClick={() => setIsInfoModalOpen(true)}
+                                    className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                                >
+                                    <Info size={18} />
+                                </button>
                             </h1>
 
                             {/* Subscription Plan Selection */}
@@ -716,6 +725,12 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     </div>
                 </div>
             </motion.div>
+
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Shadow Teacher"
+            />
         </motion.div>
     );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Calendar, Clock, Users, FileText, AlertCircle, HeartHandshake } from 'lucide-react';
+import { X, Calendar, Clock, Users, FileText, AlertCircle, HeartHandshake, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child } from '@/types/api';
+import { ServiceInfoModal } from './ServiceInfoModal';
 
 interface SpecialNeedsModalProps {
     onClose: () => void;
@@ -64,6 +65,8 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         mobilityAssistance: false,
         specialRequirements: '',
     });
+
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     // Calendar state
     const today = new Date();
@@ -390,8 +393,15 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                             <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
 
                                 {/* Title */}
-                                <h1 className="text-3xl font-display font-medium text-[#CC7A68]">
+                                <h1 className="text-3xl font-display font-medium text-[#CC7A68] flex items-center gap-3">
                                     Special Needs Care
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsInfoModalOpen(true)}
+                                        className="w-8 h-8 rounded-full bg-[#CC7A68]/10 text-[#CC7A68] flex items-center justify-center hover:bg-[#CC7A68]/20 transition-colors"
+                                    >
+                                        <Info size={18} />
+                                    </button>
                                 </h1>
 
                                 {/* Date Selection */}
@@ -636,6 +646,12 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 onClose={() => setIsAddChildModalOpen(false)}
                 onSave={handleChildSave}
                 initialData={{ profile_type: 'SPECIAL_NEEDS' }}
+            />
+
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Special Needs"
             />
         </>
     );

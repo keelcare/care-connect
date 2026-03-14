@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, FileText, AlertCircle } from 'lucide-react';
+import { X, FileText, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child } from '@/types/api';
+import { ServiceInfoModal } from './ServiceInfoModal';
 
 interface ChildCareModalProps {
     onClose: () => void;
@@ -65,6 +66,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const [startTime, setStartTime] = useState<string>('');
     const [durationStr, setDurationStr] = useState<string>('');
     const [numPeople, setNumPeople] = useState('1');
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     const [specialRequirements, setSpecialRequirements] = useState('');
 
@@ -437,8 +439,15 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                             <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
                                 
                                 {/* 1. Title */}
-                                <h1 className="text-fluid-3xl font-display font-medium text-primary-900">
+                                <h1 className="text-fluid-3xl font-display font-medium text-primary-900 flex items-center gap-3">
                                     Book a Child Care
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsInfoModalOpen(true)}
+                                        className="w-8 h-8 rounded-full bg-primary-900/10 text-primary-900 flex items-center justify-center hover:bg-primary-900/20 transition-colors"
+                                    >
+                                        <Info size={18} />
+                                    </button>
                                 </h1>
 
                                 {/* 2. Profiles */}
@@ -662,6 +671,13 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 isOpen={isAddChildModalOpen}
                 onClose={() => setIsAddChildModalOpen(false)}
                 onSave={handleChildSave}
+            />
+
+            {/* Service info Modal */}
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Child Care"
             />
         </>
     );
