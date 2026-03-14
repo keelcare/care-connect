@@ -1,78 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { api } from '@/lib/api';
-import { Notification, NotificationCategory } from '@/types/notification';
+import { NotificationCategory } from '@/types/notification';
 import { NotificationCard } from '@/components/notifications/NotificationCard';
 import {
-  bookingToNotification,
-  reviewToNotification,
   groupNotificationsByDate,
 } from '@/lib/notificationHelpers';
 import { Bell, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Booking } from '@/types/api';
-import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 type FilterType = 'all' | NotificationCategory;
 
 export default function NannyNotificationsPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationContext();
+
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user]);
-
-  const fetchNotifications = async () => {
-    try {
-      const data = await api.enhancedNotifications.list();
-      setNotifications(data);
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const { subscribe } = useSSE();
-
-  useEffect(() => {
-    const handleRefresh = () => {
-      console.log('Real-time refresh triggered in Nanny Notifications Page via SSE');
-      fetchNotifications();
-    };
-
-    const unsubscribe = subscribe(SSE_EVENT_TYPES.NOTIFICATION, handleRefresh);
-    return () => unsubscribe();
-  }, [subscribe]);
-
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      await api.enhancedNotifications.markAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      await api.enhancedNotifications.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
-    }
-  };
 
   const filteredNotifications =
     activeFilter === 'all'
@@ -80,8 +34,6 @@ export default function NannyNotificationsPage() {
       : notifications.filter((n) => n.category === activeFilter);
 
   const groupedNotifications = groupNotificationsByDate(filteredNotifications);
-
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const filters: { label: string; value: FilterType }[] = [
     { label: 'All', value: 'all' },
@@ -104,7 +56,7 @@ export default function NannyNotificationsPage() {
         </div>
         {unreadCount > 0 && (
           <Button
-            onClick={handleMarkAllAsRead}
+            onClick={markAllAsRead}
             variant="outline"
             className="rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-700"
           >
@@ -178,7 +130,7 @@ export default function NannyNotificationsPage() {
                   <NotificationCard
                     key={notification.id}
                     notification={notification}
-                    onMarkAsRead={handleMarkAsRead}
+                    onMarkAsRead={markAsRead}
                   />
                 ))}
               </div>

@@ -95,14 +95,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     newSocket.on('notification', (notification: any) => {
       console.log('Socket notification received:', notification);
-
-      // Trigger toast
-      addToast({
-        type: notification.type || 'info',
-        title: notification.title || 'Notification',
-        message: notification.message || '',
-        duration: 6000,
-      });
+      // Notification is handled globally by NotificationOverlay
     });
 
     setSocket(newSocket);

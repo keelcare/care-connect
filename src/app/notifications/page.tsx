@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Booking } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
-import { api } from '@/lib/api';
-import { Notification, NotificationCategory } from '@/types/notification';
+import { NotificationCategory } from '@/types/notification';
 import { NotificationCard } from '@/components/notifications/NotificationCard';
 import {
   groupNotificationsByDate,
@@ -14,75 +12,22 @@ import {
 import { Bell, Loader2, CheckCheck } from 'lucide-react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { motion } from 'framer-motion';
-import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 type FilterType = 'all' | NotificationCategory;
 
 export default function NotificationsPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  const {
+    notifications,
+    loading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationContext();
+
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user]);
-
-  const fetchNotifications = async () => {
-    try {
-      const data = await api.enhancedNotifications.list();
-      setNotifications(data);
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const { subscribe } = useSSE();
-
-  useEffect(() => {
-    const handleRefresh = () => {
-      console.log('Real-time refresh triggered in Notifications Page');
-      fetchNotifications();
-    };
-
-    const unsubscribers = [
-      subscribe(SSE_EVENT_TYPES.NOTIFICATION, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.REQUEST_MATCHED, handleRefresh),
-    ];
-
-    return () => unsubscribers.forEach((unsub) => unsub());
-  }, [subscribe]);
-
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      await api.enhancedNotifications.markAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      await api.enhancedNotifications.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
-    }
-  };
 
   const filteredNotifications =
     activeFilter === 'all'
@@ -113,7 +58,7 @@ export default function NotificationsPage() {
           </div>
 
           <button
-            onClick={handleMarkAllAsRead}
+            onClick={markAllAsRead}
             disabled={notifications.every((n) => n.is_read)}
             className="flex items-center gap-2 text-primary hover:text-primary-800 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -178,7 +123,7 @@ export default function NotificationsPage() {
                     <NotificationCard
                       key={notification.id}
                       notification={notification}
-                      onMarkAsRead={handleMarkAsRead}
+                      onMarkAsRead={markAsRead}
                     />
                   ))}
                 </div>

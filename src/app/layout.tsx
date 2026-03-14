@@ -8,7 +8,9 @@ import { ToastProvider } from '@/components/ui/ToastProvider';
 import { AuthProvider } from '@/context/AuthContext';
 import { SocketProvider } from '@/context/SocketProvider';
 import { SSEProvider } from '@/context/SSEProvider';
+import { NotificationProvider } from '@/context/NotificationContext';
 import { Chatbot } from '@/components/ai/Chatbot';
+import { NotificationOverlay } from '@/components/notifications/NotificationOverlay';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import { Fraunces, Lora, Cormorant_Garamond } from 'next/font/google';
@@ -167,19 +169,22 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           <SSEProvider>
             <SocketProvider>
-              {!hideHeader && <Navbar />}
-              <main
-                className={!hideHeader ? 'pt-24' : ''}
-                style={{
-                  minHeight: hideHeader
-                    ? '100vh'
-                    : 'calc(100vh - 96px-400px)',
-                }}
-              >
-                {children}
-              </main>
-              {/* <Chatbot /> */}
-              {!hideFooter && <Footer />}
+              <NotificationProvider>
+                {!hideHeader && <Navbar />}
+                <main
+                  className={!hideHeader ? 'pt-24' : ''}
+                  style={{
+                    minHeight: hideHeader
+                      ? '100vh'
+                      : 'calc(100vh - 96px-400px)',
+                  }}
+                >
+                  {children}
+                </main>
+                {/* <Chatbot /> */}
+                {!hideFooter && <Footer />}
+                <NotificationOverlay />
+              </NotificationProvider>
             </SocketProvider>
           </SSEProvider>
         </AuthProvider>

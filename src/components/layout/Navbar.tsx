@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Menu,
   X,
-  Bell,
   ChevronDown,
   MapPin,
   LogOut,
@@ -22,7 +21,8 @@ import { Avatar } from '@/components/ui/avatar';
 import { usePreferences } from '@/hooks/usePreferences';
 import { LocationModal } from '@/components/features/LocationModal';
 import { LocationSelector } from './Navbar/LocationSelector';
-import { useSocket } from '@/context/SocketProvider';
+import { NotificationButton } from './Navbar/NotificationButton';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 
 const NAV_ITEMS_PARENT = [
@@ -51,27 +51,6 @@ export const Navbar: React.FC = () => {
   const { preferences } = usePreferences();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-  const { onNotification, offNotification } = useSocket();
-  const [hasUnread, setHasUnread] = useState(false);
-
-  // Listen for real-time notifications
-  useEffect(() => {
-    const handleNotification = () => {
-      setHasUnread(true);
-    };
-
-    onNotification(handleNotification);
-    return () => {
-      offNotification(handleNotification);
-    };
-  }, [onNotification, offNotification]);
-
-  // Reset unread status when visiting notifications page
-  useEffect(() => {
-    if (pathname === '/notifications' || pathname === '/dashboard/notifications') {
-      setHasUnread(false);
-    }
-  }, [pathname]);
 
   // Close menus when pathname changes
   useEffect(() => {
@@ -173,18 +152,8 @@ export const Navbar: React.FC = () => {
             {user ? (
               <div className="flex items-center gap-1.5 md:gap-3">
                 <LocationSelector onClick={() => setIsLocationModalOpen(true)} />
-                {/* Notifications */}
-                <button
-                  onClick={() => router.push(user.role === 'nanny' ? '/dashboard/notifications' : '/notifications')}
-                  className="relative p-1.5 text-primary-900/70 hover:text-primary-900 transition-colors rounded-full hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full outline-none"
-                  aria-label="Notifications"
-                >
-                  <Bell size={18} />
-                  {hasUnread && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                  )}
-                </button>
-
+                <NotificationButton />
+                
                 {/* Profile Dropdown */}
                 <div className="relative" onKeyDown={(e) => {
                   if (e.key === 'Escape') setIsProfileOpen(false);
