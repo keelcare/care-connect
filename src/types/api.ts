@@ -705,3 +705,78 @@ export interface UpdateTicketDto {
   priority?: SupportPriority;
   admin_notes?: string;
 }
+
+export type PaymentAuditStatus = 'created' | 'captured' | 'failed';
+
+export interface PaymentAuditQuery {
+  orderId?: string;
+  bookingId?: string;
+  razorpayPaymentId?: string;
+  toStatus?: PaymentAuditStatus;
+  triggeredBy?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaymentAuditPaymentInfo {
+  id?: string;
+  orderId?: string;
+  bookingId?: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string | null;
+  status?: string;
+  amount?: number;
+  currency?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PaymentAuditRow {
+  id: string;
+  paymentId?: string;
+  orderId?: string;
+  bookingId?: string;
+  fromStatus?: string | null;
+  toStatus: PaymentAuditStatus | string;
+  triggeredBy?: string | null;
+  metadata?: Record<string, unknown> | null;
+  createdAt: string;
+  payment?: PaymentAuditPaymentInfo | null;
+}
+
+export interface PaymentAuditPagination {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaymentAuditListResponse {
+  items: PaymentAuditRow[];
+  pagination: PaymentAuditPagination;
+}
+
+export interface PaymentAuditSummaryWindow {
+  last7Days?: {
+    from?: string;
+    to?: string;
+  };
+  [key: string]: unknown;
+}
+
+export interface PaymentAuditSummaryCounts {
+  failedLast7Days: number;
+  duplicateAttemptsLast7Days: number;
+  createdStuckOver24Hours: number;
+}
+
+export interface PaymentAuditSummary {
+  window: PaymentAuditSummaryWindow;
+  counts?: Record<string, number>;
+  failedLast7Days: number;
+  duplicateAttemptsLast7Days: number;
+  createdStuckOver24Hours: number;
+  generatedAt: string;
+}

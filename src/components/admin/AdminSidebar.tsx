@@ -14,6 +14,7 @@ import {
   Star,
   Bell,
   Settings,
+  CreditCard,
   ChevronLeft,
   ChevronRight,
   X,
@@ -48,6 +49,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { icon: Users, label: 'Users', href: '/admin/users' },
       { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
+      { icon: CreditCard, label: 'Payment Audit', href: '/admin/payment-audit' },
       { icon: ShieldCheck, label: 'Verify Nannies', href: '/admin/verifications' },
       { icon: UserCog, label: 'Manual Assign', href: '/admin/manual-assignment' },
     ],
@@ -117,12 +119,18 @@ function SidebarContent({
       >
         {isCollapsed ? (
           <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-            <img src="/logo.svg" alt="Keel" className="h-4 w-auto brightness-0 invert" />
+            <Image
+              src="/logo.svg"
+              alt="Keel"
+              width={16}
+              height={16}
+              className="h-4 w-auto brightness-0 invert"
+            />
           </div>
         ) : (
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <img src="/logo.svg" alt="Keel" className="h-5 w-auto" />
+              <Image src="/logo.svg" alt="Keel" width={20} height={20} className="h-5 w-auto" />
             </div>
             <div>
               <p className="text-white font-bold text-lg leading-none font-display">Keel</p>

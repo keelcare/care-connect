@@ -49,6 +49,10 @@ import {
   SupportTicket,
   CreateTicketDto,
   UpdateTicketDto,
+  PaymentAuditQuery,
+  PaymentAuditListResponse,
+  PaymentAuditSummary,
+  PaymentAuditRow,
 } from '@/types/api';
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -630,6 +634,28 @@ export const api = {
           razorpay_signature,
         }),
       }),
+    getAudit: (query: PaymentAuditQuery = {}) => {
+      const params = new URLSearchParams();
+
+      if (query.orderId) params.set('orderId', query.orderId);
+      if (query.bookingId) params.set('bookingId', query.bookingId);
+      if (query.razorpayPaymentId) params.set('razorpayPaymentId', query.razorpayPaymentId);
+      if (query.toStatus) params.set('toStatus', query.toStatus);
+      if (query.triggeredBy) params.set('triggeredBy', query.triggeredBy);
+      if (query.from) params.set('from', query.from);
+      if (query.to) params.set('to', query.to);
+      if (typeof query.page === 'number') params.set('page', String(query.page));
+      if (typeof query.pageSize === 'number') params.set('pageSize', String(query.pageSize));
+
+      const queryString = params.toString();
+      return fetchApi<PaymentAuditListResponse>(
+        `/payments/audit${queryString ? `?${queryString}` : ''}`
+      );
+    },
+    getAuditSummary: () =>
+      fetchApi<PaymentAuditSummary>('/payments/audit/summary'),
+    getOrderAuditHistory: (orderId: string) =>
+      fetchApi<PaymentAuditRow[]>(`/payments/audit/${orderId}`),
   },
   family: {
     list: () => fetchApi<Child[]>('/family/children'),
