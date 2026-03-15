@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     iosScheme: 'https',
     allowNavigation: [
-      'keel-backend.onrender.com',
+      'care-connect-backend-ok23.onrender.com',
       'checkout.razorpay.com',
       'api.razorpay.com',
       'nominatim.openstreetmap.org',

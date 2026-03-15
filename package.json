@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED='0' next dev",
     "build": "next build",
-    "build:mobile": "BUILD_TARGET=capacitor next build",
+    "build:mobile": "node scripts/mobile-build.js",
     "sync:mobile": "npm run build:mobile && npx cap sync",
     "cap:run:ios": "npx cap run ios",
     "cap:run:android": "npx cap run android",

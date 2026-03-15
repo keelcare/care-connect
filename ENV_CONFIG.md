@@ -1,79 +1,30 @@
 # Environment Configuration Guide
 
 ## Overview
-Both the frontend and backend now use **single environment files** with easy toggles between local and production configurations.
-
-## Files
-- **Frontend**: `/CareConnect/.env.local`
-- **Backend**: `/care-connect-backend/.env`
-
-## How to Switch Environments
-
-### Frontend (.env.local)
-
-**To use PRODUCTION backend:**
-```env
-# NEXT_PUBLIC_API_URL= http://localhost:4000
-NEXT_PUBLIC_API_URL = https://keel-backend.onrender.com
-```
-
-**To use LOCAL backend:**
-```env
-NEXT_PUBLIC_API_URL=http://localhost:4000
-# NEXT_PUBLIC_API_URL=https://keel-backend.onrender.com
-```
-
-After changing, restart: `npm run dev`
+We use two separate environment files that **never overlap**. Your local web development is never interrupted when you build for mobile.
 
 ---
 
-### Backend (.env)
+## 💻 Web Development ([`.env.local`](file:///Applications/Vscode/CareConnect/.env.local))
+This is your "Ground Truth" for daily development. 
+- **Used by:** `npm run dev` and `npm run build`.
+- **Target:** Always points to `localhost:4000`.
 
-**To use PRODUCTION frontend:**
-```env
-# FRONTEND_URL=http://localhost:3000
-FRONTEND_URL=https://keel-ten.vercel.app
-
-# GOOGLE_CALLBACK_URL=http://localhost:4000/auth/google/callback
-GOOGLE_CALLBACK_URL=https://keel-backend.onrender.com/auth/google/callback
-```
-
-**To use LOCAL frontend:**
-```env
-FRONTEND_URL=http://localhost:3000
-# FRONTEND_URL=https://keel-ten.vercel.app
-
-GOOGLE_CALLBACK_URL=http://localhost:4000/auth/google/callback
-# GOOGLE_CALLBACK_URL=https://keel-backend.onrender.com/auth/google/callback
-```
-
-After changing, restart: `npm run start:dev`
+## 📱 Mobile Builds ([`.env.mobile`](file:///Applications/Vscode/CareConnect/.env.mobile))
+This file is **only** used when building for iOS or Android.
+- **Used by:** `npm run sync:mobile`.
+- **Target:** Points to Production (`onrender.com`).
+- **How it works:** A custom script (`scripts/mobile-build.js`) injects these variables during the build process without ever touching your `.env.local`.
 
 ---
 
-## Common Configurations
-
-### Full Local Development
-- Frontend `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:4000`
-- Backend `.env`: `FRONTEND_URL=http://localhost:3000`
-- **Requires**: Both frontend and backend running locally
-
-### Local Frontend + Production Backend
-- Frontend `.env.local`: `NEXT_PUBLIC_API_URL=https://keel-backend.onrender.com`
-- Backend `.env`: `FRONTEND_URL=http://localhost:3000`
-- **Requires**: Only frontend running locally
-
-### Production (Vercel + Render)
-- Frontend `.env.local`: `NEXT_PUBLIC_API_URL=https://keel-backend.onrender.com`
-- Backend `.env`: `FRONTEND_URL=https://keel-ten.vercel.app`
-- **Requires**: Both deployed
-
----
-
-## Current Configuration
-✅ **Frontend**: Using LOCAL backend (`http://localhost:4000`)
-✅ **Backend**: Using LOCAL frontend (`http://localhost:3000`)
-
-**Note**: To login successfully, you need to either:
-1. Start your local backend server, OR
-2. Switch frontend to use production backend
+## How to Build for Mobile
+Simply run:
+```bash
+npm run sync:mobile
+```
+This will:
+1. Load production settings from `.env.mobile`.
+2. Build the app.
+3. Sync to Xcode/Android Studio.
+4. **Leave your `.env.local` exactly as it was.**
