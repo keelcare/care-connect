@@ -159,9 +159,9 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-[40px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                className="bg-white sm:rounded-[32px] max-w-3xl w-full max-h-[90dvh] sm:max-h-[85vh] overflow-y-auto shadow-2xl"
             >
-                <div className="sticky top-0 bg-gradient-to-r from-[#0F172A] to-[#1e293b] text-white p-8 rounded-t-[40px] z-10">
+                <div className="sticky top-0 bg-gradient-to-r from-[#0F172A] to-[#1e293b] text-white p-6 sm:p-8 sm:rounded-t-[32px] z-10">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-fluid-3xl font-bold font-display mb-2 flex items-center gap-3">
@@ -183,7 +183,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 </div>
 
                 {missingLocation && (
-                    <div className="mx-8 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                    <div className="mx-6 sm:mx-8 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
                         <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-amber-800">Location Required</p>
@@ -194,7 +194,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="p-8">
+                <form onSubmit={handleSubmit} className="p-6 sm:p-8">
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
                             <Home className="w-5 h-5 text-[#0F172A]" />

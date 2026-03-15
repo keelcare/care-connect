@@ -116,7 +116,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 fade-in duration-200',
+          'relative w-full bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90dvh] sm:max-h-[85vh] animate-in zoom-in-95 fade-in duration-200',
           maxWidthClasses[maxWidth],
           className
         )}

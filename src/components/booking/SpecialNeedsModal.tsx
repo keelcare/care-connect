@@ -338,7 +338,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                     animate="visible"
                     exit="exit"
                     onClick={(e) => e.stopPropagation()}
-                    className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[90vh] shadow-2xl relative overflow-hidden flex flex-col"
+                    className="bg-white sm:rounded-[32px] w-full max-w-6xl h-full sm:h-auto sm:max-h-[85vh] shadow-2xl relative overflow-hidden flex flex-col"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white shrink-0">
@@ -390,7 +390,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
 
                         {/* LEFT Panel (Form) */}
                         <div className="flex-1 overflow-y-auto scrollbar-hide">
-                            <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32 lg:pb-6">
+                            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 sm:space-y-8 pb-32 lg:pb-6">
 
                                 {/* Title */}
                                 <h1 className="text-3xl font-display font-medium text-[#CC7A68] flex items-center gap-3">
@@ -617,7 +617,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                         </div>
 
                         {/* RIGHT Panel (Desktop Only) */}
-                        <div className="hidden lg:flex w-[400px] border-l border-gray-100 bg-white flex-col p-8 shrink-0">
+                        <div className="hidden lg:flex w-[350px] border-l border-gray-100 bg-white flex-col p-6 shrink-0 overflow-y-auto">
                             <div className="sticky top-0">
                                 <ServiceSummary />
                                 <div className="mt-6">
