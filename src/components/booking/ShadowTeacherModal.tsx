@@ -417,14 +417,15 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     );
 
     return (
-        <motion.div
-            variants={overlayVars}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center sm:p-4"
-            onClick={onClose}
-        >
+        <>
+            <motion.div
+                variants={overlayVars}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center sm:p-4"
+                onClick={onClose}
+            >
             <motion.div
                 variants={modalVars}
                 initial="hidden"
@@ -773,6 +774,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     </div>
                 </div>
             </motion.div>
+        </motion.div>
 
             <ServiceInfoModal
                 isOpen={isInfoModalOpen}
@@ -785,6 +787,6 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 isOpen={isLocationModalOpen}
                 onClose={() => setIsLocationModalOpen(false)}
             />
-        </motion.div>
+        </>
     );
 }

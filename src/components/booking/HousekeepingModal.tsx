@@ -92,6 +92,8 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
         if (user?.profiles) {
             if (!user.profiles.lat || !user.profiles.lng) {
                 setMissingLocation(true);
+            } else {
+                setMissingLocation(false);
             }
         }
     }, [user]);
@@ -171,13 +173,14 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
     const isFormComplete = formData.date !== '' && formData.startTime !== '' && formData.duration !== '' && formData.serviceTypes.length > 0;
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={onClose}
-        >
+        <>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={onClose}
+            >
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -378,6 +381,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                     )}
                 </form>
             </motion.div>
+        </motion.div>
 
             <ServiceInfoModal
                 isOpen={isInfoModalOpen}
@@ -390,6 +394,6 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 isOpen={isLocationModalOpen}
                 onClose={() => setIsLocationModalOpen(false)}
             />
-        </motion.div>
+        </>
     );
 }

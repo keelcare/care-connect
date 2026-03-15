@@ -124,6 +124,8 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         if (user?.profiles) {
             if (!user.profiles.lat || !user.profiles.lng) {
                 setMissingLocation(true);
+            } else {
+                setMissingLocation(false);
             }
         }
     }, [user]);

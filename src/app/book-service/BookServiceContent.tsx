@@ -19,6 +19,23 @@ export default function BookServiceContent() {
   const { user } = useAuth();
   const [selectedService, setSelectedService] = useState<ServiceType>(null);
 
+  // Persistence: Restore selected service on refresh
+  useEffect(() => {
+    const savedService = localStorage.getItem('careconnect_selected_service');
+    if (savedService && ['CHILD_CARE', 'SHADOW_TEACHER', 'SPECIAL_NEEDS'].includes(savedService)) {
+      setSelectedService(savedService as ServiceType);
+    }
+  }, []);
+
+  // Persistence: Save selected service
+  useEffect(() => {
+    if (selectedService) {
+      localStorage.setItem('careconnect_selected_service', selectedService);
+    } else {
+      localStorage.removeItem('careconnect_selected_service');
+    }
+  }, [selectedService]);
+
   useEffect(() => {
     if (user === null) {
       router.push('/auth/login');

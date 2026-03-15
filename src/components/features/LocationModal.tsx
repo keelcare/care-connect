@@ -18,7 +18,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { updatePreferences } = usePreferences();
   const { addToast } = useToast();
   const [address, setAddress] = useState('');
@@ -81,6 +81,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
             message: 'Location updated successfully',
             type: 'success',
           });
+          await refreshUser();
           onClose();
         } catch (error: unknown) {
           console.error('Error updating location:', error);
@@ -138,6 +139,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
         });
 
         addToast({ message: 'Location updated successfully', type: 'success' });
+        await refreshUser();
         onClose();
       } else {
         addToast({ message: 'Could not find this location', type: 'error' });
