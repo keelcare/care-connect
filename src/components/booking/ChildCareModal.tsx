@@ -12,10 +12,13 @@ import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { LocationModal } from '@/components/features/LocationModal';
 
 interface ChildCareModalProps {
     onClose: () => void;
 }
+
+const STORAGE_KEY = 'careconnect_childcare_form';
 
 const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -67,8 +70,44 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const [durationStr, setDurationStr] = useState<string>('');
     const [numPeople, setNumPeople] = useState('1');
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const [specialRequirements, setSpecialRequirements] = useState('');
+
+    // Persistence: Load on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (parsed.selectedChildIds) setSelectedChildIds(parsed.selectedChildIds);
+                if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
+                if (parsed.startTime) setStartTime(parsed.startTime);
+                if (parsed.durationStr) setDurationStr(parsed.durationStr);
+                if (parsed.numPeople) setNumPeople(parsed.numPeople);
+                if (parsed.specialRequirements) setSpecialRequirements(parsed.specialRequirements);
+                if (parsed.currentYear) setCurrentYear(parsed.currentYear);
+                if (parsed.currentMonth) setCurrentMonth(parsed.currentMonth);
+            } catch (e) {
+                console.error('Failed to load persisted state:', e);
+            }
+        }
+    }, []);
+
+    // Persistence: Save on change
+    useEffect(() => {
+        const stateToSave = {
+            selectedChildIds,
+            selectedDate,
+            startTime,
+            durationStr,
+            numPeople,
+            specialRequirements,
+            currentYear,
+            currentMonth
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    }, [selectedChildIds, selectedDate, startTime, durationStr, numPeople, specialRequirements, currentYear, currentMonth]);
 
     useEffect(() => {
         const fetchChildren = async () => {
@@ -220,6 +259,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 message: 'Child care request submitted! Finding the best match for you...',
                 type: 'success',
             });
+            localStorage.removeItem(STORAGE_KEY);
             router.push('/bookings');
             onClose();
         } catch (error) {
@@ -280,7 +320,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const selectedChild = selectedChildIds.length > 0 ? children.find(c => c.id === selectedChildIds[0]) : null;
 
     // Check if form is complete
-    const isFormComplete = selectedDate !== null && startTime !== '' && durationStr !== '';
+    const isFormComplete = selectedDate !== null && startTime !== '' && durationStr !== '' && (children.length === 0 || selectedChildIds.length > 0);
 
     const calCells: (number | null)[] = [];
     for (let i = 0; i < firstDay; i++) calCells.push(null);
@@ -420,13 +460,18 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                             <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
                             <div>
                                 <p className="text-sm font-medium text-amber-800">Location Required</p>
-                                <p className="text-sm text-amber-700 mt-1">
-                                    Please set your location in your{' '}
-                                    <Link href="/dashboard/profile" className="underline font-medium text-amber-900">
-                                        profile settings
-                                    </Link>{' '}
-                                    to use auto-matching.
-                                </p>
+                                <div className="flex items-center justify-between mt-1">
+                                    <p className="text-sm text-amber-700">
+                                        Please set your location to use auto-matching.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsLocationModalOpen(true)}
+                                        className="text-sm font-bold text-amber-900 underline hover:no-underline"
+                                    >
+                                        Update Now
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -489,6 +534,11 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         onChange={handleChildSelect}
                                         onAddNew={() => setIsAddChildModalOpen(true)}
                                     />
+                                    {children.length > 0 && selectedChildIds.length === 0 && (
+                                        <p className="text-xs text-amber-600 mt-2 font-medium">
+                                            Please select at least one child profile to continue
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* 3. Calendar */}
@@ -627,12 +677,21 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                     <div className="mt-6">
                                         <button
                                             type="submit"
-                                            disabled={loading || missingLocation || !isFormComplete}
-                                            className="w-full bg-primary-900 hover:bg-primary-800 text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary-900/20"
+                                        disabled={loading || !isFormComplete}
+                                        className="w-full bg-primary-900 hover:bg-primary-800 text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary-900/20"
+                                    >
+                                        {loading ? 'Processing...' : missingLocation ? 'Set Location to Book' : 'Confirm Booking'} 
+                                        {missingLocation ? null : <span className="ml-2">→</span>}
+                                    </button>
+                                    {missingLocation && isFormComplete && (
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsLocationModalOpen(true)}
+                                            className="w-full mt-3 text-sm font-bold text-primary-900 underline"
                                         >
-                                            {loading ? 'Processing...' : 'Confirm Booking'} 
-                                            <span className="ml-2">→</span>
+                                            Set Location Now
                                         </button>
+                                    )}
                                     </div>
                                 </div>
                             </form>
@@ -645,12 +704,18 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                 <div className="mt-6">
                                     <button
                                         type="button"
-                                        onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
-                                        disabled={loading || missingLocation || !isFormComplete}
+                                        onClick={(e) => {
+                                            if (missingLocation) {
+                                                setIsLocationModalOpen(true);
+                                                return;
+                                            }
+                                            handleSubmit(e as unknown as React.FormEvent);
+                                        }}
+                                        disabled={loading || !isFormComplete}
                                         className="w-full bg-primary-900 hover:bg-primary-800 text-white py-4 rounded-full text-base font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary-900/20"
                                     >
-                                        {loading ? 'Processing...' : 'Confirm Booking'} 
-                                        <span className="ml-2">→</span>
+                                        {loading ? 'Processing...' : missingLocation ? 'Set Location to Book' : 'Confirm Booking'} 
+                                        {missingLocation ? null : <span className="ml-2">→</span>}
                                     </button>
                                     
                                      {!isFormComplete && (
@@ -678,6 +743,12 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 isOpen={isInfoModalOpen}
                 onClose={() => setIsInfoModalOpen(false)}
                 category="Child Care"
+            />
+
+            {/* Location Modal */}
+            <LocationModal 
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
             />
         </>
     );

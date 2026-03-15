@@ -12,10 +12,13 @@ import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { LocationModal } from '@/components/features/LocationModal';
 
 interface SpecialNeedsModalProps {
     onClose: () => void;
 }
+
+const STORAGE_KEY = 'careconnect_specialneeds_form';
 
 const DURATION_OPTIONS = [
     { value: '2', label: '2 hours' },
@@ -67,12 +70,45 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
     });
 
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     // Calendar state
     const today = new Date();
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
     const [selectedDate, setSelectedDate] = useState<number | null>(null);
+
+    // Check if form is complete
+    const isFormComplete = selectedDate !== null && formData.startTime !== '' && formData.duration !== '' && (children.length === 0 || selectedChildIds.length > 0);
+
+    // Persistence: Load on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (parsed.selectedChildIds) setSelectedChildIds(parsed.selectedChildIds);
+                if (parsed.formData) setFormData(parsed.formData);
+                if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
+                if (parsed.currentYear) setCurrentYear(parsed.currentYear);
+                if (parsed.currentMonth) setCurrentMonth(parsed.currentMonth);
+            } catch (e) {
+                console.error('Failed to load persisted state:', e);
+            }
+        }
+    }, []);
+
+    // Persistence: Save on change
+    useEffect(() => {
+        const stateToSave = {
+            selectedChildIds,
+            formData,
+            selectedDate,
+            currentYear,
+            currentMonth
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    }, [selectedChildIds, formData, selectedDate, currentYear, currentMonth]);
 
     useEffect(() => {
         const fetchChildren = async () => {
@@ -173,6 +209,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
 
             await api.requests.create(payload);
             addToast({ message: 'Special needs care request submitted! Finding the best match for you...', type: 'success' });
+            localStorage.removeItem(STORAGE_KEY);
             router.push('/bookings');
             onClose();
         } catch (error) {
@@ -368,19 +405,23 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                         </div>
                     </div>
 
-                    {/* Location Warning */}
                     {missingLocation && (
                         <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 shrink-0">
                             <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                            <div>
+                            <div className="flex-1">
                                 <p className="text-sm font-medium text-amber-800">Location Required</p>
-                                <p className="text-sm text-amber-700 mt-1">
-                                    Please set your location in your{' '}
-                                    <Link href="/dashboard/profile" className="underline font-medium text-amber-900">
-                                        profile settings
-                                    </Link>{' '}
-                                    to use auto-matching.
-                                </p>
+                                <div className="flex items-center justify-between mt-1">
+                                    <p className="text-sm text-amber-700">
+                                        Please set your location to use auto-matching.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsLocationModalOpen(true)}
+                                        className="text-sm font-bold text-amber-900 underline hover:no-underline"
+                                    >
+                                        Update Now
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -560,6 +601,11 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                         onChange={handleChildSelect}
                                         onAddNew={() => setIsAddChildModalOpen(true)}
                                     />
+                                    {children.length > 0 && selectedChildIds.length === 0 && (
+                                        <p className="text-xs text-amber-600 mt-2 font-medium">
+                                            Please select at least one profile to continue
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Specific Requirements */}
@@ -606,11 +652,20 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     <ServiceSummary />
                                     <button
                                         type="submit"
-                                        disabled={loading || missingLocation || !selectedDate || !formData.duration}
-                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
-                                    >
-                                        {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
-                                    </button>
+                                         disabled={loading || !isFormComplete}
+                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                     >
+                                         {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
+                                     </button>
+                                     {missingLocation && isFormComplete && (
+                                         <button 
+                                             type="button"
+                                             onClick={() => setIsLocationModalOpen(true)}
+                                             className="w-full mt-3 text-sm font-bold text-[#CC7A68] underline"
+                                         >
+                                             Set Location Now
+                                         </button>
+                                     )}
                                 </div>
 
                             </form>
@@ -622,18 +677,19 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                 <ServiceSummary />
                                 <div className="mt-6">
                                     <button
-                                        type="submit"
-                                        onClick={handleSubmit}
-                                        disabled={loading || missingLocation || !selectedDate || !formData.duration}
-                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
-                                    >
-                                        {loading ? 'Finding Caregivers...' : 'Confirm Request →'}
-                                    </button>
-                                    {(!selectedDate || !formData.duration) && (
-                                        <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
-                                            Please select date and duration
-                                        </p>
-                                    )}
+                                         type="submit"
+                                         onClick={(e) => {
+                                             if (missingLocation) {
+                                                 setIsLocationModalOpen(true);
+                                                 return;
+                                             }
+                                             handleSubmit(e);
+                                         }}
+                                         disabled={loading || !isFormComplete}
+                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                     >
+                                         {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
+                                     </button>
                                 </div>
                             </div>
                         </div>
@@ -648,11 +704,17 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 initialData={{ profile_type: 'SPECIAL_NEEDS' }}
             />
 
-            <ServiceInfoModal
-                isOpen={isInfoModalOpen}
-                onClose={() => setIsInfoModalOpen(false)}
-                category="Special Needs"
-            />
-        </>
+             <ServiceInfoModal
+                 isOpen={isInfoModalOpen}
+                 onClose={() => setIsInfoModalOpen(false)}
+                 category="Special Needs"
+             />
+
+             {/* Location Modal */}
+             <LocationModal 
+                 isOpen={isLocationModalOpen}
+                 onClose={() => setIsLocationModalOpen(false)}
+             />
+         </>
     );
 }

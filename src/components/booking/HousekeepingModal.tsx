@@ -9,10 +9,13 @@ import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { LocationModal } from '@/components/features/LocationModal';
 
 interface HousekeepingModalProps {
     onClose: () => void;
 }
+
+const STORAGE_KEY = 'careconnect_housekeeping_form';
 
 const DURATION_OPTIONS = [
     { value: '2', label: '2 hours' },
@@ -45,6 +48,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
     const [hourlyRate, setHourlyRate] = useState<number | null>(null);
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         date: '',
@@ -53,6 +57,24 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
         serviceTypes: [] as string[],
         specialInstructions: '',
     });
+
+    // Persistence: Load on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (parsed.formData) setFormData(parsed.formData);
+            } catch (e) {
+                console.error('Failed to load persisted state:', e);
+            }
+        }
+    }, []);
+
+    // Persistence: Save on change
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ formData }));
+    }, [formData]);
 
     const getNextDays = () => {
         const days = [];
@@ -133,6 +155,7 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
 
             await api.requests.create(payload);
             addToast({ message: 'Housekeeping request submitted! Finding the best match for you...', type: 'success' });
+            localStorage.removeItem(STORAGE_KEY);
             router.push('/bookings');
             onClose();
         } catch (error) {
@@ -144,6 +167,8 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
 
     const formatDate = (date: Date) => date.toISOString().split('T')[0];
     const isToday = (date: Date) => date.toDateString() === new Date().toDateString();
+
+    const isFormComplete = formData.date !== '' && formData.startTime !== '' && formData.duration !== '' && formData.serviceTypes.length > 0;
 
     return (
         <motion.div
@@ -185,11 +210,20 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 {missingLocation && (
                     <div className="mx-6 sm:mx-8 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
                         <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm font-medium text-amber-800">Location Required</p>
-                            <p className="text-sm text-amber-700 mt-1">
-                                Please set your location in your <Link href="/dashboard/profile" className="underline font-medium text-amber-900">profile settings</Link>.
-                            </p>
+                            <div className="flex items-center justify-between mt-1">
+                                <p className="text-sm text-amber-700">
+                                    Please set your location to use auto-matching.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsLocationModalOpen(true)}
+                                    className="text-sm font-bold text-amber-900 underline hover:no-underline"
+                                >
+                                    Update Now
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -321,11 +355,27 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
 
                     <button
                         type="submit"
-                        disabled={loading || missingLocation}
+                        onClick={(e) => {
+                            if (missingLocation) {
+                                e.preventDefault();
+                                setIsLocationModalOpen(true);
+                                return;
+                            }
+                        }}
+                        disabled={loading || !isFormComplete}
                         className="w-full bg-[#0F172A] hover:bg-[#1e293b] text-white py-5 rounded-full font-bold text-lg transition-all disabled:opacity-50 shadow-lg hover:shadow-xl"
                     >
-                        {loading ? 'Finding Housekeepers...' : 'Find My Housekeeper'}
+                        {loading ? 'Finding Housekeepers...' : missingLocation ? 'Set Location to Book' : 'Find My Housekeeper'}
                     </button>
+                    {missingLocation && isFormComplete && (
+                        <button 
+                            type="button"
+                            onClick={() => setIsLocationModalOpen(true)}
+                            className="w-full mt-3 text-sm font-bold text-[#0F172A] underline"
+                        >
+                            Set Location Now
+                        </button>
+                    )}
                 </form>
             </motion.div>
 
@@ -333,6 +383,12 @@ export default function HousekeepingModal({ onClose }: HousekeepingModalProps) {
                 isOpen={isInfoModalOpen}
                 onClose={() => setIsInfoModalOpen(false)}
                 category="Housekeeping"
+            />
+
+            {/* Location Modal */}
+            <LocationModal 
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
             />
         </motion.div>
     );

@@ -9,10 +9,13 @@ import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { LocationModal } from '@/components/features/LocationModal';
 
 interface ShadowTeacherModalProps {
     onClose: () => void;
 }
+
+const STORAGE_KEY = 'careconnect_shadowteacher_form';
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -88,6 +91,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const [hourlyRate, setHourlyRate] = useState<number>(500); // Default to 500 until fetched
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         planType: 'ONE_TIME',
@@ -103,6 +107,33 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
     const [selectedDate, setSelectedDate] = useState<number | null>(null);
+
+    // Persistence: Load on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (parsed.formData) setFormData(parsed.formData);
+                if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
+                if (parsed.currentYear) setCurrentYear(parsed.currentYear);
+                if (parsed.currentMonth) setCurrentMonth(parsed.currentMonth);
+            } catch (e) {
+                console.error('Failed to load persisted state:', e);
+            }
+        }
+    }, []);
+
+    // Persistence: Save on change
+    useEffect(() => {
+        const stateToSave = {
+            formData,
+            selectedDate,
+            currentYear,
+            currentMonth
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    }, [formData, selectedDate, currentYear, currentMonth]);
 
     useEffect(() => {
         if (user?.profiles) {
@@ -212,6 +243,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 message: 'Shadow teacher request submitted! Finding the best match for you...',
                 type: 'success',
             });
+            localStorage.removeItem(STORAGE_KEY);
             router.push('/bookings');
             onClose();
         } catch (error) {
@@ -282,6 +314,8 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const calCells: (number | null)[] = [];
     for (let i = 0; i < firstDay; i++) calCells.push(null);
     for (let d = 1; d <= daysInMonth; d++) calCells.push(d);
+
+    const isFormComplete = selectedDate !== null && formData.startTime !== '' && formData.duration !== '';
 
 
     // Animation Variants
@@ -427,22 +461,26 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     </div>
                 </div>
 
-                {/* Location Warning */}
-                {missingLocation && (
-                    <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 shrink-0">
-                        <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                            <p className="text-sm font-medium text-amber-800">Location Required</p>
-                            <p className="text-sm text-amber-700 mt-1">
-                                Please set your location in your{' '}
-                                <Link href="/dashboard/profile" className="underline font-medium text-amber-900">
-                                    profile settings
-                                </Link>{' '}
-                                to use auto-matching.
-                            </p>
+                    {missingLocation && (
+                        <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 shrink-0">
+                            <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-amber-800">Location Required</p>
+                                <div className="flex items-center justify-between mt-1">
+                                    <p className="text-sm text-amber-700">
+                                        Please set your location to use auto-matching.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsLocationModalOpen(true)}
+                                        className="text-sm font-bold text-amber-900 underline hover:no-underline"
+                                    >
+                                        Update Now
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {/* Responsive Layout Container */}
                 <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
@@ -692,11 +730,20 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                 <ServiceSummary />
                                 <button
                                     type="submit"
-                                    disabled={loading || missingLocation || !selectedDate || !formData.duration}
+                                    disabled={loading || !isFormComplete}
                                     className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
                                 >
-                                    {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
+                                    {loading ? 'Finding Shadow Teachers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
                                 </button>
+                                {missingLocation && isFormComplete && (
+                                    <button 
+                                        type="button"
+                                        onClick={() => setIsLocationModalOpen(true)}
+                                        className="w-full mt-3 text-sm font-bold text-primary underline"
+                                    >
+                                        Set Location Now
+                                    </button>
+                                )}
                             </div>
 
                         </form>
@@ -708,18 +755,19 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                             <ServiceSummary />
                             <div className="mt-6">
                                 <button
-                                    type="submit"
-                                    onClick={handleSubmit}
-                                    disabled={loading || missingLocation || !selectedDate || !formData.duration}
-                                    className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
-                                >
-                                    {loading ? 'Finding Shadow Teachers...' : 'Confirm Request →'}
-                                </button>
-                                {(!selectedDate || !formData.duration) && (
-                                    <p className="text-xs text-amber-600 mt-3 text-center font-medium opacity-80">
-                                        Please select date and duration
-                                    </p>
-                                )}
+                                     type="button"
+                                     onClick={(e) => {
+                                         if (missingLocation) {
+                                             setIsLocationModalOpen(true);
+                                             return;
+                                         }
+                                         handleSubmit(e as unknown as React.FormEvent);
+                                     }}
+                                     disabled={loading || !isFormComplete}
+                                     className="w-full bg-primary hover:bg-primary-800 text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
+                                 >
+                                     {loading ? 'Finding Shadow Teachers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
+                                 </button>
                             </div>
                         </div>
                     </div>
@@ -730,6 +778,12 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 isOpen={isInfoModalOpen}
                 onClose={() => setIsInfoModalOpen(false)}
                 category="Shadow Teacher"
+            />
+
+            {/* Location Modal */}
+            <LocationModal 
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
             />
         </motion.div>
     );

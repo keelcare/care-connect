@@ -82,7 +82,6 @@ export const LocationModal: React.FC<LocationModalProps> = ({
             type: 'success',
           });
           onClose();
-          window.location.reload(); // Refresh to apply location changes across app
         } catch (error: unknown) {
           console.error('Error updating location:', error);
           const message =
@@ -140,7 +139,6 @@ export const LocationModal: React.FC<LocationModalProps> = ({
 
         addToast({ message: 'Location updated successfully', type: 'success' });
         onClose();
-        window.location.reload();
       } else {
         addToast({ message: 'Could not find this location', type: 'error' });
       }
@@ -158,6 +156,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
       onClose={onClose}
       title="Select Location"
       maxWidth="lg"
+      zIndex={70}
     >
       <div className="space-y-6">
         <Button

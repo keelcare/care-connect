@@ -14,6 +14,7 @@ export interface ModalProps {
   footer?: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   className?: string;
+  zIndex?: number;
 }
 
 const maxWidthClasses = {
@@ -33,6 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
   footer,
   maxWidth = 'md',
   className,
+  zIndex,
 }) => {
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -105,7 +107,8 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+      style={zIndex ? { zIndex } : { zIndex: 50 }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
