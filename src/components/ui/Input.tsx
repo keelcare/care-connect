@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { Eye, EyeOff } from 'lucide-react';
 
 const inputVariants = cva(
   'w-full h-12 px-4 py-3 font-body text-base text-neutral-900 bg-white border-2 border-neutral-300 rounded-xl transition-all duration-200 placeholder:text-neutral-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-100 focus:outline-none disabled:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-70',
@@ -50,6 +51,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const [showPassword, setShowPassword] = useState(false);
+
     // Generate unique ID if not provided, ensuring consistency
     const generatedId = React.useId();
     const inputId = id || `input-${generatedId}`;
@@ -57,11 +60,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const helperId = `${inputId}-helper`;
 
     // Determine icon configuration
-    const hasIcon = leftIcon && rightElement 
+    const isPassword = props.type === 'password';
+    const actualRightElement = rightElement || (isPassword ? (
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="text-neutral-500 hover:text-neutral-700 focus:outline-none focus:text-primary-500 transition-colors p-1"
+        aria-label={showPassword ? "Hide password" : "Show password"}
+      >
+        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+      </button>
+    ) : null);
+
+    const hasIcon = leftIcon && actualRightElement 
       ? 'both' 
       : leftIcon 
       ? 'left' 
-      : rightElement 
+      : actualRightElement 
       ? 'right' 
       : 'none';
 
@@ -99,10 +114,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }
             aria-required={required}
             {...props}
+            type={isPassword ? (showPassword ? 'text' : 'password') : props.type}
           />
-          {rightElement && (
+          {actualRightElement && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
-              {rightElement}
+              {actualRightElement}
             </div>
           )}
         </div>
