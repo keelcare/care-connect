@@ -107,6 +107,11 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                   <input
                     type="date"
                     required
+                    max={(() => {
+                      const d = new Date();
+                      d.setFullYear(d.getFullYear() - 3);
+                      return d.toISOString().split('T')[0];
+                    })()}
                     value={formData.dob || ''}
                     onChange={e => updateField('dob', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1F6F5B] focus:ring-4 focus:ring-[#1F6F5B]/10 outline-none transition-all"
