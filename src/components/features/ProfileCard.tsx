@@ -27,6 +27,7 @@ export interface ProfileCardProps {
   // onBook?: () => void;
   compact?: boolean; // Compact mode for smaller cards
   hideBookButton?: boolean;
+  showHourlyRate?: boolean;
 }
 
 // iOS 26-inspired color themes with vibrant yet sophisticated palettes
@@ -109,6 +110,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   // onBook,
   compact = false,
   hideBookButton = false,
+  showHourlyRate = true,
 }) => {
   const themeIndex = useMemo(() => getThemeIndex(name), [name]);
   const theme = colorThemes[themeIndex];
@@ -186,12 +188,14 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               </div>
 
               {/* Price - Subtle placement */}
-              <div className="flex flex-col items-end">
-                <div className="text-lg font-bold text-navy">
-                  ₹{hourlyRate}
+              {showHourlyRate && (
+                <div className="flex flex-col items-end">
+                  <div className="text-lg font-bold text-navy">
+                    ₹{hourlyRate}
+                  </div>
+                  <div className="text-xs text-neutral-600 font-medium">/hr</div>
                 </div>
-                <div className="text-xs text-neutral-600 font-medium">/hr</div>
-              </div>
+              )}
             </div>
           </div>
 

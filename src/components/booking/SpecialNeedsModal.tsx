@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
-import { Child } from '@/types/api';
+import { Child, SubscriptionPlanType } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { LocationModal } from '@/components/features/LocationModal';
 
@@ -206,7 +206,9 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 children_ages: [],
                 required_skills: ['special_needs_care', 'compassionate_care'],
                 special_requirements: requirements,
-                max_hourly_rate: hourlyRate || undefined,
+                plan_type: 'ONE_TIME' as SubscriptionPlanType,
+                plan_duration_months: 1,
+                discount_percentage: 0,
             };
 
             await api.requests.create(payload);

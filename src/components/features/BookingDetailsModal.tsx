@@ -159,7 +159,9 @@ export const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
             </Button>
 
             {(booking.status === 'CONFIRMED' ||
-              booking.status === 'IN_PROGRESS') && (
+              booking.status === 'IN_PROGRESS' ||
+              booking.status === 'REQUESTED' ||
+              booking.status === 'requested') && (
               <Button
                 variant="outline"
                 onClick={() => onCancel(booking)}

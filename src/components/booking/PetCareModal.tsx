@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { SubscriptionPlanType } from '@/types/api';
 
 interface PetCareModalProps {
     onClose: () => void;
@@ -115,7 +116,9 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                 children_ages: [],
                 required_skills: ['pet_care', 'animal_handling'],
                 special_requirements: requirements,
-                max_hourly_rate: hourlyRate || undefined,
+                plan_type: 'ONE_TIME' as SubscriptionPlanType,
+                plan_duration_months: 1,
+                discount_percentage: 0,
             };
 
             await api.requests.create(payload);

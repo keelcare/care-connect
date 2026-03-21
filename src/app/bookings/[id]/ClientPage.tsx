@@ -29,6 +29,7 @@ import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import { usePayment } from '@/hooks/usePayment';
 
+
 export default function BookingDetailsPage() {
     const params = useParams();
     const router = useRouter();
@@ -281,7 +282,7 @@ export default function BookingDetailsPage() {
                                                 <p className="text-primary-900 font-bold text-xl font-display leading-tight">
                                                     {formatTime(booking?.start_time || request?.start_time)}
                                                     <span className="text-slate-400 font-normal text-sm ml-2 block md:inline mt-1 md:mt-0">
-                                                        ({request?.duration_hours || 4} hours)
+                                                        ({booking?.hourly_rate || request?.hourly_rate ? `₹${booking?.hourly_rate || request?.hourly_rate}/hr • ` : ''}{request?.duration_hours || 4} hours)
                                                     </span>
                                                 </p>
                                             </div>
@@ -357,6 +358,7 @@ export default function BookingDetailsPage() {
                                     isVerified={nanny.is_verified}
                                     onViewProfile={() => router.push(`/caregiver/${nanny.id}`)}
                                     hideBookButton={true}
+                                    showHourlyRate={false}
                                 />
                             </div>
                         ) : (
@@ -394,7 +396,7 @@ export default function BookingDetailsPage() {
                                 )}
 
                                 {/* Reschedule */}
-                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED'].includes(currentStatus) && (
+                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'REQUESTED'].includes(currentStatus) && (
                                     <Button
                                         variant="outline"
                                         onClick={() => setIsRescheduleModalOpen(true)}
@@ -406,7 +408,7 @@ export default function BookingDetailsPage() {
                                 )}
 
                                 {/* Cancel */}
-                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS'].includes(currentStatus) && (
+                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'REQUESTED'].includes(currentStatus) && (
                                     <Button
                                         variant="outline"
                                         onClick={() => setIsCancelModalOpen(true)}
@@ -437,11 +439,7 @@ export default function BookingDetailsPage() {
 
                                         <Button
                                             onClick={() => setIsReviewModalOpen(true)}
-                                            disabled={!isPaid}
-                                            className={`w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all ${isPaid
-                                                ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/10'
-                                                : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
-                                                }`}
+                                            className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-[0.98]"
                                         >
                                             <Star size={18} />
                                             Leave a Review
@@ -453,12 +451,10 @@ export default function BookingDetailsPage() {
                             {/* Booking Stats / Metadata */}
                             <div className="mt-10 pt-8 border-t border-slate-50 space-y-4">
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold uppercase tracking-widest">Rate</span>
-                                    <span className="text-primary-900 font-black">₹{nanny?.nanny_details?.hourly_rate || '20'}/hr</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold uppercase tracking-widest">Estimated Total</span>
-                                    <span className="text-slate-900 font-black">₹{(Number(nanny?.nanny_details?.hourly_rate || 20) * (request?.duration_hours || 4))}</span>
+                                    <span className="text-slate-400 font-bold uppercase tracking-widest text-sm">Total Amount</span>
+                                    <span className="text-slate-900 font-black text-lg">
+                                        ₹{booking?.total_amount || request?.total_amount || '—'}
+                                    </span>
                                 </div>
                             </div>
                         </div>

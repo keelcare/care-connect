@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChildSelector } from './ChildSelector';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
-import { Child } from '@/types/api';
+import { Child, SubscriptionPlanType } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { LocationModal } from '@/components/features/LocationModal';
 
@@ -136,8 +136,7 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 const services = await api.services.list();
                 const ccService = services.find(s => s.name === 'CC' || s.name === 'Child Care');
                 if (ccService) {
-                    // setHourlyRate(Number(ccService.hourly_rate));
-                    setHourlyRate(200); // Explicitly set to 200 as requested
+                    setHourlyRate(Number(ccService.hourly_rate));
                 }
             } catch (error) {
                 console.error('Failed to fetch services:', error);
@@ -248,9 +247,11 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 num_children: numChildren,
                 child_ids: selectedChildIds,
                 children_ages: [],
-                max_hourly_rate: hourlyRate || undefined,
                 required_skills: [],
                 special_requirements: specialRequirements,
+                plan_type: 'ONE_TIME' as SubscriptionPlanType,
+                plan_duration_months: 1,
+                discount_percentage: 0,
             };
 
             await api.requests.create(payload);

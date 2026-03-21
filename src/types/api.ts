@@ -280,6 +280,7 @@ export interface ServiceRequest {
   category: string;
   created_at: string;
   updated_at: string;
+  hourly_rate?: number;
   parent?: User;
   nanny?: User;
 }
@@ -293,7 +294,7 @@ export interface CreateServiceRequestDto {
   children_ages: number[];
   category: string;
   special_requirements?: string;
-  max_hourly_rate?: number;
+// max_hourly_rate removed as it is now handled server-side from constants/DB
   required_skills?: string[];
   // Shadow Teacher subscription fields
   plan_type?: SubscriptionPlanType;
@@ -331,6 +332,9 @@ export interface Booking {
   tags?: string[];
   created_at: string;
   updated_at: string;
+  total_amount?: number;
+  hourly_rate?: number;
+  service_request?: ServiceRequest;
   job?: Job;
   parent?: User;
   nanny?: User;

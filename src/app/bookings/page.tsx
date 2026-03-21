@@ -58,6 +58,7 @@ export default function ParentBookingsPage() {
     null
   );
 
+
   // Reschedule Modal State
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [bookingToReschedule, setBookingToReschedule] = useState<Booking | ServiceRequest | null>(null);
@@ -474,8 +475,7 @@ export default function ParentBookingsPage() {
             e.stopPropagation();
             handleOpenReview(booking.id);
           }}
-          className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
-          disabled={!isPaid}
+          className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all hover:scale-105 active:scale-95"
         >
           Leave Review
         </Button>

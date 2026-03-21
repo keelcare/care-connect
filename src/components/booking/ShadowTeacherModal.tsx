@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
+import { SubscriptionPlanType } from '@/types/api';
 import { LocationModal } from '@/components/features/LocationModal';
 
 interface ShadowTeacherModalProps {
@@ -88,7 +89,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [missingLocation, setMissingLocation] = useState(false);
-    const [hourlyRate, setHourlyRate] = useState<number>(500); // Default to 500 until fetched
+    const [hourlyRate, setHourlyRate] = useState<number>(500); // Default until fetched
     const [isLoadingPrice, setIsLoadingPrice] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -234,7 +235,9 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 children_ages: [],
                 required_skills: ['shadow_teacher', 'special_education'],
                 special_requirements: formData.specialRequirements,
-                max_hourly_rate: hourlyRate,
+                plan_type: (selectedPlan?.id as SubscriptionPlanType) || 'ONE_TIME',
+                plan_duration_months: selectedPlan?.duration || 1,
+                discount_percentage: selectedPlan?.discount || 0,
             };
 
             await api.requests.create(payload);
