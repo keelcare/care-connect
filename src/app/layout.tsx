@@ -213,6 +213,7 @@ export default function RootLayout({
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <meta name="color-scheme" content="light" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0" />
         <link rel="icon" href="/logo.jpeg" />
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>
