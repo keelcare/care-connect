@@ -350,6 +350,11 @@ export const api = {
         '/bookings/check-expired',
         { method: 'POST' }
       ),
+    reportNoShow: (id: string, reason: string) =>
+      fetchApi<{ success: boolean; message: string }>(`/bookings/${id}/no-show`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      }),
     reschedule: (
       id: string,
       body: { date: string; startTime: string; endTime: string }
