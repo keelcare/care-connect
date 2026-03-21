@@ -18,20 +18,45 @@ envContent.split('\n').forEach(line => {
   }
 });
 
-console.log('🚀 Starting Mobile Build with injected environment...');
-console.log(`📍 API Target: ${envVars.NEXT_PUBLIC_API_URL}`);
+console.log('🚀 Starting Mobile Sync with injected environment...');
 
-// 3. Run next build with the injected env
-const result = spawnSync('npx', ['next', 'build'], {
-  stdio: 'inherit',
-  env: {
+const customEnv = {
     ...process.env,
     ...envVars,
     BUILD_TARGET: 'capacitor'
-  },
-  shell: true
-});
+};
 
-if (result.status !== 0) {
-  process.exit(result.status);
+if (envVars.NEXT_PUBLIC_API_URL) {
+    console.log(`📍 API Target: ${envVars.NEXT_PUBLIC_API_URL}`);
 }
+
+if (envVars.CAP_FRONTEND_URL) {
+    console.log(`🌍 Remote Frontend URL detected: ${envVars.CAP_FRONTEND_URL}`);
+    console.log(`⏭️  Skipping Next.js local bundle build. The mobile app will load this URL directly!`);
+} else {
+    console.log(`📦 Building local Next.js frontend (this takes a few moments)...`);
+    // 3. Run next build with the injected env
+    const buildResult = spawnSync('npx', ['next', 'build'], {
+      stdio: 'inherit',
+      env: customEnv,
+      shell: true
+    });
+    
+    if (buildResult.status !== 0) {
+      process.exit(buildResult.status);
+    }
+}
+
+console.log(`🔄 Syncing Capacitor native files...`);
+// 4. Run cap sync with variables to inject URL into android/ios configurations!
+const syncResult = spawnSync('npx', ['cap', 'sync'], {
+    stdio: 'inherit',
+    env: customEnv,
+    shell: true
+});
+  
+if (syncResult.status !== 0) {
+    process.exit(syncResult.status);
+}
+
+console.log(`✅ Sync Complete.`);

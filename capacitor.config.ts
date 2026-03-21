@@ -1,5 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
+const serverUrl = process.env.CAP_FRONTEND_URL;
+
 const config: CapacitorConfig = {
   appId: 'com.keel.careconnect',
   appName: 'Keel',
@@ -13,6 +15,7 @@ const config: CapacitorConfig = {
       'api.razorpay.com',
       'nominatim.openstreetmap.org',
     ],
+    ...(serverUrl ? { url: serverUrl, cleartext: true } : {}),
   },
   plugins: {
     PushNotifications: {

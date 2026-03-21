@@ -6,7 +6,7 @@
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED='0' next dev",
     "build": "next build",
     "build:mobile": "node scripts/mobile-build.js",
-    "sync:mobile": "npm run build:mobile && npx cap sync",
+    "sync:mobile": "node scripts/mobile-build.js",
     "cap:run:ios": "npx cap run ios",
     "cap:run:android": "npx cap run android",
     "cap:sync": "npx cap sync",
