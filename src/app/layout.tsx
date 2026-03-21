@@ -213,7 +213,23 @@ export default function RootLayout({
           content="child care, nanny, babysitter, special needs support, housekeeper, maid, cleaning, caregiver, trusted, verified"
         />
         <meta name="color-scheme" content="light" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0" />
+        <script 
+          dangerouslySetInnerHTML={{ 
+            __html: `
+              (function() {
+                var meta = document.querySelector('meta[name="viewport"]');
+                if (meta) {
+                  meta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0";
+                } else {
+                  var newMeta = document.createElement('meta');
+                  newMeta.name = "viewport";
+                  newMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0";
+                  document.head.appendChild(newMeta);
+                }
+              })();
+            ` 
+          }} 
+        />
         <link rel="icon" href="/logo.jpeg" />
       </head>
       <RootLayoutContent>{children}</RootLayoutContent>

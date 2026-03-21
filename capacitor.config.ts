@@ -27,7 +27,8 @@ const config: CapacitorConfig = {
   },
   ios: {
     scrollEnabled: true,
-    contentInset: 'always',
+    contentInset: 'automatic',
+    backgroundColor: '#f9fbfb',
   },
 };
 
