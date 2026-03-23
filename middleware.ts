@@ -21,6 +21,10 @@ const PROTECTED_ROUTES = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Basic request logging for traceability
+  console.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`);
+
   // Initialize response
   const response = NextResponse.next();
   // --- Auth Logic Removed (Cross-Domain Cookie Limitation) ---
