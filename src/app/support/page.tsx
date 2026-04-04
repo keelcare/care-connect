@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
+import BottomNavBar from '@/components/layout/BottomNavBar';
 import {
     Plus,
     Search,
@@ -146,7 +147,7 @@ export default function SupportPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 mb-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 mb-10 pb-20 lg:pb-10">
 
             {/* ─── BAN ALERT ─── */}
             {isBanned && (
@@ -544,7 +545,8 @@ export default function SupportPage() {
                     </form>
                 </div>
             </Modal>
-
+            
+            {user?.role !== 'nanny' && <BottomNavBar />}
         </div>
     );
 }
