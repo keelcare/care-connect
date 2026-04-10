@@ -12,7 +12,8 @@ import {
   Settings,
   LayoutDashboard,
   User,
-  HelpCircle
+  HelpCircle,
+  CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -30,6 +31,7 @@ const NAV_ITEMS_PARENT = [
   { href: '/bookings', label: 'My Bookings', icon: LayoutDashboard }, // using LayoutDashboard as placeholder if Calendar not imported, but I should import Calendar
   { href: '/book-service', label: 'Book a Service', icon: Settings }, // Helper to fix icons later
   { href: '/parent-dashboard/family', label: 'My Family', icon: User },
+  { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
   { href: '/contact', label: 'Contact', icon: MapPin }, // Icon placeholder
   { href: '/support', label: 'Support', icon: HelpCircle },
 ];

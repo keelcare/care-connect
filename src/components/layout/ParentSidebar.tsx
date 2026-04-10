@@ -18,6 +18,7 @@ import {
   Star,
   Copy,
   HelpCircle,
+  CreditCard,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -48,6 +49,7 @@ export const ParentSidebar: React.FC<ParentSidebarProps> = ({
     { icon: Calendar, label: 'Your Bookings', href: '/bookings' },
     { icon: Repeat, label: 'Recurring', href: '/recurring-bookings' },
     { icon: User, label: 'My Family', href: '/dashboard/family' },
+    { icon: CreditCard, label: 'Payments', href: '/parent-dashboard/payments' },
     { icon: HelpCircle, label: 'Support', href: '/support' },
   ];
 
