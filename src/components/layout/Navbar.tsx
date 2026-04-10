@@ -4,18 +4,18 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Menu,
-  X,
-  ChevronDown,
-  MapPin,
-  LogOut,
-  Settings,
-  LayoutDashboard,
-  User,
-  HelpCircle,
   CreditCard,
   Calendar,
   Sparkles,
+  LayoutDashboard,
+  User,
+  HelpCircle,
+  Settings,
+  LogOut,
+  MapPin,
+  ChevronDown,
+  X,
+  Menu,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
