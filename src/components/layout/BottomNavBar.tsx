@@ -4,14 +4,14 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Calendar, CalendarPlus, User, CreditCard, HelpCircle } from 'lucide-react';
+import { Home, Calendar, Sparkles, User, HelpCircle, CreditCard } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'Bookings', icon: Calendar },
-    { href: '/book-service', label: 'Book', icon: CalendarPlus },
+    { href: '/book-service', label: 'Book', icon: Sparkles },
     { href: '/parent-dashboard/family', label: 'Family', icon: User },
     { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
     { href: '/support', label: 'Support', icon: HelpCircle },

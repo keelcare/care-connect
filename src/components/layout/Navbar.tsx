@@ -15,7 +15,7 @@ import {
   HelpCircle,
   CreditCard,
   Calendar,
-  CalendarPlus,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -31,9 +31,10 @@ import { useNotificationContext } from '@/context/NotificationContext';
 const NAV_ITEMS_PARENT = [
   { href: '/parent-dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/bookings', label: 'My Bookings', icon: Calendar },
-  { href: '/book-service', label: 'Book a Service', icon: CalendarPlus },
+  { href: '/book-service', label: 'Book a Service', icon: Sparkles },
   { href: '/parent-dashboard/family', label: 'My Family', icon: User },
   { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
+  { href: '/contact', label: 'Contact', icon: MapPin },
   { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
