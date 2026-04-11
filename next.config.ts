@@ -82,4 +82,14 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+import { withSentryConfig } from "@sentry/nextjs";
+
+export default withSentryConfig(nextConfig, {
+// For all available options, see:
+// https://github.com/getsentry/sentry-webpack-plugin#options
+
+// Suppresses source map uploading logs during bundling
+silent: true,
+org: "keel-care", // You may need to update this to your Sentry organization slug
+project: "frontend",
+});
