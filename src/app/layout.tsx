@@ -115,10 +115,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     return () => cleanup?.();
   }, [router]);
 
-  // Load Razorpay SDK on web only (Capacitor uses Browser.open instead)
+  // Load Razorpay SDK universally
   useEffect(() => {
-    const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
-    if (isCapacitor) return;
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;

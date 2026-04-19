@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { SubscriptionPlanType } from '@/types/api';
+import { SUBSCRIPTION_PLANS } from '@/constants/booking';
 
 interface PetCareModalProps {
     onClose: () => void;
@@ -49,6 +50,8 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
         petType: '',
         numPets: '1',
         specialInstructions: '',
+        planType: 'ONE_TIME',
+        useInstallments: false,
     });
 
     const getNextDays = () => {
@@ -116,9 +119,10 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                 children_ages: [],
                 required_skills: ['pet_care', 'animal_handling'],
                 special_requirements: requirements,
-                plan_type: 'ONE_TIME' as SubscriptionPlanType,
-                plan_duration_months: 1,
-                discount_percentage: 0,
+                plan_type: (formData.planType as SubscriptionPlanType) || 'ONE_TIME',
+                plan_duration_months: SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.duration || 1,
+                discount_percentage: SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.discount || 0,
+                use_installments: formData.useInstallments,
             };
 
             await api.requests.create(payload);
@@ -207,6 +211,107 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                             })}
                         </div>
                     </div>
+
+                    {/* Subscription Plan Selection */}
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Calendar className="w-5 h-5 text-[#8B87C7]" />
+                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Choose Your Plan</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {SUBSCRIPTION_PLANS.map((plan) => {
+                                const isSelected = formData.planType === plan.id;
+                                return (
+                                    <button
+                                        key={plan.id}
+                                        type="button"
+                                        onClick={() => setFormData({ 
+                                            ...formData, 
+                                            planType: plan.id,
+                                            useInstallments: plan.duration > 1 ? formData.useInstallments : false
+                                        })}
+                                        className={`relative p-5 rounded-2xl border-2 transition-all text-left group ${isSelected
+                                            ? 'bg-[#C9C6E5] text-[#0F172A] border-[#C9C6E5] shadow-lg shadow-[#C9C6E5]/10'
+                                            : 'bg-white border-gray-200 hover:border-[#C9C6E5] hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {plan.popular && (
+                                            <div className="absolute -top-3 left-6 bg-[#CC7A68] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
+                                                POPULAR
+                                            </div>
+                                        )}
+                                        <div className="flex items-start justify-between mb-1">
+                                            <div>
+                                                <h4 className="font-bold text-base font-display">{plan.label}</h4>
+                                                <p className={`text-xs mt-1 ${isSelected ? 'text-[#0F172A]/80' : 'text-gray-500'}`}>
+                                                    {plan.description}
+                                                </p>
+                                            </div>
+                                            {isSelected && (
+                                                <div className="w-5 h-5 rounded-full bg-[#0F172A]/10 flex items-center justify-center">
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M10 3L4.5 8.5L2 6" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    </svg>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {plan.discount > 0 && (
+                                            <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${isSelected ? 'bg-[#0F172A]/10 text-[#0F172A]' : 'bg-green-100 text-green-800'
+                                                }`}>
+                                                Save {plan.discount}%
+                                            </div>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Payment Type Selection (Only for Subscriptions with duration > 1) */}
+                    {formData.planType !== 'ONE_TIME' && (SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.duration || 0) > 1 && (
+                        <div className="mb-8 animate-in fade-in slide-in-from-top-2 duration-300">
+                             <div className="flex items-center gap-2 mb-4">
+                                <FileText className="w-5 h-5 text-[#8B87C7]" />
+                                <h3 className="text-xl font-bold text-[#0F172A] font-display">Payment Option</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, useInstallments: false })}
+                                    className={`p-4 rounded-2xl border-2 transition-all text-center ${!formData.useInstallments
+                                        ? 'bg-[#C9C6E5] text-[#0F172A] border-[#C9C6E5] shadow-md shadow-[#C9C6E5]/10'
+                                        : 'bg-white border-gray-200 hover:border-[#C9C6E5] hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <div className="font-bold text-sm">Pay in Full</div>
+                                    <div className={`text-[10px] mt-0.5 ${!formData.useInstallments ? 'text-[#0F172A]/80' : 'text-gray-500'}`}>
+                                        One payment upfront
+                                    </div>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, useInstallments: true })}
+                                    className={`p-4 rounded-2xl border-2 transition-all text-center ${formData.useInstallments
+                                        ? 'bg-[#C9C6E5] text-[#0F172A] border-[#C9C6E5] shadow-md shadow-[#C9C6E5]/10'
+                                        : 'bg-white border-gray-200 hover:border-[#0F172A] hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <div className="font-bold text-sm">Monthly Installments</div>
+                                    <div className={`text-[10px] mt-0.5 ${formData.useInstallments ? 'text-[#0F172A]/80' : 'text-gray-500'}`}>
+                                        Pay month by month
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="mt-3 flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                <Info size={14} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                                <p className="text-[10px] text-blue-700 leading-relaxed">
+                                    {formData.useInstallments 
+                                        ? "You will only be charged for the first month today. Subsequent payments will be automatically scheduled each month."
+                                        : "The total amount for the entire duration will be charged in a single upfront payment today."}
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-4">
@@ -307,18 +412,60 @@ export default function PetCareModal({ onClose }: PetCareModalProps) {
                         </div>
                     </div>
 
-                    <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <FileText className="w-5 h-5 text-[#8B87C7]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] font-display">Special Care Instructions</h3>
-                        </div>
-                        <textarea
-                            value={formData.specialInstructions}
-                            onChange={(e) => setFormData({ ...formData, specialInstructions: e.target.value })}
-                            placeholder="Feeding schedule, behavioral notes, medical needs, exercise preferences..."
-                            className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-[#C9C6E5] focus:ring-2 focus:ring-[#C9C6E5]/20 focus:outline-none resize-none"
-                        />
-                    </div>
+                    {(() => {
+                        const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === formData.planType);
+                        if (!selectedPlan || !formData.duration || !hourlyRate) return null;
+
+                        const durationHours = Number(formData.duration);
+                        const sessionCost = hourlyRate * durationHours;
+                        const discount = selectedPlan.discount;
+                        const discountAmount = (sessionCost * discount) / 100;
+                        const sessionCostAfterDiscount = sessionCost - discountAmount;
+
+                        let totalCost = sessionCostAfterDiscount;
+                        let sessionsPerMonth = 0;
+                        let monthlyCost = 0;
+
+                        if (selectedPlan.id !== 'ONE_TIME') {
+                            sessionsPerMonth = 4;
+                            monthlyCost = sessionCostAfterDiscount * sessionsPerMonth;
+                            totalCost = monthlyCost * (selectedPlan.duration || 1);
+                        }
+
+                        return (
+                            <div className="mb-6 p-5 bg-[#C9C6E5]/10 rounded-[24px] border border-[#C9C6E5]/20">
+                                <div className="space-y-2 mb-4">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-500">Session Cost</span>
+                                        <span className="font-medium">₹{sessionCost.toLocaleString()}</span>
+                                    </div>
+                                    {discount > 0 && (
+                                        <div className="flex justify-between text-sm text-green-600 font-medium">
+                                            <span>Plan Discount ({discount}%)</span>
+                                            <span>-₹{discountAmount.toLocaleString()}</span>
+                                        </div>
+                                    )}
+                                    {selectedPlan.id !== 'ONE_TIME' && (
+                                        <div className="flex justify-between text-sm font-medium pt-2 border-t border-dashed border-gray-300">
+                                            <span className="text-gray-700">{formData.useInstallments ? 'First Installment' : 'Monthly Cost'}</span>
+                                            <span>₹{monthlyCost.toLocaleString()}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <p className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                                            {formData.useInstallments ? 'TOTAL COMMITMENT' : 'Estimated Total'}
+                                        </p>
+                                        <p className="text-[10px] text-gray-400">Based on {formData.duration} hours @ ₹{hourlyRate}/hr</p>
+                                    </div>
+                                    <div className="text-2xl font-bold text-[#0F172A]">
+                                        ₹{totalCost.toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
 
                     <button
                         type="submit"

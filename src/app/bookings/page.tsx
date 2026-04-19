@@ -453,10 +453,10 @@ export default function ParentBookingsPage() {
               e.stopPropagation();
               handlePayNow(booking);
             }}
-            disabled={paymentLoading}
-            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm"
+            disabled={paymentLoading || !booking.nanny_id}
+            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm disabled:opacity-50"
           >
-            {paymentLoading ? 'Processing...' : 'Pay Now'}
+            {paymentLoading ? 'Processing...' : !booking.nanny_id ? 'Assigning Nanny' : 'Pay Now'}
           </Button>
         );
       } else {

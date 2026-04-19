@@ -326,13 +326,20 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                                         </div>
 
                                         {isPending && canPay && (
-                                            <button
-                                                onClick={() => onPayNow(inst.id, plan.booking_id, Number(inst.amount_due))}
-                                                disabled={paymentLoading}
-                                                className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition disabled:opacity-50"
-                                            >
-                                                {paymentLoading ? 'Wait...' : 'Pay Now'}
-                                            </button>
+                                            plan.bookings?.nanny_id ? (
+                                                <button
+                                                    onClick={() => onPayNow(inst.id, plan.booking_id, Number(inst.amount_due))}
+                                                    disabled={paymentLoading}
+                                                    className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition disabled:opacity-50"
+                                                >
+                                                    {paymentLoading ? 'Wait...' : 'Pay Now'}
+                                                </button>
+                                            ) : (
+                                                <div className="px-4 py-2 bg-amber-50 text-amber-600 text-[10px] font-bold uppercase rounded-xl border border-amber-100 flex items-center gap-1.5">
+                                                    <Clock className="w-3.5 h-3.5" />
+                                                    Awaiting Nanny Assignment
+                                                </div>
+                                            )
                                         )}
                                         {isPending && !canPay && (
                                             <div className="px-4 py-2 bg-gray-50 text-gray-400 text-[10px] font-bold uppercase rounded-xl border border-gray-100">

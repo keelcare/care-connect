@@ -53,6 +53,8 @@ import {
   PaymentAuditListResponse,
   PaymentAuditSummary,
   PaymentAuditRow,
+  PaymentPlan,
+  PaymentPlanStats,
 } from '@/types/api';
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -445,6 +447,8 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
+    getPaymentPlans: () => fetchApi<PaymentPlan[]>('/admin/payment-plans'),
+    getPaymentPlanStats: () => fetchApi<PaymentPlanStats>('/admin/payment-plans/stats'),
   },
   assignments: {
     getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),
@@ -616,7 +620,7 @@ export const api = {
       }),
   },
   payments: {
-    createOrder: (bookingId: string) =>
+    createOrder: (bookingId: string, installmentId?: string) =>
       fetchApi<{
         orderId: string;
         amount: number;
@@ -624,7 +628,7 @@ export const api = {
         key: string;
       }>('/payments/create-order', {
         method: 'POST',
-        body: JSON.stringify({ bookingId }),
+        body: JSON.stringify({ bookingId, installmentId }),
       }),
     verify: (
       razorpay_order_id: string,
@@ -661,6 +665,7 @@ export const api = {
       fetchApi<PaymentAuditSummary>('/payments/audit/summary'),
     getOrderAuditHistory: (orderId: string) =>
       fetchApi<PaymentAuditRow[]>(`/payments/audit/${orderId}`),
+    getPlans: () => fetchApi<any[]>('/payments/plans'),
   },
   family: {
     list: () => fetchApi<Child[]>('/family/children'),

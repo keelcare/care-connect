@@ -425,10 +425,10 @@ export default function BookingDetailsPage() {
                                         {!isPaid ? (
                                             <Button
                                                 onClick={handlePayNow}
-                                                disabled={paymentLoading}
-                                                className="w-full h-14 rounded-2xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-lg shadow-primary-900/10"
+                                                disabled={paymentLoading || !booking?.nanny_id}
+                                                className="w-full h-14 rounded-2xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-lg shadow-primary-900/10 disabled:opacity-50"
                                             >
-                                                {paymentLoading ? 'Processing...' : 'Complete Payment'}
+                                                {paymentLoading ? 'Processing...' : !booking?.nanny_id ? 'Pending Nanny Assignment' : 'Complete Payment'}
                                             </Button>
                                         ) : (
                                             <div className="w-full h-14 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center gap-2 font-bold shadow-inner">
