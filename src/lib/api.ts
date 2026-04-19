@@ -61,10 +61,12 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 export const API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 // Token refresh callback - will be set by AuthContext
-// NOTE: With cookie-based auth, refresh is simpler but we still need to handle 401s
 let tokenRefresher: (() => Promise<boolean>) | null = null;
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
+
+// Global cache for in-flight GET requests to prevent redundant simultaneous calls
+const pendingRequests = new Map<string, Promise<any>>();
 
 export function setTokenRefresher(refresher: () => Promise<boolean>) {
   tokenRefresher = refresher;
@@ -85,129 +87,149 @@ export async function fetchApi<T>(
     }
   }
 
-  const fetchOptions: RequestInit = {
-    ...options,
-    credentials: 'include', // This sends cookies with the request
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeaders,
-      ...options.headers,
-    },
-  };
+  const method = options.method || 'GET';
+  const isGet = method === 'GET';
+  const cacheKey = `${method}:${endpoint}`;
 
-  const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
-
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return null as any;
+  if (isGet && pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey)!;
   }
 
-  // Get text body first to check if it's empty
-  const text = await response.text();
+  const fetchPromise = (async () => {
+    try {
+      const fetchOptions: RequestInit = {
+        ...options,
+        credentials: 'include', // This sends cookies with the request
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders,
+          ...options.headers,
+        },
+      };
 
-  // Try to parse JSON, handle non-JSON or empty responses
-  let data;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = { message: 'Invalid response from server' };
-  }
+      const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
-  if (!response.ok) {
-    // Handle 429 Too Many Requests - Exponential Backoff
-    if (response.status === 429) {
-      const retryCount = (options as any)._retryCount || 0;
-      const MAX_RETRIES = 3;
+      // Handle 204 No Content
+      if (response.status === 204) {
+        return null as any;
+      }
 
-      if (retryCount < MAX_RETRIES) {
-        // Default to 1s, 2s, 4s... or use Retry-After header if available
-        const retryAfterHeader = response.headers.get('Retry-After');
-        let waitTime = 1000 * Math.pow(2, retryCount);
+      // Get text body first to check if it's empty
+      const text = await response.text();
 
-        if (retryAfterHeader) {
-          const seconds = parseInt(retryAfterHeader, 10);
-          if (!isNaN(seconds)) {
-            waitTime = seconds * 1000;
+      // Try to parse JSON, handle non-JSON or empty responses
+      let data;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = { message: 'Invalid response from server' };
+      }
+
+      if (!response.ok) {
+        // Handle 429 Too Many Requests - Exponential Backoff
+        if (response.status === 429) {
+          const retryCount = (options as any)._retryCount || 0;
+          const MAX_RETRIES = 3;
+
+          if (retryCount < MAX_RETRIES) {
+            // Default to 1s, 2s, 4s... or use Retry-After header if available
+            const retryAfterHeader = response.headers.get('Retry-After');
+            let waitTime = 1000 * Math.pow(2, retryCount);
+
+            if (retryAfterHeader) {
+              const seconds = parseInt(retryAfterHeader, 10);
+              if (!isNaN(seconds)) {
+                waitTime = seconds * 1000;
+              }
+            }
+
+            console.warn(
+              `Rate limited (429). Retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`
+            );
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+
+            return fetchApi<T>(
+              endpoint,
+              {
+                ...options,
+                _retryCount: retryCount + 1,
+              } as any,
+              skipRefresh,
+              skipRedirect
+            );
           }
         }
 
-        console.warn(
-          `Rate limited (429). Retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`
-        );
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        // Handle 401 Unauthorized - try to refresh token first
+        if (
+          response.status === 401 &&
+          typeof window !== 'undefined' &&
+          !skipRefresh
+        ) {
+          // Try to refresh the token
+          if (tokenRefresher) {
+            // Prevent multiple simultaneous refresh attempts
+            if (!isRefreshing) {
+              isRefreshing = true;
+              refreshPromise = tokenRefresher();
+            }
 
-        return fetchApi<T>(
-          endpoint,
-          {
-            ...options,
-            _retryCount: retryCount + 1,
-          } as any,
-          skipRefresh,
-          skipRedirect
-        );
+            const refreshSuccess = await refreshPromise;
+            isRefreshing = false;
+            refreshPromise = null;
+
+            if (refreshSuccess) {
+              // Retry the original request (cookies will be upgraded automatically)
+              const retryResponse = await fetch(
+                `${API_URL}${endpoint}`,
+                fetchOptions
+              );
+
+              // Also handle 429 on retry
+              if (retryResponse.status === 429) {
+                // As simple heuristic, if we get 429 immediately after refresh, just fail or let user retry.
+              }
+
+              const retryData = await retryResponse.json();
+
+              if (!retryResponse.ok) {
+                throw new Error(retryData.message || 'An error occurred');
+              }
+
+              return retryData;
+            }
+          }
+
+          // If refresh failed or no refresher, logout is handled by the consumer (AuthContext) redirects
+          if (
+            !skipRedirect &&
+            typeof window !== 'undefined' &&
+            window.location.pathname !== '/auth/login' &&
+            !window.location.pathname.startsWith('/auth/')
+          ) {
+            console.warn('Redirecting to login due to 401/expired session on:', endpoint);
+            window.location.href = '/auth/login';
+          }
+          console.log(`[API] 401 Unauthorized on ${endpoint}. SkipRefresh: ${skipRefresh}. skipRedirect: ${skipRedirect}`);
+          throw new Error(data.message || 'Session expired');
+        }
+        console.error(`[API Error] ${response.status} on ${endpoint}:`, data.message);
+        throw new Error(data.message || 'An error occurred');
+      }
+
+      return data;
+    } finally {
+      if (isGet) {
+        pendingRequests.delete(cacheKey);
       }
     }
+  })();
 
-    // Handle 401 Unauthorized - try to refresh token first
-    if (
-      response.status === 401 &&
-      typeof window !== 'undefined' &&
-      !skipRefresh
-    ) {
-      // Try to refresh the token
-      if (tokenRefresher) {
-        // Prevent multiple simultaneous refresh attempts
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshPromise = tokenRefresher();
-        }
-
-        const refreshSuccess = await refreshPromise;
-        isRefreshing = false;
-        refreshPromise = null;
-
-        if (refreshSuccess) {
-          // Retry the original request (cookies will be upgraded automatically)
-          const retryResponse = await fetch(
-            `${API_URL}${endpoint}`,
-            fetchOptions
-          );
-
-          // Also handle 429 on retry
-          if (retryResponse.status === 429) {
-            // As simple heuristic, if we get 429 immediately after refresh, just fail or let user retry.
-            // Or implement loop. For now return what we got.
-          }
-
-          const retryData = await retryResponse.json();
-
-          if (!retryResponse.ok) {
-            throw new Error(retryData.message || 'An error occurred');
-          }
-
-          return retryData;
-        }
-      }
-
-      // If refresh failed or no refresher, logout is handled by the consumer (AuthContext) redirects
-      // or we can redirect here
-      if (
-        !skipRedirect &&
-        typeof window !== 'undefined' &&
-        window.location.pathname !== '/auth/login' &&
-        !window.location.pathname.startsWith('/auth/')
-      ) {
-        console.warn('Redirecting to login due to 401/expired session on:', endpoint);
-        window.location.href = '/auth/login';
-      }
-      console.log(`[API] 401 Unauthorized on ${endpoint}. SkipRefresh: ${skipRefresh}. skipRedirect: ${skipRedirect}`);
-      throw new Error(data.message || 'Session expired');
-    }
-    console.error(`[API Error] ${response.status} on ${endpoint}:`, data.message);
-    throw new Error(data.message || 'An error occurred');
+  if (isGet) {
+    pendingRequests.set(cacheKey, fetchPromise);
   }
 
-  return data;
+  return fetchPromise;
 }
 
 

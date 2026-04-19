@@ -79,60 +79,22 @@ export default function ParentBookingsPage() {
           api.requests.getParentRequests(),
         ]);
 
-        // Deduplicate Nanny IDs for both Bookings and Requests
-        const nannyIdsToFetch = new Set<string>();
+        const sortedBookings = bookingsData.sort(
+          (a, b) =>
+            new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        );
 
-        bookingsData.forEach((b) => {
-          const hasProfile = (b.nanny?.profiles as any)?.first_name || (b.nanny as any)?.profile;
-          const nId = b.nanny_id || (b as any).nannyId;
-          if (nId && !hasProfile) {
-            nannyIdsToFetch.add(nId);
-          }
-        });
-
-        requestsData.forEach((r) => {
-          const hasProfile = (r.nanny?.profiles as any)?.first_name || (r.nanny as any)?.profile;
-          const nId = r.nanny_id || (r as any).nannyId;
-          if (nId && !hasProfile) {
-            nannyIdsToFetch.add(nId);
-          }
-        });
-
-        const nannyMap = new Map<string, any>();
-        const uniqueNannyIds = Array.from(nannyIdsToFetch);
-
-        for (const nId of uniqueNannyIds) {
-          try {
-            const nannyDetails = await api.users.get(nId);
-            nannyMap.set(nId, nannyDetails);
-            await new Promise(resolve => setTimeout(resolve, 50));
-          } catch (err) {
-            console.error(`Failed to fetch nanny ${nId}:`, err);
-          }
-        }
-
-        const enrichedBookings = bookingsData.map(b => {
-          const nId = b.nanny_id || (b as any).nannyId;
-          if (nId && nannyMap.has(nId)) {
-            return { ...b, nanny: nannyMap.get(nId) };
-          }
-          return b;
-        }).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-        const enrichedRequests = requestsData.map(r => {
-          const nId = r.nanny_id || (r as any).nannyId;
-          if (nId && nannyMap.has(nId)) {
-            return { ...r, nanny: nannyMap.get(nId) };
-          }
-          return r;
-        }).sort((a, b) => {
-          // Sort by date first, then by start_time if dates are equal
-          const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+        const sortedRequests = requestsData.sort((a, b) => {
+          const dateComparison =
+            new Date(a.date).getTime() - new Date(b.date).getTime();
           if (dateComparison !== 0) return dateComparison;
 
-          // Helper to get minutes from HH:mm or ISO string
           const getMinutes = (timeStr: string) => {
-            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
+            if (timeStr.includes('T'))
+              return (
+                new Date(timeStr).getHours() * 60 +
+                new Date(timeStr).getMinutes()
+              );
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
           };
@@ -140,8 +102,8 @@ export default function ParentBookingsPage() {
           return getMinutes(a.start_time) - getMinutes(b.start_time);
         });
 
-        setBookings(enrichedBookings);
-        setRequests(enrichedRequests);
+        setBookings(sortedBookings);
+        setRequests(sortedRequests);
       }
     } catch (err) {
       console.error('Failed to fetch data:', err);
