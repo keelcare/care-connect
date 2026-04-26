@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
+import { Skeleton } from 'boneyard-js/react';
+import ParentLayout from '@/components/layout/ParentLayout';
 import { SupportTicket, SupportCategory, SupportPriority } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -138,16 +140,33 @@ export default function SupportPage() {
         );
     }, [searchQuery, tickets]);
 
-    if (loading && tickets.length === 0) {
-        return (
-            <div className="flex h-[60vh] items-center justify-center">
-                <Spinner />
-            </div>
-        );
-    }
+
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 mb-10 pb-20 lg:pb-10">
+        <ParentLayout>
+            <Skeleton
+                name="support-page"
+                loading={loading}
+                minHeight="100vh"
+                fixture={
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 opacity-50">
+                        <div className="relative rounded-[2.5rem] bg-gray-200 h-64 overflow-hidden shadow-xl" />
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+                            <div className="lg:col-span-7 space-y-6">
+                                <div className="h-10 w-48 bg-gray-200 rounded-lg" />
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="h-48 w-full bg-white rounded-3xl border border-gray-100 shadow-sm" />
+                                ))}
+                            </div>
+                            <div className="lg:col-span-5 space-y-6">
+                                <div className="h-64 w-full bg-white rounded-3xl border border-gray-100 shadow-sm" />
+                                <div className="h-64 w-full bg-white rounded-3xl border border-gray-100 shadow-sm" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            >
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 mb-10 pb-20 lg:pb-10">
 
             {/* ─── BAN ALERT ─── */}
             {isBanned && (
@@ -547,6 +566,8 @@ export default function SupportPage() {
             </Modal>
             
             {user?.role !== 'nanny' && <BottomNavBar />}
-        </div>
+                </div>
+            </Skeleton>
+        </ParentLayout>
     );
 }

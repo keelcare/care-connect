@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { MapPin, Navigation } from 'lucide-react';
+import { MapPin, Navigation, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { UpdateUserDto } from '@/types/api';
@@ -143,6 +143,11 @@ export default function SettingsPage() {
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       // Refresh user data to ensure sync
       await refreshUser();
+      
+      // Auto-dismiss success message after 5 seconds
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     } catch (error) {
       console.error('Failed to update profile:', error);
       setMessage({
@@ -182,22 +187,27 @@ export default function SettingsPage() {
 
       {message && (
         <div
-          className={`p-4 rounded-xl border flex items-center gap-3 ${message.type === 'success'
-            ? 'bg-green-50 border-green-100 text-green-700'
-            : 'bg-red-50 border-red-100 text-red-700'
+          className={`p-4 rounded-xl flex items-center gap-3 sticky top-24 z-10 animate-in fade-in slide-in-from-top-4 shadow-sm ${message.type === 'success'
+            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+            : 'bg-red-50 text-red-800 border border-red-200'
             }`}
         >
-          {message.text}
+          {message.type === 'success' ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+          )}
+          <p className="font-medium text-sm">{message.text}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8 md:p-10 space-y-8">
-          <div>
-            <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
-              Personal Information
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-8 pb-12">
+        {/* Personal Information UI Card */}
+        <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+          <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+            Personal Information
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 label="First Name"
                 name="firstName"
@@ -262,12 +272,12 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {user?.role === 'nanny' && (
-            <div>
-              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
-                Caregiver Profile
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {user?.role === 'nanny' && (
+          <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+            <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+              Caregiver Profile
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   label="Hourly Rate (₹)"
                   name="hourlyRate"
@@ -317,10 +327,10 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-          )}
+        )}
 
-          <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-100">
-            <Button type="button" variant="ghost" className="rounded-xl">
+        <div className="flex items-center justify-end gap-4 pt-4">
+          <Button type="button" variant="ghost" className="rounded-xl">
               Cancel
             </Button>
             <Button
@@ -330,7 +340,6 @@ export default function SettingsPage() {
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
-          </div>
         </div>
       </form>
     </div>

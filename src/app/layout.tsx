@@ -13,29 +13,10 @@ import { Chatbot } from '@/components/ai/Chatbot';
 import { NotificationOverlay } from '@/components/notifications/NotificationOverlay';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
-import { Fraunces, Lora, Cormorant_Garamond } from 'next/font/google';
 import localFont from 'next/font/local';
 import 'lineicons/dist/lineicons.css';
 import './globals.css';
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-fraunces',
-  display: 'swap',
-});
-
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-lora',
-  display: 'swap',
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  variable: '--font-cormorant',
-  weight: ['300', '400', '500', '600', '700'],
-  display: 'swap',
-});
+import '../bones/registry';
 
 const satoshi = localFont({
   src: [
@@ -162,7 +143,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/welcome-mobile');
 
   return (
-    <body suppressHydrationWarning className={`${fraunces.variable} ${lora.variable} ${cormorant.variable} ${satoshi.variable} font-body bg-background text-primary-900`}>
+    <body suppressHydrationWarning className={`${satoshi.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
           <SSEProvider>

@@ -238,7 +238,7 @@
 
   .btn-accent {
     background-color: hsl(var(--accent));
-    color: white;
+    color: hsl(var(--primary-900));
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-xl);

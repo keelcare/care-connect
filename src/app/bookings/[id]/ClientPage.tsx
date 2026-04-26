@@ -236,10 +236,10 @@ export default function BookingDetailsPage() {
                     </div>
 
                     <div className="ml-auto flex items-center gap-3">
-                        <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${currentStatus === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                            currentStatus === 'CANCELLED' ? 'bg-red-50 text-red-700 border-red-100' :
-                                currentStatus === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                                    'bg-primary-50 text-primary-700 border-primary-100'
+                        <div className={`px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest border ${currentStatus === 'COMPLETED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                            currentStatus === 'CANCELLED' ? 'bg-red-50 text-red-800 border-red-200' :
+                                currentStatus === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                    'bg-primary-50 text-primary-800 border-primary-200'
                             }`}>
                             {currentStatus.replace('_', ' ')}
                         </div>
@@ -381,17 +381,16 @@ export default function BookingDetailsPage() {
                                 {/* Chat Action - Now primary in detail view */}
                                 {['CONFIRMED', 'IN_PROGRESS', 'ACCEPTED'].includes(currentStatus) && (
                                     <Button
-                                        variant="outline"
                                         onClick={() => router.push(`/messages?booking=${bookingId}`)}
-                                        className="w-full h-14 rounded-2xl flex items-center justify-between px-6 border-accent-100 text-accent-700 hover:bg-accent-50 hover:border-accent-200 transition-all font-bold group shadow-sm bg-accent-50/10"
+                                        className="w-full h-14 rounded-2xl flex items-center justify-between px-6 bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold group shadow-lg shadow-primary-900/20"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-xl bg-accent-100 flex items-center justify-center text-accent-700 shadow-sm group-hover:scale-110 transition-transform">
+                                            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
                                                 <MessageSquare size={16} />
                                             </div>
                                             Open Secure Chat
                                         </div>
-                                        <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+                                        <ArrowRight size={16} className="opacity-50 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
                                     </Button>
                                 )}
 
@@ -410,9 +409,9 @@ export default function BookingDetailsPage() {
                                 {/* Cancel */}
                                 {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'REQUESTED'].includes(currentStatus) && (
                                     <Button
-                                        variant="outline"
+                                        variant="ghost"
                                         onClick={() => setIsCancelModalOpen(true)}
-                                        className="w-full h-14 rounded-2xl flex items-center gap-3 px-6 border-red-50 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all font-bold shadow-sm"
+                                        className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 px-6 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all font-semibold"
                                     >
                                         <AlertCircle size={18} />
                                         Cancel Booking

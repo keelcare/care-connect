@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowLeft, ArrowRight, Settings } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, ArrowRight, Settings, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/Input';
@@ -70,7 +70,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4 }}
           className="w-full max-w-md mx-auto"
         >
           {/* Back Button */}
@@ -96,6 +96,18 @@ export default function LoginPage() {
               Sign in to continue to your account
             </p>
           </div>
+
+          {/* Top-Level Error Alert */}
+          {errors.password && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-6 p-4 rounded-xl bg-error-50 border border-error-100 flex items-start gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-error-600 shrink-0 mt-0.5" />
+              <p className="text-sm text-error-700 font-medium">{errors.password}</p>
+            </motion.div>
+          )}
 
           {/* Form */}
           <form className="space-y-5" onSubmit={handleSubmit}>
@@ -137,7 +149,6 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                error={errors.password}
                 className="bg-white border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all rounded-[20px]"
               />
             </div>

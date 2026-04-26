@@ -11,6 +11,7 @@ import { api } from '@/lib/api';
 import { Child } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
+import { Skeleton } from 'boneyard-js/react';
 
 export default function FamilyPage() {
   const { user } = useAuth();
@@ -95,7 +96,28 @@ export default function FamilyPage() {
 
   return (
     <ParentLayout>
-      <div className="max-w-5xl mx-auto space-y-8">
+      <Skeleton
+        name="family-page"
+        loading={loading}
+        minHeight="100vh"
+        fixture={
+          <div className="max-w-5xl mx-auto space-y-8 opacity-50">
+             <div className="flex justify-between items-center mb-8">
+               <div>
+                  <div className="h-10 w-48 bg-gray-200 rounded-lg mb-2" />
+                  <div className="h-6 w-80 bg-gray-100 rounded-lg" />
+               </div>
+               <div className="h-14 w-40 bg-primary/20 rounded-xl" />
+             </div>
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-64 bg-white rounded-[24px] border border-gray-100 shadow-sm" />
+                ))}
+             </div>
+          </div>
+        }
+      >
+        <div className="max-w-5xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-primary font-display">My Family</h1>
@@ -222,6 +244,7 @@ export default function FamilyPage() {
           initialData={selectedChild}
         />
       </div>
+      </Skeleton>
     </ParentLayout>
   );
 }
