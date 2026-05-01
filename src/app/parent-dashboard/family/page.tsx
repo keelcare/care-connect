@@ -99,7 +99,6 @@ export default function FamilyPage() {
       <Skeleton
         name="family-page"
         loading={loading}
-        minHeight="100vh"
         fixture={
           <div className="max-w-5xl mx-auto space-y-8 opacity-50">
              <div className="flex justify-between items-center mb-8">

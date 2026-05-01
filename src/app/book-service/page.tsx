@@ -1,3 +1,5 @@
+'use client';
+
 import React, { Suspense } from 'react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import BookServiceContent from './BookServiceContent';
@@ -10,7 +12,6 @@ export default function BookServicePage() {
       <Skeleton
         name="book-service"
         loading={false} // Managed by Suspense mostly, but good for capture
-        minHeight="100vh"
         fixture={
           <div className="min-h-dvh bg-[#F8F9FA] p-8 space-y-12">
             <div className="flex flex-col items-center gap-6 text-center max-w-3xl mx-auto">

@@ -147,7 +147,6 @@ export default function SupportPage() {
             <Skeleton
                 name="support-page"
                 loading={loading}
-                minHeight="100vh"
                 fixture={
                     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 lg:space-y-12 opacity-50">
                         <div className="relative rounded-[2.5rem] bg-gray-200 h-64 overflow-hidden shadow-xl" />

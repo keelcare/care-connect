@@ -481,7 +481,6 @@ export default function ParentBookingsPage() {
       <Skeleton
         name="parent-bookings"
         loading={loading}
-        minHeight="100vh"
         fixture={
           <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8 opacity-50">
              <div className="h-10 w-48 bg-gray-200 rounded-lg mb-2" />

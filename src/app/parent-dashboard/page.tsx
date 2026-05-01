@@ -140,7 +140,6 @@ export default function HomePage() {
             <Skeleton 
                 name={isNewUser ? "parent-dashboard-new" : "parent-dashboard-returning"} 
                 loading={authLoading || loading}
-                minHeight="100vh"
                 fixture={
                     isNewUser ? (
                         <NewUserDashboard />
