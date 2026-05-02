@@ -61,35 +61,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full flex bg-background">
+    <div className="min-h-dvh w-full flex" style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0F2FE 50%, #EFF6FF 100%)' }}>
       {/* Left Side - Form */}
       <div
-        className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-12"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 3rem)' }}
+        className="w-full lg:w-1/2 flex flex-col justify-start px-6 md:px-12 lg:px-20 xl:px-32 py-4 md:py-12 overflow-y-auto"
+        style={{ 
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)',
+          paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 1.5rem)',
+          paddingRight: 'calc(env(safe-area-inset-right, 0px) + 1.5rem)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)'
+        }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-md mx-auto"
-        >
-          {/* Back Button */}
+        <div className="w-full max-w-md mx-auto flex justify-start mb-2 md:mb-6">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-[#0F172A] transition-colors mb-8 group"
+            className="inline-flex items-center text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors group bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-200/50 shadow-sm"
           >
             <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Link>
+        </div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md mx-auto my-auto"
+        >
           {/* Logo */}
-          <div className="mb-10">
-            <Link href="/" className="inline-block mb-6">
+          <div className="mb-4 md:mb-10">
+            <Link href="/" className="inline-block mb-2 md:mb-6">
               <span className="text-3xl font-bold text-[#0F172A] tracking-tight font-display">
                 Keel
               </span>
             </Link>
-            <h1 className="text-4xl font-bold text-[#0F172A] mb-3 font-display">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-1 md:mb-3 font-display">
               Welcome back
             </h1>
             <p className="text-gray-600 font-body">
@@ -110,7 +116,7 @@ export default function LoginPage() {
           )}
 
           {/* Form */}
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit}>
             {/* Email Input */}
             <Input
               id="email"
@@ -157,7 +163,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-auth-blue text-white py-4 rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+              className="w-full btn-auth-blue text-white py-3 md:py-4 rounded-full font-bold text-base md:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
               {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
@@ -165,7 +171,7 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="relative my-8">
+          <div className="relative my-4 md:my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
@@ -180,7 +186,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-4 border-2 border-gray-200 rounded-full bg-white hover:bg-gray-50 hover:border-gray-300 transition-all text-gray-700 font-medium shadow-sm hover:shadow"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 md:py-4 border-2 border-gray-200 rounded-full bg-white hover:bg-gray-50 hover:border-gray-300 transition-all text-gray-700 font-medium shadow-sm hover:shadow"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -191,7 +197,7 @@ export default function LoginPage() {
             Continue with Google
           </button>
 
-          <div className="mt-8 text-center">
+          <div className="mt-4 md:mt-8 text-center">
             <p className="text-gray-600 text-sm font-body">
               Don't have an account?{' '}
               <Link
@@ -206,7 +212,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Animation */}
-      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-dvh bg-[#F0FDF4] overflow-hidden items-center justify-center">
+      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-dvh overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(160deg, #DBEAFE 0%, #C7D2FE 60%, #BAE6FD 100%)' }}>
         <style jsx>{`
           @keyframes sway {
             0%,

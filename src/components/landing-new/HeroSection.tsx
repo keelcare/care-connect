@@ -37,6 +37,9 @@ export default function HeroSection() {
             loop
             muted
             playsInline
+            webkit-playsinline="true"
+            preload="auto"
+            poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
             className="absolute inset-0 h-full w-full object-cover"
           >
             <source src="/waves.mp4" type="video/mp4" />

@@ -167,11 +167,11 @@ const config: Config = {
 
       // Typography
       fontFamily: {
-        display: ['var(--font-satoshi)', 'var(--font-fraunces)', 'serif'],
-        heading: ['var(--font-satoshi)', 'var(--font-fraunces)', 'serif'],
-        body: ['var(--font-satoshi)', 'var(--font-lora)', 'serif'],
-        sans: ['var(--font-satoshi)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        serif: ['var(--font-lora)', 'Georgia', 'serif'],
+        display: ['var(--font-lora)', 'serif'],
+        heading: ['var(--font-lora)', 'serif'],
+        body: ['var(--font-dm-sans)', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-lora)', 'serif'],
         cormorant: ['var(--font-cormorant)', 'serif'],
       },
       

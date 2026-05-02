@@ -13,6 +13,7 @@ import { Chatbot } from '@/components/ai/Chatbot';
 import { NotificationOverlay } from '@/components/notifications/NotificationOverlay';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
+import { Lora, DM_Sans } from 'next/font/google';
 import localFont from 'next/font/local';
 import 'lineicons/dist/lineicons.css';
 import './globals.css';
@@ -48,6 +49,21 @@ const satoshi = localFont({
   ],
   variable: '--font-satoshi',
   display: 'swap',
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-lora',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+  weight: ['400', '500', '700'],
 });
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
@@ -143,7 +159,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/welcome-mobile');
 
   return (
-    <body suppressHydrationWarning className={`${satoshi.variable} font-body bg-background text-primary-900`}>
+    <body suppressHydrationWarning className={`${satoshi.variable} ${lora.variable} ${dmSans.variable} font-body bg-background text-primary-900`}>
       <ToastProvider>
         <AuthProvider>
           <SSEProvider>
