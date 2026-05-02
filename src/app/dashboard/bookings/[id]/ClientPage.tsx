@@ -27,6 +27,7 @@ import { ReviewForm } from '@/components/features/ReviewForm';
 import { ReviewCard } from '@/components/features/ReviewCard';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { Modal } from '@/components/ui/Modal';
+import { toast } from 'sonner';
 
 export default function BookingDetailsPage() {
   const params = useParams();
@@ -70,16 +71,38 @@ export default function BookingDetailsPage() {
 
   const handleStartBooking = async () => {
     if (!booking) return;
-    try {
-      setActionLoading('starting');
-      const updated = await api.bookings.start(booking.id);
-      setBooking(updated);
-    } catch (err) {
-      console.error('Failed to start booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to start booking');
-    } finally {
-      setActionLoading(null);
+
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
+      return;
     }
+
+    setActionLoading('starting');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const updated = await api.bookings.start(booking.id, { latitude, longitude });
+          setBooking(updated);
+          toast.success("Job started successfully!");
+        } catch (err: any) {
+          console.error('Failed to start booking:', err);
+          toast.error(err.message || 'Failed to start booking');
+        } finally {
+          setActionLoading(null);
+        }
+      },
+      (error) => {
+        setActionLoading(null);
+        toast.error("Please allow location access to start the job.");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   };
 
   const handleCompleteBooking = async () => {

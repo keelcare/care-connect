@@ -360,8 +360,11 @@ export const api = {
     getParentBookings: () => fetchApi<Booking[]>('/bookings/parent/me'),
     getNannyBookings: () => fetchApi<Booking[]>('/bookings/nanny/me'),
     get: (id: string) => fetchApi<Booking>(`/bookings/${id}`),
-    start: (id: string) =>
-      fetchApi<Booking>(`/bookings/${id}/start`, { method: 'PUT' }),
+    start: (id: string, body?: { latitude?: number; longitude?: number }) =>
+      fetchApi<Booking>(`/bookings/${id}/start`, {
+        method: 'PUT',
+        body: body ? JSON.stringify(body) : undefined,
+      }),
     complete: (id: string) =>
       fetchApi<Booking>(`/bookings/${id}/complete`, { method: 'PUT' }),
     cancel: (id: string, body: CancelBookingDto) =>
