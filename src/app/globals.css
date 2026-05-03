@@ -142,8 +142,15 @@
     border-color: hsl(var(--border));
   }
 
-  body {
+  html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
     background-color: hsl(var(--background));
+  }
+
+  body {
     color: hsl(var(--foreground));
     font-family: var(--font-body);
     font-feature-settings: 'rlig' 1, 'calt' 1;
