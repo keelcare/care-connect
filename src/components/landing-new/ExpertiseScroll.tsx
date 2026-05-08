@@ -139,15 +139,15 @@ export const ExpertiseScroll = () => {
                   key={step.id} 
                   className={cn(
                     "absolute top-0 left-0 w-full flex flex-col items-center transition-all duration-700",
-                    activeIndex === index 
-                        ? "opacity-100 transform-none blur-0" 
-                        : "opacity-0 translate-y-8 blur-sm scale-95"
+                  activeIndex === index 
+                        ? "opacity-100 transform-none scale-100" 
+                        : "opacity-0 translate-y-12 scale-90 pointer-events-none"
                   )}
                 >
                    <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-medium text-white mb-3 md:mb-6 leading-tight">
                      {step.title}
                    </h2>
-                   <p className="text-sm sm:text-lg md:text-2xl text-white/70 font-serif max-w-xl leading-relaxed">
+                   <p className="text-sm sm:text-lg md:text-2xl text-white/90 font-serif max-w-xl leading-relaxed">
                      {step.description}
                    </p>
                 </div>

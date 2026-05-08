@@ -784,3 +784,43 @@ export interface PaymentAuditSummary {
   createdStuckOver24Hours: number;
   generatedAt: string;
 }
+
+export interface PaymentInstallment {
+  id: string;
+  plan_id: string;
+  installment_no: number;
+  amount: number;
+  status: 'pending' | 'paid' | 'overdue' | 'failed' | string;
+  due_date: string;
+  paid_date?: string | null;
+}
+
+export interface PaymentPlan {
+  id: string;
+  parent_id: string;
+  service_request_id?: string;
+  plan_type: string;
+  total_months: number;
+  monthly_rate: number;
+  total_amount: number;
+  status: 'active' | 'completed' | 'cancelled' | string;
+  created_at: string;
+  updated_at?: string;
+  users?: {
+    profiles?: {
+      first_name: string | null;
+      last_name: string | null;
+    } | null;
+  } | null;
+  service_requests?: {
+    category: string;
+  } | null;
+  payment_installments?: PaymentInstallment[];
+}
+
+export interface PaymentPlanStats {
+  totalRevenue: number;
+  totalPlans: number;
+  activePlans: number;
+  completedPlans: number;
+}

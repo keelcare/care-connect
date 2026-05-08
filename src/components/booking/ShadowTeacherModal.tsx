@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { SubscriptionPlanType } from '@/types/api';
 import { LocationModal } from '@/components/features/LocationModal';
+import { SUBSCRIPTION_PLANS } from '@/constants/booking';
 
 interface ShadowTeacherModalProps {
     onClose: () => void;
@@ -29,40 +30,6 @@ function getFirstDay(y: number, m: number): number {
     return new Date(y, m, 1).getDay();
 }
 
-const SUBSCRIPTION_PLANS = [
-    {
-        id: 'ONE_TIME',
-        label: 'One-Time Session',
-        duration: 0,
-        discount: 0,
-        popular: false,
-        description: 'Perfect for trying out our service',
-    },
-    {
-        id: 'MONTHLY',
-        label: 'Monthly Plan',
-        duration: 1,
-        discount: 10,
-        popular: false,
-        description: 'Save 10% with monthly commitment',
-    },
-    {
-        id: 'SIX_MONTH',
-        label: '6-Month Plan',
-        duration: 6,
-        discount: 15,
-        popular: true,
-        description: 'Save 15% with 6-month commitment',
-    },
-    {
-        id: 'YEARLY',
-        label: 'Yearly Plan',
-        duration: 12,
-        discount: 20,
-        popular: false,
-        description: 'Save 20% with yearly commitment',
-    },
-];
 
 const DURATION_OPTIONS = [
     { value: '1', label: '1 hour' },
@@ -96,6 +63,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
 
     const [formData, setFormData] = useState({
         planType: 'ONE_TIME',
+        useInstallments: false,
         date: '',
         startTime: '',
         duration: '',
@@ -177,12 +145,13 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
 
         let totalCost = sessionCostAfterDiscount;
         let sessionsPerMonth = 0;
+        let monthlyCost = 0;
 
         if (selectedPlan.id !== 'ONE_TIME') {
             // Assume 4 sessions per month for subscription plans
             sessionsPerMonth = 4;
-            const monthlyCost = sessionCostAfterDiscount * sessionsPerMonth;
-            totalCost = monthlyCost * selectedPlan.duration;
+            monthlyCost = sessionCostAfterDiscount * sessionsPerMonth;
+            totalCost = monthlyCost * (selectedPlan.duration || 1);
         }
 
         return {
@@ -191,7 +160,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
             discountAmount,
             sessionCostAfterDiscount,
             totalCost,
-            monthlyCost: selectedPlan.id !== 'ONE_TIME' ? sessionCostAfterDiscount * sessionsPerMonth : 0,
+            monthlyCost,
             sessionsPerMonth,
         };
     };
@@ -238,6 +207,7 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                 plan_type: (selectedPlan?.id as SubscriptionPlanType) || 'ONE_TIME',
                 plan_duration_months: selectedPlan?.duration || 1,
                 discount_percentage: selectedPlan?.discount || 0,
+                use_installments: formData.useInstallments,
             };
 
             await api.requests.create(payload);
@@ -364,6 +334,11 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                     <span className="text-gray-600">Plan</span>
                     <span className="font-medium text-gray-900">
                         {SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.label || 'One-Time'}
+                        {formData.planType !== 'ONE_TIME' && (
+                            <span className="ml-1 text-[10px] bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">
+                                {formData.useInstallments ? 'Monthly' : 'Full'}
+                            </span>
+                        )}
                     </span>
                 </div>
                 {selectedDate && (
@@ -401,12 +376,14 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                         )}
                         {formData.planType !== 'ONE_TIME' && (
                             <div className="flex justify-between text-sm font-medium pt-2 border-t border-dashed border-gray-200">
-                                <span className="text-gray-700">Monthly</span>
+                                <span className="text-gray-700">{formData.useInstallments ? 'First Installment' : 'Monthly Cost'}</span>
                                 <span>₹{pricing.monthlyCost.toLocaleString()}</span>
                             </div>
                         )}
                         <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
-                            <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL</span>
+                            <span className="text-xs font-bold tracking-wider text-gray-500">
+                                {formData.useInstallments ? 'TOTAL COMMITMENT' : 'TOTAL PAYABLE'}
+                            </span>
                             <span className="text-xl font-bold text-primary">₹{pricing.totalCost.toLocaleString()}</span>
                         </div>
                     </>
@@ -517,7 +494,11 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                             <button
                                                 key={plan.id}
                                                 type="button"
-                                                onClick={() => setFormData({ ...formData, planType: plan.id })}
+                                                onClick={() => setFormData({ 
+                                                    ...formData, 
+                                                    planType: plan.id,
+                                                    useInstallments: plan.duration > 1 ? formData.useInstallments : false
+                                                })}
                                                 className={`relative p-5 rounded-2xl border transition-all text-left group ${isSelected
                                                     ? 'bg-primary text-white border-primary shadow-lg shadow-primary/10'
                                                     : 'bg-white border-gray-200 hover:border-primary hover:bg-gray-50'
@@ -552,6 +533,52 @@ export default function ShadowTeacherModal({ onClose }: ShadowTeacherModalProps)
                                     })}
                                 </div>
                             </div>
+
+                            {/* Payment Type Selection (Only for Subscriptions with duration > 1) */}
+                            {formData.planType !== 'ONE_TIME' && (SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.duration || 0) > 1 && (
+                                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Payment Option
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, useInstallments: false })}
+                                            className={`p-4 rounded-2xl border transition-all text-center ${!formData.useInstallments
+                                                ? 'bg-primary text-white border-primary shadow-md shadow-primary/10'
+                                                : 'bg-white border-gray-200 hover:border-primary hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            <div className="font-bold text-sm">Pay in Full</div>
+                                            <div className={`text-[10px] mt-0.5 ${!formData.useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                One payment upfront
+                                            </div>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, useInstallments: true })}
+                                            className={`p-4 rounded-2xl border transition-all text-center ${formData.useInstallments
+                                                ? 'bg-primary text-white border-primary shadow-md shadow-primary/10'
+                                                : 'bg-white border-gray-200 hover:border-primary hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            <div className="font-bold text-sm">Monthly Installments</div>
+                                            <div className={`text-[10px] mt-0.5 ${formData.useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                Pay month by month
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <div className="mt-3 flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                        <Info size={14} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                                        <p className="text-[10px] text-blue-700 leading-relaxed">
+                                            {formData.useInstallments 
+                                                ? "You will only be charged for the first month today. Subsequent payments will be automatically scheduled each month."
+                                                : "The total amount for the entire duration will be charged in a single upfront payment today."}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
 
                             {/* Date Selection */}
                             <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">

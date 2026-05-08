@@ -13,6 +13,7 @@ import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child, SubscriptionPlanType } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { LocationModal } from '@/components/features/LocationModal';
+import { SUBSCRIPTION_PLANS } from '@/constants/booking';
 
 interface ChildCareModalProps {
     onClose: () => void;
@@ -73,6 +74,8 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     const [specialRequirements, setSpecialRequirements] = useState('');
+    const [planType, setPlanType] = useState<string>('ONE_TIME');
+    const [useInstallments, setUseInstallments] = useState<boolean>(false);
 
     // Persistence: Load on mount
     useEffect(() => {
@@ -249,9 +252,10 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                 children_ages: [],
                 required_skills: [],
                 special_requirements: specialRequirements,
-                plan_type: 'ONE_TIME' as SubscriptionPlanType,
-                plan_duration_months: 1,
-                discount_percentage: 0,
+                plan_type: (planType as SubscriptionPlanType) || 'ONE_TIME',
+                plan_duration_months: SUBSCRIPTION_PLANS.find(p => p.id === planType)?.duration || 1,
+                discount_percentage: SUBSCRIPTION_PLANS.find(p => p.id === planType)?.discount || 0,
+                use_installments: useInstallments,
             };
 
             await api.requests.create(payload);
@@ -350,6 +354,40 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
         }
     };
 
+    const calculatePricing = () => {
+        const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === planType);
+        if (!selectedPlan || !durationStr || !hourlyRate) return null;
+
+        const durationHours = Number(durationStr);
+        const sessionCost = hourlyRate * durationHours;
+        const discount = selectedPlan.discount;
+        const discountAmount = (sessionCost * discount) / 100;
+        const sessionCostAfterDiscount = sessionCost - discountAmount;
+
+        let totalCost = sessionCostAfterDiscount;
+        let sessionsPerMonth = 0;
+        let monthlyCost = 0;
+
+        if (selectedPlan.id !== 'ONE_TIME') {
+            // Assume 4 sessions per month for subscription plans
+            sessionsPerMonth = 4;
+            monthlyCost = sessionCostAfterDiscount * sessionsPerMonth;
+            totalCost = monthlyCost * (selectedPlan.duration || 1);
+        }
+
+        return {
+            sessionCost,
+            discount,
+            discountAmount,
+            sessionCostAfterDiscount,
+            totalCost,
+            monthlyCost,
+            sessionsPerMonth,
+        };
+    };
+
+    const pricing = calculatePricing();
+
     const ServiceSummary = () => (
         <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
@@ -371,6 +409,17 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
             {/* Details Grid */}
             <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Plan</span>
+                    <span className="font-medium text-gray-900">
+                        {SUBSCRIPTION_PLANS.find(p => p.id === planType)?.label || 'One-Time'}
+                        {planType !== 'ONE_TIME' && (
+                            <span className="ml-1 text-[10px] bg-primary-100 text-primary-900 px-1.5 py-0.5 rounded">
+                                {useInstallments ? 'Monthly' : 'Full'}
+                            </span>
+                        )}
+                    </span>
+                </div>
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Date</span>
                     <span className="font-medium text-gray-900">{formattedDate}</span>
@@ -397,15 +446,41 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
 
             {/* Price */}
             <div className="pt-3 border-t border-gray-200">
-                <div className="flex justify-between items-baseline mb-1">
-                    <span className="text-xs font-bold tracking-wider text-gray-500">ESTIMATED TOTAL</span>
-                    <span className={`text-xl font-bold ${hourlyRate ? 'text-primary-900' : 'text-gray-300'}`}>
-                        {hourlyRate ? `₹${(hourlyRate * Number(durationStr || 0)).toFixed(0)}` : '—'}
-                    </span>
-                </div>
-                <div className="text-right text-[10px] text-gray-400">
-                    {hourlyRate ? `Based on ₹${hourlyRate}/hr` : 'Pricing TBD'}
-                </div>
+                {pricing ? (
+                    <>
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-500">Session Cost</span>
+                            <span className="font-medium">₹{pricing.sessionCost.toLocaleString()}</span>
+                        </div>
+                        {pricing.discount > 0 && (
+                            <div className="flex justify-between text-sm mb-2 text-green-600 font-medium">
+                                <span>Plan Discount ({pricing.discount}%)</span>
+                                <span>-₹{pricing.discountAmount.toLocaleString()}</span>
+                            </div>
+                        )}
+                        {planType !== 'ONE_TIME' && (
+                            <div className="flex justify-between text-sm font-medium pt-2 mb-4 border-t border-dashed border-gray-200">
+                                <span className="text-gray-700">{useInstallments ? 'First Installment' : 'Monthly Cost'}</span>
+                                <span>₹{pricing.monthlyCost.toLocaleString()}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-baseline">
+                            <span className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                                {useInstallments ? 'TOTAL COMMITMENT' : 'ESTIMATED TOTAL'}
+                            </span>
+                            <span className="text-xl font-bold text-primary-900">
+                                ₹{pricing.totalCost.toLocaleString()}
+                            </span>
+                        </div>
+                        <div className="text-right text-[10px] text-gray-400 mt-1">
+                            Based on ₹{hourlyRate}/hr
+                        </div>
+                    </>
+                ) : (
+                    <div className="text-center py-2 text-sm text-gray-400">
+                        Select duration to see pricing
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -495,6 +570,104 @@ export default function ChildCareModal({ onClose }: ChildCareModalProps) {
                                         <Info size={18} />
                                     </button>
                                 </h1>
+
+                                {/* Subscription Plan Selection */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Choose Your Plan
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {SUBSCRIPTION_PLANS.map((plan) => {
+                                            const isSelected = planType === plan.id;
+                                            return (
+                                                <button
+                                                    key={plan.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setPlanType(plan.id);
+                                                        if (plan.duration <= 1) setUseInstallments(false);
+                                                    }}
+                                                    className={`relative p-5 rounded-2xl border transition-all text-left group ${isSelected
+                                                        ? 'bg-primary-900 text-white border-primary-900 shadow-lg shadow-primary-900/10'
+                                                        : 'bg-white border-gray-200 hover:border-primary-900 hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    {plan.popular && (
+                                                        <div className="absolute -top-3 left-6 bg-[#CC7A68] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
+                                                            POPULAR
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-start justify-between mb-1">
+                                                        <div>
+                                                            <h4 className="font-bold text-base font-display">{plan.label}</h4>
+                                                            <p className={`text-xs mt-1 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                                                                {plan.description}
+                                                            </p>
+                                                        </div>
+                                                        {isSelected && (
+                                                            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {plan.discount > 0 && (
+                                                        <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-green-100 text-green-800'
+                                                            }`}>
+                                                            Save {plan.discount}%
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Payment Type Selection (Only for Subscriptions with duration > 1) */}
+                                {planType !== 'ONE_TIME' && (SUBSCRIPTION_PLANS.find(p => p.id === planType)?.duration || 0) > 1 && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                            Payment Option
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setUseInstallments(false)}
+                                                className={`p-4 rounded-2xl border transition-all text-center ${!useInstallments
+                                                    ? 'bg-primary-900 text-white border-primary-900 shadow-md shadow-primary-900/10'
+                                                    : 'bg-white border-gray-200 hover:border-primary-900 hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                <div className="font-bold text-sm">Pay in Full</div>
+                                                <div className={`text-[10px] mt-0.5 ${!useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                    One payment upfront
+                                                </div>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setUseInstallments(true)}
+                                                className={`p-4 rounded-2xl border transition-all text-center ${useInstallments
+                                                    ? 'bg-primary-900 text-white border-primary-900 shadow-md shadow-primary-900/10'
+                                                    : 'bg-white border-gray-200 hover:border-primary-900 hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                <div className="font-bold text-sm">Monthly Installments</div>
+                                                <div className={`text-[10px] mt-0.5 ${useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                    Pay month by month
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div className="mt-3 flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                            <Info size={14} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                                            <p className="text-[10px] text-blue-700 leading-relaxed">
+                                                {useInstallments 
+                                                    ? "You will only be charged for the first month today. Subsequent payments will be automatically scheduled each month."
+                                                    : "The total amount for the entire duration will be charged in a single upfront payment today."}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* 2. Profiles */}
                                 <div>

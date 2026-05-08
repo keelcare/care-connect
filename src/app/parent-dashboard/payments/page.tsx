@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { usePayment } from '@/hooks/usePayment';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Skeleton } from 'boneyard-js/react';
 
 export default function ManagePaymentsPage() {
     const [plans, setPlans] = useState<any[]>([]);
@@ -55,19 +56,29 @@ export default function ManagePaymentsPage() {
         });
     };
 
-    if (loading) {
-        return (
-            <ParentLayout>
-                <div className="min-h-[500px] flex items-center justify-center">
-                    <Spinner size="lg" />
-                </div>
-            </ParentLayout>
-        );
-    }
+
 
     return (
         <ParentLayout>
-            <div className="max-w-4xl mx-auto space-y-8 px-4 pb-20">
+            <Skeleton
+                name="payments-page"
+                loading={loading}
+                fixture={
+                    <div className="max-w-4xl mx-auto space-y-8 px-4 pb-20 opacity-50">
+                        <div className="flex items-center space-x-4 mb-8">
+                            <div className="p-3 bg-indigo-100 rounded-2xl w-14 h-14" />
+                            <div>
+                                <div className="h-10 w-64 bg-gray-200 rounded-lg mb-2" />
+                                <div className="h-5 w-80 bg-gray-100 rounded-lg" />
+                            </div>
+                        </div>
+                        {[1, 2].map(i => (
+                            <div key={i} className="h-64 w-full bg-white rounded-3xl border border-gray-100 shadow-sm" />
+                        ))}
+                    </div>
+                }
+            >
+                <div className="max-w-4xl mx-auto space-y-8 px-4 pb-20">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div className="flex items-center space-x-4">
                         <div className="p-3 bg-indigo-100 rounded-2xl">
@@ -105,6 +116,7 @@ export default function ManagePaymentsPage() {
                     </div>
                 )}
             </div>
+            </Skeleton>
         </ParentLayout>
     );
 }
@@ -326,13 +338,20 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                                         </div>
 
                                         {isPending && canPay && (
-                                            <button
-                                                onClick={() => onPayNow(inst.id, plan.booking_id, Number(inst.amount_due))}
-                                                disabled={paymentLoading}
-                                                className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition disabled:opacity-50"
-                                            >
-                                                {paymentLoading ? 'Wait...' : 'Pay Now'}
-                                            </button>
+                                            plan.bookings?.nanny_id ? (
+                                                <button
+                                                    onClick={() => onPayNow(inst.id, plan.booking_id, Number(inst.amount_due))}
+                                                    disabled={paymentLoading}
+                                                    className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition disabled:opacity-50"
+                                                >
+                                                    {paymentLoading ? 'Wait...' : 'Pay Now'}
+                                                </button>
+                                            ) : (
+                                                <div className="px-4 py-2 bg-amber-50 text-amber-600 text-[10px] font-bold uppercase rounded-xl border border-amber-100 flex items-center gap-1.5">
+                                                    <Clock className="w-3.5 h-3.5" />
+                                                    Awaiting Nanny Assignment
+                                                </div>
+                                            )
                                         )}
                                         {isPending && !canPay && (
                                             <div className="px-4 py-2 bg-gray-50 text-gray-400 text-[10px] font-bold uppercase rounded-xl border border-gray-100">

@@ -13,6 +13,7 @@ import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { Child, SubscriptionPlanType } from '@/types/api';
 import { ServiceInfoModal } from './ServiceInfoModal';
 import { LocationModal } from '@/components/features/LocationModal';
+import { SUBSCRIPTION_PLANS } from '@/constants/booking';
 
 interface SpecialNeedsModalProps {
     onClose: () => void;
@@ -67,6 +68,8 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         medicalConditions: '',
         mobilityAssistance: false,
         specialRequirements: '',
+        planType: 'ONE_TIME',
+        useInstallments: false,
     });
 
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -206,9 +209,10 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 children_ages: [],
                 required_skills: ['special_needs_care', 'compassionate_care'],
                 special_requirements: requirements,
-                plan_type: 'ONE_TIME' as SubscriptionPlanType,
-                plan_duration_months: 1,
-                discount_percentage: 0,
+                plan_type: (formData.planType as SubscriptionPlanType) || 'ONE_TIME',
+                plan_duration_months: SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.duration || 1,
+                discount_percentage: SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.discount || 0,
+                use_installments: formData.useInstallments,
             };
 
             await api.requests.create(payload);
@@ -260,7 +264,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             const currentTimePlus30 = new Date(today.getTime() + 30 * 60000);
             const currentHours = currentTimePlus30.getHours();
             const currentMinutes = currentTimePlus30.getMinutes();
-            
+
             return TIME_SLOTS.filter(time => {
                 const [slotHours, slotMinutes] = time.split(':').map(Number);
                 if (slotHours > currentHours) return true;
@@ -298,6 +302,40 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
         }
     };
 
+    const calculatePricing = () => {
+        const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.id === formData.planType);
+        if (!selectedPlan || !formData.duration || !hourlyRate) return null;
+
+        const durationHours = Number(formData.duration);
+        const sessionCost = hourlyRate * durationHours;
+        const discount = selectedPlan.discount;
+        const discountAmount = (sessionCost * discount) / 100;
+        const sessionCostAfterDiscount = sessionCost - discountAmount;
+
+        let totalCost = sessionCostAfterDiscount;
+        let sessionsPerMonth = 0;
+        let monthlyCost = 0;
+
+        if (selectedPlan.id !== 'ONE_TIME') {
+            // Assume 4 sessions per month for subscription plans
+            sessionsPerMonth = 4;
+            monthlyCost = sessionCostAfterDiscount * sessionsPerMonth;
+            totalCost = monthlyCost * (selectedPlan.duration || 1);
+        }
+
+        return {
+            sessionCost,
+            discount,
+            discountAmount,
+            sessionCostAfterDiscount,
+            totalCost,
+            monthlyCost,
+            sessionsPerMonth,
+        };
+    };
+
+    const pricing = calculatePricing();
+
     const ServiceSummary = () => (
         <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 mb-4 font-display">Service Summary</h3>
@@ -314,20 +352,27 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
             </div>
 
             <div className="space-y-3">
-                {selectedDate && (
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Date</span>
-                        <span className="font-medium text-gray-900">
-                            {formattedDate}
-                        </span>
-                    </div>
-                )}
-                {formData.startTime && (
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Time</span>
-                        <span className="font-medium text-gray-900">{formData.startTime}</span>
-                    </div>
-                )}
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Plan</span>
+                    <span className="font-medium text-gray-900">
+                        {SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.label || 'One-Time'}
+                        {formData.planType !== 'ONE_TIME' && (
+                            <span className="ml-1 text-[10px] bg-[#CC7A68]/10 text-[#CC7A68] px-1.5 py-0.5 rounded">
+                                {formData.useInstallments ? 'Monthly' : 'Full'}
+                            </span>
+                        )}
+                    </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Date</span>
+                    <span className="font-medium text-gray-900">
+                        {formattedDate}
+                    </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Time</span>
+                    <span className="font-medium text-gray-900">{formData.startTime || '—'}</span>
+                </div>
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Duration</span>
                     <span className="font-medium text-gray-900">{formData.duration || 0} hours</span>
@@ -338,28 +383,45 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                         {selectedChildIds.length > 0 ? selectedChildIds.length : formData.numPeople}
                     </span>
                 </div>
-
-                <div className="border-t border-gray-200 my-4" />
-
-                {(hourlyRate && formData.duration) ? (
-                    <>
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-500">Hourly Rate</span>
-                            <span className="font-medium">₹{hourlyRate.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
-                            <span className="text-xs font-bold tracking-wider text-gray-500">TOTAL EST.</span>
-                            <span className="text-xl font-bold text-[#CC7A68]">
-                                ₹{(hourlyRate * Number(formData.duration)).toLocaleString()}
-                            </span>
-                        </div>
-                    </>
-                ) : (
-                    <div className="text-center text-sm text-gray-400 py-2">
-                        Pricing calculated based on duration
-                    </div>
-                )}
             </div>
+
+            <div className="border-t border-gray-200 my-4" />
+
+            {pricing ? (
+                <>
+                    <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-500">Session Cost</span>
+                        <span className="font-medium">₹{pricing.sessionCost.toLocaleString()}</span>
+                    </div>
+                    {pricing.discount > 0 && (
+                        <div className="flex justify-between text-sm mb-2 text-green-600 font-medium">
+                            <span>Plan Discount ({pricing.discount}%)</span>
+                            <span>-₹{pricing.discountAmount.toLocaleString()}</span>
+                        </div>
+                    )}
+                    {formData.planType !== 'ONE_TIME' && (
+                        <div className="flex justify-between text-sm font-medium pt-2 mb-4 border-t border-dashed border-gray-200">
+                            <span className="text-gray-700">{formData.useInstallments ? 'First Installment' : 'Monthly Cost'}</span>
+                            <span>₹{pricing.monthlyCost.toLocaleString()}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-baseline pt-4 mt-2 border-t border-gray-200">
+                        <span className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                            {formData.useInstallments ? 'TOTAL COMMITMENT' : 'TOTAL EST.'}
+                        </span>
+                        <span className="text-xl font-bold text-[#CC7A68]">
+                            ₹{pricing.totalCost.toLocaleString()}
+                        </span>
+                    </div>
+                    <div className="text-right text-[10px] text-gray-400 mt-1">
+                        Based on ₹{hourlyRate?.toLocaleString() || 0}/hr
+                    </div>
+                </>
+            ) : (
+                <div className="text-center text-sm text-gray-400 py-2">
+                    Pricing calculated based on duration
+                </div>
+            )}
         </div>
     );
 
@@ -449,6 +511,105 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     </button>
                                 </h1>
 
+                                {/* Subscription Plan Selection */}
+                                <div>
+                                    <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                        Choose Your Plan
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {SUBSCRIPTION_PLANS.map((plan) => {
+                                            const isSelected = formData.planType === plan.id;
+                                            return (
+                                                <button
+                                                    key={plan.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({
+                                                        ...formData,
+                                                        planType: plan.id,
+                                                        useInstallments: plan.duration > 1 ? formData.useInstallments : false
+                                                    })}
+                                                    className={`relative p-5 rounded-2xl border transition-all text-left group ${isSelected
+                                                        ? 'bg-[#CC7A68] text-white border-[#CC7A68] shadow-lg shadow-[#CC7A68]/10'
+                                                        : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    {plan.popular && (
+                                                        <div className="absolute -top-3 left-6 bg-[#CC7A68] text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
+                                                            POPULAR
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-start justify-between mb-1">
+                                                        <div>
+                                                            <h4 className="font-bold text-base font-display">{plan.label}</h4>
+                                                            <p className={`text-xs mt-1 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                                                                {plan.description}
+                                                            </p>
+                                                        </div>
+                                                        {isSelected && (
+                                                            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {plan.discount > 0 && (
+                                                        <div className={`mt-3 inline-block text-[10px] font-bold px-2 py-1 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-green-100 text-green-800'
+                                                            }`}>
+                                                            Save {plan.discount}%
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Payment Type Selection (Only for Subscriptions with duration > 1) */}
+                                {formData.planType !== 'ONE_TIME' && (SUBSCRIPTION_PLANS.find(p => p.id === formData.planType)?.duration || 0) > 1 && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="text-xs font-bold tracking-wider text-gray-400 mb-4 uppercase">
+                                            Payment Option
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, useInstallments: false })}
+                                                className={`p-4 rounded-2xl border transition-all text-center ${!formData.useInstallments
+                                                    ? 'bg-[#CC7A68] text-white border-[#CC7A68] shadow-md shadow-[#CC7A68]/10'
+                                                    : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                <div className="font-bold text-sm">Pay in Full</div>
+                                                <div className={`text-[10px] mt-0.5 ${!formData.useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                    One payment upfront
+                                                </div>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, useInstallments: true })}
+                                                className={`p-4 rounded-2xl border transition-all text-center ${formData.useInstallments
+                                                    ? 'bg-[#CC7A68] text-white border-[#CC7A68] shadow-md shadow-[#CC7A68]/10'
+                                                    : 'bg-white border-gray-200 hover:border-[#CC7A68] hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                <div className="font-bold text-sm">Monthly Installments</div>
+                                                <div className={`text-[10px] mt-0.5 ${formData.useInstallments ? 'text-white/80' : 'text-gray-500'}`}>
+                                                    Pay month by month
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div className="mt-3 flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                            <Info size={14} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                                            <p className="text-[10px] text-blue-700 leading-relaxed">
+                                                {formData.useInstallments
+                                                    ? "You will only be charged for the first month today. Subsequent payments will be automatically scheduled each month."
+                                                    : "The total amount for the entire duration will be charged in a single upfront payment today."}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Date Selection */}
                                 <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
                                     <div className="flex justify-between items-center mb-6">
@@ -483,7 +644,7 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                         {calCells.map((day, idx) => {
                                             if (!day) return <div key={`e${idx}`} />;
                                             const isSel = day === selectedDate;
-                                            
+
                                             const dateObj = new Date(currentYear, currentMonth, day);
                                             const todayStart = new Date();
                                             todayStart.setHours(0, 0, 0, 0);
@@ -495,13 +656,12 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                                         type="button"
                                                         disabled={isPast}
                                                         onClick={() => !isPast && setSelectedDate(day)}
-                                                        className={`w-10 h-10 rounded-full text-sm font-medium transition flex items-center justify-center ${
-                                                            isPast 
-                                                                ? 'text-gray-300 cursor-not-allowed'
-                                                                : isSel
-                                                                    ? 'bg-[#CC7A68] text-white shadow-md shadow-[#CC7A68]/20'
-                                                                    : 'text-gray-700 hover:bg-gray-100'
-                                                        }`}
+                                                        className={`w-10 h-10 rounded-full text-sm font-medium transition flex items-center justify-center ${isPast
+                                                            ? 'text-gray-300 cursor-not-allowed'
+                                                            : isSel
+                                                                ? 'bg-[#CC7A68] text-white shadow-md shadow-[#CC7A68]/20'
+                                                                : 'text-gray-700 hover:bg-gray-100'
+                                                            }`}
                                                     >
                                                         {day}
                                                     </button>
@@ -656,20 +816,20 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                     <ServiceSummary />
                                     <button
                                         type="submit"
-                                         disabled={loading || !isFormComplete}
-                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
-                                     >
-                                         {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
-                                     </button>
-                                     {missingLocation && isFormComplete && (
-                                         <button 
-                                             type="button"
-                                             onClick={() => setIsLocationModalOpen(true)}
-                                             className="w-full mt-3 text-sm font-bold text-[#CC7A68] underline"
-                                         >
-                                             Set Location Now
-                                         </button>
-                                     )}
+                                        disabled={loading || !isFormComplete}
+                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base mt-6 transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                    >
+                                        {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
+                                    </button>
+                                    {missingLocation && isFormComplete && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsLocationModalOpen(true)}
+                                            className="w-full mt-3 text-sm font-bold text-[#CC7A68] underline"
+                                        >
+                                            Set Location Now
+                                        </button>
+                                    )}
                                 </div>
 
                             </form>
@@ -681,19 +841,19 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                                 <ServiceSummary />
                                 <div className="mt-6">
                                     <button
-                                         type="submit"
-                                         onClick={(e) => {
-                                             if (missingLocation) {
-                                                 setIsLocationModalOpen(true);
-                                                 return;
-                                             }
-                                             handleSubmit(e);
-                                         }}
-                                         disabled={loading || !isFormComplete}
-                                         className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
-                                     >
-                                         {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
-                                     </button>
+                                        type="submit"
+                                        onClick={(e) => {
+                                            if (missingLocation) {
+                                                setIsLocationModalOpen(true);
+                                                return;
+                                            }
+                                            handleSubmit(e);
+                                        }}
+                                        disabled={loading || !isFormComplete}
+                                        className="w-full bg-[#CC7A68] hover:bg-[#b06a5b] text-white py-4 rounded-full font-bold text-base transition-all disabled:opacity-50 shadow-xl shadow-[#CC7A68]/20"
+                                    >
+                                        {loading ? 'Finding Caregivers...' : missingLocation ? 'Set Location to Book' : 'Confirm Request →'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -708,17 +868,17 @@ export default function SpecialNeedsModal({ onClose }: SpecialNeedsModalProps) {
                 initialData={{ profile_type: 'SPECIAL_NEEDS' }}
             />
 
-             <ServiceInfoModal
-                 isOpen={isInfoModalOpen}
-                 onClose={() => setIsInfoModalOpen(false)}
-                 category="Special Needs"
-             />
+            <ServiceInfoModal
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
+                category="Special Needs"
+            />
 
-             {/* Location Modal */}
-             <LocationModal 
-                 isOpen={isLocationModalOpen}
-                 onClose={() => setIsLocationModalOpen(false)}
-             />
-         </>
+            {/* Location Modal */}
+            <LocationModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+            />
+        </>
     );
 }

@@ -13,7 +13,9 @@ import {
   LayoutDashboard,
   User,
   HelpCircle,
-  CreditCard
+  CreditCard,
+  Calendar,
+  CalendarPlus,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -28,11 +30,10 @@ import { useNotificationContext } from '@/context/NotificationContext';
 
 const NAV_ITEMS_PARENT = [
   { href: '/parent-dashboard', label: 'Home', icon: LayoutDashboard },
-  { href: '/bookings', label: 'My Bookings', icon: LayoutDashboard }, // using LayoutDashboard as placeholder if Calendar not imported, but I should import Calendar
-  { href: '/book-service', label: 'Book a Service', icon: Settings }, // Helper to fix icons later
+  { href: '/bookings', label: 'My Bookings', icon: Calendar },
+  { href: '/book-service', label: 'Book a Service', icon: CalendarPlus },
   { href: '/parent-dashboard/family', label: 'My Family', icon: User },
   { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
-  { href: '/contact', label: 'Contact', icon: MapPin }, // Icon placeholder
   { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
@@ -155,7 +156,7 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center gap-1.5 md:gap-3">
                 <LocationSelector onClick={() => setIsLocationModalOpen(true)} />
                 <NotificationButton />
-                
+
                 {/* Profile Dropdown */}
                 <div className="relative" onKeyDown={(e) => {
                   if (e.key === 'Escape') setIsProfileOpen(false);

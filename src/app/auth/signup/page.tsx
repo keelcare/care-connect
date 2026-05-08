@@ -35,7 +35,7 @@ function SignupContent() {
   // Map 'parent' -> 'family' and 'nanny' -> 'caregiver'
   const initialRole: Role = roleParam === 'nanny' ? 'caregiver' : 'family';
 
-  const [role, setRole] = useState<Role>(initialRole);
+  const [role] = useState<Role>(initialRole);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -154,11 +154,11 @@ function SignupContent() {
   // Theme Configuration
   const themes = {
     family: {
-      gradient: 'from-stone-50 via-white to-stone-100',
-      accent: 'text-stone-900',
+      gradient: 'from-blue-50 via-indigo-50/40 to-sky-100/60',
+      accent: 'text-indigo-900',
       button: 'bg-accent hover:bg-accent-600',
-      border: 'border-stone-900',
-      bgSoft: 'bg-stone-50',
+      border: 'border-indigo-800',
+      bgSoft: 'bg-indigo-50',
       title: (
         <>
           Find Trusted <br />
@@ -189,11 +189,11 @@ function SignupContent() {
       ],
     },
     caregiver: {
-      gradient: 'from-accent-50 via-white to-blue-50',
+      gradient: 'from-sky-50 via-blue-50/50 to-indigo-100/60',
       accent: 'text-accent-600',
       button: 'bg-accent hover:bg-accent-600',
       border: 'border-accent-600',
-      bgSoft: 'bg-accent-50',
+      bgSoft: 'bg-sky-50',
       title: (
         <>
           Find Your Perfect <br />
@@ -233,7 +233,7 @@ function SignupContent() {
   const currentTheme = themes[role];
 
   return (
-    <div className="h-dvh flex bg-neutral-50 justify-center transition-colors duration-500 overflow-hidden">
+    <div className="h-dvh flex bg-blue-50 justify-center transition-colors duration-500 overflow-hidden">
       <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
         {/* Left Side - Branding (Desktop Only) */}
         <div
@@ -447,22 +447,27 @@ function SignupContent() {
 
         {/* Right Side - Form */}
         <div
-          className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 md:p-12 overflow-y-auto"
-          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}
+          className="w-full lg:w-1/2 h-full flex flex-col justify-start items-center p-4 md:p-12 overflow-y-auto"
+          style={{ 
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)',
+            paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 1.5rem)',
+            paddingRight: 'calc(env(safe-area-inset-right, 0px) + 1.5rem)',
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)'
+          }}
         >
-          <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 my-auto">
+          <div className="w-full max-w-md mx-auto flex justify-start mb-2 md:mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors group bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-200/50 shadow-sm"
+            >
+              <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Home
+            </Link>
+          </div>
+
+          <div className="w-full max-w-md space-y-4 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 my-auto">
             <div className="text-center lg:text-left">
-              <Link
-                href="/"
-                className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-8 group"
-              >
-                <ArrowLeft
-                  size={16}
-                  className="mr-2 group-hover:-translate-x-1 transition-transform"
-                />
-                Back to Home
-              </Link>
-              <h2 className="text-3xl font-bold text-neutral-900 font-display">
+              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 font-display">
                 Create Account
               </h2>
               <p className="text-neutral-500 mt-2">
@@ -470,44 +475,9 @@ function SignupContent() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div
-                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${role === 'family'
-                  ? `${themes.family.border} ${themes.family.bgSoft} ${themes.family.accent} shadow-sm scale-[1.02]`
-                  : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
-                  }`}
-                onClick={() => setRole('family')}
-              >
-                <User
-                  size={24}
-                  className={
-                    role === 'family'
-                      ? themes.family.accent
-                      : 'text-neutral-400'
-                  }
-                />
-                <span className="font-bold text-sm">I need care</span>
-              </div>
-              <div
-                className={`cursor-pointer rounded-2xl p-4 border-2 transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 ${role === 'caregiver'
-                  ? `${themes.caregiver.border} ${themes.caregiver.bgSoft} ${themes.caregiver.accent} shadow-sm scale-[1.02]`
-                  : 'border-neutral-100 hover:border-neutral-200 text-neutral-500 hover:bg-neutral-50'
-                  }`}
-                onClick={() => setRole('caregiver')}
-              >
-                <Heart
-                  size={24}
-                  className={
-                    role === 'caregiver'
-                      ? themes.caregiver.accent
-                      : 'text-neutral-400'
-                  }
-                />
-                <span className="font-bold text-sm">I want to care</span>
-              </div>
-            </div>
 
-            <form className="space-y-5" onSubmit={handleSubmit}>
+
+            <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   id="firstName"
@@ -665,13 +635,13 @@ function SignupContent() {
                 type="submit"
                 size="lg"
                 isLoading={isLoading}
-                className="w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-12 text-base font-medium btn-auth-blue"
+                className="w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-10 md:h-12 text-sm md:text-base font-medium btn-auth-blue"
               >
                 Create Account
               </Button>
             </form>
 
-            <div className="relative">
+            <div className="relative my-2 md:my-0">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-neutral-200"></div>
               </div>
@@ -720,7 +690,7 @@ function SignupContent() {
               }}
               type="button"
               disabled={role === 'caregiver' && formData.categories.length === 0}
-              className={`w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-full bg-white transition-colors text-neutral-700 font-medium h-12 ${role === 'caregiver' && formData.categories.length === 0
+              className={`w-full flex items-center justify-center gap-3 px-4 py-2 md:py-3 border border-neutral-200 rounded-full bg-white transition-colors text-neutral-700 font-medium h-10 md:h-12 ${role === 'caregiver' && formData.categories.length === 0
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:bg-neutral-50'
                 }`}

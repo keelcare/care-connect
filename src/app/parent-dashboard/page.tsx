@@ -8,6 +8,7 @@ import { NewUserDashboard } from '@/components/dashboard/NewUserDashboard';
 import { api } from '@/lib/api';
 import { Spinner } from '@/components/ui/Spinner';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { Skeleton } from 'boneyard-js/react';
 
 export default function HomePage() {
     const { user, loading: authLoading } = useAuth();
@@ -132,30 +133,35 @@ export default function HomePage() {
         return () => unsubscribers.forEach((unsub) => unsub());
     }, [subscribe, fetchDashboardData]);
 
-    if (authLoading || loading) {
-        return (
-            <ParentLayout>
-                <div className="min-h-[500px] flex items-center justify-center">
-                    <Spinner />
-                </div>
-            </ParentLayout>
-        );
-    }
-
-    // Determine which dashboard to show
     const isNewUser = bookingCount === 0;
 
     return (
         <ParentLayout>
-            {isNewUser ? (
-                <NewUserDashboard />
-            ) : (
-                <ReturningUserDashboard
-                    activeSession={dashboardData.activeSession}
-                    upcomingBookings={dashboardData.upcomingBookings}
-                    notifications={dashboardData.notifications}
-                />
-            )}
+            <Skeleton 
+                name={isNewUser ? "parent-dashboard-new" : "parent-dashboard-returning"} 
+                loading={authLoading || loading}
+                fixture={
+                    isNewUser ? (
+                        <NewUserDashboard />
+                    ) : (
+                        <ReturningUserDashboard
+                            activeSession={null}
+                            upcomingBookings={[]}
+                            notifications={[]}
+                        />
+                    )
+                }
+            >
+                {isNewUser ? (
+                    <NewUserDashboard />
+                ) : (
+                    <ReturningUserDashboard
+                        activeSession={dashboardData?.activeSession}
+                        upcomingBookings={dashboardData?.upcomingBookings || []}
+                        notifications={dashboardData?.notifications || []}
+                    />
+                )}
+            </Skeleton>
         </ParentLayout>
     );
 }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
@@ -158,8 +158,33 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Spinner />
+      <div className="space-y-6" aria-busy="true" aria-live="polite">
+        {/* NannyHero skeleton */}
+        <div className="rounded-3xl p-8 bg-gradient-to-br from-neutral-100 to-neutral-50 animate-pulse">
+          <Skeleton variant="text" className="w-36 mb-3" />
+          <Skeleton variant="title" className="w-64 mb-2" />
+          <Skeleton variant="text" className="w-48" />
+        </div>
+        {/* Main grid skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-5">
+            {/* Session card skeleton */}
+            <Skeleton variant="card" className="h-44" />
+            {/* Quick actions skeleton */}
+            <div className="grid grid-cols-2 gap-4">
+              <Skeleton variant="card" className="h-28" />
+              <Skeleton variant="card" className="h-28" />
+              <Skeleton variant="card" className="h-28" />
+              <Skeleton variant="card" className="h-28" />
+            </div>
+          </div>
+          <div className="space-y-4">
+            {/* Upcoming schedule skeleton */}
+            <Skeleton variant="card" className="h-72" />
+            {/* Feedback skeleton */}
+            <Skeleton variant="card" className="h-44" />
+          </div>
+        </div>
       </div>
     );
   }

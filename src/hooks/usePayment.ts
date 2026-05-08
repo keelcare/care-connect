@@ -12,6 +12,7 @@ interface RazorpayResponse {
 interface PaymentOptions {
   amount: number; // in INR
   bookingId: string;
+  installmentId?: string;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -24,47 +25,16 @@ export const usePayment = () => {
   const handlePayment = async ({
     amount,
     bookingId,
+    installmentId,
     onSuccess,
     onError,
   }: PaymentOptions) => {
     setLoading(true);
     try {
       // 1. Create Order
-      const orderData = await api.payments.createOrder(bookingId);
+      const orderData = await api.payments.createOrder(bookingId, installmentId);
 
-      const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
-
-      if (isCapacitor) {
-        // --- Capacitor: open Razorpay hosted checkout in native in-app browser ---
-        const { Browser } = await import('@capacitor/browser');
-        const callbackUrl = encodeURIComponent('keel://payment/callback');
-        const checkoutUrl =
-          `https://checkout.razorpay.com/v1/checkout?` +
-          `order_id=${orderData.orderId}&key=${orderData.key}&callback_url=${callbackUrl}`;
-
-        await Browser.open({ url: checkoutUrl });
-
-        // Wait for the deep-link return dispatched by the appUrlOpen listener in layout.tsx
-        await new Promise<void>((resolve) => {
-          const handler = (e: Event) => {
-            const { status, error } = (e as CustomEvent<{ status: string; error?: string }>).detail;
-            window.removeEventListener('careconnect-payment-result', handler);
-            if (status === 'success') {
-              addToast({ message: 'Payment Successful!', type: 'success' });
-              onSuccess();
-            } else {
-              const msg = error || 'Payment Failed';
-              addToast({ message: msg, type: 'error' });
-              onError(msg);
-            }
-            resolve();
-          };
-          window.addEventListener('careconnect-payment-result', handler);
-        });
-        return;
-      }
-
-      // --- Web: existing Razorpay JS SDK flow (unchanged) ---
+      // --- Web & Capacitor: use Razorpay JS SDK flow (Razorpay's modal handles mobile webviews well) ---
       const options = {
         key: orderData.key, // Backend returns 'key', not 'keyId'
         amount: orderData.amount,

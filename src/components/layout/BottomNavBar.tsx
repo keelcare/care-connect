@@ -4,14 +4,14 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Calendar, Sparkles, User, HelpCircle, CreditCard } from 'lucide-react';
+import { Home, Calendar, CalendarPlus, User, CreditCard, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'Bookings', icon: Calendar },
-    { href: '/book-service', label: 'Book', icon: Sparkles },
+    { href: '/book-service', label: 'Book', icon: CalendarPlus },
     { href: '/parent-dashboard/family', label: 'Family', icon: User },
     { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
     { href: '/support', label: 'Support', icon: HelpCircle },
@@ -53,7 +53,7 @@ export default function BottomNavBar() {
                                     key={item.href}
                                     href={item.href}
                                     onClick={(e) => handleNavClick(e, item.href)}
-                                    className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-2xl transition-all"
+                                    className="relative flex flex-col items-center gap-1 py-3 px-3 rounded-2xl transition-all min-w-[44px] min-h-[44px] justify-center"
                                 >
                                     <div className="relative">
                                         <Icon

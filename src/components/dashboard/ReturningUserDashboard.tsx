@@ -41,7 +41,7 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
     return (
         <div className="min-h-dvh pb-10">
             <GreetingHero
-                userName={user?.profiles?.first_name || 'Parent'}
+                userName={user?.profiles?.first_name || ''}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -87,13 +87,6 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
 
                     <ActivityPanel activities={notifications} />
 
-                    {/* Additional widgets can go here */}
-                    <div className="bg-gradient-to-br from-dashboard-success/20 to-dashboard-mint rounded-[20px] p-5 border border-dashboard-success/10">
-                        <h3 className="font-heading font-bold text-dashboard-childcare-teal text-base mb-1.5">Did you know?</h3>
-                        <p className="text-dashboard-childcare-teal/80 text-[13px] leading-relaxed">
-                            Consistent routines help children feel secure. Try booking the same caregiver for recurring sessions.
-                        </p>
-                    </div>
                 </div>
             </div>
 

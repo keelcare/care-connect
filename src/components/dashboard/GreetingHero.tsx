@@ -23,7 +23,7 @@ export function GreetingHero({ userName, carePlanUpdate }: GreetingHeroProps) {
                 transition={{ duration: 0.5 }}
             >
                 <h1 className="text-fluid-5xl font-display font-medium text-dashboard-accent-start mb-2 tracking-tight">
-                    {getGreeting()}, {userName}
+                    {getGreeting()}{userName ? `, ${userName}` : ''}
                 </h1>
                 <p className="text-dashboard-text-secondary text-fluid-base font-body font-medium antialiased">
                     {carePlanUpdate || "Here's the latest update on your care plan."}

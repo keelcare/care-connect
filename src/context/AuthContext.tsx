@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     checkAuth();
-  }, [checkAuth, pathname]);
+  }, [checkAuth]);
 
   const login = async (data: User | AuthResponse) => {
     if (typeof window !== 'undefined') {

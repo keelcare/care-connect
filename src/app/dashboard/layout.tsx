@@ -26,6 +26,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { LocationModal } from '@/components/features/LocationModal';
 import { usePreferences } from '@/hooks/usePreferences';
 import { Navbar } from '@/components/layout/Navbar';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function DashboardLayout({
   children,
@@ -91,8 +92,49 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary-900 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-dvh flex" aria-busy="true" aria-live="polite">
+        {/* Sidebar skeleton */}
+        <aside className="w-72 bg-white border-r border-neutral-200/60 fixed h-full z-30 hidden md:flex flex-col">
+          <div className="p-8 border-b border-neutral-200/60">
+            <Skeleton variant="title" className="w-16" />
+          </div>
+          <nav className="flex-1 p-6 space-y-3">
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3">
+                <Skeleton variant="circle" width={20} height={20} />
+                <Skeleton variant="text" className="w-28" />
+              </div>
+            ))}
+          </nav>
+          <div className="p-6 border-t border-neutral-200/60">
+            <div className="flex items-center gap-3 p-3">
+              <Skeleton variant="avatar" />
+              <div className="flex-1 space-y-2">
+                <Skeleton variant="text" className="w-32" />
+                <Skeleton variant="text" className="w-20" />
+              </div>
+            </div>
+          </div>
+        </aside>
+        {/* Main content skeleton */}
+        <main className="md:ml-72 flex-1 p-6 md:p-10 space-y-6">
+          <div className="h-16 border-b border-neutral-100 mb-8" />
+          <Skeleton variant="title" className="w-64 mb-1" />
+          <Skeleton variant="text" className="w-48 mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <Skeleton variant="card" className="h-44" />
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton variant="card" className="h-28" />
+                <Skeleton variant="card" className="h-28" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <Skeleton variant="card" className="h-64" />
+              <Skeleton variant="card" className="h-40" />
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
@@ -163,26 +205,29 @@ export default function DashboardLayout({
 
         <div className="p-6 border-t border-neutral-200/60">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
-              <Image
-                src={
-                  user?.profiles?.profile_image_url ||
-                  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                }
-                alt="User"
-                fill
-                className="object-cover"
-              />
-            </div>
+            <Avatar 
+                src={user?.profiles?.profile_image_url || undefined}
+                alt={user?.profiles?.first_name || 'User'}
+                fallback={user?.profiles?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                size="md"
+                ringColor="bg-white"
+            />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-navy truncate">
-                {user?.profiles?.first_name
-                  ? `${user.profiles.first_name} ${user.profiles.last_name}`
-                  : 'Loading...'}
-              </p>
-              <p className="text-xs text-neutral-600 truncate capitalize">
-                {user?.role || '...'}
-              </p>
+              {user?.profiles?.first_name ? (
+                <>
+                  <p className="text-sm font-semibold text-navy truncate">
+                    {user.profiles.first_name} {user.profiles.last_name}
+                  </p>
+                  <p className="text-xs text-neutral-600 truncate capitalize">
+                    {user?.role}
+                  </p>
+                </>
+              ) : (
+                <div className="space-y-1.5">
+                  <Skeleton variant="text" className="w-28" />
+                  <Skeleton variant="text" className="w-16" />
+                </div>
+              )}
             </div>
           </div>
         </div>

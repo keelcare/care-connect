@@ -28,6 +28,7 @@ import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 
 import { ReviewModal } from '@/components/reviews/ReviewModal';
+import { Skeleton } from 'boneyard-js/react';
 
 export default function ParentBookingsPage() {
   const { user } = useAuth();
@@ -79,60 +80,22 @@ export default function ParentBookingsPage() {
           api.requests.getParentRequests(),
         ]);
 
-        // Deduplicate Nanny IDs for both Bookings and Requests
-        const nannyIdsToFetch = new Set<string>();
+        const sortedBookings = bookingsData.sort(
+          (a, b) =>
+            new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        );
 
-        bookingsData.forEach((b) => {
-          const hasProfile = (b.nanny?.profiles as any)?.first_name || (b.nanny as any)?.profile;
-          const nId = b.nanny_id || (b as any).nannyId;
-          if (nId && !hasProfile) {
-            nannyIdsToFetch.add(nId);
-          }
-        });
-
-        requestsData.forEach((r) => {
-          const hasProfile = (r.nanny?.profiles as any)?.first_name || (r.nanny as any)?.profile;
-          const nId = r.nanny_id || (r as any).nannyId;
-          if (nId && !hasProfile) {
-            nannyIdsToFetch.add(nId);
-          }
-        });
-
-        const nannyMap = new Map<string, any>();
-        const uniqueNannyIds = Array.from(nannyIdsToFetch);
-
-        for (const nId of uniqueNannyIds) {
-          try {
-            const nannyDetails = await api.users.get(nId);
-            nannyMap.set(nId, nannyDetails);
-            await new Promise(resolve => setTimeout(resolve, 50));
-          } catch (err) {
-            console.error(`Failed to fetch nanny ${nId}:`, err);
-          }
-        }
-
-        const enrichedBookings = bookingsData.map(b => {
-          const nId = b.nanny_id || (b as any).nannyId;
-          if (nId && nannyMap.has(nId)) {
-            return { ...b, nanny: nannyMap.get(nId) };
-          }
-          return b;
-        }).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-        const enrichedRequests = requestsData.map(r => {
-          const nId = r.nanny_id || (r as any).nannyId;
-          if (nId && nannyMap.has(nId)) {
-            return { ...r, nanny: nannyMap.get(nId) };
-          }
-          return r;
-        }).sort((a, b) => {
-          // Sort by date first, then by start_time if dates are equal
-          const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+        const sortedRequests = requestsData.sort((a, b) => {
+          const dateComparison =
+            new Date(a.date).getTime() - new Date(b.date).getTime();
           if (dateComparison !== 0) return dateComparison;
 
-          // Helper to get minutes from HH:mm or ISO string
           const getMinutes = (timeStr: string) => {
-            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
+            if (timeStr.includes('T'))
+              return (
+                new Date(timeStr).getHours() * 60 +
+                new Date(timeStr).getMinutes()
+              );
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
           };
@@ -140,8 +103,8 @@ export default function ParentBookingsPage() {
           return getMinutes(a.start_time) - getMinutes(b.start_time);
         });
 
-        setBookings(enrichedBookings);
-        setRequests(enrichedRequests);
+        setBookings(sortedBookings);
+        setRequests(sortedRequests);
       }
     } catch (err) {
       console.error('Failed to fetch data:', err);
@@ -453,10 +416,10 @@ export default function ParentBookingsPage() {
               e.stopPropagation();
               handlePayNow(booking);
             }}
-            disabled={paymentLoading}
-            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm"
+            disabled={paymentLoading || !booking.nanny_id}
+            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-sm disabled:opacity-50"
           >
-            {paymentLoading ? 'Processing...' : 'Pay Now'}
+            {paymentLoading ? 'Processing...' : !booking.nanny_id ? 'Assigning Nanny' : 'Pay Now'}
           </Button>
         );
       } else {
@@ -515,7 +478,25 @@ export default function ParentBookingsPage() {
 
   return (
     <ParentLayout>
-      <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
+      <Skeleton
+        name="parent-bookings"
+        loading={loading}
+        fixture={
+          <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8 opacity-50">
+             <div className="h-10 w-48 bg-gray-200 rounded-lg mb-2" />
+             <div className="h-6 w-64 bg-gray-100 rounded-lg mb-8" />
+             <div className="flex gap-4 border-b border-gray-100 mb-8">
+                <div className="h-10 w-24 bg-gray-100 rounded-t-lg" />
+                <div className="h-10 w-24 bg-gray-100 rounded-t-lg" />
+                <div className="h-10 w-24 bg-gray-100 rounded-t-lg" />
+             </div>
+             {[1, 2, 3].map(i => (
+               <div key={i} className="h-32 w-full bg-gray-50 rounded-2xl border border-gray-100" />
+             ))}
+          </div>
+        }
+      >
+        <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold font-display text-primary-900">My Bookings</h1>
@@ -771,7 +752,8 @@ export default function ParentBookingsPage() {
             })()}
           />
         )}
-      </div>
+        </div>
+      </Skeleton>
     </ParentLayout>
   );
 }

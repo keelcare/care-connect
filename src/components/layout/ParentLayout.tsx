@@ -38,11 +38,13 @@ export default function ParentLayout({
 
   return (
     <div className="min-h-dvh bg-background">
-      {/* Unified Navbar */}
-      <Navbar />
+      {/* Top Navbar — desktop only (mobile uses BottomNavBar) */}
+      <div className="hidden lg:block">
+        <Navbar />
+      </div>
 
-      {/* Main Content Area */}
-      <main className="pt-24 pb-24 lg:pb-8">
+      {/* Main Content Area — no top padding on mobile since there's no top nav */}
+      <main className="lg:pt-24 pb-24 lg:pb-8">
         <Container padding="responsive">
           {children}
         </Container>

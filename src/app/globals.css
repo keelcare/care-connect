@@ -108,9 +108,9 @@
     --radius-full: 9999px;
 
     /* Typography */
-    --font-display: var(--font-satoshi), sans-serif;
-    --font-heading: var(--font-satoshi), sans-serif;
-    --font-body: var(--font-satoshi), sans-serif;
+    --font-display: var(--font-lora), serif;
+    --font-heading: var(--font-lora), serif;
+    --font-body: var(--font-dm-sans), sans-serif;
     --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
     --font-weight-normal: 400;
@@ -142,8 +142,15 @@
     border-color: hsl(var(--border));
   }
 
-  body {
+  html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
     background-color: hsl(var(--background));
+  }
+
+  body {
     color: hsl(var(--foreground));
     font-family: var(--font-body);
     font-feature-settings: 'rlig' 1, 'calt' 1;
@@ -238,7 +245,7 @@
 
   .btn-accent {
     background-color: hsl(var(--accent));
-    color: white;
+    color: hsl(var(--primary-900));
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: var(--radius-xl);

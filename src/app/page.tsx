@@ -9,14 +9,26 @@ import { SplashLoader } from '@/components/ui/SplashLoader';
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  
+  const [mounted, setMounted] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
+  useEffect(() => {
+    setMounted(true);
+    if (sessionStorage.getItem('splashShown') === 'true') {
+      setShowSplash(false);
+    }
+  }, []);
+
   const handleSplashFinish = useCallback(() => {
+    sessionStorage.setItem('splashShown', 'true');
     setShowSplash(false);
   }, []);
 
   // Centralized redirection logic
   useEffect(() => {
+    if (!mounted) return;
+
     // We only redirect once the splash animation is over AND auth check is complete
     if (!showSplash && !loading) {
       if (user) {
@@ -34,7 +46,9 @@ export default function Home() {
         router.push(isNative ? '/welcome-mobile' : '/welcome');
       }
     }
-  }, [user, loading, showSplash, router]);
+  }, [user, loading, showSplash, mounted, router]);
+
+  if (!mounted) return null;
 
   // Always show splash until finished to ensure a smooth transition
   return (

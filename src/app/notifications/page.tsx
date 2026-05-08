@@ -28,6 +28,7 @@ export default function NotificationsPage() {
   } = useNotificationContext();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const isAllRead = notifications.length > 0 && notifications.every((n) => n.is_read);
 
   const filteredNotifications =
     activeFilter === 'all'
@@ -59,11 +60,15 @@ export default function NotificationsPage() {
 
           <button
             onClick={markAllAsRead}
-            disabled={notifications.every((n) => n.is_read)}
-            className="flex items-center gap-2 text-primary hover:text-primary-800 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isAllRead || notifications.length === 0}
+            className={`flex items-center gap-2 font-semibold transition-all ${
+              isAllRead || notifications.length === 0
+                ? 'text-gray-400 cursor-default'
+                : 'text-primary hover:text-primary-800 cursor-pointer'
+            }`}
           >
             <CheckCheck className="w-5 h-5" />
-            Mark all as read
+            {isAllRead ? 'All caught up' : 'Mark all as read'}
           </button>
         </div>
 
@@ -95,8 +100,12 @@ export default function NotificationsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-[32px] p-12 text-center shadow-sm border border-gray-100"
           >
-            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mx-auto mb-6">
-              <Bell className="w-10 h-10 text-primary" />
+            <div className="relative w-20 h-20 mx-auto mb-8">
+              <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse"></div>
+              <div className="absolute inset-2 bg-primary/5 rounded-full ring-8 ring-primary/5"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Bell className="w-8 h-8 text-primary" />
+              </div>
             </div>
             <h3 className="text-xl font-bold text-[#0F172A] mb-2 font-display">
               No notifications yet
