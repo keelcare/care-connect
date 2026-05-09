@@ -17,25 +17,49 @@ export const CTA = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-white mb-8">
-              Find the help your <br />
-              <span className="text-primary">family deserves.</span>
-            </h2>
-            <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-              Join over 50,000 families who trust Keel for their daily needs. Start your search today and find a verified professional in minutes.
-            </p>
+            {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
+              <>
+                <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-white mb-8">
+                  Exclusive early access <br />
+                  <span className="text-primary">for your family.</span>
+                </h2>
+                <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+                  Be among the first to experience our premium care platform in your city. Join the waitlist today.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-fluid-4xl lg:text-fluid-5xl font-bold text-white mb-8">
+                  Find the help your <br />
+                  <span className="text-primary">family deserves.</span>
+                </h2>
+                <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+                  Join over 50,000 families who trust Keel for their daily needs. Start your search today and find a verified professional in minutes.
+                </p>
+              </>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/book-service">
-                <button className="w-full sm:w-auto bg-primary text-white px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                  Find Care Today
-                </button>
-              </Link>
-              <Link href="/auth/signup?role=nanny">
-                <button className="w-full sm:w-auto bg-white/10 text-white backdrop-blur-md px-12 py-5 rounded-full font-bold text-lg hover:bg-white/20 transition-all border border-white/20">
-                  Become a Provider
-                </button>
-              </Link>
+              {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
+                <a href="#waitlist">
+                  <button className="w-full sm:w-auto bg-primary text-white px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                    Join the Waitlist
+                  </button>
+                </a>
+              ) : (
+                <>
+                  <Link href="/book-service">
+                    <button className="w-full sm:w-auto bg-primary text-white px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                      Find Care Today
+                    </button>
+                  </Link>
+                  <Link href="/auth/signup?role=nanny">
+                    <button className="w-full sm:w-auto bg-white/10 text-white backdrop-blur-md px-12 py-5 rounded-full font-bold text-lg hover:bg-white/20 transition-all border border-white/20">
+                      Become a Provider
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

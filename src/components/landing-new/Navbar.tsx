@@ -39,13 +39,16 @@ export const Navbar = () => {
       >
         <Link href="/" className="flex items-center gap-2 group">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+            className="w-10 h-10 rounded-full overflow-hidden transition-all duration-300 shadow-md"
             style={{
-              background: scrolled ? 'rgba(241,245,249,0.9)' : 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(255,255,255,0.3)',
+              border: '1px solid rgba(255,255,255,0.1)',
             }}
           >
-            <img src="/logo.svg" alt="Keel Logo" className="h-6 w-auto" />
+            <img 
+              src="/logo.jpeg" 
+              alt="Keel Logo" 
+              className="w-full h-full object-cover" 
+            />
           </div>
           <span
             className="text-xl font-bold font-display tracking-tight transition-colors duration-300"
@@ -58,7 +61,7 @@ export const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
           {[
-            { label: 'About', href: '/about' },
+
           ].map(({ label, href }) => (
             <Link
               key={label}
@@ -87,26 +90,44 @@ export const Navbar = () => {
         {/* Auth Buttons */}
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-4">
-            <Link
-              href="/auth/login"
-              className="text-sm font-bold transition-colors duration-300"
-              style={{ color: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.9)' }}
-            >
-              Log In
-            </Link>
-            <Link href="/auth/signup">
-              <button
-                className="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-lg"
-                style={{
-                  background: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  border: scrolled ? 'none' : '1px solid rgba(255,255,255,0.4)',
-                  boxShadow: scrolled ? '0 4px 14px rgba(0,0,0,0.15)' : '0 4px 14px rgba(0,0,0,0.1)',
-                }}
-              >
-                Sign Up
-              </button>
-            </Link>
+            {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
+              <a href="#waitlist">
+                <button
+                  className="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-lg"
+                  style={{
+                    background: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    border: scrolled ? 'none' : '1px solid rgba(255,255,255,0.4)',
+                    boxShadow: scrolled ? '0 4px 14px rgba(0,0,0,0.15)' : '0 4px 14px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  Join Waitlist
+                </button>
+              </a>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-bold transition-colors duration-300"
+                  style={{ color: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.9)' }}
+                >
+                  Log In
+                </Link>
+                <Link href="/auth/signup">
+                  <button
+                    className="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-lg"
+                    style={{
+                      background: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.2)',
+                      color: 'white',
+                      border: scrolled ? 'none' : '1px solid rgba(255,255,255,0.4)',
+                      boxShadow: scrolled ? '0 4px 14px rgba(0,0,0,0.15)' : '0 4px 14px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    Sign Up
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -136,9 +157,6 @@ export const Navbar = () => {
               boxShadow: '0 16px 40px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.7)',
             }}
           >
-            <Link href="/about" className="text-lg font-medium font-body text-primary" onClick={() => setIsOpen(false)}>
-              About
-            </Link>
             <button className="text-lg font-medium font-body text-primary text-left" onClick={() => { scrollTo('expertise'); setIsOpen(false); }}>
               Services
             </button>
@@ -146,14 +164,26 @@ export const Navbar = () => {
               How it Works
             </button>
             <div className="h-px bg-primary/10 my-1" />
-            <Link href="/auth/login" className="text-lg font-medium text-primary" onClick={() => setIsOpen(false)}>
-              Log In
-            </Link>
-            <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-              <button className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold">
-                Sign Up
-              </button>
-            </Link>
+            {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
+               <a href="#waitlist" onClick={() => setIsOpen(false)}>
+                 <button 
+                  className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold"
+                >
+                  Join Waitlist
+                </button>
+              </a>
+            ) : (
+              <>
+                <Link href="/auth/login" className="text-lg font-medium text-primary" onClick={() => setIsOpen(false)}>
+                  Log In
+                </Link>
+                <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
+                  <button className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold">
+                    Sign Up
+                  </button>
+                </Link>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

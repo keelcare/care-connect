@@ -80,16 +80,26 @@ export const ThatsUs = () => {
               style={{ opacity: ctaOpacity, y: ctaY }}
               className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/auth/signup">
-                <button className="w-full sm:w-auto bg-primary-900 text-white px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-primary-800 hover:scale-105 transition-all shadow-lg shadow-primary-900/20">
-                  Find Care Today
-                </button>
-              </Link>
-              <Link href="/auth/signup?role=nanny">
-                <button className="w-full sm:w-auto bg-white/40 text-primary-900 backdrop-blur-md px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-white/60 transition-all border border-primary-900/20">
-                  Become a Provider
-                </button>
-              </Link>
+              {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
+                <a href="#waitlist">
+                  <button className="w-full sm:w-auto bg-primary-900 text-white px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-primary-800 hover:scale-105 transition-all shadow-lg shadow-primary-900/20">
+                    Join the Waitlist
+                  </button>
+                </a>
+              ) : (
+                <>
+                  <Link href="/auth/signup">
+                    <button className="w-full sm:w-auto bg-primary-900 text-white px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-primary-800 hover:scale-105 transition-all shadow-lg shadow-primary-900/20">
+                      Find Care Today
+                    </button>
+                  </Link>
+                  <Link href="/auth/signup?role=nanny">
+                    <button className="w-full sm:w-auto bg-white/40 text-primary-900 backdrop-blur-md px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-white/60 transition-all border border-primary-900/20">
+                      Become a Provider
+                    </button>
+                  </Link>
+                </>
+              )}
             </motion.div>
           </motion.div>
         </motion.div>

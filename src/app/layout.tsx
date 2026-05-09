@@ -141,7 +141,10 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/notifications') ||
     pathname?.startsWith('/caregiver') ||
     pathname?.startsWith('/book') ||
-    pathname?.startsWith('/welcome-mobile');
+    pathname?.startsWith('/welcome-mobile') ||
+    pathname?.startsWith('/privacy') ||
+    pathname?.startsWith('/terms') ||
+    pathname?.startsWith('/cookies');
 
   const hideFooter =
     hideHeader ||
