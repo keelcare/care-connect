@@ -1,71 +1,71 @@
 import React from 'react';
-import { Heart, Instagram, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { Instagram } from 'lucide-react';
+import Link from 'next/link';
 
 export const Footer = () => {
   return (
-    <footer className="bg-primary-900 pt-24 pb-12 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-20">
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                <Heart className="text-white w-6 h-6" fill="currentColor" />
+    <footer className="bg-primary-900 px-6 pt-20 pb-10">
+      <div className="max-w-6xl mx-auto">
+
+        {/* Top section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-16 border-b border-white/10">
+
+          {/* Brand */}
+          <div className="flex flex-col gap-6">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden shadow-md flex-shrink-0">
+                <img src="/logo.jpeg" alt="Keel Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="text-2xl font-bold text-white">Keel</span>
-            </div>
-            <p className="text-lg text-white/50 max-w-sm mb-8 leading-relaxed">
-              Professional care tailored to your needs. Building trust and wellness through verified human connection.
+              <span className="text-2xl font-bold text-white tracking-tight">Keel</span>
+            </Link>
+            <p className="text-sm text-white/50 leading-relaxed max-w-xs">
+              Connecting families with trusted, verified care professionals across India.
             </p>
-            <div className="flex gap-4">
-              {[Instagram, Twitter, Facebook, Linkedin].map((Icon, idx) => (
-                <a key={idx} href="#" className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                  <Icon size={20} className="text-white/70" />
-                </a>
-              ))}
-            </div>
+            <a
+              href="https://www.instagram.com/keelcare.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 text-white/50 hover:text-white transition-colors w-fit group"
+            >
+              <div className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                <Instagram size={16} />
+              </div>
+              <span className="text-sm font-medium">@keelcare.in</span>
+            </a>
           </div>
 
-          <div>
-            <h4 className="font-bold text-white mb-6">Services</h4>
-            <ul className="space-y-4 text-white/50 font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">Child Care</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Special Needs</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pet Care</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Housekeeping</a></li>
+          {/* Services */}
+          <div className="flex flex-col gap-5">
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest">Services</h4>
+            <ul className="flex flex-col gap-3">
+              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Child Care</a></li>
+              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs Support</a></li>
+              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Housekeeping</a></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold text-white mb-6">Company</h4>
-            <ul className="space-y-4 text-white/50 font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Trust &amp; Safety</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
+          {/* Legal */}
+          <div className="flex flex-col gap-5">
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest">Legal</h4>
+            <ul className="flex flex-col gap-3">
+              <li><Link href="/privacy" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Terms of Service</Link></li>
+              <li><Link href="/cookies" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Cookie Policy</Link></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold text-white mb-6">Support</h4>
-            <ul className="space-y-4 text-white/50 font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact Support</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Safety Center</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Resource Blog</a></li>
-            </ul>
-          </div>
         </div>
 
-        <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-white/30 font-medium text-sm">
-            © 2026 Keel Inc. All rights reserved.
+        {/* Bottom bar */}
+        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-white/25 font-medium">
+            © {new Date().getFullYear()} Keel Inc. All rights reserved.
           </p>
-          <div className="flex gap-8 text-sm font-medium text-white/30">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Cookies</a>
-          </div>
+          <p className="text-xs text-white/25 font-medium">
+            Made with care, for families that deserve it.
+          </p>
         </div>
+
       </div>
     </footer>
   );
