@@ -73,8 +73,8 @@ export const FeaturedCaregivers: React.FC<FeaturedCaregiversProps> = ({
             name:
               `${nanny.profiles?.first_name || ''} ${nanny.profiles?.last_name || ''}`.trim() ||
               'Anonymous',
-            rating: 4.8, // TODO: Calculate from reviews when available
-            reviewCount: 0, // TODO: Get from reviews API when available
+            rating: nanny.averageRating || 0,
+            reviewCount: nanny.totalReviews || 0,
             location: nanny.profiles?.address || 'Location not specified',
             description: nanny.nanny_details?.bio || 'Experienced caregiver',
             hourlyRate: parseFloat(nanny.nanny_details?.hourly_rate || '0'),

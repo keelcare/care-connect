@@ -99,7 +99,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
+      <div className="fixed top-[calc(1rem+env(safe-area-inset-top))] left-0 right-0 z-50 px-4 md:px-6 pointer-events-none">
         <nav className={`max-w-7xl mx-auto bg-white/20 backdrop-blur-2xl border border-white/20 rounded-full shadow-lg shadow-primary-900/5 px-3 md:px-4 py-2 flex items-center pointer-events-auto justify-between`}>
 
           {/* Logo - Always on Left */}

@@ -1,5 +1,7 @@
 'use client';
 
+import { toast } from 'sonner';
+
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -43,39 +45,7 @@ export default function DashboardPage() {
         user?.id ? api.reviews.getByUser(user.id) : Promise.resolve([]),
       ]);
 
-      // Enrich bookings with parent details if not already populated
-      const parentIdsToFetch = new Set<string>();
-      bookingsData.forEach((booking) => {
-        if (
-          booking.parent_id &&
-          !booking.parent?.profiles?.first_name &&
-          !booking.parent?.profiles?.full_name
-        ) {
-          parentIdsToFetch.add(booking.parent_id);
-        }
-      });
-
-      const parentMap = new Map<string, any>();
-      const parentIds = Array.from(parentIdsToFetch);
-
-      for (const parentId of parentIds) {
-        try {
-          const parentDetails = await api.users.get(parentId);
-          parentMap.set(parentId, parentDetails);
-          await new Promise(resolve => setTimeout(resolve, 50));
-        } catch (err) {
-          console.error(`Failed to fetch parent ${parentId}:`, err);
-        }
-      }
-
-      const enrichedBookings = bookingsData.map((booking) => {
-        if (booking.parent_id && parentMap.has(booking.parent_id)) {
-          return { ...booking, parent: parentMap.get(booking.parent_id) };
-        }
-        return booking;
-      });
-
-      setBookings(enrichedBookings);
+      setBookings(bookingsData);
       setReviews(reviewsData || []);
 
     } catch (err) {
@@ -133,8 +103,37 @@ export default function DashboardPage() {
   };
 
   const handleCheckIn = async (booking: Booking) => {
-    // TODO: Implement check-in logic
-    console.log('Check in for booking', booking.id);
+    try {
+      setLoading(true);
+      // Attempt to get geolocation
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+              await api.bookings.start(booking.id, { latitude, longitude });
+              toast.success('Successfully checked in!');
+              fetchDashboardData();
+            } catch (err: any) {
+              toast.error(err.message || 'Failed to check in. You might be too far from the location.');
+              setLoading(false);
+            }
+          },
+          async (geoErr) => {
+            console.error('Geolocation error:', geoErr);
+            toast.error('Location access denied. Cannot verify geofence.');
+            setLoading(false);
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else {
+        toast.error('Geolocation is not supported by your browser.');
+        setLoading(false);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to check in.');
+      setLoading(false);
+    }
   };
 
   const upcomingBookings = bookings

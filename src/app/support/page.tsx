@@ -124,10 +124,23 @@ export default function SupportPage() {
             toast.error('Please enter a message explaining why you think this ban is incorrect.');
             return;
         }
-        // TODO: Send to backend API
-        toast.success('Your appeal has been submitted. Our team will review it within 24-48 hours.');
-        setIsContestingBan(false);
-        setContestMessage('');
+        try {
+            setSubmitting(true);
+            await api.support.createTicket({
+                subject: 'Account Suspension Appeal',
+                description: contestMessage,
+                category: 'account' as SupportCategory,
+                priority: 'high' as SupportPriority,
+            });
+            toast.success('Your appeal has been submitted. Our team will review it within 24-48 hours.');
+            setIsContestingBan(false);
+            setContestMessage('');
+            fetchTickets();
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to submit appeal. You may already have one open.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const filteredTickets = useMemo(() => {

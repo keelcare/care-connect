@@ -61,6 +61,15 @@ function MessagesContent() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -396,7 +405,18 @@ function MessagesContent() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
-    // TODO: Implement typing indicator
+    
+    if (activeChat && connected) {
+      sendTyping(activeChat.id, true);
+      
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      typingTimeoutRef.current = setTimeout(() => {
+        sendTyping(activeChat.id, false);
+      }, 2000);
+    }
   };
 
   // Handle sending message from enhanced chat window
