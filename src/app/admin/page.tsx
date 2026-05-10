@@ -178,17 +178,13 @@ export default function AdminOverview() {
         api.admin.getStats(),
         api.enhancedAdmin.getAdvancedStats().catch(() => null),
         api.enhancedAdmin.getDisputes().catch(() => [] as AdminDispute[]),
-        api.admin.getBookings().catch(() => [] as Booking[]),
+        api.admin.getBookings(5).catch(() => [] as Booking[]),
       ]);
       setStats(basic);
       setAdvancedStats(advanced);
       setDisputes(Array.isArray(disputeList) ? disputeList : []);
-      // Sort by created_at descending, take 5
       const safeBookings = Array.isArray(bookingList) ? bookingList : [];
-      const sorted = [...safeBookings].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-      setRecentBookings(sorted.slice(0, 5));
+      setRecentBookings(safeBookings);
     } catch (err) {
       if (!isPolling) {
         setError(err instanceof Error ? err.message : 'Failed to load statistics');

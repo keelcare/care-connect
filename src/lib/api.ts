@@ -434,7 +434,7 @@ export const api = {
   },
   admin: {
     getUsers: () => fetchApi<User[]>('/admin/users'),
-    getBookings: () => fetchApi<Booking[]>('/admin/bookings'),
+    getBookings: (limit?: number) => fetchApi<Booking[]>(`/admin/bookings${limit ? `?limit=${limit}` : ''}`),
     getStats: () => fetchApi<AdminStats>('/admin/stats'),
     verifyUser: (id: string) =>
       fetchApi<User>(`/admin/users/${id}/verify`, { method: 'PUT' }),
