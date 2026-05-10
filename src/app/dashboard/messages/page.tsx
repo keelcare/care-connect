@@ -49,6 +49,7 @@ function MessagesContent() {
     offNewMessage,
     onTyping,
     offTyping,
+    sendTyping,
   } = useSocket();
   const searchParams = useSearchParams();
   const bookingIdParam = searchParams?.get('booking');

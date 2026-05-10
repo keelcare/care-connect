@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { google } from 'googleapis';
+import { GoogleAuth } from 'google-auth-library';
 
 export async function POST(req: Request) {
   try {
@@ -22,24 +22,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    const auth = new google.auth.GoogleAuth({
+    const auth = new GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    const sheets = google.sheets({ version: 'v4', auth });
+    const client = await auth.getClient();
+    const token = await client.getAccessToken();
 
-    // Append to the first sheet
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: 'Sheet1!A:F', // Update range for 6 columns
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:F:append?valueInputOption=USER_ENTERED`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         values: [
           [new Date().toISOString(), name, email, phone, city, childDetails || '']
-        ],
-      },
+        ]
+      })
     });
+
+    if (!response.ok) {
+      throw new Error(`Google Sheets API error: ${response.statusText}`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

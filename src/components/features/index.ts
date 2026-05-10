@@ -5,7 +5,6 @@ export { CancellationModal } from './CancellationModal';
 export { ChatSidebar } from './ChatSidebar';
 export { CTASection } from './CTASection';
 export { EnhancedChatWindow } from './EnhancedChatWindow';
-export { FeaturedCaregivers } from './FeaturedCaregivers';
 export { FeaturedServices } from './FeaturedServices';
 export { FilterSidebar } from './FilterSidebar';
 export { Hero } from './Hero';
