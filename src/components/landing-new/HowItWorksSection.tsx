@@ -102,10 +102,7 @@ export const HowItWorksSection = () => {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
               {/* Label */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-900/15 bg-primary-900/5 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-900/50" />
-                <span className="text-xs font-semibold tracking-widest uppercase text-primary-900/60">How It Works</span>
-              </div>
+              
 
               {/* Split-text heading */}
               <h2 className="text-4xl sm:text-5xl md:text-fluid-5xl font-display font-medium text-primary-900 leading-[1.1] tracking-tight mb-6">
