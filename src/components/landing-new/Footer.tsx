@@ -38,9 +38,9 @@ export const Footer = () => {
           <div className="flex flex-col gap-5">
             <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest">Services</h4>
             <ul className="flex flex-col gap-3">
+              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</a></li>
               <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Child Care</a></li>
-              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs Support</a></li>
-              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Housekeeping</a></li>
+              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</a></li>
             </ul>
           </div>
 

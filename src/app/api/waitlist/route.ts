@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server';
-import { GoogleAuth } from 'google-auth-library';
+import { google } from 'googleapis';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, city, childDetails } = body;
+    const { name, email, phone, city, careType, childDetails } = body;
 
+    // Basic Backend Validation
     if (!name || !email || !phone || !city) {
       return NextResponse.json({ error: 'Name, email, phone, and city are required' }, { status: 400 });
+    }
+
+    if (name.length > 50 || phone.length > 20 || city.length > 50) {
+      return NextResponse.json({ error: 'Invalid input length' }, { status: 400 });
     }
 
     const credentials = {
@@ -22,30 +27,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    const auth = new GoogleAuth({
+    const auth = new google.auth.GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    const client = await auth.getClient();
-    const token = await client.getAccessToken();
+    const sheets = google.sheets({ version: 'v4', auth });
 
-    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:F:append?valueInputOption=USER_ENTERED`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    // Append to the first sheet
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: 'Sheet1!A:G', // Update range for 7 columns
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
         values: [
-          [new Date().toISOString(), name, email, phone, city, childDetails || '']
-        ]
-      })
+          [new Date().toISOString(), name, email, phone, city, careType || '', childDetails || '']
+        ],
+      },
     });
-
-    if (!response.ok) {
-      throw new Error(`Google Sheets API error: ${response.statusText}`);
-    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

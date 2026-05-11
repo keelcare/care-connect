@@ -24,7 +24,7 @@ export const CTA = () => {
                   <span className="text-primary">for your family.</span>
                 </h2>
                 <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-                  Be among the first to experience our premium care platform in your city. Join the waitlist today.
+                  Be among the first to experience our premium care platform in your city. Find care for your family today.
                 </p>
               </>
             ) : (
@@ -43,7 +43,7 @@ export const CTA = () => {
               {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
                 <a href="#waitlist">
                   <button className="w-full sm:w-auto bg-primary text-white px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                    Join the Waitlist
+                    Find care for my family
                   </button>
                 </a>
               ) : (

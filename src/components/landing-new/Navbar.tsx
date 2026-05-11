@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 const scrollTo = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -79,10 +80,21 @@ export const Navbar = () => {
             <button
               key={id}
               onClick={() => scrollTo(id)}
-              className="text-sm font-bold font-body transition-colors duration-300"
-              style={{ color: scrolled ? 'rgba(var(--color-primary-rgb),0.7)' : 'rgba(255,255,255,0.85)' }}
+              className="text-sm font-bold font-body transition-all duration-300 relative group py-1"
+              style={{ color: scrolled ? 'var(--color-primary)' : 'white' }}
             >
-              {label}
+              <span className={cn(
+                "transition-opacity duration-300",
+                scrolled ? "opacity-70 group-hover:opacity-100" : "opacity-85 group-hover:opacity-100"
+              )}>
+                {label}
+              </span>
+              <span 
+                className={cn(
+                  "absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 transition-all duration-300 group-hover:w-full rounded-full",
+                  scrolled ? "bg-primary" : "bg-white"
+                )} 
+              />
             </button>
           ))}
         </div>
@@ -108,8 +120,10 @@ export const Navbar = () => {
               <>
                 <Link
                   href="/auth/login"
-                  className="text-sm font-bold transition-colors duration-300"
-                  style={{ color: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.9)' }}
+                  className={cn(
+                    "text-sm font-bold transition-all duration-300 hover:opacity-100",
+                    scrolled ? "text-primary opacity-70" : "text-white opacity-90"
+                  )}
                 >
                   Log In
                 </Link>
@@ -157,10 +171,18 @@ export const Navbar = () => {
               boxShadow: '0 16px 40px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.7)',
             }}
           >
-            <button className="text-lg font-medium font-body text-primary text-left" onClick={() => { scrollTo('expertise'); setIsOpen(false); }}>
+            <button 
+              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group" 
+              onClick={() => { scrollTo('expertise'); setIsOpen(false); }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               Services
             </button>
-            <button className="text-lg font-medium font-body text-primary text-left" onClick={() => { scrollTo('how-it-works'); setIsOpen(false); }}>
+            <button 
+              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group" 
+              onClick={() => { scrollTo('how-it-works'); setIsOpen(false); }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               How it Works
             </button>
             <div className="h-px bg-primary/10 my-1" />
@@ -169,12 +191,17 @@ export const Navbar = () => {
                  <button 
                   className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold"
                 >
-                  Join Waitlist
+                  Find Care
                 </button>
               </a>
             ) : (
               <>
-                <Link href="/auth/login" className="text-lg font-medium text-primary" onClick={() => setIsOpen(false)}>
+                <Link 
+                  href="/auth/login" 
+                  className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group" 
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   Log In
                 </Link>
                 <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
