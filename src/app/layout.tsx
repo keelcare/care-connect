@@ -112,13 +112,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     return () => cleanup?.();
   }, [router]);
 
-  // Load Razorpay SDK universally
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.head.appendChild(script);
-  }, []);
+
 
   // Don't show Header/Footer on auth pages (they have their own layout)
   // Don't show Header/Footer on dashboard pages (they have their own layout)
