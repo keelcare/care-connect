@@ -70,15 +70,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = useCallback(async () => {
     try {
-      console.log('AuthContext: Verifying session...');
-
-      // If user explicitly logged out, skip check to prevent "zombie" cookie login
-      if (typeof window !== 'undefined' && localStorage.getItem('is_logged_out')) {
-        console.log('AuthContext: User explicitly logged out, skipping session check.');
+      // Check for session flag before attempting network request
+      if (typeof window !== 'undefined' && !localStorage.getItem('has_session')) {
+        console.log('AuthContext: No session flag found, skipping backend check.');
         setUser(null);
+        setLoading(false);
         return;
       }
 
+      console.log('AuthContext: Verifying session...');
       // Just call /users/me. If we have valid cookies, it returns the user.
       const userData = await fetchApi<User>('/users/me', {}, false, true);
       console.log('AuthContext: User verified', userData.email);
@@ -87,6 +87,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(userData);
     } catch (error: any) {
       console.log('AuthContext: No active session / Guest mode');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('has_session');
+      }
       setUser(null);
     } finally {
       setLoading(false);
@@ -108,7 +111,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (data: User | AuthResponse) => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('is_logged_out');
+      localStorage.setItem('has_session', 'true');
+      localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
 
       // Check if data is AuthResponse and store tokens
       if ('access_token' in data) {
@@ -148,7 +152,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Logout failed silently', error);
     } finally {
       if (typeof window !== 'undefined') {
-        localStorage.setItem('is_logged_out', 'true');
+        localStorage.removeItem('has_session');
+        localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
       }
