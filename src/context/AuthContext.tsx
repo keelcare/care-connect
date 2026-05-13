@@ -72,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // Check for session flag before attempting network request
       if (typeof window !== 'undefined' && !localStorage.getItem('has_session')) {
-        console.log('AuthContext: No session flag found, skipping backend check.');
         setUser(null);
         setLoading(false);
         return;
