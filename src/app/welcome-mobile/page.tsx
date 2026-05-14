@@ -65,7 +65,7 @@ export default function WelcomeMobilePage() {
                     >
                         <h1 className="text-4xl md:text-5xl font-display font-semibold leading-[1.1] text-center">
                             Where Big Needs Meet <br />
-                            <span className="font-medium italic text-primary-300">Gentle Care</span>
+                            <span className="font-serif italic font-medium text-primary-300">Gentle</span> Care
                         </h1>
                     </motion.div>
                 </div>

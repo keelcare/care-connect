@@ -1,6 +1,6 @@
 'use client';
 
-import { LandingPage } from '@/components/landing-new/LandingPage';
+import { LandingPage } from '@/components/landing/LandingPage';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';

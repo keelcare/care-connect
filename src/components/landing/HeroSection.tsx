@@ -91,7 +91,7 @@ export default function HeroSection() {
               transitionDelay: '200ms',
             }}
           >
-            Where Big Needs Meet Gentle Care
+            Where Big Needs Meet <span className="font-serif italic font-medium">Gentle</span> Care
           </h1>
 
           {/* Subheading */}

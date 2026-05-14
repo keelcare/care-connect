@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/landing-new/Footer';
+import { Footer } from '@/components/landing/Footer';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
     return (

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Navbar } from '@/components/landing-new/Navbar';
-import { Footer } from '@/components/landing-new/Footer';
+import { Navbar } from '@/components/landing/Navbar';
+import { Footer } from '@/components/landing/Footer';
 
 export default function TermsOfService() {
   return (

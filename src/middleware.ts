@@ -35,11 +35,11 @@ export function middleware(request: NextRequest) {
 
   const cspHeader = `
         default-src 'self';
-        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com;
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://va.vercel-scripts.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
         font-src 'self' data: https://fonts.gstatic.com;
-        connect-src 'self' ${apiUrl} ${wsUrl} https://api.razorpay.com https://nominatim.openstreetmap.org;
+        connect-src 'self' ${apiUrl} ${wsUrl} https://api.razorpay.com https://nominatim.openstreetmap.org https://vitals.vercel-insights.com;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
         base-uri 'self';
