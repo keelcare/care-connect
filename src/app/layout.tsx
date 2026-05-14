@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { SplashLoader } from '@/components/ui/SplashLoader';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ToastProvider } from '@/components/ui/ToastProvider';
@@ -69,6 +70,13 @@ const dmSans = DM_Sans({
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('splashShown') !== 'true') {
+      setShowSplash(true);
+    }
+  }, []);
 
   // Handle deep-link returns from Capacitor in-app browser (Google OAuth mobile flow)
   useEffect(() => {
@@ -157,6 +165,14 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <body suppressHydrationWarning className={`${satoshi.variable} ${lora.variable} ${dmSans.variable} font-body bg-background text-primary-900`}>
+      {showSplash && (
+        <SplashLoader
+          onFinish={() => {
+            sessionStorage.setItem('splashShown', 'true');
+            setShowSplash(false);
+          }}
+        />
+      )}
       <ToastProvider>
         <AuthProvider>
           <SSEProvider>
