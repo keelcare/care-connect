@@ -115,8 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Check if data is AuthResponse and store tokens
       if ('access_token' in data) {
-        if (data.access_token) localStorage.setItem('access_token', data.access_token);
-        if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token);
         setUser(data.user);
       } else {
         setUser(data);
@@ -153,8 +151,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
         localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
       }
       // ALWAYS cleanup client state
       setUser(null);
