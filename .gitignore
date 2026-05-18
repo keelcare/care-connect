@@ -53,3 +53,7 @@ node_modules/
 /docs/refactor
 
 out/
+
+# custom ignore
+.env.mobile
+build_log.txt

@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 const isCapacitor = process.env.BUILD_TARGET === 'capacitor';
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['192.168.1.38', 'anjaneys-macbook-air.local'],
   /* config options here */
   reactCompiler: true,
   ...(isCapacitor && { output: 'export' }),
@@ -76,7 +77,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.BACKEND_URL || 'http://localhost:4000'}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://localhost:4000'}/:path*`,
       },
     ];
   },
@@ -84,12 +85,14 @@ const nextConfig: NextConfig = {
 
 import { withSentryConfig } from "@sentry/nextjs";
 
-export default withSentryConfig(nextConfig, {
-// For all available options, see:
-// https://github.com/getsentry/sentry-webpack-plugin#options
+const exportConfig = process.env.SENTRY_AUTH_TOKEN ? withSentryConfig(nextConfig, {
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
 
-// Suppresses source map uploading logs during bundling
-silent: true,
-org: "keel-care", // You may need to update this to your Sentry organization slug
-project: "frontend",
-});
+  // Suppresses source map uploading logs during bundling
+  silent: true,
+  org: "keel-care", // You may need to update this to your Sentry organization slug
+  project: "frontend",
+}) : nextConfig;
+
+export default exportConfig;
