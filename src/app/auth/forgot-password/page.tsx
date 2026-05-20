@@ -32,7 +32,11 @@ export default function ForgotPasswordPage() {
 
       setIsSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      let errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      if (errorMessage.toLowerCase().includes('too many requests') || errorMessage.toLowerCase().includes('throttler')) {
+        errorMessage = 'Too many requests. Please try again in 5 minutes.';
+      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

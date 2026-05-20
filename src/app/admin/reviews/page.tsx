@@ -38,8 +38,8 @@ export default function AdminReviewsPage() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const data = await api.enhancedAdmin.getReviews();
-      setReviews(data);
+      const response = await api.enhancedAdmin.getReviews(1, 1000);
+      setReviews(response.data || []);
     } catch (err) {
       setError('Failed to load reviews');
       console.error(err);

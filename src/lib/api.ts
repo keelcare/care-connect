@@ -57,6 +57,15 @@ import {
   PaymentPlanStats,
 } from '@/types/api';
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    lastPage: number;
+  };
+}
+
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 export const API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
@@ -433,8 +442,8 @@ export const api = {
       }),
   },
   admin: {
-    getUsers: () => fetchApi<User[]>('/admin/users'),
-    getBookings: (limit?: number) => fetchApi<Booking[]>(`/admin/bookings${limit ? `?limit=${limit}` : ''}`),
+    getUsers: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<User>>(`/admin/users?page=${page}&pageSize=${pageSize}`),
+    getBookings: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<Booking>>(`/admin/bookings?page=${page}&pageSize=${pageSize}`),
     getStats: () => fetchApi<AdminStats>('/admin/stats'),
     verifyUser: (id: string) =>
       fetchApi<User>(`/admin/users/${id}/verify`, { method: 'PUT' }),
@@ -557,10 +566,10 @@ export const api = {
         body: JSON.stringify({ resolution }),
       }),
     // Payments
-    getPayments: () => fetchApi<any[]>('/admin/payments'),
+    getPayments: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<any>>(`/admin/payments?page=${page}&pageSize=${pageSize}`),
     getPaymentStats: () => fetchApi<AdminPaymentStats>('/admin/payments/stats'),
     // Review Moderation
-    getReviews: () => fetchApi<EnhancedReview[]>('/admin/reviews'),
+    getReviews: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<EnhancedReview>>(`/admin/reviews?page=${page}&pageSize=${pageSize}`),
     approveReview: (id: string) =>
       fetchApi<EnhancedReview>(`/admin/reviews/${id}/approve`, {
         method: 'PUT',
@@ -691,6 +700,15 @@ export const api = {
     getOrderAuditHistory: (orderId: string) =>
       fetchApi<PaymentAuditRow[]>(`/payments/audit/${orderId}`),
     getPlans: () => fetchApi<any[]>('/payments/plans'),
+    refundPayment: (paymentId: string, amount?: number) =>
+      fetchApi<any>(`/payments/refund/${paymentId}`, {
+        method: 'POST',
+        body: amount ? JSON.stringify({ amount }) : undefined,
+      }),
+    retryPayment: (bookingId: string) =>
+      fetchApi<{ orderId: string; amount: number; currency: string; key: string }>(`/payments/retry/${bookingId}`, {
+        method: 'POST',
+      }),
   },
   family: {
     list: () => fetchApi<Child[]>('/family/children'),

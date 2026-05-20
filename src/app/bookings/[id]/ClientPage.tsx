@@ -47,7 +47,7 @@ export default function BookingDetailsPage() {
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
 
-    const { handlePayment, loading: paymentLoading } = usePayment();
+    const { handlePayment, handleRetryPayment, loading: paymentLoading } = usePayment();
     const [paidBookingIds, setPaidBookingIds] = useState<string[]>([]);
 
     useEffect(() => {
@@ -444,6 +444,26 @@ export default function BookingDetailsPage() {
                                             Leave a Review
                                         </Button>
                                     </div>
+                                )}
+                                
+                                {/* Retry Payment (For upfront failures or missing payments) */}
+                                {['CONFIRMED', 'PENDING', 'ASSIGNED', 'ACCEPTED'].includes(currentStatus) && !isPaid && booking?.nanny_id && (
+                                    <Button
+                                        onClick={() => handleRetryPayment({
+                                            bookingId: booking.id,
+                                            onSuccess: () => {
+                                                const newPaid = [...paidBookingIds, booking.id];
+                                                setPaidBookingIds(newPaid);
+                                                localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
+                                                fetchData();
+                                            },
+                                            onError: (err) => console.error(err)
+                                        })}
+                                        disabled={paymentLoading}
+                                        className="w-full h-14 rounded-2xl border-2 border-primary-900 text-primary-900 hover:bg-primary-50 transition-all font-bold shadow-sm"
+                                    >
+                                        {paymentLoading ? 'Processing...' : 'Retry Payment'}
+                                    </Button>
                                 )}
                             </div>
 
