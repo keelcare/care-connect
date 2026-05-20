@@ -205,12 +205,12 @@ export default function AdminUsersPage() {
     try {
       setLoading(true);
       setError(null);
-      const [usersData, bookingsData] = await Promise.all([
-        api.admin.getUsers(),
-        api.admin.getBookings(),
+      const [usersResponse, bookingsResponse] = await Promise.all([
+        api.admin.getUsers(1, 1000),
+        api.admin.getBookings(1, 1000),
       ]);
-      setUsers(usersData);
-      setAllBookings(bookingsData);
+      setUsers(usersResponse.data || []);
+      setAllBookings(bookingsResponse.data || []);
     } catch (err) {
       console.error('Failed to fetch users:', err);
       setError(err instanceof Error ? err.message : 'Failed to load users');

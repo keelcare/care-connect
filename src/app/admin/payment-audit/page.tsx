@@ -269,6 +269,25 @@ export default function AdminPaymentAuditPage() {
     await Promise.all([fetchSummary(), fetchAuditList(true)]);
   };
 
+  const handleRefund = async (paymentId: string) => {
+    if (!confirm('Are you sure you want to refund this payment? This action cannot be undone.')) return;
+    try {
+      setLoading(true);
+      // Ensure we have a valid API method
+      if ((api.payments as any).refundPayment) {
+        await (api.payments as any).refundPayment(paymentId);
+        alert('Payment refunded successfully');
+        await fetchAuditList(true);
+      } else {
+        alert('Refund method is not available in API client yet.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Refund failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleFilterChange = (
     key:
       | 'orderId'
@@ -479,6 +498,7 @@ export default function AdminPaymentAuditPage() {
                   <th className="px-5 py-3.5 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Triggered By</th>
                   <th className="px-5 py-3.5 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Razorpay Payment ID</th>
                   <th className="px-5 py-3.5 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Amount</th>
+                  <th className="px-5 py-3.5 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-50">
@@ -509,6 +529,18 @@ export default function AdminPaymentAuditPage() {
                     </td>
                     <td className="px-5 py-4 text-xs font-semibold text-right text-neutral-800 whitespace-nowrap">
                       {getAuditAmount(row)}
+                    </td>
+                    <td className="px-5 py-4 text-xs font-semibold text-right whitespace-nowrap">
+                      {String(row.toStatus).toLowerCase() === 'captured' && (row.paymentId || row.payment?.id) ? (
+                        <button
+                          onClick={() => handleRefund((row.paymentId || row.payment?.id) as string)}
+                          className="text-red-600 hover:text-red-800 transition-colors border border-red-200 bg-red-50 hover:bg-red-100 rounded px-2 py-1"
+                        >
+                          Refund
+                        </button>
+                      ) : (
+                        <span className="text-neutral-400">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

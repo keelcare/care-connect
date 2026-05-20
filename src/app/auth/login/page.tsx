@@ -30,9 +30,16 @@ export default function LoginPage() {
       await login(response);
     } catch (error: any) {
       console.error('Login failed:', error);
+      
+      let errorMessage = error?.message || 'Login failed. Please check your credentials.';
+      // Catch NestJS Throttler/Rate Limit messages
+      if (errorMessage.toLowerCase().includes('too many requests') || errorMessage.toLowerCase().includes('throttler')) {
+        errorMessage = 'Too many login attempts. Please try again in 5 minutes.';
+      }
+      
       setErrors((prev) => ({
         ...prev,
-        password: error?.message || 'Login failed. Please check your credentials.',
+        password: errorMessage,
       }));
     } finally {
       setIsLoading(false);

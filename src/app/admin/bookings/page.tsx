@@ -75,7 +75,8 @@ export default function AdminBookingsPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.admin.getBookings();
+      const response = await api.admin.getBookings(1, 1000);
+      const data = response.data || [];
 
       // Enrich bookings with parent/nanny details if not already populated
       const enrichedBookings = await Promise.all(

@@ -142,9 +142,14 @@ function SignupContent() {
       window.location.href = '/auth/login';
     } catch (error: any) {
       console.error('Signup failed:', error);
+      let errorMessage = error?.message || 'Signup failed. Please try again.';
+      if (errorMessage.toLowerCase().includes('too many requests') || errorMessage.toLowerCase().includes('throttler')) {
+        errorMessage = 'Too many signup attempts. Please try again in 5 minutes.';
+      }
+      
       setErrors((prev) => ({
         ...prev,
-        password: error?.message || 'Signup failed. Please try again.',
+        password: errorMessage,
       }));
     } finally {
       setIsLoading(false);
