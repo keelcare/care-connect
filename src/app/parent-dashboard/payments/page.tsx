@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { api } from '@/lib/api';
 import { Spinner } from '@/components/ui/Spinner';
@@ -142,9 +143,9 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
             >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-start space-x-4">
-                        <div className="relative w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden flex-shrink-0">
+                        <div className="relative w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shrink-0">
                             {nannyProfile?.profile_image_url ? (
-                                <img src={nannyProfile.profile_image_url} alt={nannyName} className="w-full h-full object-cover" />
+                                <Image src={nannyProfile.profile_image_url} alt={nannyName} fill className="object-cover" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                                     {nannyName[0]}
@@ -195,9 +196,9 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 1, ease: "easeOut" }}
-                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full relative"
+                            className="h-full bg-linear-to-r from-indigo-500 to-indigo-600 rounded-full relative"
                         >
-                            <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.1)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.1)_50%,rgba(255,255,255,0.1)_75%,transparent_75%,transparent)] bg-[length:20px_20px]" />
+                            <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.1)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.1)_50%,rgba(255,255,255,0.1)_75%,transparent_75%,transparent)] bg-size-[20px_20px]" />
                         </motion.div>
                     </div>
                 </div>
@@ -239,7 +240,7 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
             <AnimatePresence>
                 {isExpanded && (
                     <div 
-                        className="md:hidden fixed inset-0 z-[60]"
+                        className="md:hidden fixed inset-0 z-60"
                     >
                         {/* Overlay */}
                         <motion.div 
@@ -306,7 +307,7 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                     return (
                         <div key={inst.id} className="relative flex items-center space-x-6 z-10">
                             {/* State Indicator */}
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border-4 border-white shadow-sm flex-shrink-0 ${
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border-4 border-white shadow-sm shrink-0 ${
                                 isPaid ? 'bg-green-500 text-white' : 
                                 isOverdue ? 'bg-orange-500 text-white' :
                                 isPending && canPay ? 'bg-indigo-600 text-white animate-pulse' : 'bg-gray-200 text-gray-400'
@@ -373,7 +374,7 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
             </div>
 
             <div className="mt-10 p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-start gap-4">
-                <Info className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
                 <div className="text-xs text-indigo-800 leading-relaxed">
                     <p className="font-bold mb-1 italic">Security Note:</p>
                     All payments are processed securely through Razorpay. You can only pay for the immediate upcoming installment to maintain the monthly billing integrity.

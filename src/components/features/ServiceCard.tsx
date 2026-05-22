@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export interface ServiceCardProps {
   title: string;
@@ -41,7 +42,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           className="w-full justify-start p-0 h-auto font-normal text-primary hover:text-primary/80"
         >
           Learn More
-          <i className="lni lni-arrow-right ml-2"></i>
+          <ArrowRight size={14} className="ml-2" />
         </Button>
       </CardContent>
     </Card>

@@ -144,7 +144,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-1">
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-[#0F172A] font-body">
+                <label htmlFor="password" className="block text-sm font-medium text-[#0F172A] font-body">
                   Password
                 </label>
                 <Link

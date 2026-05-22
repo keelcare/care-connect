@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -109,7 +110,7 @@ export const Navbar: React.FC = () => {
             className="flex items-center gap-2 group"
           >
             <div className="w-8 h-8 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
-              <img src="/logo.svg" alt="Keel Logo" className="h-5 w-auto" />
+              <Image src="/logo.svg" alt="Keel Logo" width={80} height={20} className="h-5 w-auto" />
             </div>
             <span className="text-lg font-bold font-display text-primary-900 tracking-tight">Keel</span>
           </Link>

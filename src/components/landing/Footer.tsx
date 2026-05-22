@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Instagram } from 'lucide-react';
 import Link from 'next/link';
 
@@ -13,8 +14,8 @@ export const Footer = () => {
           {/* Brand */}
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden shadow-md flex-shrink-0">
-                <img src="/logo.jpeg" alt="Keel Logo" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 rounded-full overflow-hidden shadow-md shrink-0 relative">
+                <Image src="/logo.jpeg" alt="Keel Logo" fill className="object-cover" />
               </div>
               <span className="text-2xl font-bold text-white tracking-tight">Keel</span>
             </Link>

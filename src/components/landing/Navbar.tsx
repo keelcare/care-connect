@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -40,15 +41,16 @@ export const Navbar = () => {
       >
         <Link href="/" className="flex items-center gap-2 group">
           <div
-            className="w-10 h-10 rounded-full overflow-hidden transition-all duration-300 shadow-md"
+            className="w-10 h-10 rounded-full overflow-hidden transition-all duration-300 shadow-md relative"
             style={{
               border: '1px solid rgba(255,255,255,0.1)',
             }}
           >
-            <img 
+            <Image 
               src="/logo.jpeg" 
               alt="Keel Logo" 
-              className="w-full h-full object-cover" 
+              fill
+              className="object-cover" 
             />
           </div>
           <span

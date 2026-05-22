@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { Spinner } from '@/components/ui/Spinner';
+
+const AdminSidebar = dynamic(
+  () => import('@/components/admin/AdminSidebar').then((m) => m.AdminSidebar),
+  { ssr: false, loading: () => null }
+);
 import { Menu, LogOut } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 

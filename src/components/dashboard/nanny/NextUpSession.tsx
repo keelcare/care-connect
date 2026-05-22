@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Clock, MapPin, Play, MessageSquare, ChevronRight } from 'lucide-react';
 import { Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
@@ -35,9 +36,8 @@ export function NextUpSession({ booking, onMessage, onCheckIn }: NextUpSessionPr
             <div className="flex items-start justify-between mb-8 relative z-10">
                 <div className="flex gap-6">
                     <div className="relative">
-                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={childImage} alt="Child" className="w-full h-full object-cover" />
+                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg relative">
+                            <Image src={childImage} alt="Child" fill className="object-cover" />
                         </div>
                         <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
