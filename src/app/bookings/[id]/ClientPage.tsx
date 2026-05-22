@@ -446,8 +446,11 @@ export default function BookingDetailsPage() {
                                     </div>
                                 )}
                                 
-                                {/* Retry Payment (For upfront failures or missing payments) */}
-                                {['CONFIRMED', 'PENDING', 'ASSIGNED', 'ACCEPTED'].includes(currentStatus) && !isPaid && booking?.nanny_id && (
+                                {/* Retry Payment (For failed or missing payments) */}
+                                {booking?.nanny_id && !isPaid && (
+                                  booking?.payment_status === 'failed' ||
+                                  (['CONFIRMED', 'PENDING', 'ASSIGNED', 'ACCEPTED'].includes(currentStatus) && !booking?.payment_status)
+                                ) && (
                                     <Button
                                         onClick={() => handleRetryPayment({
                                             bookingId: booking.id,

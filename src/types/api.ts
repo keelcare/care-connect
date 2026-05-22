@@ -334,6 +334,7 @@ export interface Booking {
   parent_id: string;
   nanny_id: string;
   status: BookingStatus;
+  payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
   start_time: string;
   end_time?: string;
   notes?: string;
