@@ -285,6 +285,17 @@ export interface ServiceRequest {
   nanny?: User;
 }
 
+export interface Assignment {
+  id: string;
+  nanny_id: string;
+  request_id: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  request?: ServiceRequest;
+  nanny?: User;
+}
+
 export interface CreateServiceRequestDto {
   date: string;
   start_time: string;

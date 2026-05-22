@@ -55,6 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Failed to refresh session:', error);
       }
       setUser(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('has_session');
+      }
       return false;
     }
   }, []);
@@ -93,20 +96,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, []);
 
   // Removed duplicate deep-link listener as it's handled in layout.tsx for better app-wide consistency
 
-  // Initial Auth Check
+  // Initial Auth Check — runs once on mount only.
+  // Subsequent pages are protected by ProtectedRoute; the API interceptor
+  // handles 401s via setTokenRefresher, so there is no need to re-verify
+  // the session on every client-side navigation.
   useEffect(() => {
-    // Skip auth check on callback page to prevent race conditions
-    // (Callback page handles the session exchange and login manually)
     if (pathname?.startsWith('/auth/callback')) {
       setLoading(false);
       return;
     }
     checkAuth();
-  }, [checkAuth]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);  // ← intentionally empty: mount-only
 
   const login = async (data: User | AuthResponse) => {
     if (typeof window !== 'undefined') {

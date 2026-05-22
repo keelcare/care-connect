@@ -12,6 +12,8 @@ import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { api } from '@/lib/api';
 import { Booking, Review } from '@/types/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { NannyOnboardingWizard } from '@/components/onboarding/NannyOnboardingWizard';
+import { NannyVerificationBanner } from '@/components/onboarding/NannyVerificationBanner';
 import { NannyHero } from '@/components/dashboard/nanny/NannyHero';
 import { SessionCard } from '@/components/dashboard/SessionCard';
 import { QuickActions } from '@/components/dashboard/nanny/QuickActions';
@@ -25,15 +27,7 @@ export default function DashboardPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (authLoading) return;
-
-    // Auth checks moved to ProtectedRoute
-    if (user && user.role === 'nanny') {
-      fetchDashboardData();
-    }
-  }, [user, authLoading]);
+  const [wizardDismissed, setWizardDismissed] = useState(false);
 
   const fetchDashboardData = React.useCallback(async () => {
     try {
@@ -56,16 +50,12 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
-    if (authLoading) return;
-
-    // Auth checks moved to ProtectedRoute
-    if (user && user.role === 'nanny') {
-      fetchDashboardData();
-    }
-  }, [user, authLoading, fetchDashboardData]);
+    if (authLoading || !user || user.role !== 'nanny') return;
+    fetchDashboardData();
+  }, [authLoading, user?.id, fetchDashboardData]);
 
   // Real-time Refresh via SSE
   const { subscribe } = useSSE();
@@ -199,12 +189,33 @@ export default function DashboardPage() {
     );
   }
 
+  const needsOnboarding =
+    !wizardDismissed &&
+    user?.role === 'nanny' &&
+    user.identity_verification_status !== 'verified';
+
   return (
     <ProtectedRoute allowedRoles={['nanny']}>
       <div className="font-sans text-wellness-text">
 
+        {/* Onboarding wizard — shown until identity is verified or dismissed */}
+        {needsOnboarding && user && (
+          <NannyOnboardingWizard
+            user={user}
+            onComplete={() => setWizardDismissed(true)}
+          />
+        )}
+
         {/* 1. Hero Section */}
         <NannyHero />
+
+        {/* Verification status banner — shown after wizard is dismissed or on return */}
+        {user && user.identity_verification_status !== 'verified' && (
+          <NannyVerificationBanner
+            status={user.identity_verification_status ?? null}
+            onResubmit={() => setWizardDismissed(false)}
+          />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useSSE, SSE_EVENT_TYPES, ServerEvent } from '@/context/SSEProvider';
+import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { useSocket } from '@/context/SocketProvider';
 import { api } from '@/lib/api';
 import { Notification } from '@/types/notification';
@@ -14,20 +14,20 @@ interface NotificationContextType {
   fetchNotifications: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
-  addLocalNotification: (notif: Notification) => void;
+  addLocalNotification: (notif: Partial<Notification> & Record<string, unknown>) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { subscribe } = useSSE();
   const { onNotification, offNotification } = useSocket();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = useCallback(async () => {
-    if (!user) {
+    if (authLoading || !user) {
       setNotifications([]);
       setLoading(false);
       return;
@@ -42,7 +42,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   // Initial fetch
   useEffect(() => {
@@ -50,7 +50,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [fetchNotifications]);
 
   // Add individual notification dynamically (e.g. from Socket or SSE)
-  const addLocalNotification = useCallback((notifRaw: any) => {
+  const addLocalNotification = useCallback((notifRaw: Partial<Notification> & Record<string, unknown>) => {
     const newNotif: Notification = {
       id: notifRaw.id || `local-${Math.random().toString(36).substring(2, 9)}`,
       title: notifRaw.title || 'Notification',
@@ -72,8 +72,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Sync with WebSockets
   useEffect(() => {
-    const handleSocketNotification = (data: any) => {
-      addLocalNotification(data);
+    const handleSocketNotification = (data: unknown) => {
+      addLocalNotification(data as Partial<Notification> & Record<string, unknown>);
     };
 
     onNotification(handleSocketNotification);
@@ -84,8 +84,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Sync with SSE
   useEffect(() => {
-    const handleSseNotification = (data: any) => {
-      addLocalNotification(data);
+    const handleSseNotification = (data: unknown) => {
+      addLocalNotification(data as Partial<Notification> & Record<string, unknown>);
     };
 
     // Generic refresh triggers that don't pass the full notification payload,
@@ -108,7 +108,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     return () => unsubscribers.forEach((unsub) => unsub());
   }, [subscribe, fetchNotifications, addLocalNotification]);
 
-  const markAsRead = async (id: string) => {
+  const markAsRead = useCallback(async (id: string) => {
     try {
       // Optimistic update
       setNotifications((prev) =>
@@ -120,9 +120,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       // Fallback
       fetchNotifications();
     }
-  };
+  }, [fetchNotifications]);
 
-  const markAllAsRead = async () => {
+  const markAllAsRead = useCallback(async () => {
     try {
       // Optimistic update
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
@@ -132,7 +132,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       // Fallback
       fetchNotifications();
     }
-  };
+  }, [fetchNotifications]);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => !n.is_read).length;

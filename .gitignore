@@ -57,3 +57,5 @@ out/
 # custom ignore
 .env.mobile
 build_log.txt
+
+/newdocs

@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { logger } from './lib/logger';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isWaitlistMode = process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true';
+  const isDev = process.env.NODE_ENV === 'development';
 
   // --- 1. Waitlist Logic ---
-  if (isWaitlistMode) {
+  // In development, waitlist is always bypassed so devs can reach auth pages.
+  if (isWaitlistMode && !isDev) {
     const protectedPaths = [
       '/auth/login',
       '/auth/signup',
@@ -26,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   // --- 2. Logging ---
-  console.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`);
+  logger.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`);
 
   // --- 3. Content Security Policy ---
   const response = NextResponse.next();

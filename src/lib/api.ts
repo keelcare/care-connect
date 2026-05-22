@@ -44,6 +44,7 @@ import {
   CategoryRequestStatus,
   Service,
   AdminManualAssignmentDto,
+  Assignment,
   AdminManualRequest,
   AdminManualNanny,
   SupportTicket,
@@ -75,15 +76,19 @@ let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
 // Global cache for in-flight GET requests to prevent redundant simultaneous calls
-const pendingRequests = new Map<string, Promise<any>>();
+const pendingRequests = new Map<string, Promise<unknown>>();
 
 export function setTokenRefresher(refresher: () => Promise<boolean>) {
   tokenRefresher = refresher;
 }
 
+interface RetryableRequestInit extends RequestInit {
+  _retryCount?: number;
+}
+
 export async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit = {},
+  options: RetryableRequestInit = {},
   skipRefresh = false,
   skipRedirect = false
 ): Promise<T> {
@@ -101,7 +106,7 @@ export async function fetchApi<T>(
   const cacheKey = `${method}:${endpoint}`;
 
   if (isGet && pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey)!;
+    return pendingRequests.get(cacheKey) as Promise<T>;
   }
 
   const fetchPromise = (async () => {
@@ -120,7 +125,7 @@ export async function fetchApi<T>(
 
       // Handle 204 No Content
       if (response.status === 204) {
-        return null as any;
+        return null as unknown as T;
       }
 
       // Get text body first to check if it's empty
@@ -137,7 +142,7 @@ export async function fetchApi<T>(
       if (!response.ok) {
         // Handle 429 Too Many Requests - Exponential Backoff
         if (response.status === 429) {
-          const retryCount = (options as any)._retryCount || 0;
+          const retryCount = options._retryCount ?? 0;
           const MAX_RETRIES = 3;
 
           if (retryCount < MAX_RETRIES) {
@@ -162,7 +167,7 @@ export async function fetchApi<T>(
               {
                 ...options,
                 _retryCount: retryCount + 1,
-              } as any,
+              },
               skipRefresh,
               skipRedirect
             );
@@ -485,11 +490,11 @@ export const api = {
     getPaymentPlanStats: () => fetchApi<PaymentPlanStats>('/admin/payment-plans/stats'),
   },
   assignments: {
-    getNannyAssignments: () => fetchApi<any[]>('/assignments/nanny/me'),
+    getNannyAssignments: () => fetchApi<Assignment[]>('/assignments/nanny/me'),
     accept: (id: string) =>
-      fetchApi<any>(`/assignments/${id}/accept`, { method: 'PUT' }),
+      fetchApi<Record<string, unknown>>(`/assignments/${id}/accept`, { method: 'PUT' }),
     reject: (id: string, reason?: string) =>
-      fetchApi<any>(`/assignments/${id}/reject`, {
+      fetchApi<Record<string, unknown>>(`/assignments/${id}/reject`, {
         method: 'PUT',
         body: JSON.stringify({ reason }),
       }),
@@ -550,7 +555,7 @@ export const api = {
       }),
   },
   enhancedNotifications: {
-    list: () => fetchApi<Notification[]>('/notifications'),
+    list: () => fetchApi<Notification[]>('/notifications', {}, false, true),
     markAsRead: (id: string) =>
       fetchApi<Notification>(`/notifications/${id}/read`, { method: 'PATCH' }),
     markAllAsRead: () =>
@@ -566,7 +571,7 @@ export const api = {
         body: JSON.stringify({ resolution }),
       }),
     // Payments
-    getPayments: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<any>>(`/admin/payments?page=${page}&pageSize=${pageSize}`),
+    getPayments: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<Record<string, unknown>>>(`/admin/payments?page=${page}&pageSize=${pageSize}`),
     getPaymentStats: () => fetchApi<AdminPaymentStats>('/admin/payments/stats'),
     // Review Moderation
     getReviews: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<EnhancedReview>>(`/admin/reviews?page=${page}&pageSize=${pageSize}`),
@@ -582,7 +587,7 @@ export const api = {
     getSettings: () => fetchApi<SystemSetting[]>('/admin/settings'),
     getSetting: (key: string) =>
       fetchApi<SystemSetting>(`/admin/settings/${key}`),
-    updateSetting: (key: string, value: any) =>
+    updateSetting: (key: string, value: SystemSetting['value']) =>
       fetchApi<SystemSetting>(`/admin/settings/${key}`, {
         method: 'POST',
         body: JSON.stringify({ value }),
@@ -699,9 +704,9 @@ export const api = {
       fetchApi<PaymentAuditSummary>('/payments/audit/summary'),
     getOrderAuditHistory: (orderId: string) =>
       fetchApi<PaymentAuditRow[]>(`/payments/audit/${orderId}`),
-    getPlans: () => fetchApi<any[]>('/payments/plans'),
+    getPlans: () => fetchApi<PaymentPlan[]>('/payments/plans'),
     refundPayment: (paymentId: string, amount?: number) =>
-      fetchApi<any>(`/payments/refund/${paymentId}`, {
+      fetchApi<Record<string, unknown>>(`/payments/refund/${paymentId}`, {
         method: 'POST',
         body: amount ? JSON.stringify({ amount }) : undefined,
       }),
