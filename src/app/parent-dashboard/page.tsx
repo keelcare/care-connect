@@ -6,17 +6,24 @@ import { useAuth } from '@/context/AuthContext';
 import { ReturningUserDashboard } from '@/components/dashboard/ReturningUserDashboard';
 import { NewUserDashboard } from '@/components/dashboard/NewUserDashboard';
 import { api } from '@/lib/api';
-import { Spinner } from '@/components/ui/Spinner';
+import { Booking, Notification } from '@/types/api';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { ParentOnboardingWizard } from '@/components/onboarding/ParentOnboardingWizard';
 import { Skeleton } from 'boneyard-js/react';
 
 export default function HomePage() {
     const { user, loading: authLoading } = useAuth();
     const [bookingCount, setBookingCount] = useState<number | null>(null);
+    const [wizardDismissed, setWizardDismissed] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('parent_onboarding_completed') === 'true';
+        }
+        return false;
+    });
     const [dashboardData, setDashboardData] = useState<{
-        activeSession: any | null;
-        upcomingBookings: any[];
-        notifications: any[];
+        activeSession: Booking | null;
+        upcomingBookings: Booking[];
+        notifications: Notification[];
     }>({
         activeSession: null,
         upcomingBookings: [],
@@ -43,8 +50,8 @@ export default function HomePage() {
 
             // Process active session
             // ONLY show IN_PROGRESS as current session
-            const inProgressBooking = allBookings.find((b: any) => b.status === 'IN_PROGRESS');
-            let currentActive = inProgressBooking || null;
+            const inProgressBooking = allBookings.find((b) => b.status === 'IN_PROGRESS');
+            const currentActive = inProgressBooking ?? null;
 
             // Process upcoming bookings (all confirmed/requested, excluding featured)
             const upcomingBookings = allBookings
@@ -65,7 +72,7 @@ export default function HomePage() {
                 }
             });
 
-            const nannyMap = new Map<string, any>();
+            const nannyMap = new Map<string, Booking['nanny']>();
             for (const nannyId of Array.from(nannyIdsToFetch)) {
                 try {
                     const nannyDetails = await api.users.get(nannyId);
@@ -76,7 +83,7 @@ export default function HomePage() {
                 }
             }
 
-            const enrich = (b: any) => {
+            const enrich = (b: Booking): Booking => {
                 if (b.nanny_id && nannyMap.has(b.nanny_id)) {
                     return { ...b, nanny: nannyMap.get(b.nanny_id) };
                 }
@@ -135,8 +142,19 @@ export default function HomePage() {
 
     const isNewUser = bookingCount === 0;
 
+    const needsOnboarding =
+        !wizardDismissed &&
+        user?.role === 'parent' &&
+        !user?.profiles?.address;
+
     return (
         <ParentLayout>
+            {needsOnboarding && user && (
+                <ParentOnboardingWizard
+                    user={user}
+                    onComplete={() => setWizardDismissed(true)}
+                />
+            )}
             <Skeleton 
                 name={isNewUser ? "parent-dashboard-new" : "parent-dashboard-returning"} 
                 loading={authLoading || loading}

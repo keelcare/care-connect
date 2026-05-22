@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, Clock, AlertCircle, ArrowRight } from 'lucide-react';
+import { Clock, AlertCircle, ArrowRight } from 'lucide-react';
 
 interface NannyVerificationBannerProps {
   status: 'pending' | 'rejected' | null;
@@ -23,7 +23,7 @@ export function NannyVerificationBanner({
             Verification in progress
           </p>
           <p className="text-xs text-[#0D2B45]/60 mt-0.5">
-            Your documents are under review. You'll be notified once approved — usually within 1–2 business days.
+            Your documents are under review. You&apos;ll be notified once approved — usually within 1–2 business days.
           </p>
         </div>
         <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0D2B45]/8 text-[#0D2B45] text-xs font-semibold">

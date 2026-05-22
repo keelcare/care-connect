@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { User } from '@/types/api';
 import VerificationUploadForm from '@/components/verification/VerificationUploadForm';
-import VerificationStatus from '@/components/verification/VerificationStatus';
+
 import { WizardAvailabilityStep } from '@/components/onboarding/WizardAvailabilityStep';
 import { Button } from '@/components/ui/button';
 
@@ -40,9 +40,6 @@ export function NannyOnboardingWizard({
   onComplete,
 }: NannyOnboardingWizardProps) {
   const [step, setStep] = useState<WizardStep>(getInitialStep(user));
-  const [uploadedStatus, setUploadedStatus] = useState<string | null>(
-    user.identity_verification_status || null
-  );
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -50,8 +47,8 @@ export function NannyOnboardingWizard({
     return () => clearTimeout(t);
   }, []);
 
-  const handleUploadSuccess = (data: any) => {
-    setUploadedStatus(data?.identity_verification_status || 'pending');
+  const handleUploadSuccess = (data: { identity_verification_status?: string }) => {
+    void data;
     setStep(2);
   };
 
@@ -199,7 +196,7 @@ export function NannyOnboardingWizard({
               </div>
 
               <h2 className="font-heading text-2xl font-medium text-[#0D2B45] mb-2">
-                You're almost there
+                You&apos;re almost there
               </h2>
               <p className="text-sm text-neutral-500 max-w-xs mb-8 leading-relaxed">
                 Our team is reviewing your identity documents — usually within{' '}
@@ -253,9 +250,9 @@ export function NannyOnboardingWizard({
 
               {/* Email notice */}
               <p className="text-xs text-neutral-400 mb-7">
-                We'll notify{' '}
+                We&apos;ll notify{' '}
                 <span className="font-semibold text-neutral-600">{user.email}</span>{' '}
-                once you're approved.
+                once you&apos;re approved.
               </p>
 
               <Button onClick={handleFinish} size="lg">
