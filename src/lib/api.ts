@@ -261,13 +261,13 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(body),
       }),
-    // Refresh now expects empty body, tokens in cookies
-    refresh: () =>
-      fetchApi<void>(
+    // Refresh now expects refresh_token in body
+    refresh: (token: string) =>
+      fetchApi<AuthResponse>(
         '/auth/refresh',
         {
           method: 'POST',
-          body: JSON.stringify({}),
+          body: JSON.stringify({ refresh_token: token }),
         },
         true
       ), // skipRefresh = true to prevent infinite loop
@@ -291,6 +291,7 @@ export const api = {
   },
   users: {
     me: () => fetchApi<User>('/users/me'),
+    deleteMe: () => fetchApi<void>('/users/me', { method: 'DELETE' }),
     get: (id: string) => fetchApi<User>(`/users/${id}`),
     nannies: () => fetchApi<User[]>('/users/nannies'),
     update: (id: string, body: UpdateUserDto) =>
@@ -442,6 +443,13 @@ export const api = {
   notifications: {
     send: (body: SendNotificationDto) =>
       fetchApi<{ success: boolean }>('/notifications/send', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+  },
+  consents: {
+    create: (body: { purpose: string; version: string }) =>
+      fetchApi<void>('/consents', {
         method: 'POST',
         body: JSON.stringify(body),
       }),

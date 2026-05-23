@@ -40,15 +40,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // We register a simple refresher that just calls the refresh endpoint (cookies handled automatically)
   const refreshSession = useCallback(async (): Promise<boolean> => {
     try {
-      console.log('Refreshing session (cookie-based)...');
-      await api.auth.refresh();
+      console.log('Refreshing session (token-based)...');
+      const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+      const data = await api.auth.refresh(refreshToken);
+      if (typeof window !== 'undefined' && data) {
+        localStorage.setItem('access_token', data.access_token);
+        if (data.refresh_token) {
+          localStorage.setItem('refresh_token', data.refresh_token);
+        }
+      }
       console.log('Session refreshed successfully');
       return true;
     } catch (error: any) {
       // If there's no refresh token, it just means the user isn't logged in or session expired completely
       if (
         error.message?.includes('No refresh token') ||
-        error.message?.includes('Unauthorized')
+        error.message?.includes('Unauthorized') ||
+        error.message?.includes('refresh token')
       ) {
         console.log('Session refresh failed (no token):', error.message);
       } else {
@@ -57,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
       }
       return false;
     }
@@ -120,6 +133,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Check if data is AuthResponse and store tokens
       if ('access_token' in data) {
+        localStorage.setItem('access_token', data.access_token);
+        if (data.refresh_token) {
+          localStorage.setItem('refresh_token', data.refresh_token);
+        }
         setUser(data.user);
       } else {
         setUser(data);
@@ -156,6 +173,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
         localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
       }
       // ALWAYS cleanup client state
       setUser(null);

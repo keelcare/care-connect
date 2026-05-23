@@ -12,6 +12,7 @@ import { SSEProvider } from '@/context/SSEProvider';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { Chatbot } from '@/components/ai/Chatbot';
 import { NotificationOverlay } from '@/components/notifications/NotificationOverlay';
+import { ConsentBanner } from '@/components/compliance/ConsentBanner';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import { Lora, DM_Sans } from 'next/font/google';
@@ -198,6 +199,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
                 {/* <Chatbot /> */}
                 {!hideFooter && <Footer />}
                 <NotificationOverlay />
+                <ConsentBanner />
               </NotificationProvider>
             </SocketProvider>
           </SSEProvider>

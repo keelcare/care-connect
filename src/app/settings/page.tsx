@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function ParentSettingsPage() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{
@@ -101,6 +101,19 @@ export default function ParentSettingsPage() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm('Are you sure you want to delete your account? This action is irreversible and permanently anonymizes your data.')) {
+      try {
+        await api.users.deleteMe();
+        alert('Account deleted successfully.');
+        await logout();
+      } catch (error) {
+        console.error('Failed to delete account:', error);
+        alert('Failed to delete account. Please try again.');
+      }
     }
   };
 
@@ -240,6 +253,24 @@ export default function ParentSettingsPage() {
             </div>
           </div>
         </form>
+
+        <div className="bg-red-50 rounded-2xl border border-red-100 shadow-sm p-8 md:p-10 space-y-4 mt-8">
+          <h2 className="text-xl font-bold text-red-900 flex items-center gap-2">
+            <AlertCircle size={20} />
+            Danger Zone
+          </h2>
+          <p className="text-red-700 text-sm">
+            Deleting your account will permanently remove all your data in compliance with DPDPA 2023. This action cannot be undone.
+          </p>
+          <Button
+            type="button"
+            variant="destructive"
+            className="rounded-xl px-6 bg-red-600 hover:bg-red-700 text-white"
+            onClick={handleDeleteAccount}
+          >
+            Delete Account
+          </Button>
+        </div>
       </div>
     </ParentLayout>
   );
