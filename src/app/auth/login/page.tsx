@@ -68,10 +68,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full flex" style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0F2FE 50%, #EFF6FF 100%)' }}>
+    <div className="h-dvh flex bg-blue-50 justify-center transition-colors duration-500 overflow-hidden">
+      <div className="w-full max-w-[1920px] h-full flex bg-white shadow-2xl mx-auto overflow-hidden">
       {/* Left Side - Form */}
       <div
-        className="w-full lg:w-1/2 flex flex-col justify-start px-6 md:px-12 lg:px-20 xl:px-32 py-4 md:py-12 overflow-y-auto"
+        className="w-full lg:w-1/2 h-full flex flex-col justify-start items-center p-4 md:p-12 overflow-y-auto"
         style={{ 
           paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)',
           paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 1.5rem)',
@@ -138,7 +139,8 @@ export default function LoginPage() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               error={errors.email}
-              className="bg-white border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all rounded-[20px]"
+              className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
+              style={{ '--tw-ring-color': '#0d9488' } as React.CSSProperties}
             />
 
             {/* Password Input */}
@@ -162,7 +164,8 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                className="bg-white border-2 border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all rounded-[20px]"
+                className="bg-neutral-50 border-neutral-200 focus:bg-white transition-all duration-300 focus:ring-2 focus:ring-offset-0"
+                style={{ '--tw-ring-color': '#0d9488' } as React.CSSProperties}
               />
             </div>
 
@@ -170,7 +173,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-auth-blue text-white py-3 md:py-4 rounded-full font-bold text-base md:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+              className="w-full rounded-full text-white shadow-lg hover:shadow-xl transition-all h-10 md:h-12 text-sm md:text-base font-medium btn-auth-blue disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
               {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
@@ -183,7 +186,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-[#F8F9FA] text-gray-500 font-medium">
+              <span className="px-4 bg-white text-gray-500 font-medium">
                 Or continue with
               </span>
             </div>
@@ -193,7 +196,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 md:py-4 border-2 border-gray-200 rounded-full bg-white hover:bg-gray-50 hover:border-gray-300 transition-all text-gray-700 font-medium shadow-sm hover:shadow"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2 md:py-3 border border-neutral-200 rounded-full bg-white hover:bg-neutral-50 transition-colors text-neutral-700 font-medium h-10 md:h-12"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -219,7 +222,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Animation */}
-      <div className="hidden lg:flex fixed right-0 top-0 w-1/2 h-dvh overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(160deg, #DBEAFE 0%, #C7D2FE 60%, #BAE6FD 100%)' }}>
+      <div className="hidden lg:flex relative w-1/2 h-full bg-gradient-to-br from-blue-50 via-indigo-50/40 to-sky-100/60 overflow-hidden items-center justify-center p-12 transition-all duration-700">
         <style jsx>{`
           @keyframes sway {
             0%,
@@ -347,7 +350,8 @@ export default function LoginPage() {
             </svg>
           </div>
         </div>
-      </div >
-    </div >
+      </div>
+      </div>
+    </div>
   );
 }
