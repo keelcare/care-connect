@@ -57,10 +57,10 @@ export const WaitlistModal = () => {
       errors.name = "Please enter a valid name (letters only).";
     }
     
-    // Check if phone is exactly 10 digits, or starts with '+' and has country code (11-14 total digits)
-    const cleanPhone = formData.phone.replace(/[\s-]/g, '');
-    if (!formData.phone || !/^(\+\d{11,14}|\d{10})$/.test(cleanPhone)) {
-      errors.phone = "Phone must be exactly 10 digits, or include a country code starting with '+' (e.g. +91...)";
+    // 10-digit Indian mobile number (we prepend +91 on submit)
+    const cleanPhone = formData.phone.replace(/\D/g, '');
+    if (!cleanPhone || !/^\d{10}$/.test(cleanPhone)) {
+      errors.phone = 'Please enter a valid 10-digit mobile number.';
     }
 
     if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -86,6 +86,7 @@ export const WaitlistModal = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          phone: `+91${formData.phone.replace(/\D/g, '')}`,
           city: finalCity,
           careType: formData.careType === 'child' ? 'Child care' : formData.careType === 'shadow' ? 'Shadow teacher' : 'Special needs',
           childDetails: formData.childDetails
@@ -229,24 +230,30 @@ export const WaitlistModal = () => {
                           if (fieldErrors.name) setFieldErrors({ ...fieldErrors, name: '' });
                         }}
                         className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition-all font-body bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 ${fieldErrors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-primary-900 focus:ring-primary-900/20'}`}
-                        placeholder="Jane Doe"
+                        placeholder="Your full name"
                       />
                       {fieldErrors.name && <p className="text-red-500 text-xs mt-1.5 font-medium">{fieldErrors.name}</p>}
                     </div>
                     <div>
                       <label htmlFor="phone" className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-1.5">Phone <span className="text-red-500">*</span></label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        maxLength={16}
-                        value={formData.phone}
-                        onChange={(e) => {
-                          setFormData({ ...formData, phone: e.target.value });
-                          if (fieldErrors.phone) setFieldErrors({ ...fieldErrors, phone: '' });
-                        }}
-                        className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition-all font-body bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 ${fieldErrors.phone ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-primary-900 focus:ring-primary-900/20'}`}
-                        placeholder="+91 9876543210"
-                      />
+                      <div className={`flex items-center rounded-xl border transition-all bg-gray-50 focus-within:bg-white ${fieldErrors.phone ? 'border-red-400 focus-within:border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 focus-within:border-primary-900 focus-within:ring-2 focus-within:ring-primary-900/20'}`}>
+                        <span className="pl-4 pr-2 text-gray-500 font-body font-medium select-none whitespace-nowrap">+91</span>
+                        <div className="w-px h-5 bg-gray-200 mr-2" />
+                        <input
+                          type="tel"
+                          id="phone"
+                          maxLength={10}
+                          inputMode="numeric"
+                          value={formData.phone}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, '');
+                            setFormData({ ...formData, phone: digits });
+                            if (fieldErrors.phone) setFieldErrors({ ...fieldErrors, phone: '' });
+                          }}
+                          className="flex-1 py-3 pr-4 bg-transparent outline-none font-body text-gray-900 placeholder-gray-400"
+                          placeholder="9876543210"
+                        />
+                      </div>
                       {fieldErrors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium">{fieldErrors.phone}</p>}
                     </div>
                   </div>
@@ -262,7 +269,7 @@ export const WaitlistModal = () => {
                         if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: '' });
                       }}
                       className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition-all font-body bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 ${fieldErrors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-primary-900 focus:ring-primary-900/20'}`}
-                      placeholder="jane@example.com"
+                      placeholder="you@example.com"
                     />
                     {fieldErrors.email && <p className="text-red-500 text-xs mt-1.5 font-medium">{fieldErrors.email}</p>}
                   </div>

@@ -35,7 +35,7 @@ function SignupContent() {
   // Map 'parent' -> 'family' and 'nanny' -> 'caregiver'
   const initialRole: Role = roleParam === 'nanny' ? 'caregiver' : 'family';
 
-  const [role] = useState<Role>(initialRole);
+  const [role, setRole] = useState<Role>(initialRole);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -480,7 +480,36 @@ function SignupContent() {
               </p>
             </div>
 
-
+            {/* Role Switcher Toggle */}
+            <div className="flex p-1 bg-neutral-100 rounded-full w-full max-w-sm mx-auto lg:mx-0 border border-neutral-200">
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('family');
+                  setErrors((prev) => ({ ...prev, categories: '' }));
+                }}
+                className={`flex-1 py-2 text-sm font-semibold rounded-full transition-all duration-300 ${
+                  role === 'family'
+                    ? 'bg-white shadow text-[#0F172A]'
+                    : 'text-neutral-500 hover:text-neutral-900'
+                }`}
+              >
+                I Need Care
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('caregiver');
+                }}
+                className={`flex-1 py-2 text-sm font-semibold rounded-full transition-all duration-300 ${
+                  role === 'caregiver'
+                    ? 'bg-white shadow text-[#0F172A]'
+                    : 'text-neutral-500 hover:text-neutral-900'
+                }`}
+              >
+                I Want to Care
+              </button>
+            </div>
 
             <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
