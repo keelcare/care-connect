@@ -109,8 +109,13 @@ export const Navbar: React.FC = () => {
             href={user ? (user.role === 'nanny' ? '/dashboard' : '/parent-dashboard') : "/parent-dashboard"}
             className="flex items-center gap-2 group"
           >
-            <div className="w-8 h-8 bg-neutral-50 rounded-full flex items-center justify-center group-hover:bg-neutral-100 transition-colors">
-              <Image src="/logo.svg" alt="Keel Logo" width={80} height={20} className="h-5 w-auto" />
+            <div className="w-8 h-8 rounded-full overflow-hidden relative shadow-sm border border-neutral-200 group-hover:shadow-md transition-shadow">
+              <Image 
+                src="/logo.jpeg" 
+                alt="Keel Logo" 
+                fill
+                className="object-cover" 
+              />
             </div>
             <span className="text-lg font-bold font-display text-primary-900 tracking-tight">Keel</span>
           </Link>

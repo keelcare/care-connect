@@ -15,6 +15,7 @@ import {
 import { User, Child } from '@/types/api';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 interface ParentOnboardingWizardProps {
   user: User;
@@ -408,6 +409,13 @@ function GetStartedStep({
   user: User;
   onFinish: () => void;
 }) {
+  const router = useRouter();
+
+  const handleBook = () => {
+    onFinish();
+    router.push('/book-service');
+  };
+
   return (
     <div className="p-8 md:p-10 text-center flex flex-col items-center">
       {/* Icon */}
@@ -430,8 +438,7 @@ function GetStartedStep({
         You're all set!
       </h2>
       <p className="text-sm text-neutral-500 max-w-xs mb-8 leading-relaxed">
-        Your profile is ready. Browse caregivers in your area and book your
-        first session.
+        Your profile is ready. Let's make your first booking now.
       </p>
 
       {/* Checklist */}
@@ -462,8 +469,8 @@ function GetStartedStep({
       </p>
 
       <div className="flex flex-col gap-3 w-full max-w-xs">
-        <Button onClick={onFinish} size="lg" className="w-full">
-          Browse Caregivers
+        <Button onClick={handleBook} size="lg" className="w-full">
+          Make First Booking
           <ArrowRight size={16} className="ml-1" />
         </Button>
         <button

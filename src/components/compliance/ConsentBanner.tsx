@@ -39,18 +39,18 @@ export function ConsentBanner() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 md:p-6 z-[9999] flex flex-col md:flex-row items-center justify-between gap-4">
-      <div className="flex-1 text-sm md:text-base text-neutral-700">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-white border border-neutral-200 shadow-xl rounded-xl p-4 z-[9999] flex flex-col gap-3">
+      <div className="flex-1 text-xs text-neutral-600 leading-relaxed">
         <p>
           <strong>Privacy Update:</strong> We have updated our data processing practices in compliance with the Digital Personal Data Protection Act (DPDPA 2023). 
           By clicking &quot;Accept&quot;, you consent to the storage and processing of your personal data as described in our Privacy Policy.
         </p>
       </div>
-      <div className="flex-shrink-0 w-full md:w-auto flex gap-3">
+      <div className="w-full">
         <Button 
           onClick={handleAccept} 
           disabled={isSubmitting}
-          className="w-full md:w-auto shadow-md"
+          className="w-full text-xs h-9"
         >
           {isSubmitting ? 'Processing...' : 'Accept & Continue'}
         </Button>

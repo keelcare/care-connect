@@ -84,10 +84,7 @@ export function NewUserDashboard() {
                     </div>
 
                     <div className="relative z-10 p-6 md:p-10 max-w-xl text-white mt-auto mb-auto">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3 border border-white/30">
-                            <Sparkles className="w-3 h-3" />
-                            <span>Welcome</span>
-                        </div>
+                        
                         
                         <h1 className="text-fluid-2xl md:text-fluid-4xl font-display font-medium mb-3 leading-tight">
                             Welcome to the Keel family, {user?.profiles?.first_name || 'Friend'}
