@@ -14,8 +14,11 @@ const config: CapacitorConfig = {
       'checkout.razorpay.com',
       'api.razorpay.com',
       'nominatim.openstreetmap.org',
+      '10.0.2.2',
+      'localhost'
     ],
-    ...(serverUrl ? { url: serverUrl, cleartext: true } : {}),
+    cleartext: true,
+    ...(serverUrl ? { url: serverUrl } : {}),
   },
   plugins: {
     PushNotifications: {

@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:mobile": "node scripts/mobile-build.js",
-    "sync:mobile": "node scripts/mobile-build.js",
+    "build:mobile": "node scripts/mobile-build.cjs",
+    "sync:mobile": "node scripts/mobile-build.cjs",
     "cap:run:ios": "npx cap run ios",
     "cap:run:android": "npx cap run android",
     "cap:sync": "npx cap sync",
