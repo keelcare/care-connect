@@ -351,6 +351,7 @@ export interface Booking {
   parent?: User;
   nanny?: User;
   users_bookings_nanny_idTousers?: User;
+  recurring_request_id?: string | null;
 }
 
 export interface CreateBookingDto {
@@ -638,8 +639,52 @@ export interface AdminCategoryRequest extends CategoryRequest {
 }
 
 export interface AdminManualAssignmentDto {
-  requestId: string;
+  requestId?: string;
+  bookingId?: string;
   nannyId: string;
+}
+
+export interface CreateRecurringRequestDto {
+  recurrence_type: 'weekly' | 'specific_dates';
+  recurrence_pattern: {
+    days?: string[];
+    dates?: number[];
+  };
+  start_date: string;
+  end_date?: string;
+  start_time: string;
+  duration_hours: number;
+  num_children: number;
+  children_ages: number[];
+  child_ids?: string[];
+  category: string;
+  plan_type: string;
+  plan_duration_months?: number;
+  sessions_per_month?: number;
+  special_requirements?: string;
+  required_skills?: string[];
+}
+
+export interface RecurringServiceRequest {
+  id: string;
+  parent_id: string;
+  status: string;
+  recurrence_type: string;
+  recurrence_pattern: any;
+  start_date: string;
+  end_date?: string;
+  start_time: string;
+  duration_hours: number;
+  num_children: number;
+  category: string;
+  plan_type: string;
+  created_at: string;
+  updated_at: string;
+  total_bookings?: number;
+  next_upcoming_date?: string | null;
+  bookings?: Booking[];
+  parent?: User;
+  _count?: { bookings: number };
 }
 
 export interface AdminManualRequest {
@@ -656,6 +701,7 @@ export interface AdminManualRequest {
   special_requirements: string;
   location_lat: number;
   location_lng: number;
+  isBookingId?: boolean;
 }
 
 export interface AdminManualNanny {

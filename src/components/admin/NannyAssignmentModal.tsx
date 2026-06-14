@@ -56,7 +56,7 @@ export function NannyAssignmentModal({
         setAssigningLoading(nannyId);
         try {
             await api.admin.manualAssignment.assignNanny({
-                requestId: request.id,
+                ...(request.isBookingId ? { bookingId: request.id } : { requestId: request.id }),
                 nannyId,
             });
             addToast({ type: 'success', message: 'Nanny assigned successfully' });

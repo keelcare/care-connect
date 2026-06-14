@@ -56,6 +56,8 @@ import {
   PaymentAuditRow,
   PaymentPlan,
   PaymentPlanStats,
+  CreateRecurringRequestDto,
+  RecurringServiceRequest,
 } from '@/types/api';
 
 export interface PaginatedResponse<T> {
@@ -506,6 +508,21 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify({ reason }),
       }),
+  },
+  recurringRequests: {
+    create: (body: CreateRecurringRequestDto) =>
+      fetchApi<RecurringServiceRequest>('/recurring-requests', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    getParentRequests: () => fetchApi<RecurringServiceRequest[]>('/recurring-requests/parent/me'),
+    get: (id: string) => fetchApi<RecurringServiceRequest>(`/recurring-requests/${id}`),
+    getPlanBookings: (id: string, page = 1, limit = 10) =>
+      fetchApi<{
+        items: Booking[];
+        pagination: { total: number; page: number; limit: number; totalPages: number };
+      }>(`/recurring-requests/${id}/bookings?page=${page}&limit=${limit}`),
+    getAllAdmin: () => fetchApi<RecurringServiceRequest[]>('/admin/recurring-requests'),
   },
   recurringBookings: {
     create: (body: CreateRecurringBookingDto) =>

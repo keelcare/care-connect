@@ -21,6 +21,7 @@ import {
   X,
   LogOut,
   LifeBuoy,
+  Repeat,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -50,6 +51,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { icon: Users, label: 'Users', href: '/admin/users' },
       { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
+      { icon: Repeat, label: 'Recurring Plans', href: '/admin/recurring-requests' },
       { icon: CreditCard, label: 'Payment Audit', href: '/admin/payment-audit' },
       { icon: Wallet, label: 'Payment Plans', href: '/admin/payment-plans' },
       { icon: ShieldCheck, label: 'Verify Nannies', href: '/admin/verifications' },

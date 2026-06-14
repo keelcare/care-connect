@@ -1,93 +1,115 @@
+'use client';
+
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { BadgePill } from '@/components/ui/BadgePill';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 interface ServiceCardProps {
+  /** Service identifier — used as an accessible label */
+  id: string;
+  /** Icon element (lucide-react, 24px rendered inside badge) */
+  icon: ReactNode;
+  /** Service name */
   title: string;
+  /** One-line description */
   description: string;
-  badge?: {
-    text: string;
-    variant?: 'primary' | 'secondary' | 'accent' | 'info';
-  };
-  pricing?: {
-    label: string;
-    sublabel?: string;
-  };
-  imagePlaceholder?: ReactNode;
-  onClick: () => void;
+  /** Pricing text, e.g. "Starting ₹200/hr" */
+  pricingLabel: string;
+  /** Optional sub-label under pricing */
+  pricingSublabel?: string;
+  /** Optional badge pill text */
+  badge?: string;
+  /** Animation delay (seconds) */
   delay?: number;
+  /** Click handler */
+  onClick: () => void;
 }
 
 export function ServiceCard({
+  id,
+  icon,
   title,
   description,
+  pricingLabel,
+  pricingSublabel,
   badge,
-  pricing,
-  imagePlaceholder,
-  onClick,
   delay = 0,
+  onClick,
 }: ServiceCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
+    <motion.button
+      id={`service-card-${id}`}
+      type="button"
+      aria-label={`Book ${title}`}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.6,
-        delay,
-        ease: [0.2, 0.8, 0.2, 1],
-      }}
-      whileHover={{ scale: 1.02, y: -4 }}
-      className="bg-white rounded-[24px] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4, scale: 1.015 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
+      className={[
+        'group relative w-full text-left',
+        'bg-white rounded-2xl',
+        'border border-[hsl(var(--border))]',
+        'shadow-[var(--shadow-sm)]',
+        'hover:border-[hsl(var(--primary))]',
+        'hover:shadow-[var(--shadow-lg)]',
+        'transition-all duration-300 ease-out',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+        'cursor-pointer',
+        'p-5',
+        'flex flex-col gap-4',
+      ].join(' ')}
     >
-      {/* Image Placeholder Section */}
-      <div className="relative h-48 bg-gradient-to-br from-primary-50 to-primary-100 overflow-hidden">
-        {imagePlaceholder && (
-          <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            {imagePlaceholder}
-          </div>
-        )}
-        
-        {/* Floating Badge */}
-        {badge && (
-          <div className="absolute top-4 right-4">
-            <BadgePill text={badge.text} variant={badge.variant} />
-          </div>
-        )}
-      </div>
+      {/* Top row: icon badge + optional badge pill + chevron */}
+      <div className="flex items-start justify-between gap-3">
+        {/* Icon Badge */}
+        <div
+          className={[
+            'w-11 h-11 rounded-xl flex items-center justify-center shrink-0',
+            'bg-[hsl(var(--primary-50))] text-[hsl(var(--primary))]',
+            'group-hover:bg-[hsl(var(--primary))] group-hover:text-white',
+            'transition-colors duration-300',
+          ].join(' ')}
+        >
+          {icon}
+        </div>
 
-      {/* Content Section */}
-      <div className="p-6">
-        <h3 className="text-2xl font-display font-bold text-primary-900 mb-3">
-          {title}
-        </h3>
-        <p className="text-gray-600 font-body mb-6 leading-relaxed">
-          {description}
-        </p>
-
-        {/* Bottom Row */}
-        <div className="flex items-center justify-between">
-          {/* Pricing Info */}
-          {pricing && (
-            <div>
-              <p className="text-lg font-semibold text-primary-900">
-                {pricing.label}
-              </p>
-              {pricing.sublabel && (
-                <p className="text-sm text-gray-500">{pricing.sublabel}</p>
-              )}
-            </div>
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Optional badge */}
+          {badge && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-[hsl(var(--primary-50))] text-[hsl(var(--primary))]">
+              {badge}
+            </span>
           )}
 
-          {/* Button */}
-          <Button variant="primary" size="sm" animated className="group-hover:brightness-110">
-            Book Now
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          {/* Chevron */}
+          <div className="w-7 h-7 rounded-full flex items-center justify-center bg-[hsl(var(--muted))] group-hover:bg-[hsl(var(--primary))] transition-colors duration-300 shrink-0">
+            <ChevronRight
+              size={14}
+              className="text-[hsl(var(--muted-foreground))] group-hover:text-white transition-colors duration-300"
+            />
+          </div>
         </div>
       </div>
-    </motion.div>
+
+      {/* Service name + description */}
+      <div className="flex flex-col gap-1.5">
+        <h3 className="text-base font-semibold text-[hsl(var(--foreground))] font-heading leading-snug">
+          {title}
+        </h3>
+        <p className="text-sm text-[hsl(var(--muted-foreground))] font-body leading-relaxed">
+          {description}
+        </p>
+      </div>
+
+      {/* Pricing */}
+      <div className="mt-auto pt-3 border-t border-[hsl(var(--border))]">
+        <p className="text-sm font-bold text-[hsl(var(--primary))]">{pricingLabel}</p>
+        {pricingSublabel && (
+          <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-0.5">{pricingSublabel}</p>
+        )}
+      </div>
+    </motion.button>
   );
 }
