@@ -997,7 +997,7 @@ export default function BookingConfigurator({
 
       {/* ── Mobile: inline confirm ── */}
       <div className="lg:hidden">
-        <ConfirmButton />
+        {ConfirmButton({})}
       </div>
     </div>
   );
@@ -1025,21 +1025,32 @@ export default function BookingConfigurator({
       </div>
 
       {/* ── Two-column layout ── */}
-      <div className="flex flex-1 overflow-hidden min-h-0">
+      <div className="flex flex-1 overflow-hidden min-h-0 relative">
+        <AnimatePresence>
+          {summaryExpanded && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSummaryExpanded(false)}
+              className="absolute inset-0 bg-black/20 z-10 lg:hidden touch-none"
+            />
+          )}
+        </AnimatePresence>
 
         {/* LEFT: form */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
-          <FormBody />
+        <div className={`flex-1 overscroll-contain ${summaryExpanded ? 'overflow-hidden lg:overflow-y-auto' : 'overflow-y-auto'}`}>
+          {FormBody()}
         </div>
 
         {/* RIGHT: sticky summary (desktop only) */}
         <div className="hidden lg:flex w-[340px] shrink-0 border-l border-[hsl(var(--border))] flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto">
-            <ServiceSummary />
+            {ServiceSummary({})}
           </div>
           {/* Sticky confirm on desktop */}
           <div className="p-5 border-t border-[hsl(var(--border))] bg-white shrink-0">
-            <ConfirmButton />
+            {ConfirmButton({})}
             {!isValid && !loading && (
               <p className="text-[11px] text-[hsl(var(--muted-foreground))] text-center mt-2">
                 Complete all required fields above
@@ -1058,9 +1069,9 @@ export default function BookingConfigurator({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-b border-[hsl(var(--border))] max-h-[50vh] overflow-y-auto"
+              className="overflow-hidden border-b border-[hsl(var(--border))] max-h-[65vh] overflow-y-auto"
             >
-              <ServiceSummary compact />
+              {ServiceSummary({ compact: true })}
             </motion.div>
           )}
         </AnimatePresence>
@@ -1090,7 +1101,7 @@ export default function BookingConfigurator({
             )}
           </button>
           <div className="shrink-0 w-44">
-            <ConfirmButton />
+            {ConfirmButton({})}
           </div>
         </div>
       </div>

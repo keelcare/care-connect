@@ -118,9 +118,10 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
     const connect = useCallback(() => {
         if (!user) return;
 
-        // EventSource does not support custom headers, so we rely on cookie-based auth.
-        // NestJS AuthGuard('jwt') reads the access_token cookie automatically.
-        const es = new EventSource(`${API_URL}/sse`, {
+        // EventSource does not support custom headers, so we pass the token in the query string.
+        // NestJS AuthGuard('jwt') reads the token from req.query.token.
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        const es = new EventSource(`${API_URL}/sse${token ? `?token=${token}` : ''}`, {
             withCredentials: true,
         });
 
