@@ -287,7 +287,7 @@ export default function AdminBookingsPage() {
                   {getNannyName(booking)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-neutral-500">
-                  {new Date(booking.start_time).toLocaleString()}
+                  {booking.start_time_formatted || new Date(booking.start_time).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

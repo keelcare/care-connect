@@ -32,7 +32,8 @@ export default function RecurringRequestsPage() {
         setLoading(true);
         try {
             const data = await api.recurringRequests.getAllAdmin();
-            setRequests(data);
+            const items = (data as any).items ?? (data as any).data ?? (Array.isArray(data) ? data : []);
+            setRequests(items);
         } catch (error) {
             console.error('Failed to fetch recurring requests:', error);
             addToast({ type: 'error', message: 'Failed to load recurring requests' });
@@ -135,7 +136,7 @@ export default function RecurringRequestsPage() {
                                                 <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest">Details</p>
                                                 <div className="flex items-center gap-2 text-neutral-700 font-medium">
                                                     <Clock size={16} className="text-neutral-300" />
-                                                    {request.start_time} • {request.duration_hours}h
+                                                    {request.start_time_formatted ?? request.start_time} • {request.duration_hours}h
                                                 </div>
                                             </div>
 

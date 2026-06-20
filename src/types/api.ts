@@ -336,6 +336,7 @@ export interface Booking {
   status: BookingStatus;
   payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
   start_time: string;
+  start_time_formatted?: string;
   end_time?: string;
   notes?: string;
   cancellation_reason?: string;
@@ -642,6 +643,7 @@ export interface AdminManualAssignmentDto {
   requestId?: string;
   bookingId?: string;
   nannyId: string;
+  force?: boolean;
 }
 
 export interface CreateRecurringRequestDto {
@@ -674,6 +676,7 @@ export interface RecurringServiceRequest {
   start_date: string;
   end_date?: string;
   start_time: string;
+  start_time_formatted?: string;
   duration_hours: number;
   num_children: number;
   category: string;
@@ -702,6 +705,7 @@ export interface AdminManualRequest {
   location_lat: number;
   location_lng: number;
   isBookingId?: boolean;
+  is_recurring?: boolean;
 }
 
 export interface AdminManualNanny {

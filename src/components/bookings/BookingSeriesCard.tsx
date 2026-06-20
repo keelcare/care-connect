@@ -92,7 +92,7 @@ export function BookingSeriesCard({
   const recurrenceSummary = getRecurrenceSummary();
 
   return (
-    <div 
+    <div
       onClick={onManage}
       className="bg-white p-6 rounded-2xl border border-primary-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 cursor-pointer group hover:-translate-y-0.5"
     >
@@ -100,7 +100,7 @@ export function BookingSeriesCard({
         <div className="flex-shrink-0 w-20 h-20 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary-700 shadow-inner group-hover:bg-primary-100 transition-colors">
           <Repeat size={28} strokeWidth={2.5} />
         </div>
-        
+
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1.5">
             <h3 className="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors font-heading">
@@ -108,11 +108,11 @@ export function BookingSeriesCard({
             </h3>
             {getStatusBadge(series.status)}
           </div>
-          
+
           <p className="text-stone-600 text-sm font-medium mb-1.5">
             <span className="text-primary-700 font-semibold">{series.plan_type.replace('_', ' ')}</span> • {recurrenceSummary}
           </p>
-          
+
           <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-stone-500 font-medium">
             <span className="flex items-center gap-1">
               <CalendarDays size={14} className="text-stone-400" />
@@ -120,12 +120,12 @@ export function BookingSeriesCard({
             </span>
             <span className="flex items-center gap-1">
               <Clock size={14} className="text-stone-400" />
-              {series.start_time} ({series.duration_hours} hr)
+              {series.start_time_formatted} ({series.duration_hours} hr)
             </span>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
         {series.status.toLowerCase() !== 'cancelled' && (
           <Button
@@ -141,7 +141,7 @@ export function BookingSeriesCard({
             Cancel Series
           </Button>
         )}
-        
+
         <Button
           size="sm"
           onClick={(e) => {

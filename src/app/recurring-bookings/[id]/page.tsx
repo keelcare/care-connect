@@ -202,7 +202,7 @@ export default function RecurringBookingDetailsPage() {
                   <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Time</p>
                   <p className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
                     <Clock size={16} className="text-blue-600" />
-                    {plan.start_time} ({plan.duration_hours} hr)
+                    {plan.start_time_formatted ?? plan.start_time} ({plan.duration_hours} hr)
                   </p>
                 </div>
                 <div>
@@ -271,7 +271,7 @@ export default function RecurringBookingDetailsPage() {
                         <div className="flex items-center gap-3 text-sm text-stone-500">
                           <span className="flex items-center gap-1">
                             <Clock size={14} />
-                            {b.start_time ?? booking.start_time}{durationHours > 0 ? ` (${durationHours} hr)` : ''}
+                            {booking.start_time_formatted ?? b.start_time ?? booking.start_time}{durationHours > 0 ? ` (${durationHours} hr)` : ''}
                           </span>
                         </div>
                       </div>

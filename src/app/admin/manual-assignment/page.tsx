@@ -187,11 +187,19 @@ export default function ManualAssignmentPage() {
                                                 {request.category === 'ST' ? <Clock size={28} /> : <User size={28} />}
                                             </div>
                                             <div>
-                                                <Badge className={`${request.category === 'ST' ? 'bg-purple-50 text-purple-700 border-purple-100' : 'bg-blue-50 text-blue-700 border-blue-100'
-                                                    }`}>
-                                                    {request.category === 'ST' ? 'Shadow Teacher' : 'Special Needs'}
-                                                </Badge>
-                                                <p className="text-[11px] text-neutral-400 mt-1 font-mono uppercase tracking-tighter">
+                                                <div className="flex flex-col gap-2 items-start mb-2">
+                                                    <Badge className={`${request.category === 'ST' ? 'bg-purple-50 text-purple-700 border-purple-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                                                        }`}>
+                                                        {request.category === 'ST' ? 'Shadow Teacher' : 'Special Needs'}
+                                                    </Badge>
+                                                    {request.is_recurring && (
+                                                        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 flex items-center gap-1">
+                                                            <Calendar size={12} />
+                                                            Recurring Plan
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <p className="text-[11px] text-neutral-400 font-mono uppercase tracking-tighter">
                                                     ID: #{request.id.slice(0, 8)}
                                                 </p>
                                             </div>

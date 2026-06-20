@@ -51,20 +51,32 @@ export function NannyAssignmentModal({
         }
     };
 
-    const handleAssign = async (nannyId: string) => {
+    const [conflictDates, setConflictDates] = useState<string[] | null>(null);
+    const [pendingNannyId, setPendingNannyId] = useState<string | null>(null);
+
+    const handleAssign = async (nannyId: string, force = false) => {
         if (!request) return;
         setAssigningLoading(nannyId);
         try {
             await api.admin.manualAssignment.assignNanny({
                 ...(request.isBookingId ? { bookingId: request.id } : { requestId: request.id }),
                 nannyId,
+                force,
             });
+            
+            setConflictDates(null);
+            setPendingNannyId(null);
             addToast({ type: 'success', message: 'Nanny assigned successfully' });
             onAssigned();
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to assign nanny:', error);
-            addToast({ type: 'error', message: 'Failed to assign nanny' });
+            if (error.response?.data?.warning && error.response?.data?.overlaps) {
+                setConflictDates(error.response.data.overlaps);
+                setPendingNannyId(nannyId);
+            } else {
+                addToast({ type: 'error', message: error.response?.data?.message || 'Failed to assign nanny' });
+            }
         } finally {
             setAssigningLoading(null);
         }
@@ -114,6 +126,7 @@ export function NannyAssignmentModal({
     };
 
     return (
+        <>
         <Modal
             isOpen={isOpen}
             onClose={onClose}
@@ -258,5 +271,57 @@ export function NannyAssignmentModal({
                 </div>
             </div>
         </Modal>
+
+        {conflictDates && pendingNannyId && (
+            <Modal
+                isOpen={true}
+                onClose={() => {
+                    setConflictDates(null);
+                    setPendingNannyId(null);
+                }}
+                title="Schedule Conflict Detected"
+                maxWidth="md"
+            >
+                <div className="space-y-4">
+                    <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3">
+                        <Info className="shrink-0 mt-0.5" />
+                        <div>
+                            <p className="font-semibold mb-1">This nanny has overlapping bookings or is unavailable on some dates in this recurring plan:</p>
+                            <ul className="list-disc pl-5 space-y-1 text-sm font-mono mt-2">
+                                {conflictDates.map(date => (
+                                    <li key={date}>{date}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    <p className="text-sm text-neutral-600">
+                        Do you want to ignore these conflicts and force the assignment anyway?
+                    </p>
+                    <div className="flex justify-end gap-3 pt-4">
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setConflictDates(null);
+                                setPendingNannyId(null);
+                            }}
+                            disabled={assigningLoading === pendingNannyId}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                            onClick={() => handleAssign(pendingNannyId, true)}
+                            disabled={assigningLoading === pendingNannyId}
+                        >
+                            {assigningLoading === pendingNannyId ? (
+                                <Spinner className="mr-2 border-white border-t-transparent" size="sm" />
+                            ) : null}
+                            Force Assign Anyway
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+        )}
+        </>
     );
 }

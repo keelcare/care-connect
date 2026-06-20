@@ -199,7 +199,7 @@ export default function RecurringBookingsPage() {
                         </p>
                         <p className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
                           <Clock size={14} className="text-primary-600" />
-                          {request.start_time} • {request.duration_hours} hr
+                          {request.start_time_formatted ?? request.start_time} • {request.duration_hours} hr
                         </p>
                       </div>
                       <div>

@@ -168,7 +168,7 @@ export default function RecurringRequestDetailPage({ params }: { params: { id: s
                                 </div>
                                 <div>
                                     <div className="font-bold text-neutral-900 text-lg">
-                                        {formatDate(booking.start_time)}
+                                        {booking.start_time_formatted || formatDate(booking.start_time)}
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">
                                         <Badge className={`${getStatusClass(booking.status)}`}>

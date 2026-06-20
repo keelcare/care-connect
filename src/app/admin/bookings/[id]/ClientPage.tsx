@@ -224,7 +224,7 @@ export default function AdminBookingDetailsPage() {
     );
   }
 
-  const startDateTime = formatDateTime(booking.start_time);
+  const startDateTime = booking.start_time_formatted || formatDateTime(booking.start_time);
   const endDateTime = booking.end_time
     ? formatDateTime(booking.end_time)
     : null;
