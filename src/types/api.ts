@@ -847,27 +847,53 @@ export interface PaymentAuditSummary {
   generatedAt: string;
 }
 
-export interface PaymentInstallment {
+export interface PriceSnapshot {
   id: string;
-  plan_id: string;
-  installment_no: number;
-  amount: number;
-  status: 'pending' | 'paid' | 'overdue' | 'failed' | string;
-  due_date: string;
-  paid_date?: string | null;
+  booking_id: string;
+  payment_plan_id: string | null;
+  cycle_number: number;
+  base_hourly_rate_used: number;
+  discount_percent_used: number;
+  hours_billed: number;
+  custom_price_applied: boolean;
+  final_amount: number;              // INR — use this for display
+  status: 'pending' | 'charged';
+  razorpay_payment_id: string | null;
+  payment_id: string | null;
+  created_at: string;
+  payments?: {
+    status: string;
+    amount: number;
+    currency: string;
+    order_id: string;
+    created_at: string;
+  } | null;
 }
 
 export interface PaymentPlan {
   id: string;
-  parent_id: string;
-  service_request_id?: string;
-  plan_type: string;
-  total_months: number;
-  monthly_rate: number;
-  total_amount: number;
-  status: 'active' | 'completed' | 'cancelled' | string;
+  booking_id: string;
+  total_cycles: number;             // replaces total_months
+  cycles_completed: number;
+  start_date: string;
+  next_due_date: string;
+  status: 'active' | 'completed' | 'cancelled';
   created_at: string;
-  updated_at?: string;
+
+  bookings?: {
+    id: string;
+    nanny_id: string | null;
+    service_requests?: { category: string } | null;
+    users_bookings_nanny_idTousers?: {
+      profiles?: {
+        first_name: string | null;
+        last_name: string | null;
+        profile_image_url: string | null;
+      } | null;
+    } | null;
+  };
+
+  // Legacy admin view fields (still returned by admin endpoint)
   users?: {
     profiles?: {
       first_name: string | null;
@@ -877,7 +903,16 @@ export interface PaymentPlan {
   service_requests?: {
     category: string;
   } | null;
-  payment_installments?: PaymentInstallment[];
+
+  price_snapshots?: PriceSnapshot[];
+}
+
+export interface RateCard {
+  id: string;
+  service_id: string;
+  hourly_rate: number;
+  effective_from: string;
+  effective_to: string | null;
 }
 
 export interface PaymentPlanStats {

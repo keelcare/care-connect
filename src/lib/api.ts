@@ -684,15 +684,20 @@ export const api = {
       }),
   },
   payments: {
-    createOrder: (bookingId: string, installmentId?: string) =>
+    createOrder: (bookingId: string) =>
       fetchApi<{
         orderId: string;
-        amount: number;
-        currency: string;
+        order_id: string;      // alias for Razorpay options compatibility
+        amount: number;        // INR for display
+        amount_due: number;    // paise for Razorpay options.amount
+        currency: 'INR';
         key: string;
+        key_id: string;        // alias
+        name: string;
+        description: string;
       }>('/payments/create-order', {
         method: 'POST',
-        body: JSON.stringify({ bookingId, installmentId }),
+        body: JSON.stringify({ bookingId }),
       }),
     verify: (
       razorpay_order_id: string,

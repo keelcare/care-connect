@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { PaymentPlan, PaymentPlanStats } from '@/types/api';
+import { PaymentPlan, PaymentPlanStats, PriceSnapshot } from '@/types/api';
 import { Spinner } from '@/components/ui/Spinner';
 import {
   Wallet,
@@ -59,8 +59,9 @@ export default function AdminPaymentPlansPage() {
   });
 
   const getProgress = (plan: PaymentPlan) => {
-    const paidCount = plan.payment_installments?.filter(i => i.status === 'paid').length || 0;
-    const total = plan.total_months || plan.payment_installments?.length || 1;
+    // NEW: price_snapshots replaces payment_installments; 'charged' replaces 'paid'
+    const paidCount = plan.price_snapshots?.filter(s => s.status === 'charged').length || 0;
+    const total = plan.total_cycles || plan.price_snapshots?.length || 1;
     return Math.min(Math.round((paidCount / total) * 100), 100);
   };
 
@@ -254,12 +255,23 @@ export default function AdminPaymentPlansPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <p className="text-sm font-semibold text-neutral-700">{plan.total_months} Mo</p>
-                        <p className="text-[10px] text-neutral-400">{plan.plan_type}</p>
+                        {/* NEW: total_cycles replaces total_months */}
+                        <p className="text-sm font-semibold text-neutral-700">{plan.total_cycles} Cycles</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-bold text-neutral-900">{formatCurrency(plan.total_amount)}</p>
-                        <p className="text-[10px] text-neutral-400">{formatCurrency(plan.monthly_rate)} / mo</p>
+                        {/* NEW: read amount from price_snapshots instead of plan.total_amount / monthly_rate */}
+                        {plan.price_snapshots && plan.price_snapshots.length > 0 ? (
+                          <>
+                            <p className="text-sm font-bold text-neutral-900">
+                              {formatCurrency(plan.price_snapshots.reduce((sum: number, s: PriceSnapshot) => sum + (s.final_amount || 0), 0))}
+                            </p>
+                            <p className="text-[10px] text-neutral-400">
+                              {formatCurrency(plan.price_snapshots[0]?.final_amount || 0)} / cycle
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-[10px] text-neutral-400">Pending first cycle</p>
+                        )}
                       </td>
                       <td className="px-6 py-4 w-48">
                         <div className="space-y-1.5">

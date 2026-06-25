@@ -10,9 +10,8 @@ interface RazorpayResponse {
 }
 
 interface PaymentOptions {
-  amount: number; // in INR
+  amount: number; // in INR (for reference/display only — actual charge comes from server)
   bookingId: string;
-  installmentId?: string;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -45,7 +44,6 @@ export const usePayment = () => {
   const handlePayment = async ({
     amount,
     bookingId,
-    installmentId,
     onSuccess,
     onError,
   }: PaymentOptions) => {
@@ -57,15 +55,15 @@ export const usePayment = () => {
       }
 
       // 1. Create Order
-      const orderData = await api.payments.createOrder(bookingId, installmentId);
+      const orderData = await api.payments.createOrder(bookingId);
 
       // --- Web & Capacitor: use Razorpay JS SDK flow (Razorpay's modal handles mobile webviews well) ---
       const options = {
         key: orderData.key, // Backend returns 'key', not 'keyId'
-        amount: orderData.amount,
+        amount: orderData.amount_due,  // paise — required by Razorpay
         currency: orderData.currency,
-        name: 'Keel',
-        description: 'Nanny Service Payment',
+        name: orderData.name || 'Keel',
+        description: orderData.description || 'Nanny Service Payment',
         order_id: orderData.orderId,
         handler: async (response: RazorpayResponse) => {
           // 3. Verify Payment

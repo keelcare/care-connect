@@ -211,6 +211,7 @@ export default function BookingConfigurator({
   /* ── Loading ── */
   const [loading, setLoading] = useState(false);
   const [hourlyRate, setHourlyRate] = useState<number | null>(null);
+  const [rateLoading, setRateLoading] = useState(true);
   const [missingLocation, setMissingLocation] = useState(false);
 
   /* ── Family ── */
@@ -290,14 +291,26 @@ export default function BookingConfigurator({
 
   useEffect(() => {
     const fetchRate = async () => {
+      setRateLoading(true);
       try {
         const services = await api.services.list();
-        const match = services.find((s) =>
+        const categorySlug = meta.category.toLowerCase(); // e.g. 'cc', 'st', 'sn'
+        const match = services.find((s: any) =>
+          s.slug === categorySlug ||
           s.name === meta.category ||
-          s.name === meta.label
+          s.name === meta.label ||
+          s.slug === meta.label.toLowerCase().replace(/\s+/g, '-')
         );
-        if (match) setHourlyRate(Number(match.hourly_rate));
-      } catch {}
+        if (match && match.hourly_rate != null) {
+          setHourlyRate(Number(match.hourly_rate));
+        } else {
+          setHourlyRate(null);
+        }
+      } catch {
+        setHourlyRate(null);
+      } finally {
+        setRateLoading(false);
+      }
     };
     fetchRate();
   }, [meta.category, meta.label]);
@@ -403,6 +416,9 @@ export default function BookingConfigurator({
     missingLocation, startTime, duration, recurrenceMode, selectedDate,
     selectedDays, selectedDates, meta.showChildSelector, children, selectedChildIds,
   ]);
+
+  // Confirm button is disabled while form is invalid OR price is still loading
+  const confirmDisabled = !isValid || loading || rateLoading;
 
   /* ── Submit ── */
   const handleSubmit = async () => {
@@ -581,8 +597,17 @@ export default function BookingConfigurator({
       )}
 
       {!pricing && (
-        <p className="text-center text-xs text-[hsl(var(--muted-foreground))] py-2">
-          Select plan + duration to see pricing
+        <p className="text-center text-xs text-[hsl(var(--muted-foreground))] py-2 flex items-center justify-center gap-1.5">
+          {rateLoading ? (
+            <>
+              <span className="w-3 h-3 border-2 border-[hsl(var(--muted-foreground))]/30 border-t-[hsl(var(--muted-foreground))] rounded-full animate-spin inline-block" />
+              Fetching pricing...
+            </>
+          ) : !hourlyRate ? (
+            'Pricing unavailable for this service'
+          ) : (
+            'Select plan + duration to see pricing'
+          )}
         </p>
       )}
     </div>
@@ -595,7 +620,7 @@ export default function BookingConfigurator({
     <button
       type="button"
       onClick={handleSubmit}
-      disabled={loading}
+      disabled={confirmDisabled}
       className={[
         'flex items-center justify-center gap-2 font-semibold rounded-[var(--radius-xl)] transition-all duration-200',
         'bg-[hsl(var(--primary))] text-white',
@@ -610,6 +635,11 @@ export default function BookingConfigurator({
         <span className="flex items-center gap-2">
           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           Submitting...
+        </span>
+      ) : rateLoading ? (
+        <span className="flex items-center gap-2">
+          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          Loading pricing...
         </span>
       ) : missingLocation ? (
         'Set Location to Book'
@@ -1051,7 +1081,7 @@ export default function BookingConfigurator({
           {/* Sticky confirm on desktop */}
           <div className="p-5 border-t border-[hsl(var(--border))] bg-white shrink-0">
             {ConfirmButton({})}
-            {!isValid && !loading && (
+            {confirmDisabled && !loading && !rateLoading && (
               <p className="text-[11px] text-[hsl(var(--muted-foreground))] text-center mt-2">
                 Complete all required fields above
               </p>

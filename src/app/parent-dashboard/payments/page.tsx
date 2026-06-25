@@ -5,7 +5,7 @@ import Image from 'next/image';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { api } from '@/lib/api';
 import { Spinner } from '@/components/ui/Spinner';
-import { format, isAfter, isBefore, addDays } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { 
     CreditCard, 
     CalendarDays, 
@@ -43,11 +43,11 @@ export default function ManagePaymentsPage() {
         fetchPlans();
     }, []);
 
-    const onPayNow = (installmentId: string, bookingId: string, amount: number) => {
+    // NEW: onPayNow no longer takes installmentId — server resolves cycle automatically
+    const onPayNow = (bookingId: string, amount: number) => {
         handlePayment({
             amount,
             bookingId,
-            installmentId,
             onSuccess: () => {
                 fetchPlans();
             },
@@ -123,16 +123,28 @@ export default function ManagePaymentsPage() {
 }
 
 function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoading }: any) {
-    const installments = plan.payment_installments || [];
-    const paidCount = installments.filter((i: any) => i.status === 'paid' || i.payments?.status === 'captured').length;
-    const progress = (paidCount / plan.total_months) * 100;
+    // NEW: use price_snapshots instead of payment_installments
+    const snapshots = plan.price_snapshots || [];
+    const paidCount = plan.cycles_completed ?? snapshots.filter((s: any) => s.status === 'charged').length;
+    const totalCycles = plan.total_cycles || snapshots.length || 1;
+    const progress = (paidCount / totalCycles) * 100;
 
     const nannyProfile = plan.bookings?.users_bookings_nanny_idTousers?.profiles;
     const nannyName = nannyProfile?.first_name ? `${nannyProfile.first_name} ${nannyProfile.last_name || ''}` : 'Nanny';
     const categoryName = plan.bookings?.service_requests?.category === 'ST' ? 'Shadow Teacher' : 'Care Service';
 
-    // Find first pending installment
-    const firstPending = installments.find((i: any) => i.status === 'pending');
+    // NEW: find the next pending snapshot using cycles_completed
+    const nextCycleNumber = paidCount + 1;
+    const snapshotToPay = snapshots.find(
+        (s: any) => s.cycle_number === nextCycleNumber && s.status === 'pending'
+    );
+    // If no snapshot yet for this cycle, createOrder will generate one automatically
+    const hasPendingAction = nextCycleNumber <= totalCycles;
+
+    // Monthly display amount: read from price_snapshots[0]?.final_amount (cycle 1)
+    const displayAmount = snapshots.find((s: any) => s.cycle_number === 1)?.final_amount
+        ?? snapshotToPay?.final_amount
+        ?? 0;
 
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden hover:border-indigo-200 transition-colors">
@@ -169,19 +181,24 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                             <h3 className="text-xl font-bold text-gray-900">{nannyName}</h3>
                             <div className="flex items-center text-sm text-gray-500 mt-1">
                                 <Clock className="w-4 h-4 mr-1.5" />
-                                <span>{plan.total_months}-Month Plan</span>
+                                {/* NEW: total_cycles replaces total_months */}
+                                <span>{totalCycles}-Cycle Plan</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-start md:items-end gap-2">
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-gray-900">₹{Number(plan.monthly_amount).toLocaleString('en-IN')}</span>
-                            <span className="text-sm font-medium text-gray-500">/mo</span>
+                            {/* NEW: read from price_snapshot.final_amount, not plan.monthly_amount */}
+                            <span className="text-2xl font-black text-gray-900">₹{Number(displayAmount).toLocaleString('en-IN')}</span>
+                            <span className="text-sm font-medium text-gray-500">/cycle</span>
                         </div>
-                        <div className="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                            Next payment: <span className="text-gray-900">{format(new Date(plan.next_due_date), 'MMM d, yyyy')}</span>
-                        </div>
+                        {plan.next_due_date && (
+                            <div className="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                                {/* NEW: next_due_date is now a top-level field on the plan */}
+                                Next payment: <span className="text-gray-900">{format(new Date(plan.next_due_date), 'MMM d, yyyy')}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -189,7 +206,8 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                 <div className="mt-8 space-y-3">
                     <div className="flex justify-between items-center text-sm">
                         <span className="font-semibold text-gray-700">Payment Progress</span>
-                        <span className="text-indigo-600 font-bold">{paidCount} <span className="text-gray-400 font-medium">of {plan.total_months} months paid</span></span>
+                        {/* NEW: cycles_completed / total_cycles */}
+                        <span className="text-indigo-600 font-bold">{paidCount} <span className="text-gray-400 font-medium">of {totalCycles} cycles paid</span></span>
                     </div>
                     <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
                         <motion.div 
@@ -208,7 +226,7 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                         {isExpanded ? 'Hide Schedule' : 'View Full Schedule'}
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </span>
-                    {firstPending && (
+                    {hasPendingAction && plan.status === 'active' && (
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-medium text-gray-400">Action Required</span>
                             <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -226,8 +244,8 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                         exit={{ height: 0, opacity: 0 }}
                         className="hidden md:block bg-gray-50/50 border-t border-gray-100"
                     >
-                        <InstallmentTimeline 
-                            installments={installments} 
+                        <SnapshotTimeline 
+                            snapshots={snapshots} 
                             plan={plan}
                             onPayNow={onPayNow} 
                             paymentLoading={paymentLoading}
@@ -273,8 +291,8 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
                                 </button>
                             </div>
 
-                            <InstallmentTimeline 
-                                installments={installments} 
+                            <SnapshotTimeline 
+                                snapshots={snapshots} 
                                 plan={plan}
                                 onPayNow={onPayNow} 
                                 paymentLoading={paymentLoading}
@@ -287,10 +305,13 @@ function SubscriptionPlanCard({ plan, isExpanded, onToggle, onPayNow, paymentLoa
     );
 }
 
-function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: any) {
-    const firstPendingId = installments.find((i: any) => 
-        i.status === 'pending' && i.payments?.status !== 'captured'
-    )?.id;
+// NEW: renamed from InstallmentTimeline → SnapshotTimeline, using price_snapshots fields
+function SnapshotTimeline({ snapshots, plan, onPayNow, paymentLoading }: any) {
+    // NEW: find the payable snapshot — the next pending cycle not yet charged
+    const nextCycleNumber = (plan.cycles_completed ?? 0) + 1;
+    const payableSnapshot = snapshots.find(
+        (s: any) => s.cycle_number === nextCycleNumber && s.status === 'pending'
+    );
 
     return (
         <div className="p-8">
@@ -298,23 +319,22 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                 {/* Vertical Line */}
                 <div className="absolute left-6 top-2 bottom-2 w-0.5 bg-gray-200" />
 
-                {installments.map((inst: any, idx: number) => {
-                    const isPaid = inst.status === 'paid' || inst.payments?.status === 'captured';
-                    const isPending = inst.status === 'pending' && !isPaid;
-                    const isOverdue = isPending && isBefore(new Date(inst.due_date), new Date());
-                    const canPay = inst.id === firstPendingId;
+                {snapshots.map((snapshot: any, idx: number) => {
+                    // NEW: use snapshot.status === 'charged' instead of 'paid'
+                    const isCharged = snapshot.status === 'charged' || snapshot.payments?.status === 'captured';
+                    const isPending = snapshot.status === 'pending' && !isCharged;
+                    const canPay = snapshot.cycle_number === nextCycleNumber && isPending;
 
                     return (
-                        <div key={inst.id} className="relative flex items-center space-x-6 z-10">
+                        <div key={snapshot.id} className="relative flex items-center space-x-6 z-10">
                             {/* State Indicator */}
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border-4 border-white shadow-sm shrink-0 ${
-                                isPaid ? 'bg-green-500 text-white' : 
-                                isOverdue ? 'bg-orange-500 text-white' :
+                                isCharged ? 'bg-green-500 text-white' : 
                                 isPending && canPay ? 'bg-indigo-600 text-white animate-pulse' : 'bg-gray-200 text-gray-400'
                             }`}>
-                                {isPaid ? <CheckCircle2 className="w-6 h-6" /> : 
-                                 isOverdue ? <AlertCircle className="w-6 h-6" /> :
-                                 isPending && canPay ? <div className="text-sm font-black">{inst.installment_no}</div> : <div className="text-xs font-bold">{inst.installment_no}</div>}
+                                {isCharged ? <CheckCircle2 className="w-6 h-6" /> : 
+                                 isPending && canPay ? <div className="text-sm font-black">{snapshot.cycle_number}</div> : 
+                                 <div className="text-xs font-bold">{snapshot.cycle_number}</div>}
                             </div>
 
                             {/* Details Card */}
@@ -324,24 +344,29 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-sm font-bold text-gray-900">Month {inst.installment_no}</span>
-                                            {isOverdue && <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">Overdue</span>}
+                                            {/* NEW: cycle_number replaces installment_no */}
+                                            <span className="text-sm font-bold text-gray-900">Cycle {snapshot.cycle_number}</span>
                                         </div>
+                                        {/* Breakdown info from snapshot */}
                                         <div className="text-xs text-gray-500 font-medium">
-                                            Due on {format(new Date(inst.due_date), 'PPP')}
+                                            {snapshot.hours_billed}h @ ₹{snapshot.base_hourly_rate_used}/hr
+                                            {snapshot.discount_percent_used > 0 && ` · ${snapshot.discount_percent_used}% off`}
                                         </div>
                                     </div>
 
                                     <div className="flex items-center justify-between md:justify-end gap-6 md:gap-8">
                                         <div className="text-right">
-                                            <div className="text-lg font-bold text-gray-900">₹{Number(inst.amount_due).toLocaleString('en-IN')}</div>
-                                            <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{inst.status}</div>
+                                            {/* NEW: final_amount replaces amount_due */}
+                                            <div className="text-lg font-bold text-gray-900">₹{Number(snapshot.final_amount).toLocaleString('en-IN')}</div>
+                                            {/* NEW: 'charged' replaces 'paid' */}
+                                            <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{snapshot.status}</div>
                                         </div>
 
                                         {isPending && canPay && (
                                             plan.bookings?.nanny_id ? (
                                                 <button
-                                                    onClick={() => onPayNow(inst.id, plan.booking_id, Number(inst.amount_due))}
+                                                    // NEW: onPayNow no longer passes snapshot.id — only bookingId + amount
+                                                    onClick={() => onPayNow(plan.booking_id, Number(snapshot.final_amount ?? 0))}
                                                     disabled={paymentLoading}
                                                     className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition disabled:opacity-50"
                                                 >
@@ -359,10 +384,10 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                                                 Upcoming
                                             </div>
                                         )}
-                                        {isPaid && (
+                                        {isCharged && (
                                             <div className="flex items-center gap-1.5 text-green-600">
                                                 <div className="w-2 h-2 rounded-full bg-green-500" />
-                                                <span className="text-xs font-bold font-display">Completed</span>
+                                                <span className="text-xs font-bold font-display">Charged</span>
                                             </div>
                                         )}
                                     </div>
@@ -371,13 +396,20 @@ function InstallmentTimeline({ installments, plan, onPayNow, paymentLoading }: a
                         </div>
                     );
                 })}
+
+                {/* If no snapshots exist yet for the next cycle, show a placeholder */}
+                {snapshots.length === 0 && (
+                    <div className="text-center text-gray-400 text-sm py-8">
+                        No billing cycles recorded yet.
+                    </div>
+                )}
             </div>
 
             <div className="mt-10 p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-start gap-4">
                 <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
                 <div className="text-xs text-indigo-800 leading-relaxed">
                     <p className="font-bold mb-1 italic">Security Note:</p>
-                    All payments are processed securely through Razorpay. You can only pay for the immediate upcoming installment to maintain the monthly billing integrity.
+                    All payments are processed securely through Razorpay. You can only pay for the immediate upcoming cycle to maintain billing integrity. Prices shown are locked at your booking rate.
                 </div>
             </div>
         </div>
