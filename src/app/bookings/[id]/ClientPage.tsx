@@ -66,9 +66,10 @@ export default function BookingDetailsPage() {
                 const bookingData = await api.bookings.get(bookingId);
                 setBooking(bookingData);
 
-                // If it has a job_id (request_id), fetch the detailed request info as well
-                if (bookingData.job_id) {
-                    const requestData = await api.requests.get(bookingData.job_id);
+                // If it has a job_id or request_id, fetch the detailed request info as well
+                const reqId = bookingData.request_id || bookingData.job_id;
+                if (reqId) {
+                    const requestData = await api.requests.get(reqId);
                     setRequest(requestData);
                 }
             } catch (err) {
@@ -282,7 +283,7 @@ export default function BookingDetailsPage() {
                                                 <p className="text-primary-900 font-bold text-xl font-display leading-tight">
                                                     {formatTime(booking?.start_time || request?.start_time)}
                                                     <span className="text-slate-400 font-normal text-sm ml-2 block md:inline mt-1 md:mt-0">
-                                                        ({booking?.hourly_rate || request?.hourly_rate ? `₹${booking?.hourly_rate || request?.hourly_rate}/hr • ` : ''}{request?.duration_hours || 4} hours)
+                                                        ({booking?.hourly_rate || request?.hourly_rate ? `₹${booking?.hourly_rate || request?.hourly_rate}/hr • ` : ''}{booking?.hours_per_day || request?.duration_hours || 4} hours)
                                                     </span>
                                                 </p>
                                             </div>
