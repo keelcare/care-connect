@@ -441,6 +441,8 @@ export const api = {
       }>(`/reviews/booking/${bookingId}/can-review`),
     getWrittenBy: (userId: string) =>
       fetchApi<Review[]>(`/reviews/written-by/${userId}`), // New endpoint for reviews written by user
+    getNannyReviews: (nannyId: string) =>
+      fetchApi<Review[]>(`/reviews/nanny/${nannyId}`),
   },
   notifications: {
     send: (body: SendNotificationDto) =>
@@ -744,6 +746,12 @@ export const api = {
       fetchApi<{ orderId: string; amount: number; currency: string; key: string }>(`/payments/retry/${bookingId}`, {
         method: 'POST',
       }),
+    getNannyEarnings: () =>
+      fetchApi<{
+        totalEarned: number;
+        pendingEarned: number;
+        bookings: any[];
+      }>('/payments/nanny/earnings'),
   },
   family: {
     list: () => fetchApi<Child[]>('/family/children'),

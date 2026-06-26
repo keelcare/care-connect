@@ -15,6 +15,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { NannyOnboardingWizard } from '@/components/onboarding/NannyOnboardingWizard';
 import { NannyVerificationBanner } from '@/components/onboarding/NannyVerificationBanner';
 import { NannyHero } from '@/components/dashboard/nanny/NannyHero';
+import { NannyStats } from '@/components/dashboard/nanny/NannyStats';
 import { SessionCard } from '@/components/dashboard/SessionCard';
 import { QuickActions } from '@/components/dashboard/nanny/QuickActions';
 import { RecentFeedback } from '@/components/dashboard/nanny/RecentFeedback';
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [earnings, setEarnings] = useState({ totalEarned: 0, pendingEarned: 0, bookings: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [wizardDismissed, setWizardDismissed] = useState(false);
@@ -34,13 +36,15 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
 
-      const [bookingsData, reviewsData] = await Promise.all([
+      const [bookingsData, reviewsData, earningsData] = await Promise.all([
         api.bookings.getNannyBookings(),
-        user?.id ? api.reviews.getByUser(user.id) : Promise.resolve([]),
+        user?.id ? api.reviews.getNannyReviews(user.id) : Promise.resolve([]),
+        api.payments.getNannyEarnings().catch(() => ({ totalEarned: 0, pendingEarned: 0, bookings: [] })),
       ]);
 
       setBookings(bookingsData);
       setReviews(reviewsData || []);
+      setEarnings(earningsData);
 
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
@@ -208,6 +212,15 @@ export default function DashboardPage() {
 
         {/* 1. Hero Section */}
         <NannyHero />
+
+        {user?.role === 'nanny' && (
+          <NannyStats
+            earnings={earnings}
+            completedBookingsCount={bookings.filter(b => b.status === 'COMPLETED').length}
+            rating={user?.averageRating || 5.0}
+            reviewCount={user?.totalReviews || reviews.length}
+          />
+        )}
 
         {/* Verification status banner — shown after wizard is dismissed or on return */}
         {user && user.identity_verification_status !== 'verified' && (
