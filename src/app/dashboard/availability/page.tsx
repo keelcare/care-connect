@@ -145,10 +145,10 @@ export default function AvailabilityPage() {
     setSubmitting(true);
 
     try {
-      const startDateTime = `${formData.startDate}T${formData.startTime}:00Z`;
+      const startDateTime = `${formData.startDate}T${formData.startTime}:00+05:30`;
       const endDateTime = formData.endDate
-        ? `${formData.endDate}T${formData.endTime}:00Z`
-        : `${formData.startDate}T${formData.endTime}:00Z`;
+        ? `${formData.endDate}T${formData.endTime}:00+05:30`
+        : `${formData.startDate}T${formData.endTime}:00+05:30`;
 
       const isRecurring = formData.blockType === 'recurring';
 
@@ -227,10 +227,12 @@ export default function AvailabilityPage() {
         weekday: 'short',
         month: 'short',
         day: 'numeric',
+        timeZone: 'Asia/Kolkata',
       }),
       time: date.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
+        timeZone: 'Asia/Kolkata',
       }),
     };
   };

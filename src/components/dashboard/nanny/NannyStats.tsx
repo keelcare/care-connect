@@ -27,10 +27,6 @@ export function NannyStats({ earnings, completedBookingsCount, rating, reviewCou
           <h3 className="text-4xl font-heading font-semibold mb-1">
             ₹{earnings.totalEarned.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
-          <div className="flex items-center gap-1.5 text-sm opacity-75 mt-2 bg-white/10 w-fit px-3 py-1 rounded-full backdrop-blur-md">
-            <Clock className="w-4 h-4" />
-            <span>₹{earnings.pendingEarned.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} pending</span>
-          </div>
         </div>
       </div>
 
