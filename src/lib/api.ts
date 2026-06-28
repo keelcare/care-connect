@@ -326,6 +326,10 @@ export const api = {
       fetchApi<{ message: string }>(`/nannies/me/category-request/${requestId}`, {
         method: 'DELETE',
       }),
+    getDashboardSummary: () =>
+      fetchApi<import('@/types/api').NannyDashboardSummary>('/nannies/me/dashboard'),
+    getPerformance: () =>
+      fetchApi<import('@/types/api').NannyPerformance>('/nannies/me/performance'),
   },
   location: {
     geocode: (address: string) =>
@@ -752,6 +756,8 @@ export const api = {
         pendingEarned: number;
         bookings: any[];
       }>('/payments/nanny/earnings'),
+    getNannyEarningsAnalytics: (period: 'week' | 'month' = 'week') =>
+      fetchApi<import('@/types/api').NannyEarningsAnalytics>(`/payments/nanny/earnings/analytics?period=${period}`),
   },
   family: {
     list: () => fetchApi<Child[]>('/family/children'),

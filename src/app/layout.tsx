@@ -135,7 +135,6 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/how-it-works') ||
     pathname?.startsWith('/parent-dashboard') ||
     pathname?.startsWith('/services') ||
-    pathname?.startsWith('/contact') ||
     pathname?.startsWith('/book-service') ||
     pathname?.startsWith('/bookings') ||
     pathname?.startsWith('/messages') ||

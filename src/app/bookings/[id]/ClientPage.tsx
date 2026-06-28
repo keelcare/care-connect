@@ -12,23 +12,58 @@ import {
     MapPin,
     Users,
     MessageSquare,
+    Phone,
     Star,
     ShieldCheck,
-    ArrowRight,
+    Download,
+    AlertCircle,
+    CheckCircle2,
+    Circle,
+    Navigation,
     Info,
-    CalendarCheck,
-    AlertCircle
+    CreditCard,
+    Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Avatar } from '@/components/ui/avatar';
 import ParentLayout from '@/components/layout/ParentLayout';
-import { ProfileCard } from '@/components/features/ProfileCard';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import { usePayment } from '@/hooks/usePayment';
 
+/* ─── Status helpers ──────────────────────────────────────────────── */
+
+type StatusKey = 'PENDING' | 'REQUESTED' | 'ASSIGNED' | 'ACCEPTED' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+const STATUS_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    PENDING:     { label: 'Pending',     color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200' },
+    REQUESTED:   { label: 'Requested',   color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200' },
+    ASSIGNED:    { label: 'Assigned',    color: 'text-primary-700', bg: 'bg-primary-50', border: 'border-primary-200' },
+    ACCEPTED:    { label: 'Accepted',    color: 'text-primary-700', bg: 'bg-primary-50', border: 'border-primary-200' },
+    CONFIRMED:   { label: 'Confirmed',   color: 'text-primary-700', bg: 'bg-primary-50', border: 'border-primary-200' },
+    IN_PROGRESS: { label: 'In Progress', color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200' },
+    COMPLETED:   { label: 'Completed',   color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+    CANCELLED:   { label: 'Cancelled',   color: 'text-red-700',     bg: 'bg-red-50',     border: 'border-red-200' },
+};
+
+/** Ordered timeline steps */
+const TIMELINE_STEPS = [
+    { key: 'CONFIRMED',   label: 'Booking Confirmed' },
+    { key: 'ASSIGNED',    label: 'Caregiver Assigned' },
+    { key: 'IN_PROGRESS', label: 'In Progress' },
+    { key: 'COMPLETED',   label: 'Completed' },
+];
+
+const STATUS_ORDER: Record<string, number> = {
+    PENDING: 0, REQUESTED: 0,
+    ASSIGNED: 1, ACCEPTED: 1, CONFIRMED: 1,
+    IN_PROGRESS: 2,
+    COMPLETED: 3,
+    CANCELLED: -1,
+};
+
+/* ─── Main component ──────────────────────────────────────────────── */
 
 export default function BookingDetailsPage() {
     const params = useParams();
@@ -42,7 +77,6 @@ export default function BookingDetailsPage() {
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    // Modals state
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
@@ -60,130 +94,89 @@ export default function BookingDetailsPage() {
         try {
             setLoading(true);
             setError(null);
-
-            // Try to get as booking first
             try {
                 const bookingData = await api.bookings.get(bookingId);
                 setBooking(bookingData);
-
-                // If it has a job_id or request_id, fetch the detailed request info as well
                 const reqId = bookingData.request_id || bookingData.job_id;
                 if (reqId) {
                     const requestData = await api.requests.get(reqId);
                     setRequest(requestData);
                 }
-            } catch (err) {
-                // If booking.get fails, maybe it's just a request ID?
+            } catch {
                 const requestData = await api.requests.get(bookingId);
                 setRequest(requestData);
-
-                // If it's a request, check if there's an associated booking
-                try {
-                    // This is a bit of a guess if we don't have a reverse lookup, 
-                    // but often these IDs are used interchangeably in the frontend logic.
-                    // For now, if we found it as a request, we'll try to find a booking that references it.
-                    // Note: The API might not have a direct "get booking by request id" but we can check if it's there.
-                } catch (bErr) {
-                    console.log('No associated booking found for this request');
-                }
             }
         } catch (err) {
-            console.error('Failed to fetch details:', err);
             setError(err instanceof Error ? err.message : 'Failed to load details');
         } finally {
             setLoading(false);
         }
     }, [bookingId]);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+    useEffect(() => { fetchData(); }, [fetchData]);
 
     const handlePayNow = async () => {
         if (!booking) return;
-
         let duration = 4;
         if (booking.start_time && booking.end_time) {
-            const start = new Date(booking.start_time).getTime();
-            const end = new Date(booking.end_time).getTime();
-            duration = (end - start) / (1000 * 60 * 60);
+            duration = (new Date(booking.end_time).getTime() - new Date(booking.start_time).getTime()) / 3600000;
         }
-        const amount = Math.max(duration * 20, 50);
-
         handlePayment({
             bookingId: booking.id,
-            amount: amount,
+            amount: Math.max(duration * 20, 50),
             onSuccess: () => {
                 const newPaid = [...paidBookingIds, booking.id];
                 setPaidBookingIds(newPaid);
                 localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
             },
-            onError: (err) => {
-                console.error('Payment failed', err);
-            },
+            onError: (err) => console.error('Payment failed', err),
         });
     };
 
     const handleCancel = async (reason: string) => {
         try {
             setActionLoading('cancelling');
-            if (booking) {
-                await api.bookings.cancel(booking.id, { reason });
-            } else if (request) {
-                await api.requests.cancel(request.id, reason);
-            }
+            if (booking) await api.bookings.cancel(booking.id, { reason });
+            else if (request) await api.requests.cancel(request.id, reason);
             await fetchData();
             setIsCancelModalOpen(false);
-        } catch (err) {
-            console.error(err);
-            alert('Failed to cancel');
-        } finally {
-            setActionLoading(null);
-        }
+        } catch { alert('Failed to cancel'); }
+        finally { setActionLoading(null); }
     };
 
     const confirmedReschedule = async (date: string, startTime: string, endTime: string) => {
         try {
             setActionLoading('rescheduling');
-            const targetId = booking?.id || request?.id;
-            if (!targetId) return;
-
-            if (booking) {
-                await api.bookings.reschedule(booking.id, { date, startTime, endTime });
-            } else {
-                await api.requests.update(targetId, { date, start_time: startTime });
-            }
-
+            if (booking) await api.bookings.reschedule(booking.id, { date, startTime, endTime });
+            else if (request) await api.requests.update(request.id, { date, start_time: startTime });
             await fetchData();
             setIsRescheduleModalOpen(false);
-        } catch (err) {
-            console.error('Failed to reschedule:', err);
-            throw err;
-        } finally {
-            setActionLoading(null);
-        }
+        } catch (err) { throw err; }
+        finally { setActionLoading(null); }
     };
 
-    const formatTime = (timeInput?: string) => {
-        if (!timeInput) return '—';
+    const formatTime = (t?: string) => {
+        if (!t) return '—';
         try {
-            if (timeInput.includes('T')) {
-                const date = new Date(timeInput);
-                return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            if (t.includes('T')) {
+                return new Date(t).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             }
-            if (timeInput.includes(':')) {
-                const parts = timeInput.split(':');
-                let h = parseInt(parts[0], 10);
-                let m = parseInt(parts[1], 10);
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                const h12 = h % 12 || 12;
-                return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+            if (t.includes(':')) {
+                const [h, m] = t.split(':').map(Number);
+                return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
             }
-            return timeInput;
-        } catch (e) {
-            return timeInput;
-        }
+        } catch { }
+        return t;
     };
+
+    const formatDate = (d?: string) => {
+        if (!d) return '—';
+        try {
+            return new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        } catch { return d; }
+    };
+
+    /* ─── Loading / Error states ────────────────────────────────── */
 
     if (loading) {
         return (
@@ -198,299 +191,477 @@ export default function BookingDetailsPage() {
     if (error || (!booking && !request)) {
         return (
             <ParentLayout>
-                <div className="max-w-3xl mx-auto py-20 px-6 text-center">
-                    <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <AlertCircle size={40} />
+                <div className="max-w-md mx-auto py-24 px-6 text-center">
+                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <AlertCircle size={28} className="text-red-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-primary-900 mb-2">Booking Not Found</h2>
-                    <p className="text-slate-500 mb-8">{error || "We couldn't find the details for this booking."}</p>
-                    <Button onClick={() => router.push('/bookings')} className="bg-primary-900">
-                        Back to All Bookings
+                    <h2 className="text-xl font-bold text-primary-900 mb-2">Booking Not Found</h2>
+                    <p className="text-slate-500 text-sm mb-6">{error || "We couldn't find this booking."}</p>
+                    <Button onClick={() => router.push('/bookings')} className="bg-primary-900 text-white rounded-xl">
+                        Back to Bookings
                     </Button>
                 </div>
             </ParentLayout>
         );
     }
 
+    /* ─── Derived data ──────────────────────────────────────────── */
+
     const currentStatus = (booking?.status || request?.status || 'PENDING').toUpperCase();
+    const statusMeta = STATUS_META[currentStatus] || STATUS_META['PENDING'];
     const isPaid = booking ? paidBookingIds.includes(booking.id) : false;
-    const nanny = booking?.nanny || request?.nanny;
+
+    // Resolve nanny from booking (via direct relation or Prisma alias) or enriched request
+    const nanny = booking?.users_bookings_nanny_idTousers || booking?.nanny || request?.nanny || null;
+
+    // Resolve nanny name: use backend-computed field first, then build from profile
+    const nannyName = booking?.nanny_name
+        || (nanny?.profiles ? `${nanny.profiles.first_name ?? ''} ${nanny.profiles.last_name ?? ''}`.trim() : null)
+        || null;
+
+    // Prefer booking times (absolute), fall back to request date+time fields
+    const startDate = booking?.start_time || request?.date;
+    const startTime = booking?.start_time || request?.start_time;
+    const endTime = booking?.end_time || request?.end_time;
+    const durationHours = booking?.hours_per_day
+        || booking?.service_requests?.duration_hours
+        || request?.duration_hours
+        || 4;
+    const hourlyRate = Number(booking?.hourly_rate || request?.hourly_rate || 0);
+    const totalAmount = Number(booking?.total_amount || request?.total_amount || 0);
+
+    // Service metadata
+    const serviceRequest = booking?.service_requests || request;
+    const category = serviceRequest?.category || 'CC';
+    const numChildren = serviceRequest?.num_children ?? 1;
+    const serviceLabel = category === 'CC' ? 'Child Care Session' : category === 'ST' ? 'Shadow Teacher Session' : 'Home Care Service';
+
+    const currentStep = STATUS_ORDER[currentStatus] ?? 0;
+    const isCancelled = currentStatus === 'CANCELLED';
+
+    /* ─── Payment line items (derived) ─────────────────────────── */
+    const baseAmount = hourlyRate > 0 ? hourlyRate * durationHours : totalAmount > 0 ? totalAmount * 0.85 : 0;
+    const platformFee = totalAmount > 0 ? Math.round(totalAmount * 0.03) : 0;
+    const taxes = totalAmount > 0 ? Math.round(totalAmount * 0.12) : 0;
+    const displayTotal = totalAmount || (baseAmount + platformFee + taxes);
+
+    /* ─── JSX ───────────────────────────────────────────────────── */
 
     return (
         <ParentLayout>
-            <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-12 py-10">
-                {/* Breadcrumbs & Navigation */}
-                <div className="flex items-center gap-4 mb-10">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10">
+
+                {/* ── Header ── */}
+                <div className="flex items-center gap-3 mb-6 sm:mb-8">
                     <button
                         onClick={() => router.push('/bookings')}
-                        className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary-700 hover:border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary-700 hover:border-primary-200 hover:bg-primary-50 transition-all shadow-sm flex-shrink-0"
+                        aria-label="Back to bookings"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={18} />
                     </button>
-                    <div className="flex flex-col">
-                        <h1 className="text-3xl font-bold font-display text-primary-900 tracking-tight">
-                            Booking Details
-                        </h1>
-                        <p className="text-slate-400 text-sm font-mono uppercase tracking-[0.2em] mt-1">
-                            ID: {booking?.id || request?.id}
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] font-mono">
+                            Booking ID: #{(booking?.id || request?.id || '').toUpperCase().slice(0, 12)}
                         </p>
+                        <h1 className="text-xl sm:text-2xl font-bold font-display text-primary-900 tracking-tight truncate">
+                            {serviceLabel}
+                        </h1>
                     </div>
-
-                    <div className="ml-auto flex items-center gap-3">
-                        <div className={`px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest border ${currentStatus === 'COMPLETED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
-                            currentStatus === 'CANCELLED' ? 'bg-red-50 text-red-800 border-red-200' :
-                                currentStatus === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-800 border-amber-200' :
-                                    'bg-primary-50 text-primary-800 border-primary-200'
-                            }`}>
-                            {currentStatus.replace('_', ' ')}
-                        </div>
+                    <div className={`ml-auto flex-shrink-0 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${statusMeta.bg} ${statusMeta.color} ${statusMeta.border}`}>
+                        {statusMeta.label}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    {/* Main Content Area */}
-                    <div className="lg:col-span-2 space-y-10">
+                {/* ── Two-column layout ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 sm:gap-6 lg:gap-8">
 
-                        {/* Booking Summary Card */}
-                        <div className="bg-white rounded-[32px] border border-slate-100 shadow-soft-xl overflow-hidden group">
-                            <div className="h-2 bg-gradient-to-r from-primary-600 via-primary-400 to-accent-500"></div>
-                            <div className="p-8 md:p-10">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div className="space-y-8">
-                                        <div className="flex items-start gap-5">
-                                            <div className="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                <CalendarCheck size={24} />
-                                            </div>
-                                            <div>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Scheduled Date</span>
-                                                <p className="text-primary-900 font-bold text-xl font-display leading-tight">
-                                                    {new Date(booking?.start_time || request?.date || '').toLocaleDateString(undefined, {
-                                                        weekday: 'long',
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric'
-                                                    })}
-                                                </p>
-                                            </div>
-                                        </div>
+                    {/* ═══════════ LEFT COLUMN ═══════════ */}
+                    <div className="space-y-5 sm:space-y-6">
 
-                                        <div className="flex items-start gap-5">
-                                            <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                <Clock size={24} />
-                                            </div>
-                                            <div>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Time & Duration</span>
-                                                <p className="text-primary-900 font-bold text-xl font-display leading-tight">
-                                                    {formatTime(booking?.start_time || request?.start_time)}
-                                                    <span className="text-slate-400 font-normal text-sm ml-2 block md:inline mt-1 md:mt-0">
-                                                        ({booking?.hourly_rate || request?.hourly_rate ? `₹${booking?.hourly_rate || request?.hourly_rate}/hr • ` : ''}{booking?.hours_per_day || request?.duration_hours || 4} hours)
-                                                    </span>
-                                                </p>
-                                            </div>
-                                        </div>
+                        {/* Service Details card */}
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="h-1 bg-gradient-to-r from-primary-700 via-primary-500 to-accent" />
+                            <div className="p-5 sm:p-6">
+                                <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Service Details</h2>
+
+                                {/* Service name row */}
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                                        <Users size={18} className="text-primary-700" />
                                     </div>
-
-                                    <div className="space-y-8">
-                                        <div className="flex items-start gap-5">
-                                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                <MapPin size={24} />
-                                            </div>
-                                            <div>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Location</span>
-                                                <p className="text-primary-900 font-bold text-lg font-display leading-snug">
-                                                    {request?.location?.address || 'Verified Home Listing'}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-5">
-                                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                <Users size={24} />
-                                            </div>
-                                            <div>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Care Details</span>
-                                                <p className="text-primary-900 font-bold text-lg font-display leading-tight">
-                                                    {request?.num_children || 1} Child{(request?.num_children || 1) !== 1 ? 'ren' : ''}
-                                                </p>
-                                                {request?.children_ages && (
-                                                    <p className="text-slate-500 text-sm mt-1">
-                                                        Ages: {request.children_ages.join(', ')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
+                                    <div>
+                                        <p className="font-bold text-primary-900 text-base">{serviceLabel}</p>
+                                        <p className="text-slate-500 text-sm">
+                                            {numChildren > 0 ? `${numChildren} child${numChildren !== 1 ? 'ren' : ''}` : 'Professional care'}
+                                            {request?.special_requirements ? ' · Special requirements noted' : ''}
+                                        </p>
                                     </div>
                                 </div>
 
+                                {/* Info grid */}
+                                <div className="grid grid-cols-2 gap-4 sm:gap-5">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</p>
+                                        <div className="flex items-center gap-1.5 text-primary-900">
+                                            <Calendar size={14} className="text-primary-600 flex-shrink-0" />
+                                            <span className="font-semibold text-sm">{formatDate(startDate)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Time</p>
+                                        <div className="flex items-center gap-1.5 text-primary-900">
+                                            <Clock size={14} className="text-primary-600 flex-shrink-0" />
+                                            <span className="font-semibold text-sm">{formatTime(startTime)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Duration</p>
+                                        <span className="font-semibold text-sm text-primary-900">~{durationHours} hour{durationHours !== 1 ? 's' : ''}</span>
+                                    </div>
+                                    {endTime && (
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">End Time</p>
+                                            <span className="font-semibold text-sm text-primary-900">{formatTime(endTime)}</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Included tasks */}
+                                <div className="mt-5 pt-4 border-t border-slate-50">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Included</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Supervision & Play', 'Meal Preparation', 'Educational Activities'].map((t) => (
+                                            <span key={t} className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-3 py-1">
+                                                <CheckCircle2 size={11} />
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Special requirements */}
                                 {request?.special_requirements && (
-                                    <div className="mt-10 pt-8 border-t border-slate-50">
-                                        <div className="flex items-center gap-2 mb-4 text-primary-900 font-bold text-sm uppercase tracking-wider">
-                                            <Info size={16} className="text-primary-600" />
-                                            Special Requirements
+                                    <div className="mt-4 pt-4 border-t border-slate-50">
+                                        <div className="flex items-center gap-1.5 mb-2">
+                                            <Info size={13} className="text-primary-500" />
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Special Requirements</p>
                                         </div>
-                                        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 text-slate-700 leading-relaxed text-lg italic shadow-inner">
+                                        <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3 italic leading-relaxed">
                                             "{request.special_requirements}"
-                                        </div>
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Caregiver Profile Card */}
+                        {/* Assigned Professional card */}
                         {nanny ? (
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between px-2 text-primary-900">
-                                    <h2 className="text-xl font-bold font-display tracking-tight uppercase tracking-[0.1em] text-sm">Assigned Caregiver</h2>
-                                    {nanny.is_verified && (
-                                        <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-                                            <ShieldCheck size={14} fill="currentColor" className="text-emerald-50" />
-                                            Verified Professional
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                                <div className="p-5 sm:p-6">
+                                    <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Assigned Professional</h2>
+
+                                    <div className="flex items-start gap-4">
+                                        {/* Avatar */}
+                                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-primary-100">
+                                            {nanny.profiles?.avatar_url ? (
+                                                <img src={nanny.profiles.avatar_url} alt={nannyName || ''} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-xl font-bold text-primary-700">
+                                                    {(nanny.profiles?.first_name?.[0] || '?').toUpperCase()}
+                                                </span>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                                <ProfileCard
-                                    name={`${nanny.profiles?.first_name} ${nanny.profiles?.last_name}`}
-                                    rating={4.9}
-                                    reviewCount={nanny.totalReviews || 0}
-                                    location={nanny.profiles?.address || ''}
-                                    description={nanny.nanny_details?.bio || ''}
-                                    hourlyRate={Number(nanny.nanny_details?.hourly_rate) || 0}
-                                    experience={`${nanny.nanny_details?.experience_years} years`}
-                                    isVerified={nanny.is_verified}
-                                    onViewProfile={() => router.push(`/caregiver/${nanny.id}`)}
-                                    hideBookButton={true}
-                                    showHourlyRate={false}
-                                />
-                            </div>
-                        ) : (
-                            <div className="bg-white rounded-[32px] border border-slate-100 p-10 flex flex-col items-center justify-center text-center shadow-soft-lg">
-                                <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center text-primary-300 mb-6">
-                                    <Users size={32} />
-                                </div>
-                                <h3 className="text-xl font-bold text-primary-900 mb-2 font-display">Searching for a Match</h3>
-                                <p className="text-slate-500 max-w-sm">Our team is currently matching you with the best available caregiver for this request.</p>
-                            </div>
-                        )}
-                    </div>
 
-                    {/* Sidebar Actions Area */}
-                    <div className="space-y-8">
-                        <div className="bg-white rounded-[32px] border border-slate-100 shadow-soft-xl p-8 sticky top-24">
-                            <h3 className="text-sm font-black text-primary-900 uppercase tracking-[0.2em] mb-8 pb-4 border-b border-slate-100">Booking Actions</h3>
-
-                            <div className="space-y-4">
-                                {/* Chat Action - Now primary in detail view */}
-                                {['CONFIRMED', 'IN_PROGRESS', 'ACCEPTED'].includes(currentStatus) && (
-                                    <Button
-                                        onClick={() => router.push(`/messages?booking=${bookingId}`)}
-                                        className="w-full h-14 rounded-2xl flex items-center justify-between px-6 bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold group shadow-lg shadow-primary-900/20"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-                                                <MessageSquare size={16} />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <p className="font-bold text-primary-900 text-base">{nannyName || 'Caregiver'}</p>
+                                                {nanny.is_verified && (
+                                                    <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-0.5 uppercase tracking-wide">
+                                                        <ShieldCheck size={10} />
+                                                        Verified
+                                                    </span>
+                                                )}
                                             </div>
-                                            Open Secure Chat
+
+                                            {/* Rating */}
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <Star size={13} className="text-amber-400 fill-amber-400" />
+                                                <span className="text-sm font-bold text-slate-700">4.9</span>
+                                                <span className="text-xs text-slate-400">({nanny.totalReviews || 0} reviews)</span>
+                                            </div>
+
+                                            {/* Bio */}
+                                            {nanny.nanny_details?.bio && (
+                                                <p className="text-sm text-slate-500 mt-2 leading-relaxed line-clamp-2">
+                                                    {nanny.nanny_details.bio}
+                                                </p>
+                                            )}
                                         </div>
-                                        <ArrowRight size={16} className="opacity-50 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
-                                    </Button>
-                                )}
+                                    </div>
 
-                                {/* Reschedule */}
-                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'REQUESTED'].includes(currentStatus) && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setIsRescheduleModalOpen(true)}
-                                        className="w-full h-14 rounded-2xl flex items-center gap-3 px-6 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all font-bold shadow-sm"
-                                    >
-                                        <Calendar size={18} />
-                                        Reschedule
-                                    </Button>
-                                )}
-
-                                {/* Cancel */}
-                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'REQUESTED'].includes(currentStatus) && (
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => setIsCancelModalOpen(true)}
-                                        className="w-full h-14 rounded-2xl flex items-center justify-center gap-3 px-6 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all font-semibold"
-                                    >
-                                        <AlertCircle size={18} />
-                                        Cancel Booking
-                                    </Button>
-                                )}
-
-                                {/* Completed Actions */}
-                                {currentStatus === 'COMPLETED' && (
-                                    <div className="space-y-4">
-                                        {!isPaid ? (
-                                            <Button
-                                                onClick={handlePayNow}
-                                                disabled={paymentLoading || !booking?.nanny_id}
-                                                className="w-full h-14 rounded-2xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-lg shadow-primary-900/10 disabled:opacity-50"
-                                            >
-                                                {paymentLoading ? 'Processing...' : !booking?.nanny_id ? 'Pending Nanny Assignment' : 'Complete Payment'}
-                                            </Button>
-                                        ) : (
-                                            <div className="w-full h-14 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center gap-2 font-bold shadow-inner">
-                                                <ShieldCheck size={20} />
-                                                Payment Completed
-                                            </div>
-                                        )}
-
+                                    {/* Action buttons */}
+                                    <div className="grid grid-cols-2 gap-3 mt-5">
                                         <Button
-                                            onClick={() => setIsReviewModalOpen(true)}
-                                            className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-[0.98]"
+                                            variant="outline"
+                                            onClick={() => router.push(`/messages?booking=${bookingId}`)}
+                                            className="h-10 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2"
                                         >
-                                            <Star size={18} />
-                                            Leave a Review
+                                            <MessageSquare size={15} />
+                                            Message
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="h-10 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2"
+                                            onClick={() => router.push(`/caregiver/${nanny.id}`)}
+                                        >
+                                            <Users size={15} />
+                                            View Profile
                                         </Button>
                                     </div>
+                                </div>
+                            </div>
+                        ) : !['COMPLETED', 'CANCELLED'].includes(currentStatus) ? (
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                                    <Loader2 size={20} className="text-primary-400 animate-spin" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-primary-900 text-sm">Matching your caregiver</p>
+                                    <p className="text-slate-500 text-xs mt-0.5">Our team is finding the best match for your request.</p>
+                                </div>
+                            </div>
+                        ) : null}
+
+                        {/* Service Location card */}
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="p-5 sm:p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest">Service Location</h2>
+                                    {request?.location?.address && (
+                                        <button className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-800 transition-colors">
+                                            <Navigation size={12} />
+                                            Get Directions
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                                        <MapPin size={16} className="text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-primary-900 text-sm">Home</p>
+                                        <p className="text-slate-500 text-sm mt-0.5 leading-relaxed">
+                                            {request?.location?.address || 'Home address on file'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ═══════════ RIGHT COLUMN ═══════════ */}
+                    <div className="space-y-5 sm:space-y-6">
+
+                        {/* Booking Status card */}
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+                            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-5">Booking Status</h2>
+
+                            {isCancelled ? (
+                                <div className="flex items-center gap-3 py-2">
+                                    <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
+                                    <p className="font-semibold text-red-600 text-sm">This booking was cancelled.</p>
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    {/* Vertical connector line */}
+                                    <div className="absolute left-[9px] top-3 bottom-3 w-px bg-slate-100" />
+
+                                    <div className="space-y-5">
+                                        {TIMELINE_STEPS.map((step, idx) => {
+                                            const done = currentStep > idx;
+                                            const active = currentStep === idx;
+                                            return (
+                                                <div key={step.key} className="flex items-start gap-3 relative">
+                                                    <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 relative z-10 border-2 transition-all ${
+                                                        done
+                                                            ? 'bg-emerald-500 border-emerald-500'
+                                                            : active
+                                                            ? 'bg-white border-primary-600 shadow-[0_0_0_3px] shadow-primary-100'
+                                                            : 'bg-white border-slate-200'
+                                                    }`}>
+                                                        {done && <CheckCircle2 size={12} className="text-white fill-white" />}
+                                                        {active && <div className="w-2 h-2 rounded-full bg-primary-600" />}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-sm font-semibold ${done ? 'text-emerald-700' : active ? 'text-primary-900' : 'text-slate-300'}`}>
+                                                            {step.label}
+                                                        </p>
+                                                        {active && (
+                                                            <p className="text-xs text-slate-400 mt-0.5">
+                                                                {step.key === 'IN_PROGRESS'
+                                                                    ? `Expected completion: ${formatTime(endTime)}`
+                                                                    : 'Current status'}
+                                                            </p>
+                                                        )}
+                                                        {done && idx === 0 && startDate && (
+                                                            <p className="text-xs text-slate-400 mt-0.5">{formatDate(startDate)}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Payment Summary card */}
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+                            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Payment Summary</h2>
+
+                            <div className="space-y-3">
+                                {hourlyRate > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-600">Care Session ({durationHours} hrs × ₹{hourlyRate})</span>
+                                        <span className="font-semibold text-primary-900">₹{hourlyRate * durationHours}</span>
+                                    </div>
                                 )}
-                                
-                                {/* Retry Payment (For failed or missing payments) */}
-                                {booking?.nanny_id && !isPaid && (
-                                  booking?.payment_status === 'failed' ||
-                                  (['CONFIRMED', 'PENDING', 'ASSIGNED', 'ACCEPTED'].includes(currentStatus) && !booking?.payment_status)
-                                ) && (
+                                {platformFee > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-600">Platform Fee</span>
+                                        <span className="font-semibold text-primary-900">₹{platformFee}</span>
+                                    </div>
+                                )}
+                                {taxes > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-600">Taxes & Fees</span>
+                                        <span className="font-semibold text-primary-900">₹{taxes}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+                                <span className="font-bold text-primary-900">Total Amount</span>
+                                <span className="text-xl font-black text-primary-900">
+                                    ₹{displayTotal || '—'}
+                                </span>
+                            </div>
+
+                            {/* Payment status chip */}
+                            {isPaid ? (
+                                <div className="mt-3 flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2.5">
+                                    <CreditCard size={14} className="text-emerald-600 flex-shrink-0" />
+                                    <span className="text-xs font-bold text-emerald-700">Payment completed</span>
+                                </div>
+                            ) : booking?.payment_status === 'paid' ? (
+                                <div className="mt-3 flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2.5">
+                                    <CreditCard size={14} className="text-emerald-600 flex-shrink-0" />
+                                    <span className="text-xs font-bold text-emerald-700">Payment completed</span>
+                                </div>
+                            ) : null}
+
+                            {/* Action buttons */}
+                            <div className="mt-4 space-y-2">
+                                {/* Download Invoice */}
+                                <Button
+                                    variant="outline"
+                                    className="w-full h-10 rounded-xl border-primary-200 text-primary-700 hover:bg-primary-50 font-semibold text-sm gap-2"
+                                >
+                                    <Download size={15} />
+                                    Download Invoice
+                                </Button>
+
+                                {/* Complete Payment */}
+                                {currentStatus === 'COMPLETED' && !isPaid && booking?.payment_status !== 'paid' && (
+                                    <Button
+                                        onClick={handlePayNow}
+                                        disabled={paymentLoading || !booking?.nanny_id}
+                                        className="w-full h-10 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm disabled:opacity-50"
+                                    >
+                                        {paymentLoading ? 'Processing…' : !booking?.nanny_id ? 'Pending Assignment' : 'Complete Payment'}
+                                    </Button>
+                                )}
+
+                                {/* Retry Payment */}
+                                {booking?.nanny_id && !isPaid && booking?.payment_status === 'failed' && (
                                     <Button
                                         onClick={() => handleRetryPayment({
                                             bookingId: booking.id,
                                             onSuccess: () => {
-                                                const newPaid = [...paidBookingIds, booking.id];
-                                                setPaidBookingIds(newPaid);
-                                                localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
+                                                const np = [...paidBookingIds, booking.id];
+                                                setPaidBookingIds(np);
+                                                localStorage.setItem('paidBookingIds', JSON.stringify(np));
                                                 fetchData();
                                             },
-                                            onError: (err) => console.error(err)
+                                            onError: (err) => console.error(err),
                                         })}
                                         disabled={paymentLoading}
-                                        className="w-full h-14 rounded-2xl border-2 border-primary-900 text-primary-900 hover:bg-primary-50 transition-all font-bold shadow-sm"
+                                        className="w-full h-10 rounded-xl border-2 border-primary-900 text-primary-900 bg-white hover:bg-primary-50 font-bold text-sm"
                                     >
-                                        {paymentLoading ? 'Processing...' : 'Retry Payment'}
+                                        {paymentLoading ? 'Processing…' : 'Retry Payment'}
+                                    </Button>
+                                )}
+
+                                {/* Cancel Booking */}
+                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'REQUESTED'].includes(currentStatus) && (
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setIsCancelModalOpen(true)}
+                                        className="w-full h-10 rounded-xl text-red-500 hover:text-red-700 hover:bg-red-50 font-semibold text-sm border border-red-100"
+                                    >
+                                        Cancel Booking
                                     </Button>
                                 )}
                             </div>
-
-                            {/* Booking Stats / Metadata */}
-                            <div className="mt-10 pt-8 border-t border-slate-50 space-y-4">
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400 font-bold uppercase tracking-widest text-sm">Total Amount</span>
-                                    <span className="text-slate-900 font-black text-lg">
-                                        ₹{booking?.total_amount || request?.total_amount || '—'}
-                                    </span>
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Help / Support Mini Card */}
-                        <div className="bg-gradient-to-br from-primary-900 to-primary-800 rounded-[32px] p-8 text-white shadow-soft-xl relative overflow-hidden group">
-                            <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors duration-500"></div>
-                            <h4 className="text-lg font-bold font-display mb-2 relative z-10">Need Assistance?</h4>
-                            <p className="text-primary-100/70 text-sm leading-relaxed mb-6 relative z-10">Our care support team is available 24/7 for any questions regarding this booking.</p>
+                        {/* Quick actions for active bookings */}
+                        {['CONFIRMED', 'IN_PROGRESS', 'ACCEPTED'].includes(currentStatus) && (
+                            <div className="space-y-2">
+                                <Button
+                                    onClick={() => router.push(`/messages?booking=${bookingId}`)}
+                                    className="w-full h-11 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm gap-2 shadow-md shadow-primary-900/20"
+                                >
+                                    <MessageSquare size={16} />
+                                    Open Secure Chat
+                                </Button>
+
+                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'REQUESTED'].includes(currentStatus) && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setIsRescheduleModalOpen(true)}
+                                        className="w-full h-11 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-sm gap-2"
+                                    >
+                                        <Calendar size={16} />
+                                        Reschedule
+                                    </Button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Completed: leave review */}
+                        {currentStatus === 'COMPLETED' && (
+                            <Button
+                                onClick={() => setIsReviewModalOpen(true)}
+                                className="w-full h-11 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm gap-2 shadow-md shadow-primary-900/20"
+                            >
+                                <Star size={16} />
+                                Leave a Review
+                            </Button>
+                        )}
+
+                        {/* Support card */}
+                        <div className="bg-gradient-to-br from-primary-900 to-primary-800 rounded-2xl p-5 text-white relative overflow-hidden">
+                            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+                            <p className="font-bold text-base mb-1 relative z-10">Need Help?</p>
+                            <p className="text-primary-100/70 text-xs leading-relaxed mb-4 relative z-10">
+                                Our support team is available 24/7 for any questions about this booking.
+                            </p>
                             <Button
                                 variant="outline"
                                 onClick={() => router.push('/support')}
-                                className="w-full rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 font-bold relative z-10"
+                                className="w-full h-9 rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 font-semibold text-sm relative z-10"
                             >
                                 Contact Support
                             </Button>
@@ -499,6 +670,7 @@ export default function BookingDetailsPage() {
                 </div>
             </div>
 
+            {/* ── Modals ── */}
             <ReviewModal
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
@@ -515,19 +687,17 @@ export default function BookingDetailsPage() {
                 title="Cancel Booking"
             />
 
-            {
-                isRescheduleModalOpen && (
-                    <RescheduleModal
-                        isOpen={isRescheduleModalOpen}
-                        onClose={() => setIsRescheduleModalOpen(false)}
-                        onConfirm={confirmedReschedule}
-                        serviceType={request?.category === 'CC' ? 'Child Care' : 'Service'}
-                        currentDate={request?.date || ''}
-                        currentStartTime={request?.start_time || '09:00'}
-                        currentEndTime={request?.end_time || '13:00'}
-                    />
-                )
-            }
+            {isRescheduleModalOpen && (
+                <RescheduleModal
+                    isOpen={isRescheduleModalOpen}
+                    onClose={() => setIsRescheduleModalOpen(false)}
+                    onConfirm={confirmedReschedule}
+                    serviceType={request?.category === 'CC' ? 'Child Care' : 'Service'}
+                    currentDate={request?.date || ''}
+                    currentStartTime={request?.start_time || '09:00'}
+                    currentEndTime={request?.end_time || '13:00'}
+                />
+            )}
         </ParentLayout>
     );
 }

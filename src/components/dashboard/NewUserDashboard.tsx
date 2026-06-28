@@ -166,7 +166,7 @@ export function NewUserDashboard() {
                             Our concierge team is available to help you get started with a personalized plan.
                         </p>
 
-                        <Link href="/contact" className="w-full">
+                        <Link href="/support" className="w-full">
                             <Button className="w-full bg-white text-dashboard-accent-start hover:bg-gray-50 rounded-xl font-semibold h-10 text-sm">
                                 Chat with Support
                             </Button>

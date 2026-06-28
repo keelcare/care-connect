@@ -39,18 +39,35 @@ export interface Child {
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   profile_type: ChildProfileType;
 
-  // Standard Fields
-  allergies?: string[];
-  dietary_restrictions?: string[];
+  // Basic care preferences
+  personality_notes?: string;     // e.g. "shy at first, loves animals"
+  hobbies?: string[];
+  bedtime?: string;               // e.g. "8:30 PM"
+  nap_schedule?: string;          // e.g. "2 PM – 3:30 PM"
 
-  // Special Needs / Shadow Teacher Fields
-  diagnosis?: string; // Optional
-  care_instructions?: string;
+  // Health & safety
+  allergies?: string[];
+  allergy_severity?: 'mild' | 'moderate' | 'severe'; // severity of worst allergy
+  dietary_restrictions?: string[];
+  medical_notes?: string;         // GP name, recurring conditions, meds
+  report_url?: string;            // URL to uploaded school/medical report
+
+  // Emergency contact (overrides parent's default)
+  emergency_contact?: {
+    name: string;
+    phone: string;
+    relation: string;
+  };
+  // Legacy alias — same field, kept for backwards compatibility
   emergency_contact_override?: {
     name: string;
     phone: string;
     relation: string;
   };
+
+  // Special Needs / Shadow Teacher Fields
+  diagnosis?: string;
+  care_instructions?: string;
 
   // Shadow Teacher Specifics
   school_details?: {
@@ -283,6 +300,10 @@ export interface ServiceRequest {
   hourly_rate?: number;
   parent?: User;
   nanny?: User;
+  // Enriched fields returned by findOne
+  title?: string;
+  booking_id?: string;
+  assignments?: Assignment[];
 }
 
 export interface Assignment {
@@ -353,6 +374,12 @@ export interface Booking {
   nanny?: User;
   users_bookings_nanny_idTousers?: User;
   recurring_request_id?: string | null;
+  request_id?: string | null;
+  // Enriched fields from backend getBookingById
+  nanny_name?: string;
+  title?: string;
+  hours_per_day?: number;
+  service_requests?: ServiceRequest;
 }
 
 export interface CreateBookingDto {
@@ -920,4 +947,57 @@ export interface PaymentPlanStats {
   totalPlans: number;
   activePlans: number;
   completedPlans: number;
+}
+
+// ─── Nanny Dashboard Types ──────────────────────────────────────────
+
+export interface NannyDashboardScheduleItem {
+  id: string;
+  status: string;
+  startTime: string;
+  endTime: string | null;
+  category: string;
+  numChildren: number;
+  parentName: string;
+  location: string | null;
+}
+
+export interface NannyDashboardSummary {
+  todayEarnings: number;
+  earningsChange: number | null;
+  completedToday: number;
+  pendingToday: number;
+  weeklyTrend: { date: string; amount: number }[];
+  todaySchedule: NannyDashboardScheduleItem[];
+}
+
+export interface NannyEarningsAnalytics {
+  totalAvailable: number;
+  pendingProcessing: number;
+  jobsCompleted: number;
+  jobsThisPeriod: number;
+  periodTotal: number;
+  periodChange: number | null;
+  trend: { date: string; amount: number; projection?: number }[];
+}
+
+export interface NannyPerformanceReview {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  reviewerName: string;
+  reviewerInitials: string;
+  category: string;
+}
+
+export interface NannyPerformance {
+  averageRating: number;
+  totalReviews: number;
+  completionRate: number;
+  punctualityScore: number;
+  expertiseScore: number;
+  professionalismScore: number;
+  sentiment: { positive: number; neutral: number; negative: number };
+  recentReviews: NannyPerformanceReview[];
 }

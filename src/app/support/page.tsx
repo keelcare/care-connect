@@ -3,535 +3,588 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Skeleton } from 'boneyard-js/react';
-import ParentLayout from '@/components/layout/ParentLayout';
 import { SupportTicket, SupportCategory, SupportPriority } from '@/types/api';
+import ParentLayout from '@/components/layout/ParentLayout';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Modal } from '@/components/ui/Modal';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
 import {
-    Plus,
-    Search,
-    MessageSquare,
-    Clock,
-    CheckCircle2,
-    AlertCircle,
-    HelpCircle,
-    LifeBuoy,
-    ChevronRight,
-    Mail,
-    Phone,
-    MapPin,
-    ArrowUpRight,
-    ShieldAlert,
-    FileText,
-    BookOpen,
-    MessageCircle,
-    ExternalLink
+  Plus, Search, MessageSquare, Clock, CheckCircle2, AlertCircle,
+  LifeBuoy, ChevronRight, Mail, Phone, ShieldAlert, X,
+  ChevronDown, Headphones, FileText,
 } from 'lucide-react';
 
-/* ─── helpers ───────────────────────────────────────────────── */
+/* ── status + priority meta ──────────────────────────────────────── */
 
-function getStatusBadge(status: string) {
-    switch (status) {
-        case 'open':
-            return { bg: 'bg-sky-500/10', text: 'text-sky-600', border: 'border-sky-500/20', icon: Clock, label: 'Open' };
-        case 'in_progress':
-            return { bg: 'bg-amber-500/10', text: 'text-amber-600', border: 'border-amber-500/20', icon: MessageSquare, label: 'In Progress' };
-        case 'resolved':
-            return { bg: 'bg-emerald-500/10', text: 'text-emerald-600', border: 'border-emerald-500/20', icon: CheckCircle2, label: 'Resolved' };
-        case 'closed':
-            return { bg: 'bg-neutral-500/10', text: 'text-neutral-500', border: 'border-neutral-500/20', icon: AlertCircle, label: 'Closed' };
-        default:
-            return { bg: 'bg-neutral-500/10', text: 'text-neutral-500', border: 'border-neutral-500/20', icon: HelpCircle, label: status };
-    }
+const STATUS_META: Record<string, { label: string; dot: string; text: string; bg: string; border: string }> = {
+  open:        { label: 'Open',        dot: 'bg-sky-500',             text: 'text-sky-700',     bg: 'bg-sky-50',     border: 'border-sky-100' },
+  in_progress: { label: 'In Progress', dot: 'bg-amber-500 animate-pulse', text: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100' },
+  resolved:    { label: 'Resolved',    dot: 'bg-emerald-500',         text: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+  closed:      { label: 'Closed',      dot: 'bg-slate-400',           text: 'text-slate-500',   bg: 'bg-slate-100',  border: 'border-slate-200' },
+};
+
+const PRIORITY_META: Record<string, { label: string; text: string; bg: string }> = {
+  low:      { label: 'Low',      text: 'text-slate-500',   bg: 'bg-slate-100' },
+  medium:   { label: 'Medium',   text: 'text-primary-600', bg: 'bg-primary-50' },
+  high:     { label: 'High',     text: 'text-amber-600',   bg: 'bg-amber-50' },
+  critical: { label: 'Critical', text: 'text-red-600',     bg: 'bg-red-50' },
+};
+
+/* ── FAQ data ────────────────────────────────────────────────────── */
+
+const FAQS = [
+  {
+    q: 'How do I book a service?',
+    a: 'Tap "Book a Service" from your home screen, choose the type of care, date, time, and number of children. We\'ll match you with a verified caregiver.',
+  },
+  {
+    q: 'Are all caregivers background-checked?',
+    a: 'Yes. Every caregiver on CareConnect undergoes identity verification and a police background check before being approved on the platform. Our team reviews all documentation within 24–48 hours.',
+  },
+  {
+    q: 'Can I cancel a booking?',
+    a: 'You can cancel up to 24 hours before the session starts with no penalty. Cancellations within 24 hours may incur a fee. Go to My Bookings → tap the booking → Cancel.',
+  },
+  {
+    q: 'How are payments handled?',
+    a: 'Payments are processed securely via Razorpay after each session is marked complete. For subscription plans, billing cycles are shown on your Payments page.',
+  },
+  {
+    q: 'How do I report a concern about a caregiver?',
+    a: 'Raise a support ticket with category "Grievance" and mark it High priority. Our team responds within 4 hours for urgent safety concerns.',
+  },
+];
+
+/* ── accordion FAQ item ──────────────────────────────────────────── */
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`rounded-xl border transition-all ${open ? 'border-primary-100 bg-primary-50/40' : 'border-slate-100 bg-white'}`}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left"
+      >
+        <span className="text-sm font-semibold text-primary-900 leading-snug">{q}</span>
+        <ChevronDown size={15} className={`text-slate-400 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 text-xs text-slate-600 leading-relaxed">
+          {a}
+        </div>
+      )}
+    </div>
+  );
 }
 
-function getPriorityBadge(priority: string) {
-    switch (priority) {
-        case 'critical': return 'bg-red-50 text-red-600 border-red-200 shadow-sm';
-        case 'high': return 'bg-orange-50 text-orange-600 border-orange-200 shadow-sm';
-        case 'medium': return 'bg-blue-50 text-blue-600 border-blue-200 shadow-sm';
-        case 'low': return 'bg-emerald-50 text-emerald-600 border-emerald-200 shadow-sm';
-        default: return 'bg-neutral-50 text-neutral-600 border-neutral-200';
-    }
+/* ── ticket card ─────────────────────────────────────────────────── */
+
+function TicketCard({ ticket }: { ticket: SupportTicket }) {
+  const status = STATUS_META[ticket.status] ?? STATUS_META['open'];
+  const priority = PRIORITY_META[ticket.priority] ?? PRIORITY_META['medium'];
+
+  const ago = (() => {
+    const diff = Date.now() - new Date(ticket.created_at).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  })();
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all overflow-hidden">
+      <div className="p-5">
+        {/* Top row */}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded">
+              {ticket.ticket_number}
+            </span>
+            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${priority.bg} ${priority.text}`}>
+              {priority.label}
+            </span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide capitalize">
+              {ticket.category}
+            </span>
+          </div>
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex-shrink-0 ${status.bg} ${status.text} ${status.border} border`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+            {status.label}
+          </span>
+        </div>
+
+        {/* Subject */}
+        <p className="font-bold text-primary-900 text-sm mb-1 leading-snug">{ticket.subject}</p>
+        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{ticket.description}</p>
+
+        {/* Timestamp */}
+        <div className="flex items-center gap-1.5 mt-3 text-[10px] text-slate-400 font-medium">
+          <Clock size={10} />
+          <span>Opened {ago}</span>
+        </div>
+
+        {/* Admin response */}
+        {ticket.admin_notes && (
+          <div className="mt-4 pt-4 border-t border-slate-50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center">
+                <Headphones size={10} className="text-primary-600" />
+              </div>
+              <p className="text-[10px] font-black text-primary-700 uppercase tracking-widest">Support Response</p>
+              {ticket.resolved_at && (
+                <p className="text-[10px] text-slate-400 ml-auto">
+                  {new Date(ticket.resolved_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </p>
+              )}
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed pl-3 border-l-2 border-primary-100">
+              {ticket.admin_notes}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
-/* ─── component ─────────────────────────────────────────────── */
+/* ── new ticket modal ────────────────────────────────────────────── */
+
+const INPUT_CLS = "w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none text-sm text-primary-900 bg-white placeholder:text-slate-400 transition-all";
+
+function NewTicketModal({
+  open, onClose, onSuccess,
+}: {
+  open: boolean; onClose: () => void; onSuccess: () => void;
+}) {
+  const [form, setForm] = useState({
+    subject: '', description: '',
+    category: 'other' as SupportCategory,
+    priority: 'medium' as SupportPriority,
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const CATEGORIES: { value: SupportCategory; label: string }[] = [
+    { value: 'payment',   label: 'Payment Issue' },
+    { value: 'booking',   label: 'Booking / Schedule' },
+    { value: 'technical', label: 'Technical Bug' },
+    { value: 'grievance', label: 'Grievance / Safety' },
+    { value: 'account',   label: 'Account Access' },
+    { value: 'other',     label: 'Other' },
+  ];
+
+  const PRIORITIES: { value: SupportPriority; label: string; hint: string }[] = [
+    { value: 'low',      label: 'Low',      hint: 'General question' },
+    { value: 'medium',   label: 'Medium',   hint: 'Needs resolution soon' },
+    { value: 'high',     label: 'High',     hint: 'Affecting my bookings' },
+    { value: 'critical', label: 'Critical', hint: 'Safety / financial issue' },
+  ];
+
+  const PRIORITY_ACTIVE: Record<string, string> = {
+    low:      'bg-slate-700 text-white border-slate-700',
+    medium:   'bg-primary-900 text-white border-primary-900',
+    high:     'bg-amber-500 text-white border-amber-500',
+    critical: 'bg-red-600 text-white border-red-600',
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.subject.trim() || !form.description.trim()) {
+      toast.error('Please fill in both subject and description.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await api.support.createTicket(form);
+      toast.success('Ticket submitted — we\'ll be in touch shortly!');
+      setForm({ subject: '', description: '', category: 'other', priority: 'medium' });
+      onClose();
+      onSuccess();
+    } catch {
+      toast.error('Failed to submit. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+
+        {/* Drag pill */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 bg-slate-200 rounded-full" />
+        </div>
+
+        {/* Header */}
+        <div className="px-5 sm:px-6 pt-4 pb-4 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h2 className="font-bold text-primary-900 text-base">New Support Ticket</h2>
+            <p className="text-xs text-slate-400 mt-0.5">We typically respond within a few hours.</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors">
+            <X size={16} className="text-slate-400" />
+          </button>
+        </div>
+
+        {/* Scrollable form */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-5">
+
+          {/* Category */}
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Category</label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {CATEGORIES.map(c => (
+                <button
+                  key={c.value} type="button"
+                  onClick={() => setForm(f => ({ ...f, category: c.value }))}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all text-left ${
+                    form.category === c.value
+                      ? 'bg-primary-900 text-white border-primary-900'
+                      : 'border-slate-200 text-slate-600 hover:border-primary-200 hover:bg-primary-50'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Priority</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {PRIORITIES.map(p => (
+                <button
+                  key={p.value} type="button"
+                  onClick={() => setForm(f => ({ ...f, priority: p.value }))}
+                  className={`py-2.5 px-3 rounded-xl border-2 transition-all text-center ${
+                    form.priority === p.value
+                      ? PRIORITY_ACTIVE[p.value]
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  <p className="text-xs font-bold">{p.label}</p>
+                  <p className={`text-[10px] mt-0.5 leading-tight ${form.priority === p.value ? 'opacity-75' : 'text-slate-400'}`}>{p.hint}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Subject */}
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Subject</label>
+            <input
+              type="text" required
+              value={form.subject}
+              onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+              placeholder="Brief summary of the issue"
+              className={INPUT_CLS}
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Description</label>
+            <textarea
+              required rows={4}
+              value={form.description}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              placeholder="Describe your issue in detail — the more context you give, the faster we can help."
+              className={`${INPUT_CLS} resize-none`}
+            />
+          </div>
+        </form>
+
+        {/* Footer */}
+        <div className="px-5 sm:px-6 py-4 border-t border-slate-100 flex gap-3 flex-shrink-0 bg-white">
+          <Button
+            type="button" variant="outline"
+            onClick={onClose}
+            className="h-11 px-4 rounded-xl border-slate-200 text-slate-600 text-sm"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit as any}
+            disabled={submitting}
+            className="flex-1 h-11 rounded-xl bg-primary-900 text-white font-bold text-sm gap-2 hover:bg-primary-800 disabled:opacity-50"
+          >
+            {submitting
+              ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Submitting…</>
+              : <><FileText size={15} /> Submit Ticket</>}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── ban appeal section ──────────────────────────────────────────── */
+
+function BanAlert({ banReason, onSubmit }: { banReason?: string; onSubmit: (msg: string) => Promise<void> }) {
+  const [contesting, setContesting] = useState(false);
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!message.trim()) { toast.error('Please enter your appeal message.'); return; }
+    setSubmitting(true);
+    try { await onSubmit(message); setContesting(false); setMessage(''); }
+    finally { setSubmitting(false); }
+  };
+
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-2xl overflow-hidden">
+      <div className="h-1 bg-red-500" />
+      <div className="p-5 flex gap-4">
+        <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+          <ShieldAlert size={18} className="text-red-600" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-red-900 text-sm mb-1">Account Suspended</p>
+          <p className="text-xs text-red-700 leading-relaxed mb-4">
+            Reason: <span className="font-semibold">{banReason || 'Terms of Service violation'}</span>
+          </p>
+
+          {!contesting ? (
+            <Button
+              onClick={() => setContesting(true)}
+              className="h-9 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold gap-2"
+            >
+              <AlertCircle size={13} /> Contest This Ban
+            </Button>
+          ) : (
+            <div className="space-y-3">
+              <textarea
+                rows={3}
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder="Explain why you believe this suspension was made in error…"
+                className="w-full px-4 py-3 rounded-xl border-2 border-red-200 bg-white focus:border-red-400 focus:outline-none text-sm resize-none placeholder:text-red-300"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="h-9 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+                >
+                  {submitting ? 'Submitting…' : 'Submit Appeal'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setContesting(false)}
+                  className="h-9 px-4 rounded-xl text-red-600 text-xs font-semibold"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── main page ───────────────────────────────────────────────────── */
 
 export default function SupportPage() {
-    const { user } = useAuth();
-    const [tickets, setTickets] = useState<SupportTicket[]>([]);
-    const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const isBanned = user?.is_active === false;
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
+      const data = await api.support.getUserTickets();
+      setTickets([...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+    } catch { toast.error('Failed to load tickets'); }
+    finally { setLoading(false); }
+  };
 
-    // Ban contest state
-    const isBanned = user?.is_active === false;
-    const [isContestingBan, setIsContestingBan] = useState(false);
-    const [contestMessage, setContestMessage] = useState('');
+  useEffect(() => { if (user) fetchTickets(); }, [user]);
 
-    const [formData, setFormData] = useState({
-        subject: '',
-        description: '',
-        category: 'other' as SupportCategory,
-        priority: 'medium' as SupportPriority,
+  const handleContestBan = async (msg: string) => {
+    await api.support.createTicket({
+      subject: 'Account Suspension Appeal',
+      description: msg,
+      category: 'account' as SupportCategory,
+      priority: 'high' as SupportPriority,
     });
+    toast.success('Appeal submitted — our team will review it within 24–48 hours.');
+    fetchTickets();
+  };
 
-    useEffect(() => {
-        if (user) fetchTickets();
-    }, [user]);
-
-    const fetchTickets = async () => {
-        try {
-            setLoading(true);
-            const data = await api.support.getUserTickets();
-            setTickets([...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
-        } catch {
-            toast.error('Failed to load support tickets');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCreateTicket = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.subject.trim() || !formData.description.trim()) {
-            toast.error('Please fill in all required fields');
-            return;
-        }
-        try {
-            setSubmitting(true);
-            await api.support.createTicket(formData);
-            toast.success('Your ticket has been submitted. We will be in touch shortly!');
-            setIsModalOpen(false);
-            setFormData({ subject: '', description: '', category: 'other', priority: 'medium' });
-            fetchTickets();
-        } catch {
-            toast.error('Failed to submit ticket. Please try again.');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const handleContestBan = async () => {
-        if (!contestMessage.trim()) {
-            toast.error('Please enter a message explaining why you think this ban is incorrect.');
-            return;
-        }
-        try {
-            setSubmitting(true);
-            await api.support.createTicket({
-                subject: 'Account Suspension Appeal',
-                description: contestMessage,
-                category: 'account' as SupportCategory,
-                priority: 'high' as SupportPriority,
-            });
-            toast.success('Your appeal has been submitted. Our team will review it within 24-48 hours.');
-            setIsContestingBan(false);
-            setContestMessage('');
-            fetchTickets();
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to submit appeal. You may already have one open.');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const filteredTickets = useMemo(() => {
-        const q = searchQuery.toLowerCase();
-        if (!q) return tickets;
-        return tickets.filter(t =>
-            t.subject.toLowerCase().includes(q) ||
-            t.ticket_number.toLowerCase().includes(q) ||
-            t.description.toLowerCase().includes(q)
-        );
-    }, [searchQuery, tickets]);
-
-    return (
-        <ParentLayout>
-            <Skeleton
-                name="support-page"
-                loading={loading}
-                fixture={
-                    <div className="p-6 md:p-10 lg:p-12 space-y-8 opacity-50">
-                        <div className="flex justify-between items-center mb-8">
-                            <div className="space-y-3">
-                                <div className="h-10 w-64 bg-gray-200 rounded-lg" />
-                                <div className="h-6 w-48 bg-gray-100 rounded-lg" />
-                            </div>
-                            <div className="h-14 w-40 bg-gray-200 rounded-xl" />
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                            <div className="lg:col-span-7 space-y-4">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="h-40 w-full bg-gray-50 rounded-2xl border border-gray-100" />
-                                ))}
-                            </div>
-                            <div className="lg:col-span-5 space-y-4">
-                                <div className="h-64 w-full bg-gray-50 rounded-2xl border border-gray-100" />
-                                <div className="h-64 w-full bg-gray-50 rounded-2xl border border-gray-100" />
-                            </div>
-                        </div>
-                    </div>
-                }
-            >
-                <div className="p-6 md:p-10 lg:p-12 space-y-8">
-                    {/* ─── BAN ALERT ─── */}
-                    {isBanned && (
-                        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500" />
-                            <div className="p-4 bg-red-100 rounded-xl text-red-600 shrink-0 self-start">
-                                <ShieldAlert size={28} />
-                            </div>
-                            <div className="flex-1 space-y-4">
-                                <div>
-                                    <h2 className="text-xl font-bold text-red-900 font-display mb-1">
-                                        Account Suspended
-                                    </h2>
-                                    <p className="text-red-700 text-sm leading-relaxed max-w-2xl">
-                                        Your account has been temporarily suspended due to the following reason:{' '}
-                                        <strong className="block mt-2 text-red-900 bg-red-100/50 p-3 rounded-xl border border-red-200/50">
-                                            {user.ban_reason || 'Terms of Service violation'}
-                                        </strong>
-                                    </p>
-                                </div>
-
-                                {!isContestingBan && (
-                                    <Button
-                                        onClick={() => setIsContestingBan(true)}
-                                        className="bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-600/10 px-6"
-                                    >
-                                        <AlertCircle size={18} className="mr-2" />
-                                        Contest This Ban
-                                    </Button>
-                                )}
-
-                                {isContestingBan && (
-                                    <div className="bg-white rounded-xl p-5 border border-red-200 shadow-sm max-w-2xl space-y-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-neutral-900 mb-2 uppercase tracking-wider">
-                                                Why do you believe this ban is incorrect?
-                                            </label>
-                                            <Textarea
-                                                value={contestMessage}
-                                                onChange={(e) => setContestMessage(e.target.value)}
-                                                className="w-full h-32 resize-none bg-neutral-50 border-neutral-200 focus:bg-white rounded-xl"
-                                                placeholder="Provide details about why you think this suspension was made in error..."
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Button onClick={handleContestBan} className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-6">
-                                                Submit Appeal
-                                            </Button>
-                                            <Button variant="ghost" onClick={() => setIsContestingBan(false)} className="rounded-xl text-neutral-500">
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* ─── HEADER SECTION ─── */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
-                            <h1 className="text-4xl font-bold font-display text-primary-900 tracking-tight">Support Center</h1>
-                            <p className="text-slate-500 mt-2 text-lg">How can we help you today?</p>
-                        </div>
-                        <Button
-                            onClick={() => setIsModalOpen(true)}
-                            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-6 h-auto text-lg font-bold flex items-center gap-2 group transition-all hover:-translate-y-0.5 active:scale-95"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
-                                <Plus size={20} />
-                            </div>
-                            Raise a Ticket
-                        </Button>
-                    </div>
-
-                    {/* ─── MAIN CONTENT GRID ─── */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-
-                        {/* LEFT COLUMN: TICKET LIST (7 cols) */}
-                        <div className="lg:col-span-7 flex flex-col gap-6">
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <h2 className="text-xl font-bold text-primary-900 font-display">Your Tickets</h2>
-                                <div className="relative w-full sm:w-64">
-                                    <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        placeholder="Search tickets..."
-                                        value={searchQuery}
-                                        onChange={e => setSearchQuery(e.target.value)}
-                                        className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/5 outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-
-                            {tickets.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-20 px-6 bg-white rounded-2xl border border-slate-100 shadow-sm text-center">
-                                    <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-6">
-                                        <LifeBuoy size={32} className="text-slate-300" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-primary-900 mb-2">No tickets yet</h3>
-                                    <p className="text-slate-500 text-sm max-w-xs mx-auto">
-                                        You haven't opened any support tickets. If you ever run into an issue, you can reach out to us here.
-                                    </p>
-                                </div>
-                            ) : filteredTickets.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-2xl border border-slate-100 shadow-sm text-center">
-                                    <Search size={28} className="text-slate-300 mb-4" />
-                                    <p className="text-sm font-medium text-slate-500">No tickets match your search.</p>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col gap-4">
-                                    {filteredTickets.map(ticket => {
-                                        const badge = getStatusBadge(ticket.status);
-                                        return (
-                                            <div
-                                                key={ticket.id}
-                                                className="group relative bg-white border border-slate-100 hover:border-primary-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-                                            >
-                                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                                            <span className="text-xs font-mono font-bold text-primary-900 bg-slate-50 px-2 py-0.5 rounded-md">
-                                                                {ticket.ticket_number}
-                                                            </span>
-                                                            <span className="text-slate-300">•</span>
-                                                            <span className="text-[10px] uppercase tracking-widest font-black text-slate-400">
-                                                                {ticket.category}
-                                                            </span>
-                                                            <span className={`text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-full border ${getPriorityBadge(ticket.priority)}`}>
-                                                                {ticket.priority}
-                                                            </span>
-                                                        </div>
-
-                                                        <h3 className="text-lg font-bold text-primary-900 mb-2 leading-snug">
-                                                            {ticket.subject}
-                                                        </h3>
-
-                                                        <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                                                            {ticket.description}
-                                                        </p>
-
-                                                        <div className="flex items-center gap-4 text-xs font-semibold text-slate-400">
-                                                            <span className="flex items-center gap-1.5">
-                                                                <Clock size={14} />
-                                                                {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-4 w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
-                                                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${badge.bg} ${badge.text} ${badge.border}`}>
-                                                            <badge.icon size={13} />
-                                                            {badge.label}
-                                                        </div>
-
-                                                        <div className="hidden sm:flex flex-col items-end gap-1 mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <span className="text-[10px] uppercase tracking-widest font-black text-primary-600 flex items-center gap-1">
-                                                                Details <ArrowUpRight size={10} />
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {ticket.admin_notes && (
-                                                    <div className="mt-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                                                                <LifeBuoy size={10} />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-primary-900">Support Response</span>
-                                                            {ticket.resolved_at && (
-                                                                <span className="text-[10px] text-slate-400 font-medium ml-auto">
-                                                                    {format(new Date(ticket.resolved_at), 'MMM d, yyyy')}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-xs text-slate-600 leading-relaxed font-medium pl-8 border-l-2 border-primary-100 ml-3">
-                                                            {ticket.admin_notes}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* RIGHT COLUMN: CONTACT & FAQ (5 cols) */}
-                        <div className="lg:col-span-5 space-y-6">
-
-                            {/* Quick Links Card */}
-                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                                <h3 className="text-lg font-bold text-primary-900 font-display p-6 pb-2">Quick Links</h3>
-
-                                <div className="divide-y divide-slate-50">
-                                    <a href="mailto:support@keelcare.com?subject=Support Request" className="flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-100 transition-colors">
-                                                <Mail size={22} />
-                                            </div>
-                                            <div>
-                                                <div className="font-bold text-primary-900 text-sm">Email Us</div>
-                                                <div className="text-xs text-slate-500 font-medium mt-0.5">support@keelcare.com</div>
-                                            </div>
-                                        </div>
-                                        <ExternalLink size={16} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
-                                    </a>
-
-                                    <a href="tel:+919876543210" className="flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                                                <Phone size={22} />
-                                            </div>
-                                            <div>
-                                                <div className="font-bold text-primary-900 text-sm">Call Us</div>
-                                                <div className="text-xs text-slate-500 font-medium mt-0.5">+91 98765 43210</div>
-                                            </div>
-                                        </div>
-                                        <ExternalLink size={16} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Common Questions Card */}
-                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 lg:p-8">
-                                <h3 className="text-lg font-bold text-primary-900 font-display mb-6">Common Questions</h3>
-                                <div className="space-y-4">
-                                    <details className="group border border-slate-50 rounded-xl open:bg-slate-50 cursor-pointer overflow-hidden transition-colors">
-                                        <summary className="font-bold text-sm text-slate-800 hover:text-primary-600 p-4 list-none flex items-center justify-between">
-                                            How do I book a service?
-                                            <ChevronRight size={16} className="text-slate-400 group-open:rotate-90 transition-transform" />
-                                        </summary>
-                                        <div className="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-medium">
-                                            Simply click <span className="text-primary-900 font-bold">"Book a Service"</span> and select your preferred service type, date, and time.
-                                        </div>
-                                    </details>
-                                    <details className="group border border-slate-50 rounded-xl open:bg-slate-50 cursor-pointer overflow-hidden transition-colors">
-                                        <summary className="font-bold text-sm text-slate-800 hover:text-primary-600 p-4 list-none flex items-center justify-between">
-                                            Are all caregivers verified?
-                                            <ChevronRight size={16} className="text-slate-400 group-open:rotate-90 transition-transform" />
-                                        </summary>
-                                        <div className="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-medium">
-                                            Yes, all our caregivers undergo thorough background checks and identity verification. Admins review documentation within 24-48 hours.
-                                        </div>
-                                    </details>
-                                    <details className="group border border-slate-50 rounded-xl open:bg-slate-50 cursor-pointer overflow-hidden transition-colors">
-                                        <summary className="font-bold text-sm text-slate-800 hover:text-primary-600 p-4 list-none flex items-center justify-between">
-                                            Can I cancel a booking?
-                                            <ChevronRight size={16} className="text-slate-400 group-open:rotate-90 transition-transform" />
-                                        </summary>
-                                        <div className="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed font-medium">
-                                            Yes, you can cancel up to 24 hours before your scheduled appointment through your <span className="text-primary-900 font-bold">My Bookings</span> dashboard.
-                                        </div>
-                                    </details>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ─── NEW TICKET MODAL ─── */}
-                    <Modal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                        title="Create a Support Ticket"
-                    >
-                        <div className="p-1">
-                            <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
-                                Describe your issue in detail. If this is urgent, please mark the priority as High or Critical so we can fast-track it.
-                            </p>
-                            <form onSubmit={handleCreateTicket} className="space-y-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Category</label>
-                                        <div className="relative">
-                                            <select
-                                                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/5 outline-none appearance-none transition-all font-bold text-sm text-slate-800 cursor-pointer"
-                                                value={formData.category}
-                                                onChange={(e) => setFormData({ ...formData, category: e.target.value as SupportCategory })}
-                                            >
-                                                <option value="payment">Payment Issue</option>
-                                                <option value="booking">Booking / Schedule</option>
-                                                <option value="technical">Technical Bug</option>
-                                                <option value="grievance">Grievance</option>
-                                                <option value="account">Account Access</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                            <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Priority</label>
-                                        <div className="relative">
-                                            <select
-                                                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/5 outline-none appearance-none transition-all font-bold text-sm text-slate-800 cursor-pointer"
-                                                value={formData.priority}
-                                                onChange={(e) => setFormData({ ...formData, priority: e.target.value as SupportPriority })}
-                                            >
-                                                <option value="low">Low (General)</option>
-                                                <option value="medium">Medium</option>
-                                                <option value="high">High (Urgent)</option>
-                                                <option value="critical">Critical (Emergency)</option>
-                                            </select>
-                                            <ChevronRight size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Input
-                                    label="Subject"
-                                    placeholder="Briefly summarize the issue"
-                                    value={formData.subject}
-                                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                    required
-                                    className="font-medium rounded-xl border-slate-200"
-                                />
-
-                                <Textarea
-                                    label="Description"
-                                    placeholder="Please provide as much detail as possible so we can help you quickly..."
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    required
-                                    className="h-32 resize-none font-medium rounded-xl border-slate-200"
-                                />
-
-                                <div className="pt-4 flex items-center justify-end gap-3">
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        className="rounded-xl px-6 text-slate-500 hover:text-slate-800"
-                                        onClick={() => setIsModalOpen(false)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white px-8 h-12 shadow-lg shadow-primary-900/10 font-bold transition-all hover:-translate-y-0.5"
-                                        disabled={submitting}
-                                    >
-                                        {submitting ? <Spinner size="sm" /> : 'Submit Ticket'}
-                                    </Button>
-                                </div>
-                            </form>
-                        </div>
-                    </Modal>
-                </div>
-            </Skeleton>
-        </ParentLayout>
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    if (!q) return tickets;
+    return tickets.filter(t =>
+      t.subject.toLowerCase().includes(q) ||
+      t.ticket_number.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q)
     );
+  }, [search, tickets]);
+
+  return (
+    <ParentLayout>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+
+        {/* ── Header ── */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold font-display text-primary-900 tracking-tight">Support</h1>
+            <p className="text-slate-500 text-sm mt-0.5">We're here to help — raise a ticket or browse common questions.</p>
+          </div>
+          <Button
+            onClick={() => setModalOpen(true)}
+            className="h-10 px-4 rounded-xl bg-primary-900 text-white text-sm font-bold gap-2 flex-shrink-0 shadow-md shadow-primary-900/20"
+          >
+            <Plus size={15} /> New Ticket
+          </Button>
+        </div>
+
+        {/* ── Ban alert ── */}
+        {isBanned && (
+          <BanAlert banReason={user.ban_reason} onSubmit={handleContestBan} />
+        )}
+
+        {/* ── Two-column layout ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 lg:gap-6">
+
+          {/* LEFT: ticket list */}
+          <div className="space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search tickets by subject or ID…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:outline-none transition-all"
+              />
+            </div>
+
+            {loading ? (
+              <div className="space-y-3">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="h-32 bg-white rounded-2xl border border-slate-100 animate-pulse" />
+                ))}
+              </div>
+            ) : tickets.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-10 text-center">
+                <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <LifeBuoy size={20} className="text-slate-300" />
+                </div>
+                <p className="font-bold text-primary-900 text-sm mb-1">No tickets yet</p>
+                <p className="text-slate-400 text-xs mb-5 max-w-xs mx-auto">
+                  If you have an issue, raise a ticket and we'll be in touch quickly.
+                </p>
+                <Button
+                  onClick={() => setModalOpen(true)}
+                  className="h-9 px-5 rounded-xl bg-primary-900 text-white text-xs font-bold gap-2"
+                >
+                  <Plus size={13} /> Raise a Ticket
+                </Button>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center">
+                <Search size={20} className="text-slate-300 mx-auto mb-2" />
+                <p className="text-sm text-slate-400">No tickets match your search.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filtered.map(ticket => <TicketCard key={ticket.id} ticket={ticket} />)}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: contact + FAQ */}
+          <div className="space-y-5">
+            {/* Contact options */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-50">
+                <p className="font-bold text-primary-900 text-sm">Contact Us</p>
+                <p className="text-xs text-slate-400 mt-0.5">Our team is available Mon–Sat, 9 AM – 7 PM</p>
+              </div>
+              <div className="divide-y divide-slate-50">
+                <a
+                  href="mailto:support@careconnect.in"
+                  className="flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-100 transition-colors">
+                    <Mail size={15} className="text-primary-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-primary-900">Email Us</p>
+                    <p className="text-xs text-slate-400">support@careconnect.in</p>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-300 flex-shrink-0" />
+                </a>
+                <a
+                  href="tel:+919876543210"
+                  className="flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
+                    <Phone size={15} className="text-emerald-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-primary-900">Call Us</p>
+                    <p className="text-xs text-slate-400">+91 98765 43210</p>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-300 flex-shrink-0" />
+                </a>
+              </div>
+            </div>
+
+            {/* Response time info */}
+            <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                  <Clock size={14} className="text-primary-700" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-primary-900">Response Times</p>
+                  <div className="mt-2 space-y-1">
+                    {[
+                      { label: 'Critical',  time: '< 2 hours' },
+                      { label: 'High',      time: '< 4 hours' },
+                      { label: 'Medium',    time: '< 24 hours' },
+                      { label: 'Low',       time: '1–3 business days' },
+                    ].map(r => (
+                      <div key={r.label} className="flex items-center justify-between text-xs">
+                        <span className="text-primary-700 font-medium">{r.label}</span>
+                        <span className="text-primary-600 font-semibold">{r.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+              <p className="font-bold text-primary-900 text-sm mb-4">Common Questions</p>
+              <div className="space-y-2">
+                {FAQS.map(faq => <FaqItem key={faq.q} q={faq.q} a={faq.a} />)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <NewTicketModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={fetchTickets}
+      />
+    </ParentLayout>
+  );
 }

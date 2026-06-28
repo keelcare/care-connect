@@ -1,630 +1,364 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { Booking, ServiceRequest } from '@/types/api';
-import { Plus, Calendar, Clock, MapPin, MessageSquare } from 'lucide-react';
+import { Booking } from '@/types/api';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/Spinner';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
-import styles from './page.module.css';
-
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import {
+  Clock, MapPin, Users, MessageSquare, CheckCircle2,
+  Calendar, ChevronDown, Filter, Receipt, Star,
+  Play, RefreshCw,
+} from 'lucide-react';
+
+/* ── helpers ─────────────────────────────────────────────────────── */
+
+function formatTime(iso?: string | null) {
+  if (!iso) return '—';
+  try {
+    if (iso.includes('T')) return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const [h, m] = iso.split(':').map(Number);
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+  } catch { return iso; }
+}
+
+function formatDate(iso?: string | null) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+  catch { return iso; }
+}
+
+type Tab = 'all' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'all',         label: 'All Bookings' },
+  { id: 'CONFIRMED',   label: 'Confirmed' },
+  { id: 'IN_PROGRESS', label: 'In Progress' },
+  { id: 'COMPLETED',   label: 'Completed' },
+  { id: 'CANCELLED',   label: 'Cancelled' },
+];
+
+const STATUS_META: Record<string, { dot: string; text: string; bg: string; border: string; label: string }> = {
+  CONFIRMED:   { dot: 'bg-primary-600',  text: 'text-primary-700',  bg: 'bg-primary-50',  border: 'border-primary-100',  label: 'Confirmed' },
+  ACCEPTED:    { dot: 'bg-primary-600',  text: 'text-primary-700',  bg: 'bg-primary-50',  border: 'border-primary-100',  label: 'Confirmed' },
+  ASSIGNED:    { dot: 'bg-primary-400',  text: 'text-primary-600',  bg: 'bg-primary-50',  border: 'border-primary-100',  label: 'Assigned' },
+  IN_PROGRESS: { dot: 'bg-amber-500 animate-pulse', text: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', label: 'In Progress' },
+  COMPLETED:   { dot: 'bg-emerald-500', text: 'text-emerald-700',  bg: 'bg-emerald-50',  border: 'border-emerald-100', label: 'Completed' },
+  CANCELLED:   { dot: 'bg-red-400',     text: 'text-red-600',      bg: 'bg-red-50',      border: 'border-red-100',      label: 'Cancelled' },
+  PENDING:     { dot: 'bg-slate-400',   text: 'text-slate-600',    bg: 'bg-slate-50',    border: 'border-slate-100',    label: 'Pending' },
+};
+
+/* ── booking card ────────────────────────────────────────────────── */
+
+function BookingCard({
+  booking, onCheckIn, onComplete, onReview, onMessage
+}: {
+  booking: Booking;
+  onCheckIn: (b: Booking) => void;
+  onComplete: (b: Booking) => void;
+  onReview: (id: string) => void;
+  onMessage: (b: Booking) => void;
+}) {
+  const router = useRouter();
+  const status = (booking.status ?? 'PENDING').toUpperCase();
+  const meta = STATUS_META[status] ?? STATUS_META['PENDING'];
+  const isNannyBooking = true;
+
+  const parentName = booking.parent?.profiles?.first_name
+    ? `${booking.parent.profiles.first_name} ${booking.parent.profiles.last_name ?? ''}`.trim()
+    : 'Client';
+
+  const location = (booking.service_requests as any)?.location?.address ?? null;
+  const numChildren = (booking.service_requests as any)?.num_children ?? 1;
+  const category = (booking.service_requests as any)?.category ?? 'CC';
+  const totalAmount = Number(booking.total_amount ?? 0);
+  const bookingIdShort = `#BK-${booking.id.slice(-4).toUpperCase()}`;
+
+  return (
+    <div className={`bg-white rounded-2xl border shadow-sm p-5 flex flex-col gap-4 transition-all hover:shadow-md ${status === 'IN_PROGRESS' ? 'border-amber-200 ring-1 ring-amber-100' : 'border-slate-100'}`}>
+      {/* Top row */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${meta.bg} ${meta.text}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+            {meta.label}
+          </span>
+        </div>
+        <span className="text-xs font-mono text-slate-400 flex-shrink-0">{bookingIdShort}</span>
+      </div>
+
+      {/* Service title */}
+      <div>
+        <h3 className="font-bold text-primary-900 text-base">
+          {category === 'CC' ? 'Child Care' : category === 'ST' ? 'Shadow Teacher' : 'Care'} Session
+        </h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          {numChildren} {numChildren === 1 ? 'child' : 'children'} · {parentName}
+        </p>
+      </div>
+
+      {/* Details */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <Clock size={12} className="text-primary-400 flex-shrink-0" />
+          <span>
+            {formatDate(booking.start_time)} · {formatTime(booking.start_time)}
+            {booking.end_time ? ` – ${formatTime(booking.end_time)}` : ''}
+          </span>
+        </div>
+        {location && (
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <MapPin size={12} className="text-emerald-500 flex-shrink-0" />
+            <span className="truncate">{location}</span>
+          </div>
+        )}
+        {parentName !== 'Client' && (
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Users size={12} className="text-indigo-400 flex-shrink-0" />
+            <span>{parentName}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Amount + CTA */}
+      <div className="flex items-center justify-between pt-1 border-t border-slate-50 gap-3 flex-wrap">
+        {totalAmount > 0 ? (
+          <p className="font-black text-primary-900 text-lg">
+            ₹{totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        ) : <div />}
+
+        <div className="flex gap-2">
+          {status === 'CONFIRMED' || status === 'ASSIGNED' || status === 'ACCEPTED' ? (
+            <>
+              <Button
+                onClick={() => onCheckIn(booking)}
+                className="h-9 rounded-xl bg-primary-900 text-white text-xs font-bold hover:bg-primary-800 gap-1.5 px-4"
+              >
+                <Play size={11} /> Start Job
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onMessage(booking)}
+                className="h-9 w-9 rounded-xl border-slate-200 p-0 flex items-center justify-center"
+              >
+                <MessageSquare size={14} className="text-slate-500" />
+              </Button>
+            </>
+          ) : status === 'IN_PROGRESS' ? (
+            <Button
+              onClick={() => onComplete(booking)}
+              className="h-9 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold gap-1.5 px-4"
+            >
+              <CheckCircle2 size={12} /> Complete Job
+            </Button>
+          ) : status === 'COMPLETED' ? (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => onReview(booking.id)}
+                className="h-9 rounded-xl border-slate-200 text-xs font-semibold text-slate-600 gap-1.5 px-3"
+              >
+                <Star size={12} /> Review
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/dashboard/bookings/${booking.id}`)}
+                className="h-9 rounded-xl border-slate-200 text-xs font-semibold text-slate-600 gap-1.5 px-3"
+              >
+                <Receipt size={12} /> Receipt
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/dashboard/bookings/${booking.id}`)}
+              className="h-9 rounded-xl border-slate-200 text-xs font-semibold text-slate-600 px-3"
+            >
+              Details
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── main page ───────────────────────────────────────────────────── */
 
 export default function BookingsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [requests, setRequests] = useState<ServiceRequest[]>([]);
-  const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    'requests' | 'upcoming' | 'completed' | 'cancelled'
-  >('upcoming');
-
-  // Review Modal State
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
-    null
-  );
+  const [activeTab, setActiveTab] = useState<Tab>('all');
+  const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
 
   const { subscribe } = useSSE();
 
-  const fetchData = React.useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      const data = await api.bookings.getNannyBookings();
 
-      if (user?.role === 'nanny') {
-        const [bookingsData, assignmentsData] = await Promise.all([
-          api.bookings.getNannyBookings(),
-          api.assignments.getNannyAssignments(),
-        ]);
-
-        // Fetch parent details for bookings that don't have profile info
-        const enrichedBookings = (await Promise.all(
-          bookingsData.map(async (booking) => {
-            if (booking.parent?.profiles?.first_name) {
-              return booking;
-            }
-            if (booking.parent_id) {
-              try {
-                const parentDetails = await api.users.get(booking.parent_id);
-                return { ...booking, parent: parentDetails };
-              } catch (err) {
-                console.error(
-                  `Failed to fetch parent details for booking ${booking.id}:`,
-                  err
-                );
-                return booking;
-              }
-            }
-            return booking;
-          })
-        )).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-        const sortedAssignments = [...assignmentsData].sort((a, b) => {
-          if (!a.request || !b.request) return 0;
-          const dateComparison = new Date(a.request.date).getTime() - new Date(b.request.date).getTime();
-          if (dateComparison !== 0) return dateComparison;
-
-          const getMinutes = (timeStr: string) => {
-            if (!timeStr) return 0;
-            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
-            const [h, m] = timeStr.split(':').map(Number);
-            return (h || 0) * 60 + (m || 0);
-          };
-
-          return getMinutes(a.request.start_time) - getMinutes(b.request.start_time);
-        });
-
-        setBookings(enrichedBookings);
-        setAssignments(sortedAssignments);
-      } else if (user?.role === 'parent') {
-        const [bookingsData, requestsData] = await Promise.all([
-          api.bookings.getParentBookings(),
-          api.requests.getParentRequests(),
-        ]);
-
-        // Fetch nanny details for bookings that don't have profile info
-        const enrichedBookings = (await Promise.all(
-          bookingsData.map(async (booking) => {
-            if (booking.nanny?.profiles?.first_name) {
-              return booking;
-            }
-            if (booking.nanny_id) {
-              try {
-                const nannyDetails = await api.users.get(booking.nanny_id);
-                return { ...booking, nanny: nannyDetails };
-              } catch (err) {
-                console.error(
-                  `Failed to fetch nanny details for booking ${booking.id}:`,
-                  err
-                );
-                return booking;
-              }
-            }
-            return booking;
-          })
-        )).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-        const sortedRequests = [...requestsData].sort((a, b) => {
-          const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-          if (dateComparison !== 0) return dateComparison;
-
-          const getMinutes = (timeStr: string) => {
-            if (!timeStr) return 0;
-            if (timeStr.includes('T')) return new Date(timeStr).getHours() * 60 + new Date(timeStr).getMinutes();
-            const [h, m] = timeStr.split(':').map(Number);
-            return (h || 0) * 60 + (m || 0);
-          };
-
-          return getMinutes(a.start_time) - getMinutes(b.start_time);
-        });
-
-        setBookings(enrichedBookings);
-        setRequests(sortedRequests);
-      }
+      // Enrich with parent profile where missing
+      const enriched = await Promise.all(
+        data.map(async (b) => {
+          if (b.parent?.profiles?.first_name || !b.parent_id) return b;
+          try {
+            const parent = await api.users.get(b.parent_id);
+            return { ...b, parent };
+          } catch { return b; }
+        })
+      );
+      setBookings(enriched.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()));
     } catch (err) {
-      console.error('Failed to fetch data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load data');
+      console.error('Failed to fetch bookings', err);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   useEffect(() => {
-    if (user) {
-      fetchData();
-    }
-  }, [user, fetchData]);
-
-  useEffect(() => {
-    const handleRefresh = () => {
-      console.log('Nanny/User Bookings Page - Received SSE Refresh Event');
-      fetchData();
-    };
-
-    const unsubscribers = [
-      subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_STARTED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_COMPLETED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_CANCELLED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_CREATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.ASSIGNMENT_REJECTED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.REQUEST_CREATED, handleRefresh),
-      subscribe(SSE_EVENT_TYPES.REQUEST_CANCELLED, handleRefresh),
+    const events = [
+      SSE_EVENT_TYPES.BOOKING_CREATED, SSE_EVENT_TYPES.BOOKING_UPDATED,
+      SSE_EVENT_TYPES.BOOKING_STARTED, SSE_EVENT_TYPES.BOOKING_COMPLETED,
+      SSE_EVENT_TYPES.BOOKING_CANCELLED,
     ];
-
-    return () => unsubscribers.forEach((unsub) => unsub());
+    const unsubs = events.map((e) => subscribe(e, fetchData));
+    return () => unsubs.forEach((u) => u());
   }, [subscribe, fetchData]);
 
-  const handleStartBooking = async (bookingId: string) => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
-      return;
-    }
-
-    setActionLoading(bookingId);
-
+  const handleCheckIn = async (booking: Booking) => {
+    if (!('geolocation' in navigator)) { toast.error('Geolocation not supported'); return; }
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
+      async ({ coords }) => {
         try {
-          const { latitude, longitude } = position.coords;
-          const updated = await api.bookings.start(bookingId, { latitude, longitude });
-          setBookings(bookings.map((b) => (b.id === bookingId ? updated : b)));
-          toast.success("Job started successfully!");
-        } catch (err: any) {
-          console.error('Failed to start booking:', err);
-          toast.error(err.message || 'Failed to start booking');
-        } finally {
-          setActionLoading(null);
-        }
+          await api.bookings.start(booking.id, { latitude: coords.latitude, longitude: coords.longitude });
+          toast.success('Job started!');
+          fetchData();
+        } catch (err: any) { toast.error(err.message || 'Failed to start job'); }
       },
-      (error) => {
-        setActionLoading(null);
-        toast.error("Please allow location access to start the job.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
+      () => toast.error('Location access denied'),
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   };
 
-  const handleCompleteBooking = async (bookingId: string) => {
+  const handleComplete = async (booking: Booking) => {
     try {
-      setActionLoading(bookingId);
-      const updated = await api.bookings.complete(bookingId);
-      setBookings(bookings.map((b) => (b.id === bookingId ? updated : b)));
-    } catch (err) {
-      console.error('Failed to complete booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to complete booking');
-    } finally {
-      setActionLoading(null);
-    }
+      await api.bookings.complete(booking.id);
+      toast.success('Job completed!');
+      fetchData();
+    } catch (err: any) { toast.error(err.message || 'Failed to complete job'); }
   };
 
-  const handleCancelBooking = async (bookingId: string) => {
-    const reason = prompt('Please provide a reason for cancellation:');
-    if (!reason) return;
-
+  const handleMessage = async (booking: Booking) => {
     try {
-      setActionLoading(bookingId);
-      const updated = await api.bookings.cancel(bookingId, { reason });
-      setBookings(bookings.map((b) => (b.id === bookingId ? updated : b)));
-    } catch (err) {
-      console.error('Failed to cancel booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to cancel booking');
-    } finally {
-      setActionLoading(null);
-    }
+      await api.chat.create({ bookingId: booking.id });
+      router.push(`/dashboard/messages?booking=${booking.id}`);
+    } catch { router.push('/dashboard/messages'); }
   };
 
-  const handleAcceptAssignment = async (assignmentId: string) => {
-    try {
-      setActionLoading(assignmentId);
-      await api.assignments.accept(assignmentId);
-      await fetchData(); // Refresh all data
-    } catch (err) {
-      console.error(err);
-      alert('Failed to accept assignment');
-    } finally {
-      setActionLoading(null);
-    }
+  const filtered = activeTab === 'all'
+    ? bookings
+    : bookings.filter((b) => {
+        const s = (b.status ?? '').toUpperCase();
+        if (activeTab === 'CONFIRMED') return ['CONFIRMED', 'ASSIGNED', 'ACCEPTED'].includes(s);
+        return s === activeTab;
+      });
+
+  const tabCounts: Record<Tab, number> = {
+    all: bookings.length,
+    CONFIRMED: bookings.filter((b) => ['CONFIRMED', 'ASSIGNED', 'ACCEPTED'].includes((b.status ?? '').toUpperCase())).length,
+    IN_PROGRESS: bookings.filter((b) => b.status?.toUpperCase() === 'IN_PROGRESS').length,
+    COMPLETED: bookings.filter((b) => b.status?.toUpperCase() === 'COMPLETED').length,
+    CANCELLED: bookings.filter((b) => b.status?.toUpperCase() === 'CANCELLED').length,
   };
-
-  const handleRejectAssignment = async (assignmentId: string) => {
-    if (!confirm('Are you sure you want to reject this request?')) return;
-
-    try {
-      setActionLoading(assignmentId);
-      await api.assignments.reject(assignmentId);
-      await fetchData(); // Refresh all data
-    } catch (err) {
-      console.error(err);
-      alert('Failed to reject assignment');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleOpenReview = (bookingId: string) => {
-    setSelectedBookingId(bookingId);
-    setIsReviewModalOpen(true);
-  };
-
-  const getStatusBadgeStyles = (status: string) => {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'bg-primary-100 text-primary-700';
-      case 'IN_PROGRESS':
-        return 'bg-stone-100 text-stone-700';
-      case 'COMPLETED':
-        return 'bg-stone-100 text-stone-700';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-700';
-      case 'PENDING':
-        return 'bg-amber-100 text-amber-700';
-      case 'ASSIGNED':
-        return 'bg-stone-100 text-stone-700';
-      case 'ACCEPTED':
-        return 'bg-primary-100 text-primary-700';
-      case 'rejected':
-        return 'bg-red-100 text-red-700';
-      case 'pending':
-        return 'bg-amber-100 text-amber-700';
-      case 'accepted':
-        return 'bg-primary-100 text-primary-700';
-      default:
-        return 'bg-stone-100 text-stone-700';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return {
-      day: date.getDate(),
-      month: date.toLocaleString('default', { month: 'short' }),
-    };
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const getOtherPartyName = (booking: Booking) => {
-    const flatName = (booking as any)[user?.role === 'nanny' ? 'parent_name' : 'nanny_name'];
-    if (flatName) return flatName;
-
-    if (user?.role === 'nanny') {
-      return booking.parent?.profiles?.first_name &&
-        booking.parent?.profiles?.last_name
-        ? `${booking.parent.profiles.first_name} ${booking.parent.profiles.last_name}`
-        : booking.parent?.email || 'Parent';
-    } else {
-      return booking.nanny?.profiles?.first_name &&
-        booking.nanny?.profiles?.last_name
-        ? `${booking.nanny.profiles.first_name} ${booking.nanny.profiles.last_name}`
-        : booking.nanny?.email || 'Nanny';
-    }
-  };
-
-  const renderActionButtons = (booking: Booking) => {
-    if (actionLoading === booking.id) {
-      return <Spinner />;
-    }
-
-    const buttons = [];
-    if (['CONFIRMED', 'IN_PROGRESS'].includes(booking.status)) {
-      buttons.push(
-        <Button
-          key="chat"
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/dashboard/messages?booking=${booking.id}`)}
-          className="rounded-xl border-accent-100 text-accent-700 hover:bg-accent-50"
-        >
-          <MessageSquare size={16} className="mr-1" />
-          Chat
-        </Button>
-      );
-    }
-
-    if (booking.status === 'CONFIRMED' && user?.role === 'nanny') {
-      buttons.push(
-        <Button
-          key="start"
-          size="sm"
-          onClick={() => handleStartBooking(booking.id)}
-          className="rounded-xl"
-        >
-          Start
-        </Button>
-      );
-    }
-
-    if (booking.status === 'IN_PROGRESS') {
-      buttons.push(
-        <Button
-          key="complete"
-          size="sm"
-          onClick={() => handleCompleteBooking(booking.id)}
-          className="rounded-xl"
-        >
-          Complete
-        </Button>
-      );
-    }
-
-    if (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') {
-      buttons.push(
-        <Button
-          key="cancel"
-          variant="outline"
-          size="sm"
-          onClick={() => handleCancelBooking(booking.id)}
-          className="rounded-xl border-neutral-200"
-        >
-          Cancel
-        </Button>
-      );
-    }
-
-    if (booking.status === 'COMPLETED') {
-      buttons.push(
-        <Button
-          key="review"
-          size="sm"
-          onClick={() => handleOpenReview(booking.id)}
-          className="rounded-xl"
-        >
-          Leave Review
-        </Button>
-      );
-    }
-
-    return buttons.length > 0 ? (
-      <div className="flex gap-2">{buttons}</div>
-    ) : null;
-  };
-
-  const filteredBookings = bookings.filter((booking) => {
-    if (activeTab === 'upcoming')
-      return ['CONFIRMED', 'IN_PROGRESS', 'PENDING'].includes(booking.status);
-    if (activeTab === 'completed') return booking.status === 'COMPLETED';
-    if (activeTab === 'cancelled') return booking.status === 'CANCELLED';
-    return true;
-  });
-
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900 font-display">
-            My Bookings
-          </h1>
-        </div>
-        <div className="flex justify-center py-12">
-          <Spinner />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary-900 font-display">
-            My Bookings
-          </h1>
-        </div>
-        <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={fetchData}>Retry</Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 md:p-10 lg:p-12 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-bold font-display text-primary-900 tracking-tight">My Bookings</h1>
-          <p className="text-slate-500 mt-2 text-lg">Manage your assignments and professional schedule</p>
-        </div>
-      </div>
+    <ProtectedRoute allowedRoles={['nanny']}>
+      <div className="space-y-6">
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
-        {['requests', 'upcoming', 'completed', 'cancelled'].map((tab) => (
-          <button
-            key={tab}
-            className={`px-6 py-4 font-medium text-sm transition-all relative whitespace-nowrap capitalize ${activeTab === tab ? 'text-primary-900 font-bold' : 'text-slate-500 hover:text-primary-700'}`}
-            onClick={() => setActiveTab(tab as any)}
-          >
-            {tab}
-            {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-900 rounded-t-full"></div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="mt-8">
-        {activeTab === 'requests' ? (
-          <div className="space-y-6">
-            {assignments.length === 0 ? (
-              <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Calendar size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-primary-900 mb-2">No New Requests</h3>
-                <p className="text-slate-500 max-w-sm mx-auto">
-                  You don't have any pending service requests at the moment.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {assignments.map((assignment) => {
-                  const request = assignment.request;
-                  if (!request) return null;
-                  return (
-                    <div
-                      key={assignment.id}
-                      className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all duration-300 overflow-hidden flex flex-col"
-                    >
-                      <div className="p-6 flex-1">
-                        <div className="flex items-center justify-between mb-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusBadgeStyles(assignment.status)}`}
-                          >
-                            {assignment.status}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                            {new Date(assignment.assigned_at).toLocaleDateString()}
-                          </span>
-                        </div>
-
-                        <h3 className="text-lg font-bold text-primary-900 mb-4 font-display">
-                          Request from {request.parent?.profiles?.first_name || 'Parent'}
-                        </h3>
-
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-primary-600 transition-colors shadow-inner">
-                              <Calendar size={14} />
-                            </div>
-                            <span className="text-slate-700 text-sm font-medium">
-                              {new Date(request.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-amber-600 transition-colors shadow-inner">
-                              <Clock size={14} />
-                            </div>
-                            <span className="text-slate-700 text-sm font-medium">
-                              {request.start_time} ({request.duration_hours} hrs)
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:text-emerald-600 transition-colors shadow-inner">
-                              <MapPin size={14} />
-                            </div>
-                            <span className="text-slate-700 text-sm font-medium truncate">
-                              {request.parent?.profiles?.address || 'Location hidden'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {assignment.status === 'pending' && (
-                        <div className="p-6 pt-0 grid grid-cols-2 gap-3">
-                          <Button
-                            variant="outline"
-                            className="h-10 rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 transition-all font-bold text-xs"
-                            onClick={() => handleRejectAssignment(assignment.id)}
-                            disabled={actionLoading === assignment.id}
-                          >
-                            Decline
-                          </Button>
-                          <Button
-                            className="h-10 rounded-xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-sm text-xs"
-                            onClick={() => handleAcceptAssignment(assignment.id)}
-                            disabled={actionLoading === assignment.id}
-                          >
-                            {actionLoading === assignment.id ? '...' : 'Accept'}
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        {/* ── Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold font-display text-primary-900 tracking-tight">Bookings</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Manage your upcoming and past service appointments.</p>
           </div>
-        ) : filteredBookings.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm">
-            <p className="text-slate-500 mb-8 text-lg">No {activeTab} bookings found.</p>
-            <Button
-              onClick={() => (window.location.href = '/dashboard')}
-              className="rounded-2xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg shadow-primary-900/10 px-8 py-4 h-auto text-base font-bold"
+        </div>
+
+        {/* ── Tabs + date filter ── */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 flex items-center gap-1 overflow-x-auto">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
+                activeTab === tab.id
+                  ? 'bg-primary-900 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-primary-900 hover:bg-slate-50'
+              }`}
             >
-              View New Jobs
-            </Button>
+              {tab.label}
+              {tabCounts[tab.id] > 0 && (
+                <span className={`text-[10px] font-black rounded-full px-1.5 py-0.5 min-w-[18px] text-center ${
+                  activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                }`}>
+                  {tabCounts[tab.id]}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Content ── */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-64 bg-white rounded-2xl border border-slate-100 animate-pulse" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center">
+            <div className="w-14 h-14 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar size={22} className="text-primary-400" />
+            </div>
+            <p className="font-bold text-primary-900 text-sm">No bookings found</p>
+            <p className="text-slate-400 text-xs mt-1">
+              {activeTab === 'all' ? 'Your bookings will appear here.' : `No ${TABS.find(t => t.id === activeTab)?.label.toLowerCase()} bookings.`}
+            </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredBookings.map((booking) => {
-              const { day, month } = formatDate(booking.start_time);
-              return (
-                <div
-                  key={booking.id}
-                  className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary-100 group hover:translate-x-1"
-                  onClick={() => router.push(`/dashboard/bookings/${booking.id}`)}
-                >
-                  <div className="flex items-center gap-6 flex-1">
-                    <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-primary-50 text-primary-900 flex flex-col items-center justify-center transition-colors shadow-inner group-hover:bg-primary-100">
-                      <span className="text-xs font-bold uppercase tracking-wider">{month}</span>
-                      <span className="text-2xl font-bold font-display">{day}</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors font-display">
-                        {getOtherPartyName(booking)}
-                      </h3>
-                      <p className="text-slate-600 text-sm mb-1 font-medium">
-                        Care for {(booking as any).num_children || (booking.job as any)?.num_children || 1} Child{((booking as any).num_children || (booking.job as any)?.num_children || 1) !== 1 ? 'ren' : ''}
-                      </p>
-                      <p className="text-slate-400 text-xs flex items-center gap-1">
-                        <Clock size={12} />
-                        {formatTime(booking.start_time)}
-                        {booking.end_time && ` — ${formatTime(booking.end_time)}`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
-                    <span
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusBadgeStyles(booking.status)}`}
-                    >
-                      {booking.status.toLowerCase().replace('_', ' ')}
-                    </span>
-                    <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
-                      {renderActionButtons(booking)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((booking) => (
+              <BookingCard
+                key={booking.id}
+                booking={booking}
+                onCheckIn={handleCheckIn}
+                onComplete={handleComplete}
+                onReview={(id) => setReviewBookingId(id)}
+                onMessage={handleMessage}
+              />
+            ))}
           </div>
         )}
       </div>
 
-      {selectedBookingId && (
+      {reviewBookingId && (
         <ReviewModal
-          isOpen={isReviewModalOpen}
-          onClose={() => setIsReviewModalOpen(false)}
-          bookingId={selectedBookingId}
-          onSuccess={() => fetchData()}
+          isOpen={!!reviewBookingId}
+          onClose={() => setReviewBookingId(null)}
+          bookingId={reviewBookingId}
+          onSuccess={fetchData}
         />
       )}
-    </div>
+    </ProtectedRoute>
   );
 }

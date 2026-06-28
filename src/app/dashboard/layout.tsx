@@ -36,17 +36,13 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const navItems = [
-    { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-    { icon: Bell, label: 'Notifications', href: '/dashboard/notifications' },
-    { icon: Calendar, label: 'Bookings', href: '/dashboard/bookings' },
-    {
-      icon: CalendarOff,
-      label: 'Availability',
-      href: '/dashboard/availability',
-    },
-    { icon: User, label: 'Profile', href: '/dashboard/profile' },
-    { icon: HelpCircle, label: 'Support', href: '/support' },
-    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: LayoutDashboard, label: 'Overview',     href: '/dashboard' },
+    { icon: Bell,            label: 'Notifications',href: '/dashboard/notifications' },
+    { icon: Calendar,        label: 'Bookings',     href: '/dashboard/bookings' },
+    { icon: CalendarOff,     label: 'Availability', href: '/dashboard/availability' },
+    { icon: User,            label: 'Profile',      href: '/dashboard/profile' },
+    { icon: HelpCircle,      label: 'Support',      href: '/support' },
+    { icon: Settings,        label: 'Settings',     href: '/dashboard/settings' },
   ];
 
   const { user, loading, logout } = useAuth();

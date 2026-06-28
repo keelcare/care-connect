@@ -21,50 +21,120 @@ import {
   Repeat,
   CheckCircle2,
   ChevronLeft,
+  ChevronRight,
   Sparkles,
   FileText,
   CalendarDays,
+  TrendingUp,
+  Settings,
+  RefreshCw,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 
-const TIME_SLOTS = [
-  '06:00',
-  '07:00',
-  '08:00',
-  '09:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-  '19:00',
-  '20:00',
-  '21:00',
-  '22:00',
-  '23:00',
-];
+/* ── constants ───────────────────────────────────────────────────── */
+
+const TIME_SLOTS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
 
 const BLOCK_TYPES = [
-  {
-    id: 'oneTime',
-    label: 'One-Time Block',
-    description: 'Block a specific date or date range',
-    icon: CalendarOff,
-    color: 'bg-primary-50 text-primary-900 border-primary-200',
-    activeColor: 'bg-primary-900 text-white border-primary-900',
-  },
-  {
-    id: 'recurring',
-    label: 'Recurring Block',
-    description: 'Block same time every week',
-    icon: Repeat,
-    color: 'bg-accent-50 text-accent-700 border-accent-200',
-    activeColor: 'bg-accent text-white border-accent',
-  },
+  { id: 'oneTime',   label: 'One-Time Block',   description: 'Block a specific date or date range', icon: CalendarOff, activeColor: 'bg-primary-900 text-white border-primary-900', color: 'bg-primary-50 text-primary-900 border-primary-200' },
+  { id: 'recurring', label: 'Recurring Block',   description: 'Block same time every week',          icon: Repeat,      activeColor: 'bg-primary-800 text-white border-primary-800', color: 'bg-slate-50 text-slate-700 border-slate-200' },
 ];
+
+/* ── demand forecast data (static display) ───────────────────────── */
+
+const DEMAND_SLOTS = [
+  { label: 'Friday Evenings',   pct: 85, color: 'text-amber-600' },
+  { label: 'Saturday Mornings', pct: 72, color: 'text-primary-600' },
+  { label: 'Sunday Afternoons', pct: 60, color: 'text-indigo-600' },
+];
+
+/* ── mini calendar ───────────────────────────────────────────────── */
+
+function MiniCalendar({ blocks }: { blocks: AvailabilityBlock[] }) {
+  const [month, setMonth] = useState(new Date());
+
+  const year = month.getFullYear();
+  const mo = month.getMonth();
+  const firstDay = new Date(year, mo, 1).getDay();
+  const daysInMonth = new Date(year, mo + 1, 0).getDate();
+
+  const today = new Date();
+  const isToday = (d: number) => today.getFullYear() === year && today.getMonth() === mo && today.getDate() === d;
+
+  // determine which days have blocks
+  const blockedDays = new Set<number>();
+  blocks.forEach((b) => {
+    const start = new Date(b.start_time);
+    const end   = new Date(b.end_time);
+    if (start.getFullYear() === year && start.getMonth() === mo) blockedDays.add(start.getDate());
+    // multi-day
+    if (end.getFullYear() === year && end.getMonth() === mo && end.getDate() !== start.getDate()) blockedDays.add(end.getDate());
+  });
+
+  const prevMonth = () => setMonth(new Date(year, mo - 1, 1));
+  const nextMonth = () => setMonth(new Date(year, mo + 1, 1));
+
+  const cells = Array.from({ length: firstDay }, () => null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
+
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  return (
+    <div>
+      {/* Nav */}
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={prevMonth} className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <ChevronLeft size={16} className="text-slate-500" />
+        </button>
+        <p className="font-bold text-primary-900 text-sm">
+          {month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        </p>
+        <button onClick={nextMonth} className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <ChevronRight size={16} className="text-slate-500" />
+        </button>
+      </div>
+
+      {/* Day headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAYS.map((d) => (
+          <div key={d} className="text-center text-[10px] font-bold text-slate-400 py-1">{d}</div>
+        ))}
+      </div>
+
+      {/* Cells */}
+      <div className="grid grid-cols-7 gap-y-1">
+        {cells.map((day, i) => {
+          if (!day) return <div key={`empty-${i}`} />;
+          const blocked = blockedDays.has(day);
+          const tod = isToday(day);
+          return (
+            <div key={day} className="flex items-center justify-center">
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors ${
+                tod ? 'bg-primary-900 text-white' :
+                blocked ? 'bg-red-100 text-red-600' :
+                'text-slate-600 hover:bg-slate-100'
+              }`}>
+                {day}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-50">
+        <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary-900" /> Today
+        </span>
+        <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-200" /> Blocked
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── main page ───────────────────────────────────────────────────── */
 
 export default function AvailabilityPage() {
   const { user } = useAuth();
@@ -74,445 +144,318 @@ export default function AvailabilityPage() {
   const [showModal, setShowModal] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [autoAccept, setAutoAccept] = useState(true);
 
-  // Form state
   const [formData, setFormData] = useState({
-    blockType: '',
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: '',
-    selectedDays: [] as string[],
-    reason: '',
+    blockType: '', startDate: '', endDate: '',
+    startTime: '', endTime: '', selectedDays: [] as string[], reason: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Generate next 30 days for date selection
-  const getNextDays = () => {
-    const days = [];
-    for (let i = 0; i < 30; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      days.push(date);
-    }
-    return days;
-  };
-
+  const getNextDays = () => Array.from({ length: 30 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
   const availableDates = getNextDays();
+  const formatDateStr = (d: Date) => d.toISOString().split('T')[0];
+  const isToday = (d: Date) => d.toDateString() === new Date().toDateString();
 
-  useEffect(() => {
-    fetchBlocks();
-  }, []);
+  useEffect(() => { fetchBlocks(); }, []);
 
   const fetchBlocks = async () => {
     try {
       setLoading(true);
-      const data = await api.availability.list();
-      setBlocks(data);
-    } catch (error) {
-      console.error('Failed to fetch availability blocks:', error);
-      addToast({ message: 'Failed to load availability', type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+      setBlocks(await api.availability.list());
+    } catch { addToast({ message: 'Failed to load availability', type: 'error' }); }
+    finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-
-    if (!formData.startDate) {
-      addToast({ message: 'Please select a start date', type: 'error' });
-      return;
+    if (!formData.startDate) { addToast({ message: 'Please select a start date', type: 'error' }); return; }
+    if (!formData.startTime || !formData.endTime) { addToast({ message: 'Please select start and end times', type: 'error' }); return; }
+    if (formData.blockType === 'recurring' && !formData.selectedDays.length) {
+      addToast({ message: 'Please select at least one day for recurring block', type: 'error' }); return;
     }
-
-    if (!formData.startTime || !formData.endTime) {
-      addToast({ message: 'Please select start and end times', type: 'error' });
-      return;
-    }
-
-    if (
-      formData.blockType === 'recurring' &&
-      formData.selectedDays.length === 0
-    ) {
-      addToast({
-        message: 'Please select at least one day for recurring block',
-        type: 'error',
-      });
-      return;
-    }
-
     setSubmitting(true);
-
     try {
       const startDateTime = `${formData.startDate}T${formData.startTime}:00+05:30`;
       const endDateTime = formData.endDate
         ? `${formData.endDate}T${formData.endTime}:00+05:30`
         : `${formData.startDate}T${formData.endTime}:00+05:30`;
-
       const isRecurring = formData.blockType === 'recurring';
-
-      const payload = {
-        startTime: startDateTime,
-        endTime: endDateTime,
-        isRecurring,
-        recurrencePattern: isRecurring
-          ? generateRecurrencePattern('weekly', formData.selectedDays)
-          : undefined,
+      await api.availability.create({
+        startTime: startDateTime, endTime: endDateTime, isRecurring,
+        recurrencePattern: isRecurring ? generateRecurrencePattern('weekly', formData.selectedDays) : undefined,
         reason: formData.reason || undefined,
-      };
-
-      await api.availability.create(payload);
-      addToast({
-        message: 'Availability block created successfully',
-        type: 'success',
       });
-      closeModal();
-      fetchBlocks();
-    } catch (error) {
-      console.error('Failed to create availability block:', error);
-      addToast({
-        message: 'Failed to create availability block',
-        type: 'error',
-      });
-    } finally {
-      setSubmitting(false);
-    }
+      addToast({ message: 'Availability block created', type: 'success' });
+      closeModal(); fetchBlocks();
+    } catch { addToast({ message: 'Failed to create block', type: 'error' }); }
+    finally { setSubmitting(false); }
   };
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
     try {
       await api.availability.delete(id);
-      addToast({ message: 'Availability block removed', type: 'success' });
-      setBlocks(blocks.filter((b) => b.id !== id));
-    } catch (error) {
-      console.error('Failed to delete availability block:', error);
-      addToast({
-        message: 'Failed to remove availability block',
-        type: 'error',
-      });
-    } finally {
-      setDeleting(null);
-    }
+      addToast({ message: 'Block removed', type: 'success' });
+      setBlocks((prev) => prev.filter((b) => b.id !== id));
+    } catch { addToast({ message: 'Failed to remove block', type: 'error' }); }
+    finally { setDeleting(null); }
   };
 
-  const resetForm = () => {
-    setFormData({
-      blockType: '',
-      startDate: '',
-      endDate: '',
-      startTime: '',
-      endTime: '',
-      selectedDays: [],
-      reason: '',
-    });
-    setCurrentStep(1);
-  };
+  const resetForm = () => { setFormData({ blockType:'',startDate:'',endDate:'',startTime:'',endTime:'',selectedDays:[],reason:'' }); setCurrentStep(1); };
+  const closeModal = () => { setShowModal(false); resetForm(); };
+  const openModal = () => { resetForm(); setShowModal(true); };
 
-  const closeModal = () => {
-    setShowModal(false);
-    resetForm();
-  };
-
-  const openModal = () => {
-    resetForm();
-    setShowModal(true);
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatBlockDisplay = (b: AvailabilityBlock) => {
+    const s = new Date(b.start_time);
+    const e = new Date(b.end_time);
     return {
-      date: date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        timeZone: 'Asia/Kolkata',
-      }),
-      time: date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Kolkata',
-      }),
+      date: s.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'Asia/Kolkata' }),
+      time: `${s.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} – ${e.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}`,
     };
   };
 
-  const formatDate = (date: Date) => {
-    return date.toISOString().split('T')[0];
-  };
+  const canProceedToStep2 = !!formData.blockType;
+  const canProceedToStep3 = formData.blockType === 'recurring' ? formData.selectedDays.length > 0 && !!formData.startDate : !!formData.startDate;
+  const canSubmit = !!formData.startTime && !!formData.endTime;
 
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
+  const getStepLabels = () => formData.blockType === 'recurring' ? ['Block Type','Days & Start','Time & Details'] : ['Block Type','Select Date','Time & Details'];
 
-  const canProceedToStep2 = formData.blockType !== '';
-  const canProceedToStep3 =
-    formData.blockType === 'recurring'
-      ? formData.selectedDays.length > 0 && formData.startDate !== ''
-      : formData.startDate !== '';
-  const canSubmit = formData.startTime !== '' && formData.endTime !== '';
-
-  const getStepLabels = () => {
-    if (formData.blockType === 'recurring') {
-      return ['Block Type', 'Days & Start', 'Time & Details'];
-    }
-    return ['Block Type', 'Select Date', 'Time & Details'];
-  };
+  const DatePicker = ({ field }: { field: 'startDate' | 'endDate' }) => (
+    <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+      {availableDates.map((date) => {
+        const dateStr = formatDateStr(date);
+        const isSelected = formData[field] === dateStr;
+        const isStart = field === 'endDate' && formData.startDate === dateStr;
+        if (field === 'endDate' && dateStr < formData.startDate) return null;
+        return (
+          <button key={dateStr} type="button"
+            onClick={() => setFormData({ ...formData, [field]: isSelected && field === 'endDate' ? '' : dateStr })}
+            className={`flex-shrink-0 flex flex-col items-center p-2.5 rounded-xl border-2 transition-all min-w-[60px] ${
+              isSelected ? 'bg-primary-900 text-white border-primary-900' :
+              isStart ? 'bg-primary-50 border-primary-300 text-primary-700' :
+              'bg-white border-slate-200 hover:border-primary-300 hover:bg-primary-50'
+            }`}
+          >
+            <span className={`text-[10px] font-semibold mb-0.5 ${isSelected ? 'text-primary-200' : 'text-slate-400'}`}>
+              {date.toLocaleDateString('en-US', { weekday: 'short' })}
+            </span>
+            <span className={`text-base font-bold ${isToday(date) && !isSelected ? 'text-primary-700' : ''}`}>{date.getDate()}</span>
+            <span className={`text-[10px] ${isSelected ? 'text-primary-200' : 'text-slate-400'}`}>
+              {date.toLocaleDateString('en-US', { month: 'short' })}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+
+      {/* ── Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">Availability</h1>
-          <p className="text-stone-500 mt-1">
-            Manage your blocked times and recurring unavailability
-          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold font-display text-primary-900 tracking-tight">Availability Planner</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Manage your working hours and view high-demand slots.</p>
         </div>
-        <Button
-          onClick={openModal}
-          className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white"
-        >
-          <Plus size={18} className="mr-2" />
-          Block Time
+        <Button onClick={openModal} className="h-10 rounded-xl bg-primary-900 text-white hover:bg-primary-800 gap-2 font-bold text-sm self-start">
+          <CalendarOff size={15} />
+          Block Time Off
         </Button>
       </div>
 
-      {/* Info Card */}
-      <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 flex items-start gap-3">
-        <CheckCircle2 className="w-5 h-5 text-primary-900 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-primary-900">How it works</p>
-          <p className="text-sm text-primary-700 mt-1">
-            Blocked times will automatically prevent parents from booking you
-            during those periods. Use recurring blocks for regular
-            unavailability like weekends.
-          </p>
-        </div>
-      </div>
+      {/* ── Main layout: calendar + sidebar ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
 
-      {/* Availability Blocks List */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
-        </div>
-      ) : blocks.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
-          <CalendarOff className="w-12 h-12 text-stone-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-stone-900 mb-2">
-            No blocked times
-          </h3>
-          <p className="text-stone-500 mb-6">
-            You haven't blocked any times yet. Block times when you're
-            unavailable.
-          </p>
-          <Button
-            onClick={() => setShowModal(true)}
-            className="rounded-xl bg-primary-900 hover:bg-primary-800 text-white"
-          >
-            <Plus size={18} className="mr-2" />
-            Block Time
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {blocks.map((block) => {
-            const start = formatDateTime(block.start_time);
-            const end = formatDateTime(block.end_time);
+        {/* Left: mini calendar + existing blocks */}
+        <div className="space-y-5">
+          {/* Calendar card */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            {loading ? (
+              <div className="h-56 animate-pulse bg-slate-50 rounded-xl" />
+            ) : (
+              <MiniCalendar blocks={blocks} />
+            )}
+          </div>
 
-            return (
-              <div
-                key={block.id}
-                className="bg-white rounded-2xl border border-stone-200 p-5 flex items-center justify-between hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${block.is_recurring
-                      ? 'bg-purple-100 text-purple-600'
-                      : 'bg-orange-100 text-orange-600'
-                      }`}
-                  >
-                    {block.is_recurring ? (
-                      <Repeat size={24} />
-                    ) : (
-                      <CalendarOff size={24} />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-stone-900">
-                        {block.is_recurring
-                          ? formatRecurrencePattern(
-                            block.recurrence_pattern || ''
-                          )
-                          : start.date}
-                      </h3>
-                      {block.is_recurring && (
-                        <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium">
-                          Recurring
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-stone-500">
-                      <span className="flex items-center gap-1">
-                        <Clock size={14} />
-                        {start.time} - {end.time}
-                      </span>
-                      {!block.is_recurring && (
-                        <span className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {start.date}{' '}
-                          {start.date !== end.date && `- ${end.date}`}
-                        </span>
-                      )}
-                    </div>
-                    {block.reason && (
-                      <p className="text-sm text-stone-400 mt-1">
-                        {block.reason}
-                      </p>
-                    )}
-                  </div>
+          {/* Blocks list */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
+              <h2 className="font-bold text-primary-900 text-sm">Blocked Times</h2>
+              <span className="text-xs font-semibold text-slate-400">{blocks.length} block{blocks.length !== 1 ? 's' : ''}</span>
+            </div>
+
+            {loading ? (
+              <div className="p-5 space-y-3">
+                {[...Array(2)].map((_, i) => <div key={i} className="h-14 bg-slate-50 animate-pulse rounded-xl" />)}
+              </div>
+            ) : blocks.length === 0 ? (
+              <div className="p-8 text-center">
+                <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CalendarOff size={18} className="text-slate-400" />
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(block.id)}
-                  disabled={deleting === block.id}
-                  className="text-stone-400 hover:text-red-600 hover:bg-red-50"
-                >
-                  {deleting === block.id ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                  ) : (
-                    <Trash2 size={18} />
-                  )}
+                <p className="text-sm font-semibold text-primary-900">No blocked times</p>
+                <p className="text-xs text-slate-400 mt-1">Block time when you're unavailable.</p>
+                <Button onClick={openModal} variant="outline" className="mt-4 h-8 rounded-xl border-slate-200 text-xs font-semibold">
+                  <Plus size={12} className="mr-1" /> Block Time
                 </Button>
               </div>
-            );
-          })}
+            ) : (
+              <div className="divide-y divide-slate-50">
+                {blocks.map((block) => {
+                  const { date, time } = formatBlockDisplay(block);
+                  return (
+                    <div key={block.id} className="flex items-center gap-3 px-5 py-3.5">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${block.is_recurring ? 'bg-indigo-50' : 'bg-amber-50'}`}>
+                        {block.is_recurring ? <Repeat size={15} className="text-indigo-600" /> : <CalendarOff size={15} className="text-amber-600" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-primary-900 truncate">
+                          {block.is_recurring ? formatRecurrencePattern(block.recurrence_pattern || '') : date}
+                        </p>
+                        <p className="text-xs text-slate-400">{time}{block.reason ? ` · ${block.reason}` : ''}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDelete(block.id)}
+                        disabled={deleting === block.id}
+                        className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"
+                      >
+                        {deleting === block.id
+                          ? <div className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                          : <Trash2 size={14} />}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
-      )}
 
-      {/* Create Block Modal - Enhanced UI */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-stone-100">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {currentStep > 1 && (
-                    <button
-                      onClick={() => setCurrentStep(currentStep - 1)}
-                      className="p-2 hover:bg-stone-100 rounded-xl transition-colors"
-                    >
-                      <ChevronLeft size={20} className="text-stone-500" />
-                    </button>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-                      <CalendarOff className="w-5 h-5 text-primary-900" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-stone-900">
-                        Block Time
-                      </h2>
-                      <p className="text-sm text-stone-500">
-                        Set when you're unavailable
-                      </p>
-                    </div>
-                  </div>
+        {/* Right: demand forecast + quick settings */}
+        <div className="space-y-5">
+          {/* Demand Forecast */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="font-bold text-primary-900 text-sm">Demand Forecast</h2>
+              <button className="text-xs font-semibold text-primary-600 hover:text-primary-800 flex items-center gap-1">
+                Full Report <ChevronRight size={12} />
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+              Based on historical data, these slots have the highest booking requests.
+            </p>
+            <div className="space-y-3">
+              {DEMAND_SLOTS.map((slot) => (
+                <div key={slot.label} className="bg-slate-50 rounded-xl p-3">
+                  <p className="text-xs font-bold text-primary-900 mb-1">{slot.label}</p>
+                  <p className={`text-xl font-black ${slot.color}`}>{slot.pct}%</p>
+                  <p className="text-[10px] text-slate-400">Booking Probability</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Settings */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <h2 className="font-bold text-primary-900 text-sm mb-4">Quick Settings</h2>
+            <div className="space-y-4">
+              {/* Auto-accept toggle */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-primary-900">Auto-Accept Bookings</p>
+                  <p className="text-xs text-slate-400 mt-0.5">During available hours</p>
                 </div>
                 <button
-                  onClick={closeModal}
-                  className="p-2 hover:bg-stone-100 rounded-xl transition-colors"
+                  onClick={() => setAutoAccept(!autoAccept)}
+                  className={`w-11 h-6 rounded-full transition-colors flex-shrink-0 relative ${autoAccept ? 'bg-primary-900' : 'bg-slate-200'}`}
                 >
-                  <X size={20} className="text-stone-500" />
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${autoAccept ? 'translate-x-5' : 'translate-x-0.5'}`} />
                 </button>
               </div>
 
-              {/* Progress Steps */}
-              <div className="flex items-center justify-between mt-4">
-                {[1, 2, 3].map((step) => {
-                  const stepLabels = getStepLabels();
-                  return (
-                    <React.Fragment key={step}>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${currentStep >= step
-                            ? 'bg-primary-900 text-white'
-                            : 'bg-stone-100 text-stone-400'
-                            }`}
-                        >
-                          {currentStep > step ? (
-                            <CheckCircle2 size={16} />
-                          ) : (
-                            step
-                          )}
-                        </div>
-                        <span
-                          className={`hidden sm:block text-xs font-medium ${currentStep >= step
-                            ? 'text-stone-900'
-                            : 'text-stone-400'
-                            }`}
-                        >
-                          {stepLabels[step - 1]}
-                        </span>
+              {/* Sync Calendar */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-primary-900">Sync Calendar</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Google / Apple / Outlook</p>
+                </div>
+                <button className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-primary-50 flex items-center justify-center transition-colors">
+                  <RefreshCw size={14} className="text-slate-500" />
+                </button>
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={() => {}}
+                className="w-full h-9 rounded-xl border-slate-200 text-sm font-semibold text-slate-600"
+              >
+                Edit Default Hours
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Block Time Modal ── */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-xl max-h-[92vh] overflow-y-auto shadow-2xl">
+            {/* Modal header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  {currentStep > 1 && (
+                    <button onClick={() => setCurrentStep(currentStep - 1)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+                      <ChevronLeft size={18} className="text-slate-500" />
+                    </button>
+                  )}
+                  <div>
+                    <h2 className="font-bold text-primary-900 text-lg">Block Time Off</h2>
+                    <p className="text-xs text-slate-400">Set when you're unavailable</p>
+                  </div>
+                </div>
+                <button onClick={closeModal} className="w-8 h-8 rounded-xl hover:bg-slate-100 flex items-center justify-center transition-colors">
+                  <X size={16} className="text-slate-500" />
+                </button>
+              </div>
+
+              {/* Steps */}
+              <div className="flex items-center gap-2">
+                {[1,2,3].map((step) => (
+                  <React.Fragment key={step}>
+                    <div className="flex items-center gap-1.5">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${currentStep >= step ? 'bg-primary-900 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                        {currentStep > step ? <CheckCircle2 size={13} /> : step}
                       </div>
-                      {step < 3 && (
-                        <div
-                          className={`flex-1 h-1 mx-2 rounded-full transition-all ${currentStep > step
-                            ? 'bg-primary-900'
-                            : 'bg-stone-200'
-                            }`}
-                        />
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+                      <span className={`hidden sm:block text-xs font-semibold ${currentStep >= step ? 'text-primary-900' : 'text-slate-400'}`}>
+                        {getStepLabels()[step-1]}
+                      </span>
+                    </div>
+                    {step < 3 && <div className={`flex-1 h-0.5 rounded-full ${currentStep > step ? 'bg-primary-900' : 'bg-slate-100'}`} />}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* Step 1: Block Type Selection */}
+              {/* Step 1 */}
               {currentStep === 1 && (
-                <div className="p-6 md:p-8">
-                  <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                      <Sparkles size={16} className="text-primary-900" />
-                    </div>
-                    <h3 className="text-lg font-bold text-stone-900">
-                      What type of block?
-                    </h3>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+                <div className="p-5 sm:p-6">
+                  <p className="text-sm font-bold text-primary-900 mb-4">What type of block?</p>
+                  <div className="grid grid-cols-2 gap-3">
                     {BLOCK_TYPES.map((type) => {
                       const Icon = type.icon;
                       const isSelected = formData.blockType === type.id;
                       return (
-                        <button
-                          key={type.id}
-                          type="button"
-                          onClick={() =>
-                            setFormData({ ...formData, blockType: type.id })
-                          }
-                          className={`p-6 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-3 hover:scale-[1.02] flex-1 max-w-[220px] ${isSelected
-                            ? type.activeColor
-                            : `${type.color} hover:shadow-md`
-                            }`}
+                        <button key={type.id} type="button"
+                          onClick={() => setFormData({ ...formData, blockType: type.id })}
+                          className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 hover:scale-[1.02] ${isSelected ? type.activeColor : `${type.color} hover:shadow-sm`}`}
                         >
-                          <Icon size={32} />
-                          <div className="text-center">
-                            <span className="font-bold text-base block">
-                              {type.label}
-                            </span>
-                            <span
-                              className={`text-xs mt-1 block ${isSelected ? 'opacity-80' : 'text-stone-500'}`}
-                            >
-                              {type.description}
-                            </span>
-                          </div>
+                          <Icon size={24} />
+                          <span className="font-bold text-sm">{type.label}</span>
+                          <span className={`text-[11px] text-center ${isSelected ? 'opacity-80' : 'text-slate-500'}`}>{type.description}</span>
                         </button>
                       );
                     })}
@@ -520,225 +463,31 @@ export default function AvailabilityPage() {
                 </div>
               )}
 
-              {/* Step 2: Date/Days Selection */}
+              {/* Step 2 */}
               {currentStep === 2 && (
-                <div className="p-6 md:p-8">
+                <div className="p-5 sm:p-6 space-y-5">
                   {formData.blockType === 'recurring' ? (
                     <>
-                      {/* Day Selection for Recurring */}
-                      <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                            <Repeat size={16} className="text-purple-600" />
-                          </div>
-                          <h3 className="text-lg font-bold text-stone-900">
-                            Select Days to Block
-                          </h3>
-                        </div>
-                        <p className="text-sm text-stone-500 mb-4">
-                          These days will be blocked every week
-                        </p>
-                        <DaySelector
-                          selectedDays={formData.selectedDays}
-                          onChange={(days) =>
-                            setFormData({ ...formData, selectedDays: days })
-                          }
-                        />
-                      </div>
-
-                      {/* Starting From Date */}
                       <div>
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                            <CalendarDays
-                              size={16}
-                              className="text-primary-900"
-                            />
-                          </div>
-                          <h3 className="text-lg font-bold text-stone-900">
-                            Starting From
-                          </h3>
-                        </div>
-
-                        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
-                          {availableDates.slice(0, 14).map((date) => {
-                            const dateStr = formatDate(date);
-                            const isSelected = formData.startDate === dateStr;
-                            return (
-                              <button
-                                key={dateStr}
-                                type="button"
-                                onClick={() =>
-                                  setFormData({
-                                    ...formData,
-                                    startDate: dateStr,
-                                  })
-                                }
-                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
-                                  ? 'bg-primary-900 text-white border-primary-900'
-                                  : 'bg-white border-stone-200 hover:border-primary-300 hover:bg-primary-50'
-                                  }`}
-                              >
-                                <span
-                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-primary-100' : 'text-stone-500'}`}
-                                >
-                                  {date.toLocaleDateString('en-US', {
-                                    weekday: 'short',
-                                  })}
-                                </span>
-                                <span
-                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-primary-900' : ''}`}
-                                >
-                                  {date.getDate()}
-                                </span>
-                                <span
-                                  className={`text-xs ${isSelected ? 'text-primary-100' : 'text-stone-400'}`}
-                                >
-                                  {date.toLocaleDateString('en-US', {
-                                    month: 'short',
-                                  })}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
+                        <p className="text-sm font-bold text-primary-900 mb-3">Select Days to Block</p>
+                        <p className="text-xs text-slate-400 mb-3">These days will be blocked every week</p>
+                        <DaySelector selectedDays={formData.selectedDays} onChange={(days) => setFormData({ ...formData, selectedDays: days })} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-primary-900 mb-3">Starting From</p>
+                        <DatePicker field="startDate" />
                       </div>
                     </>
                   ) : (
                     <>
-                      {/* Date Selection for One-Time Block */}
-                      <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                            <Calendar size={16} className="text-orange-600" />
-                          </div>
-                          <h3 className="text-lg font-bold text-stone-900">
-                            Select Start Date
-                          </h3>
-                        </div>
-
-                        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
-                          {availableDates.map((date) => {
-                            const dateStr = formatDate(date);
-                            const isSelected = formData.startDate === dateStr;
-                            return (
-                              <button
-                                key={dateStr}
-                                type="button"
-                                onClick={() =>
-                                  setFormData({
-                                    ...formData,
-                                    startDate: dateStr,
-                                  })
-                                }
-                                className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
-                                  ? 'bg-primary-900 text-white border-primary-900'
-                                  : 'bg-white border-stone-200 hover:border-primary-300 hover:bg-primary-50'
-                                  }`}
-                              >
-                                <span
-                                  className={`text-xs font-medium mb-1 ${isSelected ? 'text-primary-100' : 'text-stone-500'}`}
-                                >
-                                  {date.toLocaleDateString('en-US', {
-                                    weekday: 'short',
-                                  })}
-                                </span>
-                                <span
-                                  className={`text-xl font-bold ${isToday(date) && !isSelected ? 'text-primary-900' : ''}`}
-                                >
-                                  {date.getDate()}
-                                </span>
-                                <span
-                                  className={`text-xs ${isSelected ? 'text-primary-100' : 'text-stone-400'}`}
-                                >
-                                  {date.toLocaleDateString('en-US', {
-                                    month: 'short',
-                                  })}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
+                      <div>
+                        <p className="text-sm font-bold text-primary-900 mb-3">Select Start Date</p>
+                        <DatePicker field="startDate" />
                       </div>
-
-                      {/* End Date Selection (Optional) */}
                       {formData.startDate && (
                         <div>
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
-                              <Calendar size={16} className="text-stone-600" />
-                            </div>
-                            <h3 className="text-lg font-bold text-stone-900">
-                              End Date (Optional)
-                            </h3>
-                          </div>
-                          <p className="text-sm text-stone-500 mb-4">
-                            Leave empty for a single day block
-                          </p>
-
-                          <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2">
-                            {availableDates
-                              .filter(
-                                (date) => formatDate(date) >= formData.startDate
-                              )
-                              .map((date) => {
-                                const dateStr = formatDate(date);
-                                const isSelected = formData.endDate === dateStr;
-                                const isStartDate =
-                                  formData.startDate === dateStr;
-                                return (
-                                  <button
-                                    key={dateStr}
-                                    type="button"
-                                    onClick={() =>
-                                      setFormData({
-                                        ...formData,
-                                        endDate: isSelected ? '' : dateStr,
-                                      })
-                                    }
-                                    className={`flex-shrink-0 flex flex-col items-center p-3 rounded-xl border-2 transition-all min-w-[70px] ${isSelected
-                                      ? 'bg-stone-700 text-white border-stone-700'
-                                      : isStartDate
-                                        ? 'bg-primary-50 border-primary-300 text-primary-700'
-                                        : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50'
-                                      }`}
-                                  >
-                                    <span
-                                      className={`text-xs font-medium mb-1 ${isSelected
-                                        ? 'text-stone-300'
-                                        : isStartDate
-                                          ? 'text-primary-500'
-                                          : 'text-stone-500'
-                                        }`}
-                                    >
-                                      {date.toLocaleDateString('en-US', {
-                                        weekday: 'short',
-                                      })}
-                                    </span>
-                                    <span className={`text-xl font-bold`}>
-                                      {date.getDate()}
-                                    </span>
-                                    <span
-                                      className={`text-xs ${isSelected
-                                        ? 'text-stone-300'
-                                        : isStartDate
-                                          ? 'text-primary-500'
-                                          : 'text-stone-400'
-                                        }`}
-                                    >
-                                      {date.toLocaleDateString('en-US', {
-                                        month: 'short',
-                                      })}
-                                    </span>
-                                    {isStartDate && !isSelected && (
-                                      <span className="text-[10px] font-medium mt-1">
-                                        Start
-                                      </span>
-                                    )}
-                                  </button>
-                                );
-                              })}
-                          </div>
+                          <p className="text-sm font-bold text-primary-900 mb-1">End Date <span className="text-slate-400 font-normal">(optional)</span></p>
+                          <DatePicker field="endDate" />
                         </div>
                       )}
                     </>
@@ -746,140 +495,59 @@ export default function AvailabilityPage() {
                 </div>
               )}
 
-              {/* Step 3: Time Selection & Details */}
+              {/* Step 3 */}
               {currentStep === 3 && (
-                <div className="p-6 md:p-8">
-                  {/* Start Time Selection */}
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                        <Clock size={16} className="text-primary-900" />
-                      </div>
-                      <h3 className="text-lg font-bold text-stone-900">
-                        Start Time
-                      </h3>
-                    </div>
-
-                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                      {TIME_SLOTS.map((time) => {
-                        const isSelected = formData.startTime === time;
-                        return (
-                          <button
-                            key={`start-${time}`}
-                            type="button"
-                            onClick={() =>
-                              setFormData({ ...formData, startTime: time })
-                            }
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isSelected
-                              ? 'bg-primary-900 text-white border-primary-900'
-                              : 'bg-white border-stone-200 text-stone-700 hover:border-primary-300 hover:bg-primary-50'
-                              }`}
-                          >
-                            {time}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* End Time Selection */}
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
-                        <Clock size={16} className="text-stone-600" />
-                      </div>
-                      <h3 className="text-lg font-bold text-stone-900">
-                        End Time
-                      </h3>
-                    </div>
-
-                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                      {TIME_SLOTS.map((time) => {
-                        const isSelected = formData.endTime === time;
-                        const isDisabled = !!(
-                          formData.startTime && time <= formData.startTime
-                        );
-                        return (
-                          <button
-                            key={`end-${time}`}
-                            type="button"
-                            onClick={() =>
-                              !isDisabled &&
-                              setFormData({ ...formData, endTime: time })
-                            }
-                            disabled={isDisabled}
-                            className={`py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all ${isDisabled
-                              ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed'
-                              : isSelected
-                                ? 'bg-stone-700 text-white border-stone-700'
-                                : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400 hover:bg-stone-50'
-                              }`}
-                          >
-                            {time}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Reason (Optional) */}
+                <div className="p-5 sm:p-6 space-y-5">
                   <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center">
-                        <FileText size={16} className="text-stone-600" />
-                      </div>
-                      <h3 className="text-lg font-bold text-stone-900">
-                        Reason (Optional)
-                      </h3>
+                    <p className="text-sm font-bold text-primary-900 mb-3">Start Time</p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      {TIME_SLOTS.map((t) => (
+                        <button key={`s-${t}`} type="button" onClick={() => setFormData({ ...formData, startTime: t })}
+                          className={`py-2.5 rounded-xl text-xs font-semibold border-2 transition-all ${formData.startTime === t ? 'bg-primary-900 text-white border-primary-900' : 'bg-white border-slate-200 text-slate-700 hover:border-primary-300 hover:bg-primary-50'}`}
+                        >{t}</button>
+                      ))}
                     </div>
-
-                    <input
-                      type="text"
-                      value={formData.reason}
-                      onChange={(e) =>
-                        setFormData({ ...formData, reason: e.target.value })
-                      }
-                      placeholder="e.g., Personal appointment, Weekend off, Vacation"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none text-stone-700 placeholder:text-stone-400"
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-primary-900 mb-3">End Time</p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      {TIME_SLOTS.map((t) => {
+                        const disabled = !!(formData.startTime && t <= formData.startTime);
+                        return (
+                          <button key={`e-${t}`} type="button" disabled={disabled} onClick={() => !disabled && setFormData({ ...formData, endTime: t })}
+                            className={`py-2.5 rounded-xl text-xs font-semibold border-2 transition-all ${disabled ? 'opacity-30 cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400' : formData.endTime === t ? 'bg-primary-800 text-white border-primary-800' : 'bg-white border-slate-200 text-slate-700 hover:border-primary-300 hover:bg-primary-50'}`}
+                          >{t}</button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-primary-900 mb-2">Reason <span className="text-slate-400 font-normal">(optional)</span></p>
+                    <input type="text" value={formData.reason}
+                      onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                      placeholder="e.g., Personal appointment, Vacation"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none text-sm text-slate-700 placeholder:text-slate-400"
                     />
                   </div>
-
-                  {/* Summary Card */}
                   {formData.startTime && formData.endTime && (
-                    <div className="mt-6 p-4 bg-stone-50 rounded-2xl border border-stone-200">
-                      <p className="text-sm font-medium text-stone-700 mb-2">
-                        Summary
-                      </p>
+                    <div className="p-4 bg-primary-50 rounded-2xl border border-primary-100">
+                      <p className="text-xs font-bold text-primary-900 mb-2">Summary</p>
                       <div className="flex flex-wrap gap-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${formData.blockType === 'recurring'
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-orange-100 text-orange-700'
-                            }`}
-                        >
-                          {formData.blockType === 'recurring'
-                            ? 'Recurring'
-                            : 'One-Time'}
+                        <span className="px-2.5 py-1 rounded-full bg-primary-100 text-primary-700 text-[11px] font-bold">
+                          {formData.blockType === 'recurring' ? 'Recurring' : 'One-Time'}
                         </span>
                         {formData.blockType === 'recurring' ? (
-                          <span className="px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-medium">
-                            {formData.selectedDays
-                              .map((d) => d.slice(0, 3))
-                              .join(', ')}
+                          <span className="px-2.5 py-1 rounded-full bg-white text-slate-700 text-[11px] font-bold border border-slate-200">
+                            {formData.selectedDays.map((d) => d.slice(0,3)).join(', ')}
                           </span>
                         ) : (
-                          <span className="px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-medium">
-                            {new Date(formData.startDate).toLocaleDateString(
-                              'en-US',
-                              { month: 'short', day: 'numeric' }
-                            )}
-                            {formData.endDate &&
-                              formData.endDate !== formData.startDate &&
-                              ` - ${new Date(formData.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+                          <span className="px-2.5 py-1 rounded-full bg-white text-slate-700 text-[11px] font-bold border border-slate-200">
+                            {new Date(formData.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {formData.endDate && formData.endDate !== formData.startDate && ` – ${new Date(formData.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
                           </span>
                         )}
-                        <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-medium">
-                          {formData.startTime} - {formData.endTime}
+                        <span className="px-2.5 py-1 rounded-full bg-white text-primary-700 text-[11px] font-bold border border-primary-200">
+                          {formData.startTime} – {formData.endTime}
                         </span>
                       </div>
                     </div>
@@ -887,44 +555,23 @@ export default function AvailabilityPage() {
                 </div>
               )}
 
-              {/* Navigation Buttons */}
-              <div className="p-6 border-t border-stone-100 flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeModal}
-                  className="flex-1 rounded-xl"
-                >
+              {/* Footer nav */}
+              <div className="p-5 border-t border-slate-100 flex gap-3">
+                <Button type="button" variant="outline" onClick={closeModal} className="flex-1 h-10 rounded-xl border-slate-200 text-sm">
                   Cancel
                 </Button>
-
                 {currentStep < 3 ? (
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep + 1)}
-                    disabled={
-                      currentStep === 1
-                        ? !canProceedToStep2
-                        : !canProceedToStep3
-                    }
-                    className="flex-1 rounded-xl bg-primary-900 hover:bg-primary-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  <Button type="button" onClick={() => setCurrentStep(currentStep + 1)}
+                    disabled={currentStep === 1 ? !canProceedToStep2 : !canProceedToStep3}
+                    className="flex-1 h-10 rounded-xl bg-primary-900 text-white text-sm font-bold disabled:opacity-40"
                   >
                     Continue
                   </Button>
                 ) : (
-                  <Button
-                    type="submit"
-                    disabled={submitting || !canSubmit}
-                    className="flex-1 rounded-xl bg-primary-900 hover:bg-primary-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  <Button type="submit" disabled={submitting || !canSubmit}
+                    className="flex-1 h-10 rounded-xl bg-primary-900 text-white text-sm font-bold disabled:opacity-40"
                   >
-                    {submitting ? (
-                      <span className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Creating...
-                      </span>
-                    ) : (
-                      'Block Time'
-                    )}
+                    {submitting ? <span className="flex items-center gap-2"><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Saving…</span> : 'Block Time'}
                   </Button>
                 )}
               </div>

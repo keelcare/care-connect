@@ -12,13 +12,18 @@ import {
   MapPin,
   MessageSquare,
   Star,
-  ShieldCheck,
-  ArrowRight,
   Info,
-  CalendarCheck,
   AlertCircle,
   Play,
+  CheckCircle2,
   CheckCircle,
+  Users,
+  IndianRupee,
+  Navigation,
+  Phone,
+  Mail,
+  Wallet,
+  Receipt,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -29,7 +34,64 @@ import { CancellationModal } from '@/components/ui/CancellationModal';
 import { Modal } from '@/components/ui/Modal';
 import { toast } from 'sonner';
 
-export default function BookingDetailsPage() {
+/* ── helpers ─────────────────────────────────────────────────────── */
+
+function formatTime(iso?: string | null) {
+  if (!iso) return '—';
+  try {
+    if (iso.includes('T')) return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const [h, m] = iso.split(':').map(Number);
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+  } catch { return iso; }
+}
+
+function formatDate(iso?: string | null) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  } catch { return iso; }
+}
+
+function formatDateShort(iso?: string | null) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return iso; }
+}
+
+function durationHours(start?: string | null, end?: string | null): number {
+  if (!start || !end) return 0;
+  try { return Math.round((new Date(end).getTime() - new Date(start).getTime()) / 3600000 * 10) / 10; }
+  catch { return 0; }
+}
+
+const STATUS_META: Record<string, { label: string; dot: string; text: string; bg: string; border: string }> = {
+  CONFIRMED:   { label: 'Confirmed',   dot: 'bg-primary-600',             text: 'text-primary-700',  bg: 'bg-primary-50',  border: 'border-primary-100' },
+  ACCEPTED:    { label: 'Confirmed',   dot: 'bg-primary-600',             text: 'text-primary-700',  bg: 'bg-primary-50',  border: 'border-primary-100' },
+  ASSIGNED:    { label: 'Assigned',    dot: 'bg-primary-400',             text: 'text-primary-600',  bg: 'bg-primary-50',  border: 'border-primary-100' },
+  IN_PROGRESS: { label: 'In Progress', dot: 'bg-amber-500 animate-pulse', text: 'text-amber-700',    bg: 'bg-amber-50',    border: 'border-amber-100'   },
+  COMPLETED:   { label: 'Completed',   dot: 'bg-emerald-500',             text: 'text-emerald-700',  bg: 'bg-emerald-50',  border: 'border-emerald-100' },
+  CANCELLED:   { label: 'Cancelled',   dot: 'bg-red-400',                 text: 'text-red-600',      bg: 'bg-red-50',      border: 'border-red-100'     },
+};
+
+/* ── timeline steps (nanny perspective) ─────────────────────────── */
+
+const TIMELINE = [
+  { key: 'CONFIRMED',   label: 'Booking Confirmed' },
+  { key: 'IN_PROGRESS', label: 'Job Started' },
+  { key: 'COMPLETED',   label: 'Job Completed' },
+];
+
+const STEP_ORDER: Record<string, number> = {
+  CONFIRMED: 0, ACCEPTED: 0, ASSIGNED: 0,
+  IN_PROGRESS: 1,
+  COMPLETED: 2,
+  CANCELLED: -1,
+};
+
+/* ── main page ───────────────────────────────────────────────────── */
+
+export default function NannyBookingDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -40,7 +102,6 @@ export default function BookingDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
@@ -54,424 +115,472 @@ export default function BookingDetailsPage() {
         api.reviews.getByBooking(bookingId),
       ]);
       setBooking(bookingData);
-      if (reviewsData && reviewsData.length > 0) {
-        setReview(reviewsData[0]);
-      }
+      setReview(reviewsData?.[0] ?? null);
     } catch (err) {
-      console.error('Failed to fetch booking details:', err);
       setError(err instanceof Error ? err.message : 'Failed to load details');
     } finally {
       setLoading(false);
     }
   }, [bookingId]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  const handleStartBooking = async () => {
-    if (!booking) return;
-
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
-      return;
-    }
-
+  const handleStart = async () => {
+    if (!booking || !navigator.geolocation) { toast.error('Geolocation not supported'); return; }
     setActionLoading('starting');
-
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
+      async ({ coords }) => {
         try {
-          const { latitude, longitude } = position.coords;
-          const updated = await api.bookings.start(booking.id, { latitude, longitude });
+          const updated = await api.bookings.start(booking.id, { latitude: coords.latitude, longitude: coords.longitude });
           setBooking(updated);
-          toast.success("Job started successfully!");
-        } catch (err: any) {
-          console.error('Failed to start booking:', err);
-          toast.error(err.message || 'Failed to start booking');
-        } finally {
-          setActionLoading(null);
-        }
+          toast.success('Job started successfully!');
+        } catch (err: any) { toast.error(err.message || 'Failed to start job'); }
+        finally { setActionLoading(null); }
       },
-      (error) => {
-        setActionLoading(null);
-        toast.error("Please allow location access to start the job.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
+      () => { toast.error('Please allow location access to start the job.'); setActionLoading(null); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
   };
 
-  const handleCompleteBooking = async () => {
+  const handleComplete = async () => {
     if (!booking) return;
     try {
       setActionLoading('completing');
       const updated = await api.bookings.complete(booking.id);
       setBooking(updated);
-    } catch (err) {
-      console.error('Failed to complete booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to complete booking');
-    } finally {
-      setActionLoading(null);
-    }
+      toast.success('Job marked as complete!');
+    } catch (err: any) { toast.error(err.message || 'Failed to complete job'); }
+    finally { setActionLoading(null); }
   };
 
-  const handleCancelBooking = async (reason: string) => {
+  const handleCancel = async (reason: string) => {
     if (!booking) return;
     try {
       setActionLoading('cancelling');
       const updated = await api.bookings.cancel(booking.id, { reason });
       setBooking(updated);
       setIsCancelModalOpen(false);
-    } catch (err) {
-      console.error('Failed to cancel booking:', err);
-      // alert(err instanceof Error ? err.message : 'Failed to cancel');
-      throw err;
-    } finally {
-      setActionLoading(null);
-    }
+    } catch (err) { throw err; }
+    finally { setActionLoading(null); }
   };
 
-  const formatTime = (timeInput?: string) => {
-    if (!timeInput) return '—';
-    try {
-      if (timeInput.includes('T')) {
-        const date = new Date(timeInput);
-        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-      }
-      if (timeInput.includes(':')) {
-        const parts = timeInput.split(':');
-        let h = parseInt(parts[0], 10);
-        let m = parseInt(parts[1], 10);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const h12 = h % 12 || 12;
-        return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
-      }
-      return timeInput;
-    } catch (e) {
-      return timeInput;
-    }
-  };
-
+  /* ── Loading ── */
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <Spinner />
       </div>
     );
   }
 
+  /* ── Error ── */
   if (error || !booking) {
     return (
-      <div className="max-w-3xl mx-auto py-20 px-6 text-center">
-        <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-          <AlertCircle size={40} />
+      <div className="max-w-md mx-auto py-20 text-center">
+        <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle size={24} className="text-red-500" />
         </div>
-        <h2 className="text-2xl font-bold text-primary-900 mb-2">Booking Not Found</h2>
-        <p className="text-slate-500 mb-8">{error || "We couldn't find the details for this booking."}</p>
-        <Button onClick={() => router.push('/dashboard/bookings')} className="bg-primary-900">
-          Back to All Bookings
+        <h2 className="font-bold text-primary-900 text-lg mb-2">Booking Not Found</h2>
+        <p className="text-slate-500 text-sm mb-6">{error || "We couldn't find this booking."}</p>
+        <Button onClick={() => router.push('/dashboard/bookings')} className="bg-primary-900 text-white rounded-xl">
+          Back to Bookings
         </Button>
       </div>
     );
   }
 
-  const currentStatus = booking.status.toUpperCase();
-  const otherParty = booking.parent;
+  /* ── Derived data ── */
+  const currentStatus = (booking.status ?? 'PENDING').toUpperCase();
+  const meta = STATUS_META[currentStatus] ?? STATUS_META['CONFIRMED'];
+  const currentStep = STEP_ORDER[currentStatus] ?? 0;
+  const isCancelled = currentStatus === 'CANCELLED';
+
+  const parent = booking.parent ?? booking.users_bookings_nanny_idTousers; // fallback
+  const parentName = parent?.profiles
+    ? `${parent.profiles.first_name ?? ''} ${parent.profiles.last_name ?? ''}`.trim()
+    : 'Client';
+  const parentInitial = (parent?.profiles?.first_name?.[0] ?? 'C').toUpperCase();
+
+  const serviceRequest = (booking as any).service_requests ?? null;
+  const category = serviceRequest?.category ?? 'CC';
+  const numChildren = serviceRequest?.num_children ?? 1;
+  const location = serviceRequest?.location?.address ?? parent?.profiles?.address ?? null;
+  const specialReqs = serviceRequest?.special_requirements ?? null;
+
+  const hourlyRate = Number(booking.hourly_rate ?? booking.nanny?.nanny_details?.hourly_rate ?? 0);
+  const totalAmount = Number(booking.total_amount ?? 0);
+  const hours = Number((booking as any).hours_per_day) || durationHours(booking.start_time, booking.end_time);
+
+  const bookingIdShort = `#${booking.id.slice(-8).toUpperCase()}`;
 
   return (
-    <div className="max-w-7xl mx-auto py-10">
-      {/* Breadcrumbs & Navigation */}
-      <div className="flex items-center gap-4 mb-10">
+    <div className="space-y-6">
+
+      {/* ── Header ── */}
+      <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/dashboard/bookings')}
-          className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary-700 hover:border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
+          className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary-700 hover:border-primary-200 hover:bg-primary-50 transition-all shadow-sm flex-shrink-0"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
         </button>
-        <div className="flex flex-col">
-          <h1 className="text-3xl font-bold font-display text-primary-900 tracking-tight">
-            Booking Details
-          </h1>
-          <p className="text-slate-400 text-sm font-mono uppercase tracking-[0.2em] mt-1">
-            ID: {booking.id}
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] font-mono">
+            Booking {bookingIdShort}
           </p>
+          <h1 className="text-xl sm:text-2xl font-bold font-display text-primary-900 tracking-tight truncate">
+            {category === 'CC' ? 'Child Care' : category === 'ST' ? 'Shadow Teacher' : 'Care'} Session
+          </h1>
         </div>
-
-        <div className="ml-auto flex items-center gap-3">
-          <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${currentStatus === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-              currentStatus === 'CANCELLED' ? 'bg-red-50 text-red-700 border-red-100' :
-                currentStatus === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                  'bg-primary-50 text-primary-700 border-primary-100'
-            }`}>
-            {currentStatus.replace('_', ' ')}
-          </div>
-        </div>
+        <span className={`ml-auto flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${meta.bg} ${meta.text} ${meta.border}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+          {meta.label}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-10">
-          {/* Booking Summary Card */}
-          <div className="bg-white rounded-[32px] border border-slate-100 shadow-soft-xl overflow-hidden group">
-            <div className="h-2 bg-gradient-to-r from-primary-600 via-primary-400 to-accent-500"></div>
-            <div className="p-8 md:p-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-8">
-                  <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <CalendarCheck size={24} />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Scheduled Date</span>
-                      <p className="text-primary-900 font-bold text-xl font-display leading-tight">
-                        {new Date(booking.start_time).toLocaleDateString(undefined, {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </p>
-                    </div>
-                  </div>
+      {/* ── Two-column layout ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 lg:gap-6">
 
-                  <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <Clock size={24} />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Time & Duration</span>
-                      <p className="text-primary-900 font-bold text-xl font-display leading-tight">
-                        {formatTime(booking.start_time)}
-                        {booking.end_time && (
-                          <span className="text-slate-400 font-normal text-sm ml-2 block md:inline mt-1 md:mt-0">
-                            (until {formatTime(booking.end_time)})
-                          </span>
-                        )}
-                      </p>
-                    </div>
+        {/* ═══ LEFT ═══ */}
+        <div className="space-y-5">
+
+          {/* Session Details card */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-primary-700 via-primary-500 to-accent" />
+            <div className="p-5 sm:p-6">
+              <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Session Details</h2>
+
+              {/* Date + time grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</p>
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={13} className="text-primary-500 flex-shrink-0" />
+                    <span className="text-sm font-semibold text-primary-900">{formatDateShort(booking.start_time)}</span>
                   </div>
                 </div>
-
-                <div className="space-y-8">
-                  <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <MapPin size={24} />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Parent's Location</span>
-                      <p className="text-primary-900 font-bold text-lg font-display leading-snug">
-                        {otherParty?.profiles?.address || 'Verified Home Listing'}
-                      </p>
-                    </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Start</p>
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={13} className="text-primary-500 flex-shrink-0" />
+                    <span className="text-sm font-semibold text-primary-900">{formatTime(booking.start_time)}</span>
                   </div>
-
-                  <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-700 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                      <ShieldCheck size={24} />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Job Details</span>
-                      <p className="text-primary-900 font-bold text-lg font-display leading-tight">
-                        {booking.job?.title || 'Child Care Booking'}
-                      </p>
-                    </div>
+                </div>
+                {booking.end_time && (
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">End</p>
+                    <span className="text-sm font-semibold text-primary-900">{formatTime(booking.end_time)}</span>
                   </div>
+                )}
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Duration</p>
+                  <span className="text-sm font-semibold text-primary-900">
+                    {hours > 0 ? `${hours} hr${hours !== 1 ? 's' : ''}` : '—'}
+                  </span>
                 </div>
               </div>
 
-              {booking.job?.description && (
-                <div className="mt-10 pt-8 border-t border-slate-50">
-                  <div className="flex items-center gap-2 mb-4 text-primary-900 font-bold text-sm uppercase tracking-wider">
-                    <Info size={16} className="text-primary-600" />
-                    Job Description
+              {/* Children + location */}
+              <div className="space-y-3 pt-4 border-t border-slate-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                    <Users size={14} className="text-indigo-600" />
                   </div>
-                  <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 text-slate-700 leading-relaxed text-lg italic shadow-inner">
-                    "{booking.job.description}"
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Children</p>
+                    <p className="text-sm font-semibold text-primary-900">
+                      {numChildren} {numChildren === 1 ? 'child' : 'children'}
+                    </p>
                   </div>
+                </div>
+
+                {location && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                      <MapPin size={14} className="text-emerald-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location</p>
+                      <p className="text-sm font-semibold text-primary-900 truncate">{location}</p>
+                    </div>
+                    <button className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-800 transition-colors flex-shrink-0">
+                      <Navigation size={11} /> Directions
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Special requirements */}
+              {specialReqs && (
+                <div className="mt-4 pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Info size={12} className="text-primary-500" />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Special Requirements</p>
+                  </div>
+                  <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3 italic leading-relaxed">
+                    "{specialReqs}"
+                  </p>
                 </div>
               )}
 
+              {/* Cancellation reason */}
               {booking.cancellation_reason && (
-                <div className="mt-10 pt-8 border-t border-red-50">
-                  <div className="flex items-center gap-2 mb-4 text-red-600 font-bold text-sm uppercase tracking-wider">
-                    <AlertCircle size={16} />
-                    Cancellation Reason
+                <div className="mt-4 pt-4 border-t border-red-50">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <AlertCircle size={12} className="text-red-500" />
+                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Cancellation Reason</p>
                   </div>
-                  <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-red-700 leading-relaxed font-medium">
+                  <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3 leading-relaxed">
                     {booking.cancellation_reason}
+                  </p>
+                </div>
+              )}
+
+              {/* Job description */}
+              {booking.job?.description && (
+                <div className="mt-4 pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Info size={12} className="text-primary-500" />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Job Notes</p>
                   </div>
+                  <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3 italic leading-relaxed">
+                    "{booking.job.description}"
+                  </p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Parent Profile Card */}
-          {otherParty && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold font-display tracking-tight uppercase tracking-[0.1em] text-sm px-2">Assigned Parent</h2>
-              <div className="bg-white rounded-[32px] border border-slate-100 p-8 shadow-soft-xl flex flex-col md:flex-row md:items-center gap-6">
-                <Avatar
-                  src={otherParty.profiles?.profile_image_url || undefined}
-                  alt={otherParty.profiles?.first_name || 'Parent'}
-                  fallback={otherParty.profiles?.first_name?.[0] || 'P'}
-                  size="xl"
-                  ringColor="bg-slate-100"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-2xl font-bold text-primary-900">{otherParty.profiles?.first_name} {otherParty.profiles?.last_name}</h3>
+          {/* Parent / Client card */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Client</h2>
+            <div className="flex items-start gap-4">
+              {/* Avatar */}
+              <div className="w-12 h-12 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {parent?.profiles?.profile_image_url ? (
+                  <img src={parent.profiles.profile_image_url} alt={parentName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-lg font-bold text-primary-700">{parentInitial}</span>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-primary-900 text-base">{parentName}</p>
+                {parent?.email && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500">
+                    <Mail size={11} className="flex-shrink-0" />
+                    <span className="truncate">{parent.email}</span>
                   </div>
-                  <p className="text-slate-500 mb-4">{otherParty.email}</p>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-1.5 text-slate-600 text-sm bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                      <MapPin size={14} className="text-slate-400" />
-                      {otherParty.profiles?.address || 'Location Verified'}
-                    </div>
-                    {otherParty.profiles?.phone && (
-                      <div className="text-slate-600 text-sm bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                        {otherParty.profiles.phone}
-                      </div>
-                    )}
+                )}
+                {parent?.profiles?.phone && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500">
+                    <Phone size={11} className="flex-shrink-0" />
+                    <span>{parent.profiles.phone}</span>
                   </div>
-                </div>
-                <Button
-                  onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
-                  className="rounded-2xl h-12 px-6 bg-accent-500 hover:bg-accent-600 text-white shadow-lg shadow-accent-500/10 flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0"
-                >
-                  <MessageSquare size={18} />
-                  Message
-                </Button>
+                )}
+                {location && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500">
+                    <MapPin size={11} className="flex-shrink-0" />
+                    <span className="truncate">{location}</span>
+                  </div>
+                )}
               </div>
             </div>
-          )}
 
-          {/* Review Card if exists */}
+            <Button
+              onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
+              variant="outline"
+              className="w-full h-9 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2 mt-4"
+            >
+              <MessageSquare size={14} />
+              Message Client
+            </Button>
+          </div>
+
+          {/* Review (if one exists) */}
           {review && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold font-display tracking-tight uppercase tracking-[0.1em] text-sm px-2">Booking Review</h2>
-              <div className="bg-white rounded-[32px] border border-slate-100 p-8 shadow-soft-xl">
-                <ReviewCard review={review} />
-              </div>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+              <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Client Review</h2>
+              <ReviewCard review={review} />
             </div>
           )}
         </div>
 
-        {/* Sidebar Actions Area */}
-        <div className="space-y-8">
-          <div className="bg-white rounded-[32px] border border-slate-100 shadow-soft-xl p-8 sticky top-24">
-            <h3 className="text-sm font-black text-primary-900 uppercase tracking-[0.2em] mb-8 pb-4 border-b border-slate-100">Nanny Actions</h3>
+        {/* ═══ RIGHT ═══ */}
+        <div className="space-y-5">
 
-            <div className="space-y-4">
-              {actionLoading ? (
-                <div className="flex justify-center p-4">
-                  <Spinner />
+          {/* Job Status timeline */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-5">Job Status</h2>
+
+            {isCancelled ? (
+              <div className="flex items-center gap-3 py-1">
+                <AlertCircle size={18} className="text-red-500 flex-shrink-0" />
+                <p className="text-sm font-semibold text-red-600">This booking was cancelled.</p>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="absolute left-[9px] top-3 bottom-3 w-px bg-slate-100" />
+                <div className="space-y-5">
+                  {TIMELINE.map((step, idx) => {
+                    const done   = currentStep > idx;
+                    const active = currentStep === idx;
+                    return (
+                      <div key={step.key} className="flex items-start gap-3 relative">
+                        <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 relative z-10 border-2 transition-all ${
+                          done   ? 'bg-emerald-500 border-emerald-500' :
+                          active ? 'bg-white border-primary-600 shadow-[0_0_0_3px] shadow-primary-100' :
+                                   'bg-white border-slate-200'
+                        }`}>
+                          {done   && <CheckCircle2 size={11} className="text-white" />}
+                          {active && <div className="w-2 h-2 rounded-full bg-primary-600" />}
+                        </div>
+                        <div className="flex-1">
+                          <p className={`text-sm font-semibold ${done ? 'text-emerald-700' : active ? 'text-primary-900' : 'text-slate-300'}`}>
+                            {step.label}
+                          </p>
+                          {active && (
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {step.key === 'IN_PROGRESS' ? `Expected end: ${formatTime(booking.end_time)}` : 'Current status'}
+                            </p>
+                          )}
+                          {done && idx === 0 && (
+                            <p className="text-xs text-slate-400 mt-0.5">{formatDateShort(booking.start_time)}</p>
+                          )}
+                          {done && idx === 2 && (booking as any).actual_end_time && (
+                            <p className="text-xs text-slate-400 mt-0.5">{formatTime((booking as any).actual_end_time)}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : (
-                <>
-                  {booking.status === 'CONFIRMED' && (
-                    <Button
-                      onClick={handleStartBooking}
-                      className="w-full h-14 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-bold shadow-lg shadow-emerald-500/10 flex items-center justify-between px-6 group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Play size={18} fill="currentColor" />
-                        Start This Job
-                      </div>
-                      <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
-                    </Button>
-                  )}
-
-                  {booking.status === 'IN_PROGRESS' && (
-                    <Button
-                      onClick={handleCompleteBooking}
-                      className="w-full h-14 rounded-2xl bg-primary-900 text-white hover:bg-primary-800 transition-all font-bold shadow-lg shadow-primary-900/10 flex items-center justify-between px-6 group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <CheckCircle size={18} />
-                        Mark as Complete
-                      </div>
-                      <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
-                    </Button>
-                  )}
-
-                  {['CONFIRMED', 'IN_PROGRESS'].includes(booking.status) && (
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsCancelModalOpen(true)}
-                      className="w-full h-14 rounded-2xl border-red-50 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all font-bold shadow-sm flex items-center gap-3 px-6"
-                    >
-                      <AlertCircle size={18} />
-                      Cancel Job
-                    </Button>
-                  )}
-
-                  {booking.status === 'COMPLETED' && !review && (
-                    <Button
-                      onClick={() => setIsReviewModalOpen(true)}
-                      className="w-full h-14 rounded-2xl bg-amber-500 text-white hover:bg-amber-600 transition-all font-bold shadow-lg shadow-amber-500/10 flex items-center gap-3 px-6"
-                    >
-                      <Star size={18} />
-                      Leave a Review
-                    </Button>
-                  )}
-                </>
-              )}
-
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
-                className="w-full h-14 rounded-2xl border-slate-100 text-slate-600 hover:bg-slate-50 transition-all font-bold shadow-sm flex items-center gap-3 px-6"
-              >
-                <MessageSquare size={18} />
-                Booking Chat
-              </Button>
-            </div>
-
-            {/* Price Metadata */}
-            <div className="mt-10 pt-8 border-t border-slate-50 space-y-4">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-400">
-                <span>Your Hourly Rate</span>
-                <span className="text-primary-900">₹{booking.nanny?.nanny_details?.hourly_rate || '25'}</span>
               </div>
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-400">
-                <span>Total Earnings</span>
-                <span className="text-emerald-600">₹{(Number(booking.nanny?.nanny_details?.hourly_rate || 25) * 4).toFixed(0)}</span>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Help Overlay */}
-          <div className="bg-gradient-to-br from-primary-900 to-primary-800 rounded-[32px] p-8 text-white shadow-soft-xl relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors duration-500"></div>
-            <h4 className="text-lg font-bold font-display mb-2 relative z-10">Caregiver Support</h4>
-            <p className="text-primary-100/70 text-sm leading-relaxed mb-6 relative z-10">Need help with this booking? Our team is here to assist our nannies 24/7.</p>
+          {/* Earnings summary */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Earnings</h2>
+
+            <div className="space-y-2.5">
+              {hourlyRate > 0 && hours > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">{hours} hr{hours !== 1 ? 's' : ''} × ₹{hourlyRate}/hr</span>
+                  <span className="font-semibold text-primary-900">₹{(hourlyRate * hours).toLocaleString('en-IN')}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span className="font-bold text-primary-900 text-sm">Total</span>
+              <span className="text-xl font-black text-emerald-600">
+                ₹{totalAmount > 0
+                  ? totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                  : hourlyRate > 0 && hours > 0
+                    ? (hourlyRate * hours).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    : '—'}
+              </span>
+            </div>
+
+            {currentStatus === 'COMPLETED' && (
+              <div className="mt-3 flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2.5">
+                <Wallet size={13} className="text-emerald-600 flex-shrink-0" />
+                <span className="text-xs font-bold text-emerald-700">Payment processed</span>
+              </div>
+            )}
+          </div>
+
+          {/* Primary CTA actions */}
+          <div className="space-y-2.5">
+            {actionLoading ? (
+              <div className="flex justify-center py-4">
+                <Spinner />
+              </div>
+            ) : (
+              <>
+                {/* Start job */}
+                {['CONFIRMED', 'ASSIGNED', 'ACCEPTED'].includes(currentStatus) && (
+                  <Button
+                    onClick={handleStart}
+                    className="w-full h-11 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm gap-2 shadow-md shadow-primary-900/20"
+                  >
+                    <Play size={14} fill="currentColor" />
+                    Start Job
+                  </Button>
+                )}
+
+                {/* Complete job */}
+                {currentStatus === 'IN_PROGRESS' && (
+                  <Button
+                    onClick={handleComplete}
+                    className="w-full h-11 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold text-sm gap-2 shadow-md shadow-emerald-500/20"
+                  >
+                    <CheckCircle size={15} />
+                    Mark as Complete
+                  </Button>
+                )}
+
+                {/* Message */}
+                {['CONFIRMED', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(currentStatus) && (
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
+                    className="w-full h-11 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2"
+                  >
+                    <MessageSquare size={15} />
+                    Open Chat
+                  </Button>
+                )}
+
+                {/* Leave review (after completed, no review yet) */}
+                {currentStatus === 'COMPLETED' && !review && (
+                  <Button
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="w-full h-11 rounded-xl bg-amber-500 text-white hover:bg-amber-600 font-bold text-sm gap-2"
+                  >
+                    <Star size={14} />
+                    Leave a Review
+                  </Button>
+                )}
+
+                {/* Cancel */}
+                {['CONFIRMED', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(currentStatus) && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsCancelModalOpen(true)}
+                    className="w-full h-10 rounded-xl text-red-500 hover:text-red-700 hover:bg-red-50 font-semibold text-sm border border-red-100"
+                  >
+                    Cancel Job
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Support card */}
+          <div className="bg-gradient-to-br from-primary-900 to-primary-800 rounded-2xl p-5 text-white relative overflow-hidden">
+            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+            <p className="font-bold text-base mb-1 relative z-10">Caregiver Support</p>
+            <p className="text-primary-100/70 text-xs leading-relaxed mb-4 relative z-10">
+              Need help with this booking? Our team is available 24/7.
+            </p>
             <Button
               variant="outline"
               onClick={() => router.push('/support')}
-              className="w-full rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 font-bold relative z-10"
+              className="w-full h-9 rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 font-semibold text-sm relative z-10"
             >
-              Contact Help Center
+              Contact Help Centre
             </Button>
           </div>
         </div>
       </div>
 
-      <Modal
-        isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
-        title="Write a Review"
-        maxWidth="lg"
-      >
+      {/* ── Modals ── */}
+      <Modal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} title="Write a Review" maxWidth="lg">
         <ReviewForm
           bookingId={bookingId}
-          onSuccess={() => {
-            setIsReviewModalOpen(false);
-            fetchData();
-          }}
+          onSuccess={() => { setIsReviewModalOpen(false); fetchData(); }}
           onCancel={() => setIsReviewModalOpen(false)}
         />
       </Modal>
@@ -479,7 +588,7 @@ export default function BookingDetailsPage() {
       <CancellationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
-        onConfirm={handleCancelBooking}
+        onConfirm={handleCancel}
         type="booking"
         startTime={booking.start_time}
         title="Cancel Booking"

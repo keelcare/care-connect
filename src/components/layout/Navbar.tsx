@@ -13,7 +13,6 @@ import {
   HelpCircle,
   Settings,
   LogOut,
-  MapPin,
   ChevronDown,
   X,
   Menu,
@@ -35,16 +34,15 @@ const NAV_ITEMS_PARENT = [
   { href: '/book-service', label: 'Book a Service', icon: Sparkles },
   { href: '/parent-dashboard/family', label: 'My Family', icon: User },
   { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
-  { href: '/contact', label: 'Contact', icon: MapPin },
   { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
 const NAV_ITEMS_NANNY = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/bookings', label: 'Bookings', icon: LayoutDashboard },
-  { href: '/dashboard/availability', label: 'Availability', icon: Settings },
-  { href: '/dashboard/profile', label: 'Profile', icon: User },
-  { href: '/support', label: 'Support', icon: HelpCircle },
+  { href: '/dashboard',              label: 'Overview',     icon: LayoutDashboard },
+  { href: '/dashboard/earnings',     label: 'Earnings',     icon: CreditCard },
+  { href: '/dashboard/bookings',     label: 'Bookings',     icon: Calendar },
+  { href: '/dashboard/availability', label: 'Planner',      icon: Settings },
+  { href: '/dashboard/performance',  label: 'Performance',  icon: Sparkles },
 ];
 
 export const Navbar: React.FC = () => {

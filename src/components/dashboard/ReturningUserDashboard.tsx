@@ -73,7 +73,7 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
                                 subtitle="Get help with your care plan"
                                 icon={Bell}
                                 color="bg-dashboard-success/10"
-                                onClick={() => router.push('/contact')}
+                                onClick={() => router.push('/support')}
                             />
                         </div>
                     </section>

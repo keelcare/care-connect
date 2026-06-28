@@ -2,248 +2,320 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Edit2, Trash2, User, Heart, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {
+  Plus, Edit2, Trash2, User, Heart, AlertCircle,
+  Utensils, Moon, Phone, FileText, Sparkles, Users,
+} from 'lucide-react';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { Button } from '@/components/ui/button';
 import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { api } from '@/lib/api';
 import { Child } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
-import { format } from 'date-fns';
-import { Skeleton } from 'boneyard-js/react';
+
+/* ── helpers ─────────────────────────────────────────────────────── */
+
+function calcAge(dob: string) {
+  return Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+}
+
+function formatDob(dob: string) {
+  try { return new Date(dob).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+  catch { return dob; }
+}
+
+/* ── child card ──────────────────────────────────────────────────── */
+
+function ChildCard({
+  child, onEdit, onDelete, deleting,
+}: {
+  child: Child;
+  onEdit: () => void;
+  onDelete: () => void;
+  deleting: boolean;
+}) {
+  const isSpecial = child.profile_type === 'SPECIAL_NEEDS';
+  const age = calcAge(child.dob);
+
+  return (
+    <div className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all hover:shadow-md group ${
+      isSpecial ? 'border-rose-100 hover:border-rose-200' : 'border-slate-100 hover:border-primary-100'
+    }`}>
+      {/* Colour header */}
+      <div className={`h-1.5 ${isSpecial ? 'bg-rose-400' : 'bg-primary-600'}`} />
+
+      <div className="p-5">
+        {/* Avatar + name + actions */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-black flex-shrink-0 ${
+              isSpecial ? 'bg-rose-500' : 'bg-primary-800'
+            }`}>
+              {child.first_name[0].toUpperCase()}
+            </div>
+            <div>
+              <p className="font-bold text-primary-900 text-base">{child.first_name} {child.last_name}</p>
+              <p className="text-xs text-slate-500">{age} years old · {formatDob(child.dob)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={onEdit}
+              className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-primary-700 transition-colors"
+            >
+              <Edit2 size={14} />
+            </button>
+            <button
+              onClick={onDelete}
+              disabled={deleting}
+              className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors"
+            >
+              {deleting
+                ? <div className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                : <Trash2 size={14} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Profile type badge */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+            isSpecial ? 'bg-rose-50 text-rose-600' : 'bg-primary-50 text-primary-700'
+          }`}>
+            {isSpecial ? <Heart size={10} className="fill-current" /> : <User size={10} />}
+            {isSpecial ? 'Special Care' : 'Standard Care'}
+          </span>
+
+          {child.gender && (
+            <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
+              {child.gender === 'MALE' ? 'Boy' : child.gender === 'FEMALE' ? 'Girl' : 'Other'}
+            </span>
+          )}
+        </div>
+
+        {/* Info pills */}
+        <div className="space-y-2">
+          {(child.allergies?.length ?? 0) > 0 && (
+            <div className="flex items-start gap-2 text-xs">
+              <AlertCircle size={12} className="text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-red-600">Allergies: </span>
+                <span className="text-slate-600">{child.allergies!.join(', ')}</span>
+                {child.allergy_severity && (
+                  <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${
+                    child.allergy_severity === 'severe' ? 'bg-red-100 text-red-600' :
+                    child.allergy_severity === 'moderate' ? 'bg-amber-100 text-amber-600' :
+                    'bg-emerald-100 text-emerald-600'
+                  }`}>{child.allergy_severity}</span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {(child.dietary_restrictions?.length ?? 0) > 0 && (
+            <div className="flex items-center gap-2 text-xs">
+              <Utensils size={12} className="text-slate-400 flex-shrink-0" />
+              <span className="text-slate-600">{child.dietary_restrictions!.join(', ')}</span>
+            </div>
+          )}
+
+          {child.bedtime && (
+            <div className="flex items-center gap-2 text-xs">
+              <Moon size={12} className="text-indigo-400 flex-shrink-0" />
+              <span className="text-slate-600">Bedtime: {child.bedtime}</span>
+            </div>
+          )}
+
+          {isSpecial && child.diagnosis && (
+            <div className="flex items-start gap-2 text-xs">
+              <Sparkles size={12} className="text-rose-400 flex-shrink-0 mt-0.5" />
+              <span className="text-slate-600 truncate">{child.diagnosis}</span>
+            </div>
+          )}
+
+          {isSpecial && child.school_details?.name && (
+            <div className="flex items-center gap-2 text-xs">
+              <FileText size={12} className="text-slate-400 flex-shrink-0" />
+              <span className="text-slate-600">{child.school_details.name}{child.school_details.grade ? `, ${child.school_details.grade}` : ''}</span>
+            </div>
+          )}
+
+          {(child.emergency_contact ?? child.emergency_contact_override) && (
+            <div className="flex items-center gap-2 text-xs">
+              <Phone size={12} className="text-emerald-500 flex-shrink-0" />
+              <span className="text-slate-600">
+                {(child.emergency_contact ?? child.emergency_contact_override)!.name}
+                {' · '}
+                {(child.emergency_contact ?? child.emergency_contact_override)!.phone}
+              </span>
+            </div>
+          )}
+
+          {child.personality_notes && (
+            <p className="text-xs text-slate-400 italic line-clamp-2 pt-1">
+              "{child.personality_notes}"
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Edit footer */}
+      <div className="border-t border-slate-50 px-5 py-3 bg-slate-50/50">
+        <button
+          onClick={onEdit}
+          className="text-xs font-semibold text-primary-600 hover:text-primary-800 transition-colors"
+        >
+          Edit profile →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── empty state ─────────────────────────────────────────────────── */
+
+function EmptyState({ onAdd }: { onAdd: () => void }) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center">
+      <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Users size={24} className="text-primary-400" />
+      </div>
+      <p className="font-bold text-primary-900 text-base mb-2">No child profiles yet</p>
+      <p className="text-slate-400 text-sm mb-6 max-w-xs mx-auto leading-relaxed">
+        Add profiles for your children so we can match you with the most suitable caregivers and personalise each session.
+      </p>
+      <Button
+        onClick={onAdd}
+        className="h-10 px-6 rounded-xl bg-primary-900 text-white text-sm font-bold gap-2 mx-auto"
+      >
+        <Plus size={15} /> Add First Profile
+      </Button>
+    </div>
+  );
+}
+
+/* ── main page ───────────────────────────────────────────────────── */
 
 export default function FamilyPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedChild, setSelectedChild] = useState<Partial<Child> | undefined>(undefined);
-
-  // Mock data for demonstration until backend is ready
-
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchChildren = async () => {
     try {
       setLoading(true);
-      const data = await api.family.list();
-      setChildren(data);
-    } catch (error) {
-      console.error('Failed to fetch children:', error);
-      // Optional: Add toast error here if you have useToast hook available in this scope? 
-      // The snippet doesn't show useToast imported, let's fix that in a separate edit or assume it's fine for now to just log.
-      // But for save/delete we definitely want feedbacks.
+      setChildren(await api.family.list());
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const router = useRouter();
-
   useEffect(() => {
-    if (user) {
-      fetchChildren();
-    } else if (user === null) {
-      router.push('/auth/login');
-    }
+    if (user) fetchChildren();
+    else if (user === null) router.push('/auth/login');
   }, [user, router]);
 
-  const handleSaveChild = async (childData: Partial<Child>) => {
+  const handleSave = async (childData: Partial<Child>) => {
     try {
       if (selectedChild?.id) {
-        // Update existing
         const updated = await api.family.update(selectedChild.id, childData);
         setChildren(prev => prev.map(c => c.id === selectedChild.id ? updated : c));
       } else {
-        // Create new
         const created = await api.family.create(childData);
         setChildren(prev => [...prev, created]);
       }
       setIsModalOpen(false);
-    } catch (error) {
-      console.error('Failed to save child:', error);
-      alert('Failed to save profile. Please try again.'); // Simple alert for now as useToast isn't in imports yet?
+    } catch (err) {
+      alert('Failed to save profile. Please try again.');
     }
   };
 
-  const handleDeleteChild = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this profile?')) return;
+  const handleDelete = async (id: string) => {
+    if (!confirm('Remove this child profile?')) return;
+    setDeletingId(id);
     try {
       await api.family.delete(id);
       setChildren(prev => prev.filter(c => c.id !== id));
-    } catch (error) {
-      console.error('Failed to delete child:', error);
-      alert('Failed to delete profile.');
-    }
+    } catch { alert('Failed to remove profile.'); }
+    finally { setDeletingId(null); }
   };
 
-  const openAddModal = () => {
-    setSelectedChild(undefined);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (child: Child) => {
-    setSelectedChild(child);
-    setIsModalOpen(true);
-  };
-
-  const calculateAge = (dob: string) => {
-    const birthDate = new Date(dob);
-    const ageDifMs = Date.now() - birthDate.getTime();
-    const ageDate = new Date(ageDifMs);
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
-  };
+  const openAdd = () => { setSelectedChild(undefined); setIsModalOpen(true); };
+  const openEdit = (child: Child) => { setSelectedChild(child); setIsModalOpen(true); };
 
   return (
     <ParentLayout>
-      <Skeleton
-        name="family-page"
-        loading={loading}
-        fixture={
-          <div className="max-w-5xl mx-auto space-y-8 opacity-50">
-             <div className="flex justify-between items-center mb-8">
-               <div>
-                  <div className="h-10 w-48 bg-gray-200 rounded-lg mb-2" />
-                  <div className="h-6 w-80 bg-gray-100 rounded-lg" />
-               </div>
-               <div className="h-14 w-40 bg-primary/20 rounded-xl" />
-             </div>
-             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-64 bg-white rounded-[24px] border border-gray-100 shadow-sm" />
-                ))}
-             </div>
-          </div>
-        }
-      >
-        <div className="max-w-5xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+
+        {/* ── Header ── */}
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-primary font-display">My Family</h1>
-            <p className="text-gray-500 mt-1">Manage profiles for your children to personalize their care.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold font-display text-primary-900 tracking-tight">My Family</h1>
+            <p className="text-slate-500 text-sm mt-0.5">
+              Child profiles help us find caregivers who are the perfect match.
+            </p>
           </div>
-          <Button
-            onClick={openAddModal}
-            className="bg-primary hover:bg-primary-800 text-white rounded-xl px-6 py-6 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Child Profile
-          </Button>
+          {children.length > 0 && (
+            <Button
+              onClick={openAdd}
+              className="h-10 px-4 rounded-xl bg-primary-900 text-white text-sm font-bold gap-2 flex-shrink-0 shadow-md shadow-primary-900/20"
+            >
+              <Plus size={15} /> Add Child
+            </Button>
+          )}
         </div>
 
+        {/* ── Content ── */}
         {loading ? (
-          <div className="grid md:grid-cols-2 gap-6">
-            {[1, 2].map(i => (
-              <div key={i} className="bg-white rounded-[24px] p-6 h-64 animate-pulse bg-gray-100" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-64 bg-white rounded-2xl border border-slate-100 animate-pulse" />
             ))}
           </div>
         ) : children.length === 0 ? (
-          <div className="bg-white rounded-[32px] p-12 text-center border border-gray-100 shadow-sm">
-            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mx-auto mb-6">
-              <User className="w-10 h-10 text-primary" />
-            </div>
-            <h3 className="text-xl font-bold text-primary mb-2">No profiles added yet</h3>
-            <p className="text-gray-500 mb-8 max-w-md mx-auto">
-              Add profiles for your children to help us match you with the perfect caregivers and ensure all their needs are met.
-            </p>
-            <Button onClick={openAddModal} variant="outline" className="border-primary text-primary">
-              Create First Profile
-            </Button>
-          </div>
+          <EmptyState onAdd={openAdd} />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {children.map((child) => (
-              <motion.div
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {children.map(child => (
+              <ChildCard
                 key={child.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`group relative bg-white rounded-[24px] border-2 transition-all duration-300 hover:shadow-xl overflow-hidden ${child.profile_type === 'SPECIAL_NEEDS'
-                  ? 'border-[#FDF3F1] hover:border-[#CC7A68]/30'
-                  : 'border-background hover:border-primary/30'
-                  }`}
-              >
-                {/* Header Pattern */}
-                <div className={`h-24 ${child.profile_type === 'SPECIAL_NEEDS'
-                  ? 'bg-[#FDF3F1]'
-                  : 'bg-background'
-                  }`} />
-
-                <div className="px-6 pb-6">
-                  {/* Avatar & Name */}
-                  <div className="relative -mt-12 mb-4 flex justify-between items-end">
-                    <div className="relative">
-                      <div className={`w-24 h-24 rounded-full border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold ${child.profile_type === 'SPECIAL_NEEDS'
-                        ? 'bg-[#CC7A68] text-white'
-                        : 'bg-primary text-white'
-                        }`}>
-                        {child.first_name[0]}
-                      </div>
-                      {child.profile_type === 'SPECIAL_NEEDS' && (
-                        <div className="absolute -bottom-1 -right-1 bg-white p-1.5 rounded-full shadow-sm border border-gray-100" title="Special Needs / Shadow Teacher Profile">
-                          <Heart className="w-4 h-4 text-[#CC7A68] fill-current" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => openEditModal(child)}
-                        className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteChild(child.id)}
-                        className="p-2 hover:bg-red-50 rounded-full text-gray-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-primary">{child.first_name} {child.last_name}</h3>
-                    <p className="text-gray-500 text-sm font-medium">
-                      {calculateAge(child.dob)} years old • {format(new Date(child.dob), 'MMM d, yyyy')}
-                    </p>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {child.allergies && child.allergies.length > 0 && (
-                      <span className="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {child.allergies.length} Allergies
-                      </span>
-                    )}
-                    {child.profile_type === 'SPECIAL_NEEDS' && (
-                      <span className="px-3 py-1 bg-[#FDF3F1] text-[#CC7A68] text-xs font-semibold rounded-full">
-                        Special Care
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Details Preview */}
-                  {child.profile_type === 'SPECIAL_NEEDS' && child.diagnosis && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-xl text-sm">
-                      <p className="text-gray-500 text-xs uppercase tracking-wide font-semibold mb-1">Diagnosis</p>
-                      <p className="text-gray-700 font-medium truncate">{child.diagnosis}</p>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
+                child={child}
+                onEdit={() => openEdit(child)}
+                onDelete={() => handleDelete(child.id)}
+                deleting={deletingId === child.id}
+              />
             ))}
+
+            {/* Add new card */}
+            <button
+              onClick={openAdd}
+              className="bg-white rounded-2xl border-2 border-dashed border-slate-200 hover:border-primary-300 hover:bg-primary-50/30 transition-all flex flex-col items-center justify-center gap-3 p-8 min-h-[200px] text-center group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-primary-100 flex items-center justify-center transition-colors">
+                <Plus size={22} className="text-slate-400 group-hover:text-primary-600 transition-colors" />
+              </div>
+              <div>
+                <p className="font-bold text-sm text-slate-600 group-hover:text-primary-900 transition-colors">Add Another Child</p>
+                <p className="text-xs text-slate-400 mt-0.5">Standard or special needs profile</p>
+              </div>
+            </button>
           </div>
         )}
-
-        <ChildProfileModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSaveChild}
-          initialData={selectedChild}
-        />
       </div>
-      </Skeleton>
+
+      <ChildProfileModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        initialData={selectedChild}
+      />
     </ParentLayout>
   );
 }
