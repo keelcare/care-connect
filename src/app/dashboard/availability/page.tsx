@@ -75,7 +75,7 @@ function MiniCalendar({ blocks }: { blocks: AvailabilityBlock[] }) {
   const prevMonth = () => setMonth(new Date(year, mo - 1, 1));
   const nextMonth = () => setMonth(new Date(year, mo + 1, 1));
 
-  const cells = Array.from({ length: firstDay }, () => null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
+  const cells: (number | null)[] = [...Array.from({ length: firstDay }, () => null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
 
   const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 

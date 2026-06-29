@@ -364,8 +364,8 @@ export default function BookingDetailsPage() {
                                     <div className="flex items-start gap-4">
                                         {/* Avatar */}
                                         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-primary-100">
-                                            {nanny.profiles?.avatar_url ? (
-                                                <img src={nanny.profiles.avatar_url} alt={nannyName || ''} className="w-full h-full object-cover" />
+                                            {nanny.profiles?.profile_image_url ? (
+                                                <img src={nanny.profiles.profile_image_url} alt={nannyName || ''} className="w-full h-full object-cover" />
                                             ) : (
                                                 <span className="text-xl font-bold text-primary-700">
                                                     {(nanny.profiles?.first_name?.[0] || '?').toUpperCase()}

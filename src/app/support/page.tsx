@@ -452,7 +452,7 @@ export default function SupportPage() {
 
         {/* ── Ban alert ── */}
         {isBanned && (
-          <BanAlert banReason={user.ban_reason} onSubmit={handleContestBan} />
+          <BanAlert banReason={user.ban_reason || undefined} onSubmit={handleContestBan} />
         )}
 
         {/* ── Two-column layout ── */}

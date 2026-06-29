@@ -214,7 +214,7 @@ export default function PerformancePage() {
                   {(perf?.sentiment.negative ?? 0) > 0 && (
                     <div className="bg-red-50 rounded-xl p-3 text-center">
                       <Frown size={18} className="text-red-400 mx-auto mb-1" />
-                      <p className="text-xl font-black text-red-500">{perf.sentiment.negative}%</p>
+                      <p className="text-xl font-black text-red-500">{perf?.sentiment.negative ?? 0}%</p>
                       <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Needs Work</p>
                     </div>
                   )}

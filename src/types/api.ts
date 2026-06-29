@@ -758,7 +758,7 @@ export interface AdminManualNanny {
 }
 
 // Support Ticket Types
-export type SupportCategory = 'payment' | 'technical' | 'grievance' | 'account' | 'other';
+export type SupportCategory = 'payment' | 'booking' | 'technical' | 'grievance' | 'account' | 'other';
 export type SupportPriority = 'low' | 'medium' | 'high' | 'critical';
 export type SupportStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 

@@ -109,9 +109,9 @@ export default function NannyOnboardingPage() {
           
           let addressName = 'Current Location';
           try {
-            const data = await api.location.reverseGeocode(latitude, longitude);
-            if (data?.address) {
-              addressName = data.address;
+            const response = await api.location.reverseGeocode(latitude, longitude);
+            if (response?.data?.address) {
+              addressName = response.data.address;
             }
           } catch {
             // Silently fall back to 'Current Location' — non-critical
