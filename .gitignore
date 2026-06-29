@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Native mobile secrets (must never be committed)
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist
+
 # Playwright
 node_modules/
 /test-results/

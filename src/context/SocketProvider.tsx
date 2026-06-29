@@ -12,6 +12,7 @@ import { useAuth } from './AuthContext';
 import { Message } from '@/types/api';
 
 import { useToast } from '@/components/ui/ToastProvider';
+import { logger } from '@/lib/logger';
 
 interface GeofenceAlertData {
   bookingId: string;
@@ -74,7 +75,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    console.log('Initializing socket connection');
+    logger.log('Initializing socket connection');
     const newSocket = io(API_URL, {
       withCredentials: true,
       transports: ['websocket'],
@@ -84,17 +85,17 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     });
 
     newSocket.on('connect', () => {
-      console.log('Socket connected:', newSocket.id);
+      logger.log('Socket connected');
       setConnected(true);
     });
 
     newSocket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
+      logger.log('Socket disconnected:', reason);
       setConnected(false);
     });
 
     newSocket.on('notification', (notification: any) => {
-      console.log('Socket notification received:', notification);
+      logger.debug('Socket notification received:', notification);
       // Notification is handled globally by NotificationOverlay
     });
 

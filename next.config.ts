@@ -34,9 +34,8 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
-    unoptimized: true,
+    unoptimized: isCapacitor, // Only disable optimization for Capacitor static export
   },
   async headers() {
     return [

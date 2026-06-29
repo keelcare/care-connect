@@ -6,12 +6,11 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useRef,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { api, setTokenRefresher, fetchApi } from '@/lib/api';
+import { logger } from '@/lib/logger';
 import { User, AuthResponse } from '@/types/api';
-import { App } from '@capacitor/app';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { BannedModal } from '@/components/banned/BannedModal';
 
@@ -36,40 +35,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize native push notifications (only active if Capacitor and authenticated)
   usePushNotifications();
 
-  // With cookie-based auth, we rely on the API 401 response to trigger logout.
-  // We register a simple refresher that just calls the refresh endpoint (cookies handled automatically)
+  // With cookie-based auth, refresh is done via the HttpOnly refresh_token cookie.
+  // No token is read from localStorage — the browser sends the cookie automatically.
   const refreshSession = useCallback(async (): Promise<boolean> => {
     try {
-      console.log('Refreshing session (token-based)...');
-      const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
-      if (!refreshToken) {
-        throw new Error('No refresh token available');
-      }
-      const data = await api.auth.refresh(refreshToken);
-      if (typeof window !== 'undefined' && data) {
-        localStorage.setItem('access_token', data.access_token);
-        if (data.refresh_token) {
-          localStorage.setItem('refresh_token', data.refresh_token);
-        }
-      }
-      console.log('Session refreshed successfully');
+      await api.auth.refresh();
       return true;
-    } catch (error: any) {
-      // If there's no refresh token, it just means the user isn't logged in or session expired completely
-      if (
-        error.message?.includes('No refresh token') ||
-        error.message?.includes('Unauthorized') ||
-        error.message?.includes('refresh token')
-      ) {
-        console.log('Session refresh failed (no token):', error.message);
-      } else {
-        console.error('Failed to refresh session:', error);
-      }
+    } catch {
       setUser(null);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
       }
       return false;
     }
@@ -93,15 +68,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      console.log('AuthContext: Verifying session...');
-      // Just call /users/me. If we have valid cookies, it returns the user.
+      logger.log('AuthContext: Verifying session...');
       const userData = await fetchApi<User>('/users/me', {}, false, true);
-      console.log('AuthContext: User verified', userData.email);
+      logger.log('AuthContext: User verified');
 
       // BannedModal is shown globally when user.is_active === false — no redirect needed.
       setUser(userData);
     } catch (error: any) {
-      console.log('AuthContext: No active session / Guest mode');
+      logger.log('AuthContext: No active session / Guest mode');
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
       }
@@ -127,27 +101,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);  // ← intentionally empty: mount-only
 
   const login = async (data: User | AuthResponse) => {
+    // Mark session active — non-sensitive flag used to skip /users/me on cold load
     if (typeof window !== 'undefined') {
       localStorage.setItem('has_session', 'true');
-      localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
-
-      // Check if data is AuthResponse and store tokens
-      if ('access_token' in data) {
-        localStorage.setItem('access_token', data.access_token);
-        if (data.refresh_token) {
-          localStorage.setItem('refresh_token', data.refresh_token);
-        }
-        setUser(data.user);
-      } else {
-        setUser(data);
-      }
-    } else {
-      setUser('user' in data ? (data as any).user : data);
+      localStorage.removeItem('is_logged_out');
     }
 
+    // Tokens live in HttpOnly cookies set by the backend — never in localStorage
+    const userData = 'user' in data ? (data as AuthResponse).user : (data as User);
+    setUser(userData);
     setLoading(false);
-    const userData = 'user' in data ? data.user : data;
-    console.log('Logged in user:', userData);
 
     // If user is banned, BannedModal will render — don't route them to any dashboard.
     if (userData.is_active === false) {
@@ -168,13 +131,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.auth.logout();
     } catch (error) {
-      console.error('Logout failed silently', error);
+      logger.error('Logout failed silently', error);
     } finally {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('has_session');
-        localStorage.removeItem('is_logged_out'); // Cleanup legacy flag
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('is_logged_out');
       }
       // ALWAYS cleanup client state
       setUser(null);

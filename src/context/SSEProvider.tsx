@@ -28,6 +28,7 @@ import React, {
 import { useAuth } from './AuthContext';
 import { API_URL } from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
+import { logger } from '@/lib/logger';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -108,7 +109,7 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
                 try {
                     cb(event.data);
                 } catch (err) {
-                    console.error(`[SSE] Error in callback for event "${event.type}":`, err);
+                    logger.error(`[SSE] Error in callback for event "${event.type}":`, err);
                 }
             });
         }
@@ -118,17 +119,16 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
     const connect = useCallback(() => {
         if (!user) return;
 
-        // EventSource does not support custom headers, so we pass the token in the query string.
-        // NestJS AuthGuard('jwt') reads the token from req.query.token.
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        const es = new EventSource(`${API_URL}/sse${token ? `?token=${token}` : ''}`, {
+        // withCredentials sends the HttpOnly access_token cookie automatically.
+        // Never pass tokens in the URL — they appear in server logs and browser history.
+        const es = new EventSource(`${API_URL}/sse`, {
             withCredentials: true,
         });
 
         eventSourceRef.current = es;
 
         es.onopen = () => {
-            console.log('[SSE] Connection established');
+            logger.log('[SSE] Connection established');
             connectedRef.current = true;
             setConnected(true);
             reconnectAttemptsRef.current = 0; // Reset backoff on successful connect
@@ -137,15 +137,15 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
         es.onmessage = (rawEvent) => {
             try {
                 const payload: ServerEvent = JSON.parse(rawEvent.data);
-                console.debug('[SSE] Event received:', payload.type, payload.data);
+                logger.debug('[SSE] Event received:', payload.type);
                 dispatch(payload);
             } catch (err) {
-                console.error('[SSE] Failed to parse event:', rawEvent.data, err);
+                logger.error('[SSE] Failed to parse event:', err);
             }
         };
 
         es.onerror = (err) => {
-            console.warn('[SSE] Connection error — will attempt to reconnect', err);
+            logger.warn('[SSE] Connection error — will attempt to reconnect');
             connectedRef.current = false;
             setConnected(false);
             es.close();

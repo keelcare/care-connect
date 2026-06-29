@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import {
   LoginDto,
   SignupDto,
@@ -94,15 +95,8 @@ export async function fetchApi<T>(
   skipRefresh = false,
   skipRedirect = false
 ): Promise<T> {
-  // Fallback: Add Authorization header if token exists in localStorage
-  let authHeaders = {};
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      authHeaders = { Authorization: `Bearer ${token}` };
-    }
-  }
-
+  // Auth is handled exclusively via HttpOnly cookies (credentials: 'include').
+  // No localStorage token fallback — that pattern exposes tokens to XSS.
   const method = options.method || 'GET';
   const isGet = method === 'GET';
   const cacheKey = `${method}:${endpoint}`;
@@ -118,7 +112,7 @@ export async function fetchApi<T>(
         credentials: 'include', // This sends cookies with the request
         headers: {
           'Content-Type': 'application/json',
-          ...authHeaders,
+          'X-Requested-With': 'XMLHttpRequest', // CSRF: forces CORS preflight on cross-origin requests
           ...options.headers,
         },
       };
@@ -159,7 +153,7 @@ export async function fetchApi<T>(
               }
             }
 
-            console.warn(
+            logger.warn(
               `Rate limited (429). Retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`
             );
             await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -223,13 +217,13 @@ export async function fetchApi<T>(
             window.location.pathname !== '/auth/login' &&
             !window.location.pathname.startsWith('/auth/')
           ) {
-            console.warn('Redirecting to login due to 401/expired session on:', endpoint);
+            logger.warn('Redirecting to login due to 401 on:', endpoint);
             window.location.href = '/auth/login';
           }
-          console.log(`[API] 401 Unauthorized on ${endpoint}. SkipRefresh: ${skipRefresh}. skipRedirect: ${skipRedirect}`);
+          logger.log(`[API] 401 on ${endpoint}. skipRefresh=${skipRefresh}`);
           throw new Error(data.message || 'Session expired');
         }
-        console.error(`[API Error] ${response.status} on ${endpoint}:`, data.message);
+        logger.error(`[API Error] ${response.status} on ${endpoint}:`, data.message);
         throw new Error(data.message || 'An error occurred');
       }
 
@@ -263,13 +257,14 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(body),
       }),
-    // Refresh now expects refresh_token in body
-    refresh: (token: string) =>
+    // Refresh uses the HttpOnly refresh_token cookie automatically.
+    // token is optional for legacy native mobile fallback only.
+    refresh: (token?: string) =>
       fetchApi<AuthResponse>(
         '/auth/refresh',
         {
           method: 'POST',
-          body: JSON.stringify({ refresh_token: token }),
+          ...(token ? { body: JSON.stringify({ refresh_token: token }) } : {}),
         },
         true
       ), // skipRefresh = true to prevent infinite loop
@@ -631,12 +626,9 @@ export const api = {
     chat: async (message: string) => {
       const response = await fetch(`${API_URL}/ai/chat`, {
         method: 'POST',
-        credentials: 'include', // Send HttpOnly cookies
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          ...(typeof window !== 'undefined' && localStorage.getItem('access_token')
-            ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-            : {}),
         },
         body: JSON.stringify({ message }),
       });
@@ -655,13 +647,8 @@ export const api = {
       // Use fetch with credentials to send HttpOnly cookies
       return fetch(`${API_URL}/verification/upload`, {
         method: 'POST',
-        credentials: 'include', // CRITICAL: Send cookies with request
-        headers: {
-          ...(typeof window !== 'undefined' && localStorage.getItem('access_token')
-            ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-            : {}),
-        },
-        // Content-Type is intentionally omitted to let the browser set it with boundary
+        credentials: 'include',
+        // Content-Type intentionally omitted — browser sets it with multipart boundary
         body: formData,
       }).then(async (res) => {
         if (!res.ok) {

@@ -43,7 +43,7 @@ Create the database schema:
 
 ```bash
 # Using the provided SQL script
-PGPASSWORD=davanj123 psql -h localhost -p 5433 -U project_user -d careconnect -f schema.sql
+PGPASSWORD=$DB_PASSWORD psql -h localhost -p 5433 -U project_user -d careconnect -f schema.sql
 ```
 
 Seed the database with test data:

@@ -673,12 +673,15 @@ export interface AdminManualAssignmentDto {
   force?: boolean;
 }
 
+/** Shape of recurrence_pattern for the recurring-request system. */
+export interface RecurringRequestPattern {
+  days?: string[];   // e.g. ['MON', 'WED'] for weekly recurrence
+  dates?: number[];  // e.g. [1, 15] for specific-date recurrence
+}
+
 export interface CreateRecurringRequestDto {
   recurrence_type: 'weekly' | 'specific_dates';
-  recurrence_pattern: {
-    days?: string[];
-    dates?: number[];
-  };
+  recurrence_pattern: RecurringRequestPattern;
   start_date: string;
   end_date?: string;
   start_time: string;
@@ -698,8 +701,8 @@ export interface RecurringServiceRequest {
   id: string;
   parent_id: string;
   status: string;
-  recurrence_type: string;
-  recurrence_pattern: any;
+  recurrence_type: 'weekly' | 'specific_dates' | string;
+  recurrence_pattern: RecurringRequestPattern;
   start_date: string;
   end_date?: string;
   start_time: string;

@@ -32,27 +32,35 @@ export function proxy(request: NextRequest) {
   logger.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`);
 
   // --- 3. Content Security Policy ---
+  // PHASE 1: Report-only mode — measures real violations without breaking the app.
+  // Upgrade to enforced CSP (Content-Security-Policy) once violations are reviewed.
+  // Remove 'unsafe-inline' and 'unsafe-eval' from script-src in Phase 2 (nonce-based CSP).
   const response = NextResponse.next();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://care-connect-backend-ok23.onrender.com';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    throw new Error('NEXT_PUBLIC_API_URL is not set. Check your .env file.');
+  }
   const wsUrl = apiUrl.replace(/^http/, 'ws');
+  const sentryReportUri = process.env.NEXT_PUBLIC_SENTRY_CSP_REPORT_URI || '';
 
-  const cspHeader = `
-        default-src 'self';
-        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://va.vercel-scripts.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com;
-        font-src 'self' data: https://fonts.gstatic.com;
-        connect-src 'self' ${apiUrl} ${wsUrl} https://api.razorpay.com https://nominatim.openstreetmap.org https://vitals.vercel-insights.com;
-        frame-src 'self' https://api.razorpay.com;
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-        frame-ancestors 'none';
-        block-all-mixed-content;
-        upgrade-insecure-requests;
-    `.replace(/\s{2,}/g, ' ').trim();
+  const cspDirectives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://va.vercel-scripts.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.googleusercontent.com https://ui-avatars.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    `connect-src 'self' ${apiUrl} ${wsUrl} https://api.razorpay.com https://nominatim.openstreetmap.org https://vitals.vercel-insights.com`,
+    "frame-src 'self' https://api.razorpay.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests",
+    ...(sentryReportUri ? [`report-uri ${sentryReportUri}`] : []),
+  ];
 
-  response.headers.set('Content-Security-Policy', cspHeader);
+  // Report-only: violations are logged but not blocked
+  response.headers.set('Content-Security-Policy-Report-Only', cspDirectives.join('; '));
 
   return response;
 }

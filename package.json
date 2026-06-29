@@ -70,6 +70,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@capacitor/assets": "^3.0.5",
     "@playwright/test": "^1.57.0",
     "@types/js-cookie": "^3.0.6",
@@ -89,6 +90,7 @@
     "minimatch": "^5.0.0",
     "tar": "^7.5.11",
     "yauzl": "^3.2.1",
-    "file-type": "^21.3.2"
+    "file-type": "^21.3.2",
+    "handlebars": "^4.7.9"
   }
 }
