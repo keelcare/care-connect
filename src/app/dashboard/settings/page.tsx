@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { MapPin, Navigation, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
+import { logger } from '@/lib/logger';
 import { useAuth } from '@/context/AuthContext';
 import { UpdateUserDto } from '@/types/api';
 import styles from './page.module.css';
@@ -105,7 +106,7 @@ export default function SettingsPage() {
           // Refresh auth context user
           await refreshUser();
         } catch (error) {
-          console.error('Error updating location:', error);
+          logger.error('Error updating location:', error);
           setMessage({ type: 'error', text: 'Failed to detect location.' });
         } finally {
           setUpdatingLocation(false);
@@ -149,7 +150,7 @@ export default function SettingsPage() {
         setMessage(null);
       }, 5000);
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      logger.error('Failed to update profile:', error);
       setMessage({
         type: 'error',
         text: 'Failed to update profile. Please try again.',
@@ -165,10 +166,24 @@ export default function SettingsPage() {
         await api.users.deleteMe();
         alert('Account deleted successfully.');
         await logout();
-      } catch (error) {
-        console.error('Failed to delete account:', error);
+      } catch {
         alert('Failed to delete account. Please try again.');
       }
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      const data = await api.users.exportMyData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `keel-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to export data. Please try again.');
     }
   };
 
@@ -364,6 +379,14 @@ export default function SettingsPage() {
         <p className="text-red-700 text-sm">
           Deleting your account will permanently remove all your data in compliance with DPDPA 2023. This action cannot be undone.
         </p>
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-xl px-6"
+          onClick={handleExportData}
+        >
+          Download My Data
+        </Button>
         <Button
           type="button"
           variant="destructive"

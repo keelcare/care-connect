@@ -291,6 +291,7 @@ export const api = {
   users: {
     me: () => fetchApi<User>('/users/me'),
     deleteMe: () => fetchApi<void>('/users/me', { method: 'DELETE' }),
+    exportMyData: () => fetchApi<Record<string, unknown>>('/users/me/export'),
     get: (id: string) => fetchApi<User>(`/users/${id}`),
     nannies: () => fetchApi<User[]>('/users/nannies'),
     update: (id: string, body: UpdateUserDto) =>
