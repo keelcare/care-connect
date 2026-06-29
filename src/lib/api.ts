@@ -71,7 +71,9 @@ export interface PaginatedResponse<T> {
 }
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-export const API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
+const baseUrl = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
+// All API requests go through /v1 — matches backend setGlobalPrefix('v1')
+export const API_URL = `${baseUrl}/v1`;
 
 // Token refresh callback - will be set by AuthContext
 let tokenRefresher: (() => Promise<boolean>) | null = null;

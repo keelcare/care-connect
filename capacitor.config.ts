@@ -13,11 +13,11 @@ const config: CapacitorConfig = {
       'care-connect-backend-ok23.onrender.com',
       'checkout.razorpay.com',
       'api.razorpay.com',
-      'nominatim.openstreetmap.org',
       '10.0.2.2',
       'localhost'
     ],
-    cleartext: true,
+    // cleartext is NOT set here — Android cleartext is controlled per-build-type via
+    // network_security_config.xml (debug allows localhost/192.168.x, release blocks all HTTP)
     ...(serverUrl ? { url: serverUrl } : {}),
   },
   plugins: {

@@ -4,6 +4,7 @@ import React, { useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
+import { logger } from '@/lib/logger';
 import styles from './page.module.css';
 
 function CallbackContent() {
@@ -22,7 +23,7 @@ function CallbackContent() {
       // Check for errors in query params
       const error = searchParams?.get('error');
       if (error) {
-        console.error('Auth error:', error);
+        logger.error('Auth error in callback:', error);
         router.push(`/auth/login?error=${encodeURIComponent(error)}`);
         return;
       }
@@ -43,7 +44,7 @@ function CallbackContent() {
           await login(user);
         }
       } catch (err) {
-        console.error('Failed to verify session during callback:', err);
+        logger.error('Failed to verify session during callback:', err);
         router.push('/auth/login?error=auth_failed');
       }
     };

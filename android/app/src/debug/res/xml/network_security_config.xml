@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only network security config.
+  Allows cleartext (HTTP) to localhost and your local dev machine IP so the
+  Capacitor WebView can reach the NestJS backend running on your machine.
+  This file is NEVER included in release builds.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+            <!-- Trust user-installed CAs in debug (Charles Proxy, mitmproxy, etc.) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Allow cleartext HTTP only for local dev origins -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <!-- Your dev machine on the local network — update if your IP changes -->
+        <domain includeSubdomains="false">192.168.1.37</domain>
+    </domain-config>
+</network-security-config>

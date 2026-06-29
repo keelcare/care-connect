@@ -109,15 +109,12 @@ export default function NannyOnboardingPage() {
           
           let addressName = 'Current Location';
           try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-            );
-            const data = await response.json();
-            if (data.display_name) {
-              addressName = data.display_name;
+            const data = await api.location.reverseGeocode(latitude, longitude);
+            if (data?.address) {
+              addressName = data.address;
             }
-          } catch (e) {
-            console.warn('Reverse geocoding failed', e);
+          } catch {
+            // Silently fall back to 'Current Location' — non-critical
           }
 
           setFormData(prev => ({
