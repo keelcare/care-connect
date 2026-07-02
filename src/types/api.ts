@@ -1004,3 +1004,21 @@ export interface NannyPerformance {
   sentiment: { positive: number; neutral: number; negative: number };
   recentReviews: NannyPerformanceReview[];
 }
+
+export interface NannySettings {
+  auto_accept_bookings: boolean;
+  default_start_time: string | null;
+  default_end_time: string | null;
+}
+
+export interface DemandForecastSlot {
+  label: string;
+  count: number;
+  pct: number;
+}
+
+export interface DemandForecast {
+  slots: DemandForecastSlot[];
+  sampleSize: number;
+  windowDays: number;
+}
