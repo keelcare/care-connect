@@ -3,12 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { MapPin, Navigation, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Navigation, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { logger } from '@/lib/logger';
 import { useAuth } from '@/context/AuthContext';
-import { UpdateUserDto } from '@/types/api';
-import styles from './page.module.css';
+import {
+  NannyProfileFormState,
+  buildInitialFormState,
+  toUpdateUserDto,
+  toUpsertOnboardingDto,
+} from '@/types/nannyProfileForm';
+import { PersonalInfoSection } from '@/components/nanny-profile/PersonalInfoSection';
+import { EducationExperienceSection } from '@/components/nanny-profile/EducationExperienceSection';
+import { SkillsInterestsSection } from '@/components/nanny-profile/SkillsInterestsSection';
+import { CompensationSection } from '@/components/nanny-profile/CompensationSection';
+import { ConsentsSection } from '@/components/nanny-profile/ConsentsSection';
+import { DocumentsSection } from '@/components/nanny-profile/DocumentsSection';
+import { WizardAvailabilityStep } from '@/components/onboarding/WizardAvailabilityStep';
 
 export default function SettingsPage() {
   const { user, refreshUser, logout } = useAuth();
@@ -20,57 +31,27 @@ export default function SettingsPage() {
     text: string;
   } | null>(null);
 
-  // Form state
-  const [formData, setFormData] = useState<UpdateUserDto>({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: '',
-    profileImageUrl: '',
-    bio: '',
-    hourlyRate: 0,
-    experienceYears: 0,
-    skills: [],
-  });
+  const [form, setForm] = useState<NannyProfileFormState>(buildInitialFormState(null));
+  const [bio, setBio] = useState('');
+  const [skills, setSkills] = useState('');
+  const [experienceYears, setExperienceYears] = useState('');
 
   useEffect(() => {
     if (user) {
-      // Initialize form data
-      setFormData({
-        firstName: user.profiles?.first_name || '',
-        lastName: user.profiles?.last_name || '',
-        phone: user.profiles?.phone || '',
-        address: user.profiles?.address || '',
-        profileImageUrl: user.profiles?.profile_image_url || '',
-        bio: user.nanny_details?.bio || '',
-        hourlyRate: user.nanny_details?.hourly_rate
-          ? Number(user.nanny_details.hourly_rate)
-          : 0,
-        experienceYears: user.nanny_details?.experience_years || 0,
-        skills: user.nanny_details?.skills || [],
-      });
+      setForm(buildInitialFormState(user));
+      setBio(user.nanny_details?.bio || '');
+      setSkills((user.nanny_details?.skills || []).join(', '));
+      setExperienceYears(
+        user.nanny_details?.experience_years != null
+          ? String(user.nanny_details.experience_years)
+          : ''
+      );
       setLoading(false);
     }
   }, [user]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    // Prevent negative values for numeric fields
-    if ((name === 'hourlyRate' || name === 'experienceYears') && Number(value) < 0) {
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === 'hourlyRate' || name === 'experienceYears'
-          ? Number(value)
-          : value,
-    }));
-  };
+  const update = (patch: Partial<NannyProfileFormState>) =>
+    setForm((prev) => ({ ...prev, ...patch }));
 
   const handleUpdateLocation = () => {
     if (!navigator.geolocation) {
@@ -85,25 +66,11 @@ export default function SettingsPage() {
 
         try {
           if (!user) return;
-          // Update user location
-          await api.users.update(user.id, {
-            lat: latitude,
-            lng: longitude,
-          });
-
-          // Wait for backend reverse geocoding to complete
+          await api.users.update(user.id, { lat: latitude, lng: longitude });
           await new Promise((resolve) => setTimeout(resolve, 2000));
-
-          // Fetch updated user data to get the address
           const updatedUser = await api.users.me();
-
-          setFormData(prev => ({
-            ...prev,
-            address: updatedUser.profiles?.address || prev.address
-          }));
-
+          update({ address: updatedUser.profiles?.address || form.address });
           setMessage({ type: 'success', text: 'Location detected and updated!' });
-          // Refresh auth context user
           await refreshUser();
         } catch (error) {
           logger.error('Error updating location:', error);
@@ -114,15 +81,9 @@ export default function SettingsPage() {
       },
       (error) => {
         let errorMessage = 'Unable to retrieve your location';
-        
-        if (error.code === 1) {
-          errorMessage = 'Please allow location access in your browser settings';
-        } else if (error.code === 2) {
-          errorMessage = 'Unable to determine your location. Please check your Wi-Fi and Location Services';
-        } else if (error.code === 3) {
-          errorMessage = 'Location request timed out. Please try again';
-        }
-        
+        if (error.code === 1) errorMessage = 'Please allow location access in your browser settings';
+        else if (error.code === 2) errorMessage = 'Unable to determine your location. Please check your Wi-Fi and Location Services';
+        else if (error.code === 3) errorMessage = 'Location request timed out. Please try again';
         alert(errorMessage);
         setUpdatingLocation(false);
       }
@@ -137,18 +98,18 @@ export default function SettingsPage() {
       setSaving(true);
       setMessage(null);
 
-      // Filter out empty values or only send changed values ideally
-      // For now sending all form data
-      await api.users.update(user.id, formData);
+      await api.users.update(user.id, {
+        ...toUpdateUserDto(form),
+        bio,
+        skills: skills.split(',').map((s) => s.trim()).filter(Boolean),
+        experienceYears: experienceYears ? Number(experienceYears) : undefined,
+      });
+      await api.nannyOnboarding.update(toUpsertOnboardingDto(form));
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      // Refresh user data to ensure sync
       await refreshUser();
-      
-      // Auto-dismiss success message after 5 seconds
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+
+      setTimeout(() => setMessage(null), 5000);
     } catch (error) {
       logger.error('Failed to update profile:', error);
       setMessage({
@@ -202,6 +163,8 @@ export default function SettingsPage() {
     );
   }
 
+  const isNanny = user?.role === 'nanny';
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
@@ -230,131 +193,107 @@ export default function SettingsPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8 pb-12">
-        {/* Personal Information UI Card */}
         <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
           <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
             Personal Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="rounded-xl"
-              />
-              <Input
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="rounded-xl"
-              />
-              <Input
-                label="Phone Number"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="rounded-xl"
-              />
-              <div className="md:col-span-2">
-                <div className="flex items-end gap-4">
-                  <div className="flex-1">
-                    <Input
-                      label="Address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      helperText="This will be used to calculate distances for search results."
-                      className="rounded-xl"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleUpdateLocation}
-                    disabled={updatingLocation}
-                    className="mb-6 h-12 rounded-xl border-neutral-200 flex items-center gap-2 whitespace-nowrap"
-                  >
-                    {updatingLocation ? (
-                      '...'
-                    ) : (
-                      <>
-                        <Navigation size={16} />
-                        Get Location
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <Input
-                  label="Profile Image URL"
-                  name="profileImageUrl"
-                  value={formData.profileImageUrl || ''}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="rounded-xl"
-                />
-              </div>
-            </div>
+          <PersonalInfoSection form={form} update={update} email={user?.email || ''} onAvatarUploaded={refreshUser} />
+          <div className="mt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleUpdateLocation}
+              disabled={updatingLocation}
+              className="rounded-xl border-neutral-200 flex items-center gap-2 whitespace-nowrap"
+            >
+              {updatingLocation ? '...' : (<><Navigation size={16} />Detect Location</>)}
+            </Button>
           </div>
+        </div>
 
-        {user?.role === 'nanny' && (
-          <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
-            <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
-              Caregiver Profile
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {isNanny && (
+          <>
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+                Education & Experience
+              </h2>
+              <EducationExperienceSection form={form} update={update} />
+            </div>
+
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+                Skills & Interests
+              </h2>
+              <SkillsInterestsSection form={form} update={update} />
+              <div className="mt-6 grid grid-cols-1 gap-6">
                 <Input
-                  label="Hourly Rate (₹)"
-                  name="hourlyRate"
-                  type="number"
-                  value={formData.hourlyRate?.toString()}
-                  onChange={handleChange}
-                  className="rounded-xl"
-                />
-                <Input
-                  label="Years of Experience"
-                  name="experienceYears"
+                  label="Years of Experience (overall)"
                   type="number"
                   min={0}
-                  value={formData.experienceYears?.toString()}
-                  onChange={handleChange}
+                  value={experienceYears}
+                  onChange={(e) => setExperienceYears(e.target.value)}
+                  className="rounded-xl max-w-xs"
+                />
+                <Input
+                  label="Other Skills (comma separated)"
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                  placeholder="CPR, First Aid, Cooking"
                   className="rounded-xl"
                 />
-                <div className="md:col-span-2">
-                  <Input
-                    label="Skills (comma separated)"
-                    name="skills"
-                    value={formData.skills?.join(', ') || ''}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        skills: e.target.value
-                          .split(',')
-                          .map((s) => s.trim())
-                          .filter(Boolean),
-                      }))
-                    }
-                    placeholder="CPR, First Aid, Cooking"
-                    className="rounded-xl"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Bio
-                  </label>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Bio</label>
                   <textarea
-                    name="bio"
                     className="w-full rounded-xl border-neutral-200 focus:border-primary-900 focus:ring-primary-900 min-h-[120px] p-3"
-                    value={formData.bio}
-                    onChange={handleChange}
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell parents about yourself..."
                   />
                 </div>
               </div>
             </div>
+
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+                Compensation & Logistics
+              </h2>
+              <CompensationSection form={form} update={update} />
+            </div>
+
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+                Consents
+              </h2>
+              <ConsentsSection form={form} update={update} />
+            </div>
+
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100">
+                Documents
+              </h2>
+              <DocumentsSection
+                documents={user?.identity_documents || []}
+                onUploaded={refreshUser}
+              />
+            </div>
+
+            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
+              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100 flex items-center gap-2">
+                <Clock size={20} />
+                Weekly Availability
+              </h2>
+              {user && (
+                <WizardAvailabilityStep
+                  user={user}
+                  onSave={() => {
+                    refreshUser();
+                    setMessage({ type: 'success', text: 'Availability updated!' });
+                  }}
+                  onSkip={() => {}}
+                />
+              )}
+            </div>
+          </>
         )}
 
         <div className="flex items-center justify-end gap-4 pt-4">

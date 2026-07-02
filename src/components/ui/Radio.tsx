@@ -29,19 +29,15 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
           />
           <div
             className={cn(
-              'min-h-tap min-w-tap w-6 h-6 flex items-center justify-center rounded-full border-2 border-neutral-300 bg-white transition-all duration-200',
+              'w-6 h-6 shrink-0 flex items-center justify-center rounded-full border-2 border-neutral-300 bg-white transition-all duration-200',
               'peer-focus-visible:ring-4 peer-focus-visible:ring-primary-100 peer-focus-visible:border-primary-500',
               'peer-checked:border-primary-900',
+              'peer-checked:[&>div]:scale-100',
               'peer-disabled:bg-neutral-100 peer-disabled:cursor-not-allowed',
               !disabled && 'group-hover:border-primary-500'
             )}
           >
-            <div
-              className={cn(
-                'w-3 h-3 rounded-full bg-primary-900 scale-0 transition-transform duration-200',
-                'peer-checked:scale-100'
-              )}
-            />
+            <div className="w-3 h-3 rounded-full bg-primary-900 scale-0 transition-transform duration-200" />
           </div>
         </div>
         {label && (

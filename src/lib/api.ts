@@ -304,6 +304,21 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ userId, imageUrl }),
       }),
+    uploadAvatar: (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return fetch(`${API_URL}/users/me/avatar`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      }).then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: 'Upload failed' }));
+          throw new Error(err.message || 'Upload failed');
+        }
+        return res.json() as Promise<{ profileImageUrl: string }>;
+      });
+    },
     registerPushToken: (token: string) =>
       fetchApi<void>('/users/push-token', {
         method: 'POST',
@@ -335,6 +350,22 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(body),
       }),
+  },
+  nannyOnboarding: {
+    get: () =>
+      fetchApi<import('@/types/api').NannyOnboardingDetails | null>(
+        '/nanny-onboarding/me'
+      ),
+    update: (body: import('@/types/api').UpsertNannyOnboardingDto) =>
+      fetchApi<import('@/types/api').NannyOnboardingDetails>(
+        '/nanny-onboarding/me',
+        { method: 'PUT', body: JSON.stringify(body) }
+      ),
+    complete: () =>
+      fetchApi<{ onboardingCompleted: boolean }>(
+        '/nanny-onboarding/me/complete',
+        { method: 'POST' }
+      ),
   },
   location: {
     geocode: (address: string) =>
@@ -469,6 +500,7 @@ export const api = {
   },
   admin: {
     getUsers: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<User>>(`/admin/users?page=${page}&pageSize=${pageSize}`),
+    getUserFullProfile: (id: string) => fetchApi<User>(`/admin/users/${id}/full-profile`),
     getBookings: (page = 1, pageSize = 10) => fetchApi<PaginatedResponse<Booking>>(`/admin/bookings?page=${page}&pageSize=${pageSize}`),
     getStats: () => fetchApi<AdminStats>('/admin/stats'),
     verifyUser: (id: string) =>

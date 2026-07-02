@@ -9,7 +9,6 @@ import { api } from '@/lib/api';
 import { Booking } from '@/types/api';
 import { NannyDashboardSummary } from '@/types/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { NannyOnboardingWizard } from '@/components/onboarding/NannyOnboardingWizard';
 import { NannyVerificationBanner } from '@/components/onboarding/NannyVerificationBanner';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/button';
@@ -72,7 +71,6 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<NannyDashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [wizardDismissed, setWizardDismissed] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
   const fetchData = React.useCallback(async () => {
@@ -96,6 +94,13 @@ export default function DashboardPage() {
     if (authLoading || !user || user.role !== 'nanny') return;
     fetchData();
   }, [authLoading, user?.id, fetchData]);
+
+  useEffect(() => {
+    if (authLoading || !user || user.role !== 'nanny') return;
+    if (!user.profiles?.onboarding_completed) {
+      router.replace('/nanny/onboarding');
+    }
+  }, [authLoading, user, router]);
 
   const { subscribe } = useSSE();
   useEffect(() => {
@@ -153,16 +158,14 @@ export default function DashboardPage() {
   const todaySchedule = summary?.todaySchedule ?? [];
   const upcomingToday = todaySchedule.filter((s) => s.status !== 'COMPLETED');
 
-  const needsOnboarding = !wizardDismissed && user?.role === 'nanny' && user.identity_verification_status !== 'verified';
-
   return (
     <ProtectedRoute allowedRoles={['nanny']}>
       <div className="space-y-6">
-        {needsOnboarding && user && (
-          <NannyOnboardingWizard user={user} onComplete={() => setWizardDismissed(true)} />
-        )}
         {user && user.identity_verification_status !== 'verified' && (
-          <NannyVerificationBanner status={user.identity_verification_status ?? null} onResubmit={() => setWizardDismissed(false)} />
+          <NannyVerificationBanner
+            status={user.identity_verification_status ?? null}
+            onResubmit={() => router.push('/nanny/onboarding?step=documents')}
+          />
         )}
 
         {/* ── Header row ── */}

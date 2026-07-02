@@ -234,7 +234,7 @@ export const Navbar: React.FC = () => {
                           </Link>
 
                           <Link
-                            href="/settings"
+                            href={user.role === 'nanny' ? '/dashboard/settings' : '/settings'}
                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
                             role="menuitem"
                           >
@@ -336,7 +336,7 @@ export const Navbar: React.FC = () => {
                     <div className="h-px bg-neutral-100 my-2" />
 
                     <Link
-                      href="/settings"
+                      href={user?.role === 'nanny' ? '/dashboard/settings' : '/settings'}
                       className="text-lg font-bold text-primary-900 hover:bg-neutral-50 p-2 rounded-lg -ml-2"
                       onClick={() => setIsMenuOpen(false)}
                     >

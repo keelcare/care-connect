@@ -9,6 +9,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/badge';
 import { Star, MapPin, CheckCircle, User, Award, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
+import NannyProfileModal from '@/components/admin/NannyProfileModal';
 
 interface NannyAssignmentModalProps {
     isOpen: boolean;
@@ -53,6 +54,7 @@ export function NannyAssignmentModal({
 
     const [conflictDates, setConflictDates] = useState<string[] | null>(null);
     const [pendingNannyId, setPendingNannyId] = useState<string | null>(null);
+    const [viewingNannyId, setViewingNannyId] = useState<string | null>(null);
 
     const handleAssign = async (nannyId: string, force = false) => {
         if (!request) return;
@@ -174,7 +176,10 @@ export function NannyAssignmentModal({
                                     key={nanny.id}
                                     className="p-5 border border-neutral-100 rounded-2xl bg-white hover:border-primary-200 transition-all shadow-sm hover:shadow-md group"
                                 >
-                                    <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
+                                    <div
+                                        className="flex flex-col md:flex-row gap-5 items-start md:items-center cursor-pointer"
+                                        onClick={() => setViewingNannyId(nanny.id)}
+                                    >
                                         <div className="flex-shrink-0 w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center text-neutral-400 overflow-hidden relative">
                                             {nanny.profile_image_url ? (
                                                 <img
@@ -238,7 +243,7 @@ export function NannyAssignmentModal({
                                             </div>
                                         </div>
 
-                                        <div className="flex-shrink-0 w-full md:w-auto">
+                                        <div className="flex-shrink-0 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
                                             <Button
                                                 onClick={() => handleAssign(nanny.id)}
                                                 disabled={assigningLoading !== null}
@@ -322,6 +327,12 @@ export function NannyAssignmentModal({
                 </div>
             </Modal>
         )}
+
+        <NannyProfileModal
+            nannyId={viewingNannyId}
+            allBookings={[]}
+            onClose={() => setViewingNannyId(null)}
+        />
         </>
     );
 }

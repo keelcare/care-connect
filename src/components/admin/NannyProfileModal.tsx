@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import { api, API_URL } from '@/lib/api';
 import { User, Booking } from '@/types/api';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/button';
@@ -10,17 +10,18 @@ import {
   Star,
   Phone,
   MapPin,
-  Mail,
   CheckCircle,
   XCircle,
   ShieldAlert,
   Briefcase,
   Clock,
-  DollarSign,
   Award,
   CalendarDays,
   TrendingUp,
   Tag,
+  GraduationCap,
+  FileText,
+  Download,
 } from 'lucide-react';
 
 interface NannyProfileModalProps {
@@ -77,6 +78,21 @@ function StatBadge({
   );
 }
 
+function ConsentBadge({ label, value }: { label: string; value: boolean | null | undefined }) {
+  const style =
+    value === true
+      ? 'bg-emerald-50 text-emerald-700'
+      : value === false
+      ? 'bg-red-50 text-red-600'
+      : 'bg-neutral-100 text-neutral-500';
+  return (
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold ${style}`}>
+      {value === true ? <CheckCircle size={10} /> : value === false ? <XCircle size={10} /> : null}
+      {label}
+    </span>
+  );
+}
+
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-1">
@@ -113,7 +129,7 @@ export default function NannyProfileModal({ nannyId, allBookings, onClose }: Nan
     let cancelled = false;
     setLoading(true);
     setError(null);
-    api.users.get(nannyId)
+    api.admin.getUserFullProfile(nannyId)
       .then((data) => { if (!cancelled) setNanny(data); })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load profile'); })
       .finally(() => { if (!cancelled) setLoading(false); });
@@ -148,6 +164,20 @@ export default function NannyProfileModal({ nannyId, allBookings, onClose }: Nan
   const details = nanny?.nanny_details;
   const skills = details?.skills ?? [];
   const categories = details?.categories ?? [];
+  const onboarding = nanny?.nanny_onboarding_details;
+
+  const handleViewDocument = async (documentId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/verification/document/${documentId}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to load document');
+      const blob = await res.blob();
+      window.open(URL.createObjectURL(blob), '_blank');
+    } catch {
+      alert('Failed to load document');
+    }
+  };
 
   return (
     <div
@@ -312,11 +342,6 @@ export default function NannyProfileModal({ nannyId, allBookings, onClose }: Nan
                           : undefined
                       }
                     />
-                    <InfoRow
-                      icon={DollarSign}
-                      label="Hourly Rate"
-                      value={details.hourly_rate ? `₹${details.hourly_rate}/hr` : undefined}
-                    />
                     {details.bio && (
                       <InfoRow icon={Briefcase} label="Bio" value={details.bio} />
                     )}
@@ -357,6 +382,106 @@ export default function NannyProfileModal({ nannyId, allBookings, onClose }: Nan
                       </div>
                     </div>
                   )}
+                </section>
+              )}
+
+              {/* === Extended Onboarding Profile === */}
+              {onboarding && (
+                <section>
+                  <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-3">
+                    Extended Profile
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <InfoRow icon={GraduationCap} label="Age" value={onboarding.age} />
+                    <InfoRow icon={GraduationCap} label="Gender" value={onboarding.gender} />
+                    <InfoRow icon={GraduationCap} label="City" value={onboarding.city} />
+                    <InfoRow
+                      icon={GraduationCap}
+                      label="Education"
+                      value={
+                        onboarding.education_qualification === 'Other'
+                          ? onboarding.education_qualification_other
+                          : onboarding.education_qualification
+                      }
+                    />
+                    <InfoRow icon={GraduationCap} label="Stream" value={onboarding.stream_subjects} />
+                    <InfoRow
+                      icon={GraduationCap}
+                      label="Shadow Teacher Exp."
+                      value={onboarding.shadow_teacher_experience}
+                    />
+                    <InfoRow
+                      icon={GraduationCap}
+                      label="Previous Salary"
+                      value={onboarding.previous_salary ? `₹${onboarding.previous_salary}` : undefined}
+                    />
+                    <InfoRow
+                      icon={CalendarDays}
+                      label="Available From"
+                      value={onboarding.available_start_date?.slice(0, 10)}
+                    />
+                  </div>
+
+                  {onboarding.academic_subjects?.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wide mb-2">
+                        Academic Subjects
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {onboarding.academic_subjects.map((s) => (
+                          <span key={s} className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-neutral-100 text-neutral-600">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {onboarding.children_types_supported?.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wide mb-2">
+                        Children Supported
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {onboarding.children_types_supported.map((s) => (
+                          <span key={s} className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex items-center gap-2 flex-wrap">
+                    <ConsentBadge label="Training" value={onboarding.training_agreement} />
+                    <ConsentBadge label="Placement Fee" value={onboarding.placement_fee_agreement} />
+                    <ConsentBadge label="Police Verification" value={onboarding.police_verification_consent} />
+                    <ConsentBadge label="Declaration" value={onboarding.declaration_confirmed} />
+                  </div>
+                </section>
+              )}
+
+              {/* === Documents === */}
+              {(nanny?.identity_documents?.length ?? 0) > 0 && (
+                <section>
+                  <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-3">
+                    Documents
+                  </h3>
+                  <div className="space-y-2">
+                    {nanny!.identity_documents!.map((doc) => (
+                      <button
+                        key={doc.id}
+                        onClick={() => handleViewDocument(doc.id)}
+                        className="w-full flex items-center justify-between p-3 rounded-xl border border-neutral-100 hover:bg-neutral-50 transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText size={16} className="text-neutral-400 shrink-0" />
+                          <span className="text-sm font-medium text-neutral-800 truncate">{doc.type}</span>
+                        </div>
+                        <Download size={14} className="text-neutral-400 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
                 </section>
               )}
 

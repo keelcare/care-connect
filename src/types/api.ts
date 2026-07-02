@@ -14,18 +14,71 @@ export interface User {
   updated_at: string;
   profiles?: UserProfile;
   nanny_details?: NannyDetails;
+  nanny_onboarding_details?: NannyOnboardingDetails | null;
   averageRating?: number;
   totalReviews?: number;
   children?: Child[];
+  bookings?: Record<string, number>;
 }
 
 export interface IdentityDocument {
   id: string;
-  type: 'AADHAR' | 'PAN' | 'VOTER_ID';
+  type: 'AADHAR' | 'PAN' | 'VOTER_ID' | 'RESUME';
   id_number: string;
   file_path: string;
   original_name?: string;
   uploaded_at: string;
+}
+
+export interface NannyOnboardingDetails {
+  user_id: string;
+  age: number | null;
+  gender: string | null;
+  permanent_address: string | null;
+  city: string | null;
+  education_qualification: string | null;
+  education_qualification_other: string | null;
+  stream_subjects: string | null;
+  shadow_teacher_experience: string | null;
+  age_groups_worked: string[];
+  children_types_supported: string[];
+  children_types_other: string | null;
+  academic_subjects: string[];
+  hobbies_interests: string | null;
+  hobbies_activities_for_child: string[];
+  previous_salary: string | null;
+  available_start_date: string | null;
+  training_agreement: boolean | null;
+  placement_fee_agreement: boolean | null;
+  police_verification_consent: boolean | null;
+  declaration_confirmed: boolean | null;
+  declaration_confirmed_at: string | null;
+  onboarding_completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpsertNannyOnboardingDto {
+  age?: number;
+  gender?: string;
+  permanentAddress?: string;
+  city?: string;
+  educationQualification?: string;
+  educationQualificationOther?: string;
+  streamSubjects?: string;
+  shadowTeacherExperience?: string;
+  ageGroupsWorked?: string[];
+  childrenTypesSupported?: string[];
+  childrenTypesOther?: string;
+  academicSubjects?: string[];
+  hobbiesInterests?: string;
+  hobbiesActivitiesForChild?: string[];
+  previousSalary?: string;
+  availableStartDate?: string;
+  trainingAgreement?: boolean;
+  placementFeeAgreement?: boolean;
+  policeVerificationConsent?: boolean;
+  declarationConfirmed?: boolean;
 }
 
 export type ChildProfileType = 'STANDARD' | 'SPECIAL_NEEDS';
@@ -102,6 +155,7 @@ export interface UserProfile {
   lat: string | null; // Decimal stored as string
   lng: string | null; // Decimal stored as string
   profile_image_url: string | null;
+  onboarding_completed?: boolean;
   created_at: string;
   updated_at: string;
 }

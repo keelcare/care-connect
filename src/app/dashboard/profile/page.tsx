@@ -214,16 +214,8 @@ export default function ProfilePage() {
 
           {user.role === 'nanny' && (
             <div className="space-y-8">
-              <div className="grid grid-cols-3 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+              <div className="grid grid-cols-2 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-900 mb-1">
-                    ₹{nanny_details?.hourly_rate || 0}
-                  </div>
-                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
-                    Hourly Rate
-                  </div>
-                </div>
-                <div className="text-center border-l border-neutral-200">
                   <div className="text-2xl font-bold text-primary-900 mb-1">
                     {nanny_details?.experience_years || 0}
                   </div>
@@ -240,6 +232,42 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+
+              {user.nanny_onboarding_details && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-bold text-primary-900">Extended Profile</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+                    <ProfileFact label="Age" value={user.nanny_onboarding_details.age} />
+                    <ProfileFact label="Gender" value={user.nanny_onboarding_details.gender} />
+                    <ProfileFact label="City" value={user.nanny_onboarding_details.city} />
+                    <ProfileFact
+                      label="Education"
+                      value={
+                        user.nanny_onboarding_details.education_qualification === 'Other'
+                          ? user.nanny_onboarding_details.education_qualification_other
+                          : user.nanny_onboarding_details.education_qualification
+                      }
+                    />
+                    <ProfileFact
+                      label="Shadow Teacher Exp."
+                      value={user.nanny_onboarding_details.shadow_teacher_experience}
+                    />
+                    <ProfileFact
+                      label="Available From"
+                      value={user.nanny_onboarding_details.available_start_date?.slice(0, 10)}
+                    />
+                  </div>
+                  {user.nanny_onboarding_details.academic_subjects?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {user.nanny_onboarding_details.academic_subjects.map((s, i) => (
+                        <span key={i} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="space-y-3">
                 <h3 className="text-lg font-bold text-primary-900">About</h3>
@@ -315,6 +343,16 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ProfileFact({ label, value }: { label: string; value?: string | number | null }) {
+  if (!value) return null;
+  return (
+    <div>
+      <div className="text-sm font-semibold text-primary-900">{value}</div>
+      <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">{label}</div>
     </div>
   );
 }
