@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { Navigation, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { Navigation, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { logger } from '@/lib/logger';
 import { useAuth } from '@/context/AuthContext';
@@ -19,7 +19,6 @@ import { SkillsInterestsSection } from '@/components/nanny-profile/SkillsInteres
 import { CompensationSection } from '@/components/nanny-profile/CompensationSection';
 import { ConsentsSection } from '@/components/nanny-profile/ConsentsSection';
 import { DocumentsSection } from '@/components/nanny-profile/DocumentsSection';
-import { WizardAvailabilityStep } from '@/components/onboarding/WizardAvailabilityStep';
 
 export default function SettingsPage() {
   const { user, refreshUser, logout } = useAuth();
@@ -66,11 +65,21 @@ export default function SettingsPage() {
 
         try {
           if (!user) return;
-          await api.users.update(user.id, { lat: latitude, lng: longitude });
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          const updatedUser = await api.users.me();
-          update({ address: updatedUser.profiles?.address || form.address });
-          setMessage({ type: 'success', text: 'Location detected and updated!' });
+          // Resolve a human-readable label for the detected coordinates
+          let locationAddress = 'Current location';
+          try {
+            const res = await api.location.reverseGeocode(latitude, longitude);
+            if (res?.success && res.data?.address) locationAddress = res.data.address;
+          } catch {
+            /* keep fallback label */
+          }
+          // Save the matching location — kept separate from the residential address
+          await api.users.update(user.id, {
+            lat: latitude,
+            lng: longitude,
+            locationAddress,
+          });
+          setMessage({ type: 'success', text: 'Matching location updated!' });
           await refreshUser();
         } catch (error) {
           logger.error('Error updating location:', error);
@@ -198,16 +207,28 @@ export default function SettingsPage() {
             Personal Information
           </h2>
           <PersonalInfoSection form={form} update={update} email={user?.email || ''} onAvatarUploaded={refreshUser} />
-          <div className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleUpdateLocation}
-              disabled={updatingLocation}
-              className="rounded-xl border-neutral-200 flex items-center gap-2 whitespace-nowrap"
-            >
-              {updatingLocation ? '...' : (<><Navigation size={16} />Detect Location</>)}
-            </Button>
+
+          <div className="mt-6 pt-6 border-t border-neutral-100">
+            <p className="text-sm font-semibold text-neutral-900">Matching location</p>
+            <p className="text-xs text-neutral-400 mt-1 mb-3">
+              Used to match you with nearby families. This is separate from your residential address above.
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleUpdateLocation}
+                disabled={updatingLocation}
+                className="rounded-xl border-neutral-200 flex items-center gap-2 whitespace-nowrap"
+              >
+                {updatingLocation ? 'Detecting…' : (<><Navigation size={16} />Use current location</>)}
+              </Button>
+              <span className="text-sm text-neutral-500">
+                {user?.profiles?.location_address
+                  ? user.profiles.location_address
+                  : 'No matching location set yet'}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -277,22 +298,6 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm p-8 md:p-10">
-              <h2 className="text-xl font-bold text-neutral-900 mb-6 pb-4 border-b border-neutral-100 flex items-center gap-2">
-                <Clock size={20} />
-                Weekly Availability
-              </h2>
-              {user && (
-                <WizardAvailabilityStep
-                  user={user}
-                  onSave={() => {
-                    refreshUser();
-                    setMessage({ type: 'success', text: 'Availability updated!' });
-                  }}
-                  onSkip={() => {}}
-                />
-              )}
-            </div>
           </>
         )}
 

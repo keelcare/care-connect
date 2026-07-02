@@ -151,7 +151,8 @@ export interface UserProfile {
   full_name?: string | null; // Backend may return this
   phone: string | null;
   bio?: string | null; // Backend may include bio here
-  address: string | null;
+  address: string | null; // Typed residential address (onboarding)
+  location_address?: string | null; // Label for the matching location (lat/lng)
   lat: string | null; // Decimal stored as string
   lng: string | null; // Decimal stored as string
   profile_image_url: string | null;
@@ -268,6 +269,7 @@ export interface UpdateUserDto {
   lastName?: string;
   phone?: string;
   address?: string;
+  locationAddress?: string;
   lat?: number;
   lng?: number;
   profileImageUrl?: string;

@@ -26,8 +26,9 @@ export const LocationModal: React.FC<LocationModalProps> = ({
   const [geoLoading, setGeoLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen && user?.profiles?.address) {
-      setAddress(user.profiles.address);
+    // Show the saved matching-location label (NOT the typed residential address)
+    if (isOpen && user?.profiles?.location_address) {
+      setAddress(user.profiles.location_address);
     }
   }, [isOpen, user]);
 
@@ -59,12 +60,12 @@ export const LocationModal: React.FC<LocationModalProps> = ({
           }
           setAddress(addressText);
 
-          // Update user profile if logged in
+          // Update the matching location (kept separate from the residential address)
           if (user?.id) {
             await api.users.update(user.id, {
               lat: latitude,
               lng: longitude,
-              address: addressText,
+              locationAddress: addressText,
             });
           }
 
@@ -126,7 +127,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
           await api.users.update(user.id, {
             lat,
             lng,
-            address: address, // Update address string too
+            locationAddress: address, // matching-location label, not the residential address
           });
         }
 
