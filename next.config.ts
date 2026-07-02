@@ -100,4 +100,11 @@ const exportConfig = process.env.SENTRY_AUTH_TOKEN ? withSentryConfig(nextConfig
   project: "frontend",
 }) : nextConfig;
 
-export default exportConfig;
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+// Enable with `ANALYZE=true npm run build` to inspect client/server bundle sizes.
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withBundleAnalyzer(exportConfig);

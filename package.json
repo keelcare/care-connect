@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "analyze": "ANALYZE=true next build",
     "clean:cache": "bash scripts/clean-turbopack-cache.sh",
     "build:mobile": "node scripts/mobile-build.cjs",
     "sync:mobile": "node scripts/mobile-build.cjs",
@@ -73,6 +74,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@capacitor/assets": "^3.0.5",
+    "@next/bundle-analyzer": "^16.2.10",
     "@playwright/test": "^1.57.0",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",

@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -279,12 +281,14 @@ export default function RecurringBookingDetailsPage() {
 
                     {/* Caregiver Info */}
                     <div className="flex items-center gap-3 sm:border-l sm:border-stone-100 sm:pl-6">
-                      <div className="w-10 h-10 rounded-full bg-stone-100 overflow-hidden flex items-center justify-center border border-stone-200">
+                      <div className="relative w-10 h-10 rounded-full bg-stone-100 overflow-hidden flex items-center justify-center border border-stone-200">
                         {booking.nanny?.profiles?.profile_image_url ? (
-                          <img 
-                            src={booking.nanny.profiles.profile_image_url} 
-                            alt="Caregiver" 
-                            className="w-full h-full object-cover" 
+                          <Image
+                            src={booking.nanny.profiles.profile_image_url}
+                            alt="Caregiver"
+                            fill
+                            sizes="40px"
+                            className="object-cover"
                           />
                         ) : (
                           <UserIcon className="text-stone-400" size={18} />

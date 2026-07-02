@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -356,9 +358,9 @@ export default function NannyBookingDetailPage() {
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Client</h2>
             <div className="flex items-start gap-4">
               {/* Avatar */}
-              <div className="w-12 h-12 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="relative w-12 h-12 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {parent?.profiles?.profile_image_url ? (
-                  <img src={parent.profiles.profile_image_url} alt={parentName} className="w-full h-full object-cover" />
+                  <Image src={parent.profiles.profile_image_url} alt={parentName} fill sizes="48px" className="object-cover" />
                 ) : (
                   <span className="text-lg font-bold text-primary-700">{parentInitial}</span>
                 )}
