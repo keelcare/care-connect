@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "clean:cache": "bash scripts/clean-turbopack-cache.sh",
     "build:mobile": "node scripts/mobile-build.cjs",
     "sync:mobile": "node scripts/mobile-build.cjs",
     "cap:run:ios": "npx cap run ios",

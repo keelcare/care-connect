@@ -328,6 +328,13 @@ export const api = {
       fetchApi<import('@/types/api').NannyDashboardSummary>('/nannies/me/dashboard'),
     getPerformance: () =>
       fetchApi<import('@/types/api').NannyPerformance>('/nannies/me/performance'),
+    getSettings: () =>
+      fetchApi<import('@/types/api').NannySettings>('/nannies/me/settings'),
+    updateSettings: (body: Partial<import('@/types/api').NannySettings>) =>
+      fetchApi<import('@/types/api').NannySettings>('/nannies/me/settings', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
   },
   location: {
     geocode: (address: string) =>
@@ -554,6 +561,8 @@ export const api = {
       }),
     delete: (id: string) =>
       fetchApi<void>(`/availability/${id}`, { method: 'DELETE' }),
+    forecast: () =>
+      fetchApi<import('@/types/api').DemandForecast>('/availability/demand-forecast'),
   },
   favorites: {
     list: () => fetchApi<Favorite[]>('/favorites'),
