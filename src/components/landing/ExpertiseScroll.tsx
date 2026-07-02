@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cn } from '@/lib/utils';
-import { BookOpen, Baby, HeartPulse, LucideIcon } from 'lucide-react';
+import { BookOpen, Baby, HeartPulse, HandHeart, ArrowDown, LucideIcon } from 'lucide-react';
 
 export const ExpertiseScroll = () => {
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -23,32 +23,49 @@ export const ExpertiseScroll = () => {
       id: number;
       title: string;
       description: string;
+      serviceId?: string; // matches ServicesShowcase tab ids
       Icon?: LucideIcon;
   }[] = [
     {
       id: 0,
-      title: 'Our Care Expertise',
-      description: 'Comprehensive support services tailored to your needs.',
+      title: 'Four ways we care',
+      description: 'Keep scrolling to meet each one — then explore the details below.',
     },
     {
       id: 1,
       title: 'Shadow Teacher',
-      description: 'Specialized educational support for unique learning needs.',
+      description: 'A steady hand beside your child in the classroom, every single day.',
+      serviceId: 'shadow-teacher',
       Icon: BookOpen,
     },
     {
       id: 2,
       title: 'Child Care',
-      description: 'Verified nannies and sitters for every age.',
+      description: 'A nanny your kids run to — and you never worry about.',
+      serviceId: 'child-care',
       Icon: Baby,
     },
     {
       id: 3,
       title: 'Special Needs',
-      description: 'Professional support for unique requirements.',
+      description: 'Trained care that follows your family’s plan, not a generic one.',
+      serviceId: 'special-needs',
       Icon: HeartPulse,
+    },
+    {
+      id: 4,
+      title: 'Elder Care',
+      description: 'Someone dependable for your parents, when you can’t be there.',
+      serviceId: 'elder-care',
+      Icon: HandHeart,
     }
   ];
+
+  // Scrolls to the showcase and activates the matching service tab
+  const exploreService = (serviceId: string) => {
+    window.dispatchEvent(new CustomEvent('keel:select-service', { detail: serviceId }));
+    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // Configuration
   const RADIUS = 1500; // Large radius for flat horizon
@@ -70,7 +87,7 @@ export const ExpertiseScroll = () => {
         scrollTrigger: {
           trigger: triggerRef.current,
           start: 'top top',
-          end: '+=300%',
+          end: '+=400%',
           scrub: 1,
           pin: true,
           anticipatePin: 1,
@@ -150,6 +167,16 @@ export const ExpertiseScroll = () => {
                    <p className="text-sm sm:text-lg md:text-2xl text-white/90 font-serif max-w-xl leading-relaxed">
                      {step.description}
                    </p>
+                   {step.serviceId && (
+                     <button
+                       onClick={() => exploreService(step.serviceId!)}
+                       tabIndex={activeIndex === index ? 0 : -1}
+                       className="pointer-events-auto mt-5 md:mt-8 group flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm md:text-base font-semibold text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-primary-900 hover:border-white"
+                     >
+                       Explore {step.title.toLowerCase()}
+                       <ArrowDown size={16} className="transition-transform duration-300 group-hover:translate-y-0.5" />
+                     </button>
+                   )}
                 </div>
              ))}
         </div>

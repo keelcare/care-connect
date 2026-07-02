@@ -8,7 +8,13 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 const scrollTo = (id: string) => {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    // Section lives on the landing page — navigate there (e.g. from /about)
+    window.location.href = `/welcome#${id}`;
+  }
 };
 
 export const Navbar = () => {
@@ -76,8 +82,9 @@ export const Navbar = () => {
             </Link>
           ))}
           {[
-            { label: 'Services', id: 'expertise' },
+            { label: 'Services', id: 'services' },
             { label: 'How it Works', id: 'how-it-works' },
+            { label: 'FAQ', id: 'faq' },
           ].map(({ label, id }) => (
             <button
               key={id}
@@ -99,6 +106,24 @@ export const Navbar = () => {
               />
             </button>
           ))}
+          <Link
+            href="/about"
+            className="text-sm font-bold font-body transition-all duration-300 relative group py-1"
+            style={{ color: scrolled ? 'var(--color-primary)' : 'white' }}
+          >
+            <span className={cn(
+              "transition-opacity duration-300",
+              scrolled ? "opacity-70 group-hover:opacity-100" : "opacity-85 group-hover:opacity-100"
+            )}>
+              Our Story
+            </span>
+            <span
+              className={cn(
+                "absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 transition-all duration-300 group-hover:w-full rounded-full",
+                scrolled ? "bg-primary" : "bg-white"
+              )}
+            />
+          </Link>
         </div>
 
         {/* Auth Buttons */}
@@ -175,18 +200,33 @@ export const Navbar = () => {
           >
             <button 
               className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group" 
-              onClick={() => { scrollTo('expertise'); setIsOpen(false); }}
+              onClick={() => { scrollTo('services'); setIsOpen(false); }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               Services
             </button>
-            <button 
-              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group" 
+            <button
+              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group"
               onClick={() => { scrollTo('how-it-works'); setIsOpen(false); }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               How it Works
             </button>
+            <button
+              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group"
+              onClick={() => { scrollTo('faq'); setIsOpen(false); }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              FAQ
+            </button>
+            <Link
+              href="/about"
+              className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              Our Story
+            </Link>
             <div className="h-px bg-primary/10 my-1" />
             {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
                <a href="#waitlist" onClick={() => setIsOpen(false)}>

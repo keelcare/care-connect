@@ -5,6 +5,8 @@ import { ExpertiseScroll } from './ExpertiseScroll';
 
 import { ThatsUs } from './ThatsUs';
 import { SafetyPromise } from './SafetyPromise';
+import { ServicesShowcase } from './ServicesShowcase';
+import { FAQSection } from './FAQSection';
 import { HowItWorksSection } from './HowItWorksSection';
 import { Footer } from './Footer';
 import { WaitlistModal } from './WaitlistModal';
@@ -16,8 +18,10 @@ export const LandingPage = () => {
       <main>
         <HeroSection />
         <ExpertiseScroll />
+        <ServicesShowcase />
         <SafetyPromise />
         <HowItWorksSection />
+        <FAQSection />
         <ThatsUs />
         {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' && <WaitlistModal />}
       </main>

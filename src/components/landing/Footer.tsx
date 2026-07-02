@@ -22,6 +22,9 @@ export const Footer = () => {
             <p className="text-sm text-white/50 leading-relaxed max-w-xs">
               Connecting families with trusted, verified care professionals across India.
             </p>
+            <Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors font-medium w-fit">
+              Our Story →
+            </Link>
             <a
               href="https://www.instagram.com/keelcare.in"
               target="_blank"
@@ -39,9 +42,10 @@ export const Footer = () => {
           <div className="flex flex-col gap-5">
             <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest">Services</h4>
             <ul className="flex flex-col gap-3">
-              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</a></li>
-              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Child Care</a></li>
-              <li><a href="#expertise" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</a></li>
+              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Child Care</a></li>
+              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</a></li>
+              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</a></li>
+              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Elder Care</a></li>
             </ul>
           </div>
 
