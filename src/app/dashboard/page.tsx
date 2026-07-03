@@ -20,6 +20,7 @@ import {
   Clock,
   Calendar,
   MapPin,
+  MapPinOff,
   Users,
   ChevronRight,
   BarChart2,
@@ -166,6 +167,28 @@ export default function DashboardPage() {
             status={user.identity_verification_status ?? null}
             onResubmit={() => router.push('/nanny/onboarding?step=documents')}
           />
+        )}
+
+        {/* Matching location missing → the caregiver won't surface in family
+            searches until it's set. */}
+        {user && (!user.profiles?.lat || !user.profiles?.lng) && (
+          <div className="flex items-start gap-3 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200/70">
+            <MapPinOff size={18} className="text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-800">
+                You won’t appear in family searches yet
+              </p>
+              <p className="text-xs text-amber-700/80 mt-0.5">
+                Set your matching location so nearby families can find and book you.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/dashboard/settings')}
+              className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors"
+            >
+              Set location
+            </button>
+          </div>
         )}
 
         {/* ── Header row ── */}
@@ -413,7 +436,7 @@ export default function DashboardPage() {
                 </p>
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => router.push(`/dashboard/messages?booking=${currentSession.id}`)}
+                    onClick={() => router.push(`/dashboard/messages/${currentSession.id}`)}
                     className="flex-1 h-8 rounded-xl bg-primary-900 text-white text-xs font-bold gap-1.5"
                   >
                     <MessageSquare size={11} /> Message

@@ -18,6 +18,7 @@ import {
 import { formatRelativeTime } from '@/lib/notificationHelpers';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -64,6 +65,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   onMarkAsRead,
 }) => {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Determine styles based on type or category
   const style = typeStyles[notification.type as keyof typeof typeStyles] || typeStyles.info;
@@ -75,7 +77,9 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
     }
     // Handle navigation based on category or related_id
     if (notification.category === 'message' && notification.related_id) {
-      router.push(`/messages/${notification.related_id}`);
+      // Nannies use the dashboard-scoped room; parents use the top-level room.
+      const base = user?.role === 'nanny' ? '/dashboard/messages' : '/messages';
+      router.push(`${base}/${notification.related_id}`);
     } else if (notification.category === 'booking' && notification.related_id) {
       router.push(`/bookings/${notification.related_id}`);
     }

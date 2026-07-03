@@ -1,6 +1,6 @@
 // Features Components Index
 export { CancellationModal } from './CancellationModal';
-export { ChatSidebar } from './ChatSidebar';
+export { ChatRoom } from './ChatRoom';
 export { EnhancedChatWindow } from './EnhancedChatWindow';
 export { FilterSidebar } from './FilterSidebar';
 export { LocationModal } from './LocationModal';

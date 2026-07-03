@@ -2,19 +2,10 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import {
-  Send,
-  Smile,
-  MoreVertical,
-  Phone,
-  Video,
-  Search,
-  ChevronLeft,
-} from 'lucide-react';
+import { Send, MoreVertical, ChevronLeft, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketProvider';
 import { Message, Chat, User } from '@/types/api';
-import { Button } from '@/components/ui/button';
 
 interface ChatWindowProps {
   chat: Chat;
@@ -24,6 +15,8 @@ interface ChatWindowProps {
   onBack?: () => void;
   isLoading?: boolean;
   showBackButton?: boolean;
+  /** Show the back button at all breakpoints (room view has no sidebar). */
+  backAlwaysVisible?: boolean;
 }
 
 export function EnhancedChatWindow({
@@ -34,6 +27,7 @@ export function EnhancedChatWindow({
   onBack,
   isLoading = false,
   showBackButton = false,
+  backAlwaysVisible = false,
 }: ChatWindowProps) {
   const { user } = useAuth();
   const { connected, sendTyping, onTyping, offTyping } = useSocket();
@@ -41,7 +35,7 @@ export function EnhancedChatWindow({
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const otherPartyName =
@@ -51,41 +45,38 @@ export function EnhancedChatWindow({
 
   const otherPartyImage = otherParty?.profiles?.profile_image_url;
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new messages / typing changes.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, otherUserTyping]);
 
-  // Handle typing indicator
+  // Receive the other party's typing state.
   useEffect(() => {
     const handleTyping = (data: { userId: string; isTyping: boolean }) => {
       if (data.userId !== user?.id) {
         setOtherUserTyping(data.isTyping);
       }
     };
-
     onTyping(handleTyping);
     return () => offTyping(handleTyping);
   }, [user?.id, onTyping, offTyping]);
 
-  // Handle input change with typing indicator
+  const stopTyping = useCallback(() => {
+    setIsTyping(false);
+    sendTyping(chat.id, false);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+  }, [chat.id, sendTyping]);
+
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value;
       setMessageInput(value);
 
-      // Send typing indicator
       if (value && !isTyping) {
         setIsTyping(true);
         sendTyping(chat.id, true);
       }
-
-      // Clear previous timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-
-      // Stop typing indicator after 2 seconds of inactivity
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
         setIsTyping(false);
         sendTyping(chat.id, false);
@@ -94,84 +85,84 @@ export function EnhancedChatWindow({
     [chat.id, isTyping, sendTyping]
   );
 
-  // Handle send message
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageInput.trim() || !connected) return;
-
     onSendMessage(messageInput.trim());
     setMessageInput('');
-    setIsTyping(false);
-    sendTyping(chat.id, false);
+    stopTyping();
+  };
 
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
   };
 
-  // Format timestamp
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
+  const formatTime = (dateString: string) =>
+    new Date(dateString).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
 
-  // Format date for message grouping
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-      });
-    }
+    if (date.toDateString() === today.toDateString()) return 'Today';
+    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
-  // Group messages by date
-  const groupedMessages = messages.reduce(
-    (groups, message) => {
+  // Group messages by day for date separators.
+  const groups = messages.reduce<{ date: string; items: Message[] }[]>(
+    (acc, message) => {
       const date = formatDate(message.created_at);
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(message);
-      return groups;
+      const last = acc[acc.length - 1];
+      if (last && last.date === date) last.items.push(message);
+      else acc.push({ date, items: [message] });
+      return acc;
     },
-    {} as Record<string, Message[]>
+    []
   );
 
+  // Index of the last message I sent (for the read receipt).
+  const lastOwnIndex = (() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].sender_id === user?.id) return messages[i].id;
+    }
+    return null;
+  })();
+  const lastOwnMessage = messages.find((m) => m.id === lastOwnIndex);
+
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm border border-neutral-100">
+    <div className="flex flex-col h-full bg-white overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 bg-white border-b border-neutral-100 flex items-center gap-3">
+      <div className="px-4 py-3 bg-white/90 backdrop-blur border-b border-neutral-100 flex items-center gap-3">
         {showBackButton && (
           <button
             onClick={onBack}
-            className="p-2 -ml-2 rounded-full hover:bg-neutral-100 transition-colors lg:hidden"
+            aria-label="Back"
+            className={`p-2 -ml-2 rounded-full hover:bg-neutral-100 transition-colors ${backAlwaysVisible ? '' : 'lg:hidden'}`}
           >
             <ChevronLeft size={20} className="text-neutral-600" />
           </button>
         )}
 
         <div className="relative flex-shrink-0">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden bg-neutral-100">
             {otherPartyImage ? (
               <Image
                 src={otherPartyImage}
                 alt={otherPartyName}
-                width={40}
-                height={40}
+                fill
+                sizes="40px"
                 className="object-cover"
               />
             ) : (
@@ -191,27 +182,25 @@ export function EnhancedChatWindow({
           </h3>
           <p className="text-xs text-neutral-500">
             {otherUserTyping ? (
-              <span className="text-primary-600">typing...</span>
+              <span className="text-primary-600">typing…</span>
             ) : connected ? (
-              'Online'
+              'Active now'
             ) : (
-              'Offline'
+              'Connecting…'
             )}
           </p>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button className="p-2 rounded-full hover:bg-neutral-100 transition-colors text-neutral-500">
-            <Search size={18} />
-          </button>
-          <button className="p-2 rounded-full hover:bg-neutral-100 transition-colors text-neutral-500">
-            <MoreVertical size={18} />
-          </button>
-        </div>
+        <button
+          aria-label="Conversation options"
+          className="p-2 rounded-full hover:bg-neutral-100 transition-colors text-neutral-500"
+        >
+          <MoreVertical size={18} />
+        </button>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-50/50">
+      <div className="flex-1 overflow-y-auto px-4 py-4 bg-neutral-50/60">
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
@@ -222,45 +211,48 @@ export function EnhancedChatWindow({
               <Send size={24} className="text-neutral-300" />
             </div>
             <p className="text-sm">No messages yet</p>
-            <p className="text-xs mt-1">Start the conversation!</p>
+            <p className="text-xs mt-1">Say hello to {otherPartyName}!</p>
           </div>
         ) : (
-          Object.entries(groupedMessages).map(([date, dateMessages]) => (
-            <div key={date}>
-              {/* Date separator */}
+          groups.map((group) => (
+            <div key={group.date}>
               <div className="flex items-center justify-center my-4">
-                <div className="bg-neutral-200/60 text-neutral-500 text-xs font-medium px-3 py-1 rounded-full">
-                  {date}
+                <div className="bg-neutral-200/70 text-neutral-500 text-[11px] font-semibold px-3 py-1 rounded-full">
+                  {group.date}
                 </div>
               </div>
 
-              {/* Messages for this date */}
-              {dateMessages.map((message, index) => {
+              {group.items.map((message, index) => {
                 const isMe = message.sender_id === user?.id;
-                const showAvatar =
-                  !isMe &&
-                  (index === 0 ||
-                    dateMessages[index - 1]?.sender_id !== message.sender_id);
+                const prev = group.items[index - 1];
+                const next = group.items[index + 1];
+                const isFirstOfGroup = !prev || prev.sender_id !== message.sender_id;
+                const isLastOfGroup = !next || next.sender_id !== message.sender_id;
+
+                // iMessage-style corners: the tail sits on the last bubble of a run.
+                const corner = isMe
+                  ? `rounded-2xl ${isLastOfGroup ? 'rounded-br-md' : ''}`
+                  : `rounded-2xl ${isLastOfGroup ? 'rounded-bl-md' : ''}`;
 
                 return (
                   <div
                     key={message.id}
-                    className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-1`}
+                    className={`flex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'} ${isLastOfGroup ? 'mb-2.5' : 'mb-0.5'}`}
                   >
                     {!isMe && (
-                      <div className="w-8 mr-2 flex-shrink-0">
-                        {showAvatar && (
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-neutral-200">
+                      <div className="w-7 flex-shrink-0">
+                        {isLastOfGroup && (
+                          <div className="relative w-7 h-7 rounded-full overflow-hidden bg-neutral-200">
                             {otherPartyImage ? (
                               <Image
                                 src={otherPartyImage}
                                 alt={otherPartyName}
-                                width={32}
-                                height={32}
+                                fill
+                                sizes="28px"
                                 className="object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs font-bold">
+                              <div className="w-full h-full flex items-center justify-center text-neutral-400 text-[10px] font-bold">
                                 {otherPartyName.charAt(0).toUpperCase()}
                               </div>
                             )}
@@ -269,25 +261,24 @@ export function EnhancedChatWindow({
                       </div>
                     )}
 
-                    <div
-                      className={`max-w-[70%] ${isMe ? 'items-end' : 'items-start'}`}
-                    >
+                    <div className={`group max-w-[75%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                       <div
-                        className={`px-4 py-2.5 rounded-2xl ${isMe
-                            ? 'bg-primary-600 text-white rounded-br-md'
-                            : 'bg-white text-neutral-800 rounded-bl-md shadow-sm border border-neutral-100'
-                          }`}
+                        title={formatTime(message.created_at)}
+                        className={`px-4 py-2.5 shadow-sm ${corner} ${
+                          isMe
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-white text-neutral-800 border border-neutral-100'
+                        }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap break-words">
+                        <p className="text-[15px] leading-snug whitespace-pre-wrap break-words">
                           {message.content}
                         </p>
                       </div>
-                      <p
-                        className={`text-[10px] mt-1 px-1 ${isMe ? 'text-right text-neutral-400' : 'text-neutral-400'
-                          }`}
-                      >
-                        {formatTime(message.created_at)}
-                      </p>
+                      {isLastOfGroup && (
+                        <span className="text-[10px] text-neutral-400 mt-1 px-1">
+                          {formatTime(message.created_at)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
@@ -296,23 +287,36 @@ export function EnhancedChatWindow({
           ))
         )}
 
+        {/* Read receipt under my most recent message */}
+        {!isLoading && lastOwnMessage && (
+          <div className="flex justify-end pr-1">
+            <span className="flex items-center gap-1 text-[10px] text-neutral-400">
+              {lastOwnMessage.is_read ? (
+                <>
+                  <CheckCheck size={12} className="text-primary-600" /> Read
+                </>
+              ) : (
+                <>
+                  <Check size={12} /> Sent
+                </>
+              )}
+            </span>
+          </div>
+        )}
+
         {/* Typing indicator */}
         {otherUserTyping && (
-          <div className="flex items-center gap-2 ml-10">
+          <div className="flex items-center gap-2 mt-2">
+            <div className="w-7" />
             <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-neutral-100">
               <div className="flex gap-1">
-                <span
-                  className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '0ms' }}
-                />
-                <span
-                  className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '150ms' }}
-                />
-                <span
-                  className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '300ms' }}
-                />
+                {[0, 150, 300].map((delay) => (
+                  <span
+                    key={delay}
+                    className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"
+                    style={{ animationDelay: `${delay}ms` }}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -324,40 +328,35 @@ export function EnhancedChatWindow({
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 bg-white border-t border-neutral-100"
+        className="p-3 bg-white border-t border-neutral-100"
       >
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="p-2 rounded-full hover:bg-neutral-100 transition-colors text-neutral-400"
-          >
-            <Smile size={22} />
-          </button>
-
+        <div className="flex items-end gap-2">
           <div className="flex-1 relative">
-            <input
+            <textarea
               ref={inputRef}
-              type="text"
+              rows={1}
               value={messageInput}
               onChange={handleInputChange}
-              placeholder="Type a message..."
+              onKeyDown={handleKeyDown}
+              placeholder="Message…"
               disabled={!connected}
-              className="w-full px-4 py-2.5 bg-neutral-50 rounded-full border-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all text-sm placeholder:text-neutral-400"
+              className="w-full max-h-32 resize-none px-4 py-2.5 bg-neutral-100 rounded-3xl border-none focus:ring-2 focus:ring-primary-500/30 focus:bg-white transition-all text-[15px] placeholder:text-neutral-400 disabled:opacity-60"
             />
           </div>
 
-          <Button
+          <button
             type="submit"
+            aria-label="Send message"
             disabled={!connected || !messageInput.trim()}
-            className="w-10 h-10 rounded-full p-0 flex items-center justify-center bg-primary-600 hover:bg-primary-700 disabled:bg-neutral-200 disabled:text-neutral-400 transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 bg-primary-600 text-white hover:bg-primary-700 disabled:bg-neutral-200 disabled:text-neutral-400 transition-colors"
           >
             <Send size={18} />
-          </Button>
+          </button>
         </div>
 
         {!connected && (
           <p className="text-xs text-amber-600 mt-2 text-center">
-            Connecting to chat server...
+            Connecting to chat server…
           </p>
         )}
       </form>

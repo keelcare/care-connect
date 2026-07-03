@@ -390,7 +390,7 @@ export default function NannyBookingDetailPage() {
             </div>
 
             <Button
-              onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
+              onClick={() => router.push(`/dashboard/messages/${bookingId}`)}
               variant="outline"
               className="w-full h-9 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2 mt-4"
             >
@@ -527,7 +527,7 @@ export default function NannyBookingDetailPage() {
                 {['CONFIRMED', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(currentStatus) && (
                   <Button
                     variant="outline"
-                    onClick={() => router.push(`/dashboard/messages?booking=${bookingId}`)}
+                    onClick={() => router.push(`/dashboard/messages/${bookingId}`)}
                     className="w-full h-11 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2"
                   >
                     <MessageSquare size={15} />

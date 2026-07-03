@@ -219,21 +219,6 @@ export const Navbar: React.FC = () => {
                           </div>
 
                           <Link
-                            href={
-                              user.role === 'nanny'
-                                ? '/dashboard'
-                                : user.role === 'admin'
-                                  ? '/admin'
-                                  : '/parent-dashboard'
-                            }
-                            className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
-                            role="menuitem"
-                          >
-                            <LayoutDashboard size={18} />
-                            <span>Dashboard</span>
-                          </Link>
-
-                          <Link
                             href={user.role === 'nanny' ? '/dashboard/settings' : '/settings'}
                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
                             role="menuitem"

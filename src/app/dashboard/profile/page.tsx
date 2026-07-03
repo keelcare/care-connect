@@ -2,16 +2,18 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { MapPin, ShieldCheck, Edit, User, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  MapPin,
+  ShieldCheck,
+  Edit,
+  Star,
+  Briefcase,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
-import { api } from '@/lib/api';
-import styles from './page.module.css';
-import { usePreferences } from '@/hooks/usePreferences';
 import { CategoryRequestModal } from '@/components/nanny/CategoryRequestModal';
-import { NannyDetails } from '@/types/api';
 
 const CATEGORY_MAP: Record<string, string> = {
   EC: 'Elder Care',
@@ -20,39 +22,29 @@ const CATEGORY_MAP: Record<string, string> = {
   ST: 'Shadow Teacher',
 };
 
+const reveal = {
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+};
+
 export default function ProfilePage() {
   const { user, loading } = useAuth();
-  const { updatePreferences } = usePreferences();
-  const [updatingLocation, setUpdatingLocation] = React.useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = React.useState(false);
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary-900 font-display">
-            My Profile
-          </h1>
-        </div>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
-        </div>
+      <div className="flex justify-center py-24">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary-900 font-display">
-            My Profile
-          </h1>
-        </div>
-        <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
-          <p className="text-red-600 mb-4">
-            Please log in to view your profile.
-          </p>
+      <div className="max-w-md mx-auto py-20 text-center">
+        <div className="bg-red-50 p-8 rounded-[28px] border border-red-100">
+          <p className="text-red-600 mb-4">Please log in to view your profile.</p>
           <Link href="/auth/login">
             <Button>Log In</Button>
           </Link>
@@ -61,298 +53,268 @@ export default function ProfilePage() {
     );
   }
 
-  const { profiles, nanny_details } = user;
-
-  const handleUpdateLocation = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
-      return;
-    }
-
-    setUpdatingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        try {
-          // Update user location
-          await api.users.update(user.id, {
-            lat: latitude,
-            lng: longitude,
-          });
-
-          // Wait for backend reverse geocoding to complete (typically takes 1-2 seconds)
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-
-          // Fetch updated user data to get the address
-          const updatedUser = await api.users.me();
-
-          // Update preferences with location
-          updatePreferences({
-            location: {
-              lat: latitude,
-              lng: longitude,
-              address: updatedUser.profiles?.address || 'Current Location',
-            },
-          });
-
-          // Reload window to refresh user data with the new address
-          window.location.reload();
-        } catch (error) {
-          console.error('Error updating location:', error);
-          alert('Failed to update location.');
-          setUpdatingLocation(false);
-        }
-      },
-      (error) => {
-        let errorMessage = 'Unable to retrieve your location';
-        
-        if (error.code === 1) {
-          errorMessage = 'Please allow location access in your browser settings';
-        } else if (error.code === 2) {
-          errorMessage = 'Unable to determine your location. Please check your Wi-Fi and Location Services';
-        } else if (error.code === 3) {
-          errorMessage = 'Location request timed out. Please try again';
-        }
-        
-        alert(errorMessage);
-        setUpdatingLocation(false);
-      }
-    );
-  };
+  const { profiles, nanny_details, nanny_onboarding_details } = user;
+  const fullName =
+    `${profiles?.first_name || ''} ${profiles?.last_name || ''}`.trim() || 'Your profile';
+  const initial = (profiles?.first_name || user.email || 'U').charAt(0).toUpperCase();
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-primary-900 font-display">
-          My Profile
-        </h1>
-        <Link href="/dashboard/settings">
+    <div className="max-w-4xl mx-auto pb-16">
+      {/* Hero banner */}
+      <motion.div
+        {...reveal}
+        className="relative overflow-hidden rounded-[32px] bg-primary-900 px-8 py-10 md:px-12 md:py-12 mt-6"
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-16 right-0 w-72 h-72 rounded-full bg-sky-400/20 blur-[120px]" />
+          <div className="absolute bottom-0 left-1/4 w-56 h-56 rounded-full bg-secondary/20 blur-[100px]" />
+        </div>
+
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/30 bg-white/10 flex items-center justify-center flex-shrink-0">
+            {profiles?.profile_image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profiles.profile_image_url}
+                alt={fullName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-3xl font-bold text-white">{initial}</span>
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-white">
+              {fullName}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm text-white/75">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={15} className="text-white/50" />
+                {profiles?.address || 'No address set'}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck
+                  size={15}
+                  className={user.is_verified ? 'text-emerald-300' : 'text-white/40'}
+                />
+                {user.is_verified ? 'Verified account' : 'Unverified'}
+              </span>
+            </div>
+            {!!nanny_details?.categories?.length && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {nanny_details.categories.map((cat, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-white/10 border border-white/15 text-white text-xs font-semibold rounded-full backdrop-blur-sm"
+                  >
+                    {CATEGORY_MAP[cat] || cat}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Link href="/dashboard/settings" className="sm:self-start">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <Edit size={15} className="mr-2" /> Edit
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div
+        {...reveal}
+        transition={{ ...reveal.transition, delay: 0.05 }}
+        className="grid grid-cols-2 gap-4 mt-6"
+      >
+        <StatCard
+          icon={<Briefcase size={18} />}
+          value={nanny_details?.experience_years ?? 0}
+          label="Years experience"
+        />
+        <StatCard
+          icon={<Star size={18} />}
+          value={user.averageRating ? user.averageRating.toFixed(1) : 'New'}
+          label="Average rating"
+        />
+      </motion.div>
+
+      {/* Extended profile */}
+      {nanny_onboarding_details && (
+        <Section title="Extended profile" delay={0.1}>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5">
+            <Fact label="Age" value={nanny_onboarding_details.age} />
+            <Fact label="Gender" value={nanny_onboarding_details.gender} />
+            <Fact label="City" value={nanny_onboarding_details.city} />
+            <Fact
+              label="Education"
+              value={
+                nanny_onboarding_details.education_qualification === 'Other'
+                  ? nanny_onboarding_details.education_qualification_other
+                  : nanny_onboarding_details.education_qualification
+              }
+            />
+            <Fact
+              label="Available from"
+              value={nanny_onboarding_details.available_start_date?.slice(0, 10)}
+            />
+          </div>
+          {!!nanny_onboarding_details.academic_subjects?.length && (
+            <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-neutral-100">
+              {nanny_onboarding_details.academic_subjects.map((s, i) => (
+                <Chip key={i}>{s}</Chip>
+              ))}
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* About */}
+      <Section title="About" delay={0.12}>
+        <p className="text-neutral-600 leading-relaxed">
+          {nanny_details?.bio || 'No bio provided yet.'}
+        </p>
+      </Section>
+
+      {/* Skills */}
+      <Section title="Skills" delay={0.14}>
+        <div className="flex flex-wrap gap-2">
+          {nanny_details?.skills?.length ? (
+            nanny_details.skills.map((skill, i) => <Chip key={i}>{skill}</Chip>)
+          ) : (
+            <span className="text-neutral-500 italic">No skills listed</span>
+          )}
+        </div>
+      </Section>
+
+      {/* Categories */}
+      <Section
+        title="Care categories"
+        delay={0.16}
+        action={
           <Button
             variant="outline"
             size="sm"
             className="rounded-xl border-neutral-200"
+            onClick={() => setIsCategoryModalOpen(true)}
           >
-            <Edit size={16} className="mr-2" /> Edit Profile
+            Request change
+          </Button>
+        }
+      >
+        <div className="flex flex-wrap gap-2">
+          {nanny_details?.categories?.length ? (
+            nanny_details.categories.map((category, i) => (
+              <span
+                key={i}
+                className="px-3 py-1.5 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium"
+              >
+                {CATEGORY_MAP[category] || category}
+              </span>
+            ))
+          ) : (
+            <span className="text-neutral-500 italic">No categories listed</span>
+          )}
+        </div>
+      </Section>
+
+      <motion.div
+        {...reveal}
+        transition={{ ...reveal.transition, delay: 0.18 }}
+        className="mt-6"
+      >
+        <Link href={`/caregiver/${user.id}`}>
+          <Button className="w-full rounded-xl bg-primary-900 hover:bg-primary-800 text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+            <Sparkles size={16} />
+            View public profile
           </Button>
         </Link>
+      </motion.div>
+
+      <CategoryRequestModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        currentCategories={nanny_details?.categories || []}
+        onSuccess={() => setIsCategoryModalOpen(false)}
+      />
+    </div>
+  );
+}
+
+function StatCard({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: string | number;
+  label: string;
+}) {
+  return (
+    <div className="bg-white rounded-[24px] border border-neutral-100 shadow-soft p-6 flex items-center gap-4">
+      <div className="w-11 h-11 rounded-xl bg-primary-50 text-primary-700 flex items-center justify-center flex-shrink-0">
+        {icon}
       </div>
-
-      <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-primary-100 to-neutral-100"></div>
-        <div className="px-8 pb-8 md:px-10 md:pb-10">
-          <div className="relative flex flex-col md:flex-row gap-6 md:gap-8 -mt-12 mb-6">
-            <div className="relative">
-              <Avatar
-                src={profiles?.profile_image_url || undefined}
-                alt="Profile"
-                fallback={profiles?.first_name?.[0] || 'U'}
-                size="xl"
-                className="w-32 h-32"
-                ringColor="bg-white"
-              />
-            </div>
-
-            <div className="pt-2 md:pt-14 flex-1">
-              <h2 className="text-2xl font-bold text-primary-900 mb-2">
-                {profiles?.first_name} {profiles?.last_name}
-              </h2>
-              <div className="flex flex-wrap gap-4 text-sm text-neutral-600">
-                <div className="flex items-center gap-1.5">
-                  <MapPin size={16} className="text-neutral-400" />
-                  <span>{profiles?.address || 'No address set'}</span>
-                </div>
-                {user.role === 'nanny' && nanny_details?.categories && nanny_details.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {nanny_details.categories.map((cat, i) => (
-                      <div key={i} className="px-3 py-1 bg-slate-800 text-white text-xs font-bold rounded-lg whitespace-nowrap">
-                        {CATEGORY_MAP[cat] || cat}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck
-                    size={16}
-                    className={
-                      user.is_verified ? 'text-green-500' : 'text-neutral-400'
-                    }
-                  />
-                  <span>
-                    {user.is_verified ? 'Verified Account' : 'Unverified'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Family Section - Visible to all parents */}
-            <div className="mt-8 pt-8 border-t border-neutral-100">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-primary-900">My Family</h3>
-                <Link href="/parent-dashboard/family">
-                  <Button variant="outline" className="rounded-xl">Manage Family</Button>
-                </Link>
-              </div>
-              <div
-                className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 flex items-center justify-between group cursor-pointer hover:border-primary-200 transition-all"
-                onClick={() => window.location.href = '/dashboard/family'}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-primary-900">
-                    <User size={24} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-primary-900">Family Profiles</h4>
-                    <p className="text-sm text-neutral-500">Manage child profiles and care preferences</p>
-                  </div>
-                </div>
-                <ChevronRight className="text-neutral-400 group-hover:text-primary-600 transition-colors" />
-              </div>
-            </div>
-
-          </div>
-
-          {user.role === 'nanny' && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-2 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-900 mb-1">
-                    {nanny_details?.experience_years || 0}
-                  </div>
-                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
-                    Years Exp.
-                  </div>
-                </div>
-                <div className="text-center border-l border-neutral-200">
-                  <div className="text-2xl font-bold text-primary-900 mb-1">
-                    {user.averageRating ? user.averageRating.toFixed(1) : 'New'}
-                  </div>
-                  <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
-                    Rating
-                  </div>
-                </div>
-              </div>
-
-              {user.nanny_onboarding_details && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-primary-900">Extended Profile</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
-                    <ProfileFact label="Age" value={user.nanny_onboarding_details.age} />
-                    <ProfileFact label="Gender" value={user.nanny_onboarding_details.gender} />
-                    <ProfileFact label="City" value={user.nanny_onboarding_details.city} />
-                    <ProfileFact
-                      label="Education"
-                      value={
-                        user.nanny_onboarding_details.education_qualification === 'Other'
-                          ? user.nanny_onboarding_details.education_qualification_other
-                          : user.nanny_onboarding_details.education_qualification
-                      }
-                    />
-                    <ProfileFact
-                      label="Shadow Teacher Exp."
-                      value={user.nanny_onboarding_details.shadow_teacher_experience}
-                    />
-                    <ProfileFact
-                      label="Available From"
-                      value={user.nanny_onboarding_details.available_start_date?.slice(0, 10)}
-                    />
-                  </div>
-                  {user.nanny_onboarding_details.academic_subjects?.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {user.nanny_onboarding_details.academic_subjects.map((s, i) => (
-                        <span key={i} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <h3 className="text-lg font-bold text-primary-900">About</h3>
-                <p className="text-neutral-600 leading-relaxed">
-                  {nanny_details?.bio || 'No bio provided yet.'}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-lg font-bold text-primary-900">Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {nanny_details?.skills?.map((skill, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium"
-                    >
-                      {skill}
-                    </span>
-                  )) || (
-                      <span className="text-neutral-500 italic">
-                        No skills listed
-                      </span>
-                    )}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-primary-900">Categories</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsCategoryModalOpen(true)}
-                  >
-                    Request Change
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {nanny_details?.categories?.map((category, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium"
-                    >
-                      {category}
-                    </span>
-                  )) || (
-                      <span className="text-neutral-500 italic">
-                        No categories listed
-                      </span>
-                    )}
-                </div>
-              </div>
-
-              <CategoryRequestModal
-                isOpen={isCategoryModalOpen}
-                onClose={() => setIsCategoryModalOpen(false)}
-                currentCategories={nanny_details?.categories || []}
-                onSuccess={() => {
-                  // Ideally refresh user data here, but for now just close
-                  // user data refresh might happen on next load or we could force it
-                  // api.users.me().then(setUser); (if setUser was available from context)
-                }}
-              />
-
-              <div className="pt-4 border-t border-neutral-100">
-                <Link href={`/caregiver/${user.id}`}>
-                  <Button className="w-full rounded-xl shadow-lg hover:shadow-xl transition-all">
-                    View Public Profile
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
+      <div>
+        <div className="text-2xl font-bold text-primary-900 leading-none font-display">
+          {value}
+        </div>
+        <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide mt-1.5">
+          {label}
         </div>
       </div>
     </div>
   );
 }
 
-function ProfileFact({ label, value }: { label: string; value?: string | number | null }) {
+function Section({
+  title,
+  action,
+  delay = 0,
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  delay?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.section
+      {...reveal}
+      transition={{ ...reveal.transition, delay }}
+      className="bg-white rounded-[28px] border border-neutral-100 shadow-soft p-7 md:p-9 mt-6"
+    >
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-display text-xl font-bold text-primary-900">{title}</h3>
+        {action}
+      </div>
+      {children}
+    </motion.section>
+  );
+}
+
+function Fact({ label, value }: { label: string; value?: string | number | null }) {
   if (!value) return null;
   return (
     <div>
       <div className="text-sm font-semibold text-primary-900">{value}</div>
-      <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">{label}</div>
+      <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide mt-0.5">
+        {label}
+      </div>
     </div>
+  );
+}
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-medium">
+      {children}
+    </span>
   );
 }

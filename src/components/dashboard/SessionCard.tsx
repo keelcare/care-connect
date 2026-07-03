@@ -134,7 +134,7 @@ export function SessionCard({
 
             {/* Actions */}
             <div className="flex items-center gap-fluid-xs">
-                <Link href={`/dashboard/messages?booking=${session.id}`} className="block">
+                <Link href={`/dashboard/messages/${session.id}`} className="block">
                     <Button
                         className="min-h-tap px-6 rounded-2xl bg-dashboard-accent-start hover:bg-dashboard-accent-end text-white text-fluid-sm font-semibold shadow-lg shadow-dashboard-accent-start/10 transition-all hover:scale-[1.02]"
                     >

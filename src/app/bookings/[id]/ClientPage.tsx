@@ -406,7 +406,7 @@ export default function BookingDetailsPage() {
                                     <div className="grid grid-cols-2 gap-3 mt-5">
                                         <Button
                                             variant="outline"
-                                            onClick={() => router.push(`/messages?booking=${bookingId}`)}
+                                            onClick={() => router.push(`/messages/${bookingId}`)}
                                             className="h-10 rounded-xl border-slate-200 text-slate-700 hover:bg-primary-50 hover:border-primary-200 font-semibold text-sm gap-2"
                                         >
                                             <MessageSquare size={15} />
@@ -622,7 +622,7 @@ export default function BookingDetailsPage() {
                         {['CONFIRMED', 'IN_PROGRESS', 'ACCEPTED'].includes(currentStatus) && (
                             <div className="space-y-2">
                                 <Button
-                                    onClick={() => router.push(`/messages?booking=${bookingId}`)}
+                                    onClick={() => router.push(`/messages/${bookingId}`)}
                                     className="w-full h-11 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm gap-2 shadow-md shadow-primary-900/20"
                                 >
                                     <MessageSquare size={16} />

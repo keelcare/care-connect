@@ -184,7 +184,7 @@ function BookingCard({
             {isActive && ['CONFIRMED', 'IN_PROGRESS'].includes(rawStatus) && (
               <Button
                 variant="outline"
-                onClick={() => router.push(`/messages?booking=${booking.id}`)}
+                onClick={() => router.push(`/messages/${booking.id}`)}
                 className="h-8 w-8 rounded-xl border-slate-200 p-0 flex items-center justify-center"
               >
                 <MessageSquare size={13} className="text-slate-500" />

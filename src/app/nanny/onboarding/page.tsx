@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   Check,
   Lock,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
@@ -284,6 +285,17 @@ function NannyOnboardingContent() {
             <p className="text-neutral-500 mt-2 leading-relaxed">{active.blurb}</p>
           </header>
 
+          {/* Search-visibility notice — nannies with incomplete profiles are not
+              shown to families. */}
+          <div className="mb-8 flex items-start gap-3 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200/70">
+            <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-800 leading-relaxed">
+              Your profile stays <span className="font-semibold">hidden from families</span> until
+              you finish every step and submit for review. Caregivers with missing
+              details don’t appear in family searches.
+            </p>
+          </div>
+
           {/* Step body */}
           <div className="flex-1">
             {step === 0 && (
@@ -314,13 +326,9 @@ function NannyOnboardingContent() {
                 Back
               </Button>
             ) : (
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard')}
-                className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
-              >
-                Save &amp; finish later
-              </button>
+              // No "finish later" escape — nannies must complete onboarding before
+              // they can be matched. Empty spacer keeps "Continue" right-aligned.
+              <span aria-hidden className="w-px" />
             )}
 
             {!isLastStep ? (

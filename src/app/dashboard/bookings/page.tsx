@@ -259,11 +259,9 @@ export default function BookingsPage() {
     } catch (err: any) { toast.error(err.message || 'Failed to complete job'); }
   };
 
-  const handleMessage = async (booking: Booking) => {
-    try {
-      await api.chat.create({ bookingId: booking.id });
-      router.push(`/dashboard/messages?booking=${booking.id}`);
-    } catch { router.push('/dashboard/messages'); }
+  const handleMessage = (booking: Booking) => {
+    // The room resolves (or lazily creates) the chat on open.
+    router.push(`/dashboard/messages/${booking.id}`);
   };
 
   const filtered = activeTab === 'all'
