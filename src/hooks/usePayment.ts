@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { api } from '@/lib/api';
+import { logger } from '@/lib/logger';
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -77,7 +78,7 @@ export const usePayment = () => {
             addToast({ message: 'Payment Successful!', type: 'success' });
             onSuccess();
           } catch (verifyError: any) {
-            console.error(verifyError);
+            logger.error(verifyError);
             addToast({
               message: verifyError.message || 'Payment Verification Failed',
               type: 'error',
@@ -107,7 +108,7 @@ export const usePayment = () => {
       });
       razorpay.open();
     } catch (error: any) {
-      console.error('Payment initialization failed', error);
+      logger.error('Payment initialization failed', error);
       addToast({
         message: error.message || 'Could not start payment',
         type: 'error',
@@ -150,7 +151,7 @@ export const usePayment = () => {
             addToast({ message: 'Payment Successful!', type: 'success' });
             onSuccess();
           } catch (verifyError: any) {
-            console.error(verifyError);
+            logger.error(verifyError);
             addToast({
               message: verifyError.message || 'Payment Verification Failed',
               type: 'error',
@@ -180,7 +181,7 @@ export const usePayment = () => {
       });
       razorpay.open();
     } catch (error: any) {
-      console.error('Payment retry failed', error);
+      logger.error('Payment retry failed', error);
       addToast({
         message: error.message || 'Could not retry payment',
         type: 'error',

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, MapPin, X, Bell, Navigation } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/context/AuthContext';
+import { logger } from '@/lib/logger';
 
 interface GeofenceAlert {
   bookingId: string;
@@ -64,7 +65,7 @@ export function GeofenceAlertBanner({
       oscillator.start();
       setTimeout(() => oscillator.stop(), 200);
     } catch (e) {
-      console.log('Could not play alert sound');
+      logger.log('Could not play alert sound');
     }
   };
 
@@ -85,7 +86,7 @@ export function GeofenceAlertBanner({
     socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
-      console.log('Geofence alert socket connected');
+      logger.log('Geofence alert socket connected');
       setIsConnected(true);
 
       // Subscribe to all bookings or specific booking
@@ -97,18 +98,18 @@ export function GeofenceAlertBanner({
     });
 
     newSocket.on('disconnect', () => {
-      console.log('Geofence alert socket disconnected');
+      logger.log('Geofence alert socket disconnected');
       setIsConnected(false);
     });
 
     newSocket.on('connect_error', (err) => {
-      console.error('Geofence alert socket error:', err);
+      logger.error('Geofence alert socket error:', err);
       setIsConnected(false);
     });
 
     // Listen for geofence alerts
     newSocket.on('geofence:alert', (data: GeofenceAlert) => {
-      console.log('Geofence alert received:', data);
+      logger.log('Geofence alert received:', data);
 
       // Add alert to the list
       setAlerts((prev) => {

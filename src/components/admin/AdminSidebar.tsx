@@ -27,6 +27,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useRouter } from 'next/navigation';
 import { Avatar } from '@/components/ui/avatar';
+import { logger } from '@/lib/logger';
 
 interface NavItem {
   icon: React.ElementType;
@@ -104,7 +105,7 @@ function SidebarContent({
       addToast({ message: 'Logged out successfully', type: 'success' });
       router.push('/auth/login');
     } catch (error) {
-      console.error('Logout failed', error);
+      logger.error('Logout failed', error);
       addToast({ message: 'Failed to log out', type: 'error' });
     }
   };

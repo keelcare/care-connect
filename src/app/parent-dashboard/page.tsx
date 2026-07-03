@@ -10,6 +10,7 @@ import { Booking, Notification } from '@/types/api';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { ParentOnboardingWizard } from '@/components/onboarding/ParentOnboardingWizard';
 import { Skeleton } from 'boneyard-js/react';
+import { logger } from '@/lib/logger';
 
 export default function HomePage() {
     const { user, loading: authLoading } = useAuth();
@@ -79,7 +80,7 @@ export default function HomePage() {
                     nannyMap.set(nannyId, nannyDetails);
                     await new Promise(resolve => setTimeout(resolve, 50));
                 } catch (err) {
-                    console.error(`Failed to fetch nanny ${nannyId}:`, err);
+                    logger.error(`Failed to fetch nanny ${nannyId}:`, err);
                 }
             }
 
@@ -101,7 +102,7 @@ export default function HomePage() {
             });
 
         } catch (error) {
-            console.error('Failed to fetch dashboard data:', error);
+            logger.error('Failed to fetch dashboard data:', error);
             setBookingCount(0);
         } finally {
             setLoading(false);
@@ -132,7 +133,7 @@ export default function HomePage() {
 
         const unsubscribers = bookingEvents.map((eventType) =>
             subscribe(eventType, () => {
-                console.log('[SSE] Parent dashboard refreshing on event:', eventType);
+                logger.log('[SSE] Parent dashboard refreshing on event:', eventType);
                 fetchDashboardData();
             })
         );

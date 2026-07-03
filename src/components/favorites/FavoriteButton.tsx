@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 interface FavoriteButtonProps {
   nannyId: string;
@@ -38,7 +39,7 @@ export function FavoriteButton({
       const result = await api.favorites.check(nannyId);
       setIsFavorite(result.isFavorite);
     } catch (error) {
-      console.error('Failed to check favorite status:', error);
+      logger.error('Failed to check favorite status:', error);
     } finally {
       setIsChecking(false);
     }
@@ -62,7 +63,7 @@ export function FavoriteButton({
         onToggle?.(true);
       }
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite:', error);
     } finally {
       setIsLoading(false);
     }

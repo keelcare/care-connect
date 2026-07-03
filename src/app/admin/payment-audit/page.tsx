@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   Timer,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -230,7 +231,7 @@ export default function AdminPaymentAuditPage() {
       const data = await api.payments.getAuditSummary();
       setSummary(data);
     } catch (err) {
-      console.error('Failed to load payment audit summary:', err);
+      logger.error('Failed to load payment audit summary:', err);
     } finally {
       setSummaryLoading(false);
     }
@@ -249,7 +250,7 @@ export default function AdminPaymentAuditPage() {
         setAuditRows(normalized.items);
         setPagination(normalized.pagination);
       } catch (err) {
-        console.error('Failed to load payment audits:', err);
+        logger.error('Failed to load payment audits:', err);
         setError(err instanceof Error ? err.message : 'Failed to load audit logs');
       } finally {
         if (isRefresh) setRefreshing(false);

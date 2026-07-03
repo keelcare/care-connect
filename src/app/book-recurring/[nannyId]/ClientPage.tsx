@@ -30,6 +30,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import Image from 'next/image';
+import { logger } from '@/lib/logger';
 
 const DURATION_OPTIONS = [
   { value: '1', label: '1 hour' },
@@ -95,7 +96,7 @@ function LegacyBookRecurringPage() {
         const data = await api.users.get(id);
         setNanny(data);
       } catch (error) {
-        console.error('Failed to fetch nanny:', error);
+        logger.error('Failed to fetch nanny:', error);
         addToast({
           message: 'Failed to load caregiver details',
           type: 'error',
@@ -158,7 +159,7 @@ function LegacyBookRecurringPage() {
       });
       router.push('/recurring-bookings');
     } catch (error: any) {
-      console.error('Failed to create recurring booking:', error);
+      logger.error('Failed to create recurring booking:', error);
       addToast({
         message: error.message || 'Failed to create recurring booking',
         type: 'error',

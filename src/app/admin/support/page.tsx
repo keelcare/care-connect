@@ -23,6 +23,7 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { logger } from '@/lib/logger';
 
 /* ─── helpers ───────────────────────────────────────────────── */
 
@@ -123,7 +124,7 @@ export default function AdminSupportDashboard() {
         fetchTickets();
         
         const handleRefresh = () => {
-            console.log('Admin Support Dashboard - Received SSE Refresh Event');
+            logger.log('Admin Support Dashboard - Received SSE Refresh Event');
             fetchTickets(true);
         };
         

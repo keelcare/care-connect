@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, MapPin, CheckCircle, User, Award, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import NannyProfileModal from '@/components/admin/NannyProfileModal';
+import { logger } from '@/lib/logger';
 
 interface NannyAssignmentModalProps {
     isOpen: boolean;
@@ -43,7 +44,7 @@ export function NannyAssignmentModal({
             // Sort by match score descending
             setNannies(data.sort((a, b) => b.match_details.total_score - a.match_details.total_score));
         } catch (error) {
-            console.error('[ManualAssignment] Failed to fetch nannies:', error);
+            logger.error('[ManualAssignment] Failed to fetch nannies:', error);
             addToast({ type: 'error', message: 'Failed to load available nannies' });
         } finally {
             setLoading(false);
@@ -70,7 +71,7 @@ export function NannyAssignmentModal({
             onAssigned();
             onClose();
         } catch (error: any) {
-            console.error('Failed to assign nanny:', error);
+            logger.error('Failed to assign nanny:', error);
             if (error.response?.data?.warning && error.response?.data?.overlaps) {
                 setConflictDates(error.response.data.overlaps);
                 setPendingNannyId(nannyId);

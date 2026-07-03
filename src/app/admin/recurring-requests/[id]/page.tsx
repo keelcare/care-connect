@@ -11,6 +11,7 @@ import { ArrowLeft, User } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { NannyAssignmentModal } from '@/components/admin/NannyAssignmentModal';
 import { AdminPageHeader, SectionCard, StatusBadge, BadgeTone } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 const STATUS_TONE: Record<string, BadgeTone> = {
   CONFIRMED: 'success',
@@ -44,7 +45,7 @@ export default function RecurringRequestDetailPage({ params }: { params: { id: s
             const data = await api.recurringRequests.get(params.id);
             setRequest(data);
         } catch (error) {
-            console.error('Failed to fetch recurring request details:', error);
+            logger.error('Failed to fetch recurring request details:', error);
             addToast({ type: 'error', message: 'Failed to load details' });
         } finally {
             setLoading(false);

@@ -19,6 +19,7 @@ import { User, Review } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { ReviewCard } from '@/components/features/ReviewCard';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { logger } from '@/lib/logger';
 
 // Mock data for demo - REMOVED
 // const MOCK_USERS = { ... };
@@ -62,7 +63,7 @@ export default function CaregiverProfilePage() {
         setCaregiver(userData);
         setReviews(reviewsData);
       } catch (err) {
-        console.error(err);
+        logger.error(err);
         setError('Failed to load caregiver profile');
       } finally {
         setLoading(false);

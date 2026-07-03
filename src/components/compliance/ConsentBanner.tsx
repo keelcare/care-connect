@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { logger } from '@/lib/logger';
 
 export function ConsentBanner() {
   const [isVisible, setIsVisible] = useState(false);
@@ -31,7 +32,7 @@ export function ConsentBanner() {
       localStorage.setItem('dpdpa_consent_v1', 'true');
       setIsVisible(false);
     } catch (error) {
-      console.error('Failed to record consent:', error);
+      logger.error('Failed to record consent:', error);
       alert('Failed to record consent. Please try again.');
     } finally {
       setIsSubmitting(false);

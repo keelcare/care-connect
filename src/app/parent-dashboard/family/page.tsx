@@ -12,6 +12,7 @@ import { ChildProfileModal } from '@/components/dashboard/ChildProfileModal';
 import { api } from '@/lib/api';
 import { Child } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
+import { logger } from '@/lib/logger';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 
@@ -211,7 +212,7 @@ export default function FamilyPage() {
       setLoading(true);
       setChildren(await api.family.list());
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     } finally {
       setLoading(false);
     }

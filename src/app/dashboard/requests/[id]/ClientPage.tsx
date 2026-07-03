@@ -23,6 +23,7 @@ import { api } from '@/lib/api';
 import { ServiceRequest, User } from '@/types/api';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import styles from './page.module.css';
+import { logger } from '@/lib/logger';
 
 export default function RequestDetailsPage() {
   const params = useParams();
@@ -51,7 +52,7 @@ export default function RequestDetailsPage() {
         setAssignedNanny(nanny);
       }
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       setError('Failed to load request details');
     } finally {
       setLoading(false);
@@ -64,7 +65,7 @@ export default function RequestDetailsPage() {
 
   useEffect(() => {
     const handleRefresh = () => {
-      console.log('Request Details Page - Received SSE Refresh Event');
+      logger.log('Request Details Page - Received SSE Refresh Event');
       // In this specific page, any mutation might be relevant (assign, cancel, new booking, etc)
       fetchRequestDetails();
     };
@@ -96,7 +97,7 @@ export default function RequestDetailsPage() {
       const updated = await api.requests.get(request.id);
       setRequest(updated);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       alert('Failed to cancel request');
       throw err; // Re-throw so the modal knows it failed
     } finally {
@@ -124,7 +125,7 @@ export default function RequestDetailsPage() {
       setRequest(updated);
       setIsRescheduleModalOpen(false);
     } catch (err) {
-      console.error('Failed to reschedule:', err);
+      logger.error('Failed to reschedule:', err);
       throw err;
     }
   };

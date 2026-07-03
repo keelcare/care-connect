@@ -9,6 +9,7 @@ import { Review } from '@/types/api';
 import { ReviewCard } from '@/components/features/ReviewCard';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
+import { logger } from '@/lib/logger';
 
 export default function ReviewsDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -35,7 +36,7 @@ export default function ReviewsDashboard() {
         const data = await api.reviews.getByUser(user.id);
         setReviews(data);
       } catch (err) {
-        console.error('Failed to fetch reviews:', err);
+        logger.error('Failed to fetch reviews:', err);
         setError('Failed to load your reviews.');
       } finally {
         setLoading(false);

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminPageHeader, StatCard } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 export default function AdminPaymentPlansPage() {
   const [plans, setPlans] = useState<PaymentPlan[]>([]);
@@ -41,7 +42,7 @@ export default function AdminPaymentPlansPage() {
       setPlans(plansData);
       setStats(statsData);
     } catch (err) {
-      console.error('Failed to load payment plans:', err);
+      logger.error('Failed to load payment plans:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setRefreshing(false);

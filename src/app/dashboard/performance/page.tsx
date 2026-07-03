@@ -16,6 +16,7 @@ import {
   Meh,
   Frown,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 /* ── metric bar ─────────────────────────────────────────────────── */
 
@@ -62,7 +63,7 @@ export default function PerformancePage() {
   useEffect(() => {
     api.nanny.getPerformance()
       .then(setPerf)
-      .catch(console.error)
+      .catch(logger.error)
       .finally(() => setLoading(false));
   }, []);
 

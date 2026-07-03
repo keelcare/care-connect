@@ -20,6 +20,7 @@ import {
   CheckCircle2, Star, AlertCircle,
   Repeat, Users, CreditCard, RefreshCw,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 
@@ -105,7 +106,7 @@ function BookingCard({
       bookingId: booking.id,
       amount: totalAmount > 0 ? totalAmount : Math.max(duration * 20, 50),
       onSuccess: () => onPaySuccess(booking.id),
-      onError: (err) => console.error(err),
+      onError: (err) => logger.error(err),
     });
   };
 

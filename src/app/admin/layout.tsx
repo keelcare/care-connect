@@ -12,6 +12,7 @@ const AdminSidebar = dynamic(
 );
 import { Menu, LogOut } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
+import { logger } from '@/lib/logger';
 
 export default function AdminLayout({
   children,
@@ -31,7 +32,7 @@ export default function AdminLayout({
       addToast({ message: 'Logged out successfully', type: 'success' });
       router.push('/auth/login');
     } catch (error) {
-      console.error('Logout failed', error);
+      logger.error('Logout failed', error);
       addToast({ message: 'Failed to log out', type: 'error' });
     }
   };

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Info } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { logger } from '@/lib/logger';
 
 interface ServiceInfoModalProps {
   isOpen: boolean;
@@ -40,7 +41,7 @@ export function ServiceInfoModal({ isOpen, onClose, category }: ServiceInfoModal
           const text = await response.text();
           setContent(text.trim());
         } catch (error) {
-          console.error('Failed to fetch service info:', error);
+          logger.error('Failed to fetch service info:', error);
           setContent('Failed to load service information.');
         } finally {
           setLoading(false);

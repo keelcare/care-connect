@@ -6,6 +6,7 @@ import { User } from '@/types/api';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, FileText, ExternalLink, Loader2, ShieldCheck } from 'lucide-react';
 import { AdminPageHeader } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 type DocPreview = { url: string; isPdf: boolean };
 
@@ -46,7 +47,7 @@ export default function VerificationDetailPage() {
         setUser(detailedUser);
       }
     } catch (error) {
-      console.error('Failed to fetch user details', error);
+      logger.error('Failed to fetch user details', error);
     } finally {
       setLoading(false);
     }
@@ -96,7 +97,7 @@ export default function VerificationDetailPage() {
       router.push('/admin/verifications');
       router.refresh();
     } catch (error) {
-      console.error('Failed to approve user', error);
+      logger.error('Failed to approve user', error);
       alert('Failed to approve user');
       setProcessing(false);
     }
@@ -113,7 +114,7 @@ export default function VerificationDetailPage() {
       router.push('/admin/verifications');
       router.refresh();
     } catch (error) {
-      console.error('Failed to reject user', error);
+      logger.error('Failed to reject user', error);
       alert('Failed to reject user');
       setProcessing(false);
     }

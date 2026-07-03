@@ -17,6 +17,7 @@ import {
   TD,
 } from '@/components/admin/ui';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/logger';
 
 /** Formats an ISO timestamp as IST, e.g. "07/02/2026, 14:35". */
 function formatIST(ts?: string | null): string {
@@ -65,7 +66,7 @@ export default function AdminPendingVerificationsPage() {
       const data = await api.verification.getPending();
       setUsers(data);
     } catch (error) {
-      console.error('Failed to fetch pending verifications', error);
+      logger.error('Failed to fetch pending verifications', error);
     } finally {
       setLoading(false);
     }

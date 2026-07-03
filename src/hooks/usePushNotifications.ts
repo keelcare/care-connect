@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 
 import { Capacitor } from '@capacitor/core';
+import { logger } from '@/lib/logger';
 
 export function usePushNotifications() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function usePushNotifications() {
 
       // Handle notification received while app is open
       await PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        console.log('Push received:', notification);
+        logger.log('Push received:', notification);
         // Toast or in-app banner can be triggered here if needed
       });
 

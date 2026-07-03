@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
 // Lightweight Google Sheets append — no googleapis SDK required.
@@ -138,7 +139,7 @@ export async function POST(req: Request) {
     const spreadsheetId  = process.env.GOOGLE_SPREADSHEET_ID;
 
     if (!clientEmail || !privateKey || !spreadsheetId) {
-      console.error('Missing Google Sheets API credentials');
+      logger.error('Missing Google Sheets API credentials');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
@@ -153,7 +154,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Waitlist API Error:', error);
+    logger.error('Waitlist API Error:', error);
     return NextResponse.json({ error: 'Failed to join waitlist' }, { status: 500 });
   }
 }

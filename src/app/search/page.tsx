@@ -25,6 +25,7 @@ import { api } from '@/lib/api';
 import { User } from '@/types/api';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePreferences } from '@/hooks/usePreferences';
+import { logger } from '@/lib/logger';
 
 export default function SearchPage() {
   const router = useRouter();
@@ -91,7 +92,7 @@ export default function SearchPage() {
             window.location.reload();
           }
         } catch (error) {
-          console.error('Error updating location:', error);
+          logger.error('Error updating location:', error);
           addToast({ message: 'Failed to update location', type: 'error' });
         } finally {
           setUpdatingLocation(false);
@@ -164,7 +165,7 @@ export default function SearchPage() {
               return;
             }
           } catch (e) {
-            console.warn(
+            logger.warn(
               'Nearby fetch from preferences failed, falling back...',
               e
             );
@@ -213,7 +214,7 @@ export default function SearchPage() {
                 setFilteredNannies([]);
               }
             } catch (err) {
-              console.warn('Geolocation nearby fetch failed', err);
+              logger.warn('Geolocation nearby fetch failed', err);
               // Fallback to all nannies so page isn't broken
               try {
                 const allNannies = await api.users.nannies();
@@ -227,7 +228,7 @@ export default function SearchPage() {
             }
           },
           (err) => {
-            console.warn('Geolocation denied/error', err);
+            logger.warn('Geolocation denied/error', err);
             // Fallback to all nannies
             api.users
               .nannies()
@@ -250,7 +251,7 @@ export default function SearchPage() {
         setLoading(false);
       }
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       // One last attempt to fetch generic list if everything else exploded
       try {
         const allNannies = await api.users.nannies();

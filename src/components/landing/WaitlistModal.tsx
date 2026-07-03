@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 export const WaitlistModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +102,7 @@ export const WaitlistModal = () => {
       }
     } catch (error) {
       setStatus('error');
-      console.error(error);
+      logger.error(error);
     }
   };
 

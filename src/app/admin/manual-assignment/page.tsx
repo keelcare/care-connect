@@ -13,6 +13,7 @@ import { NannyAssignmentModal } from '@/components/admin/NannyAssignmentModal';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { AdminPageHeader, SectionCard, EmptyState, AdminSearch } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 export default function ManualAssignmentPage() {
     const { user } = useAuth();
@@ -36,7 +37,7 @@ export default function ManualAssignmentPage() {
     useEffect(() => {
         // Admin SSE real-time refresh
         const handleRefresh = () => {
-            console.log('Manual Assignment Page - SSE Refresh Triggered');
+            logger.log('Manual Assignment Page - SSE Refresh Triggered');
             fetchPendingRequests();
         };
 
@@ -55,7 +56,7 @@ export default function ManualAssignmentPage() {
             const data = await api.admin.manualAssignment.getRequests();
             setRequests(data);
         } catch (error) {
-            console.error('Failed to fetch requests:', error);
+            logger.error('Failed to fetch requests:', error);
             addToast({ type: 'error', message: 'Failed to load pending requests' });
         } finally {
             setLoading(false);

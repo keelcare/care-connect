@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { CreateReviewDto } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import styles from './ReviewForm.module.css';
+import { logger } from '@/lib/logger';
 
 interface ReviewFormProps {
   bookingId: string;
@@ -48,7 +49,7 @@ export function ReviewForm({
         onSuccess();
       }
     } catch (err) {
-      console.error('Failed to submit review:', err);
+      logger.error('Failed to submit review:', err);
       setError(err instanceof Error ? err.message : 'Failed to submit review');
     } finally {
       setLoading(false);

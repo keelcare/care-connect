@@ -6,6 +6,7 @@ import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { useSocket } from '@/context/SocketProvider';
 import { api } from '@/lib/api';
 import { Notification } from '@/types/notification';
+import { logger } from '@/lib/logger';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -38,7 +39,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const data = await api.enhancedNotifications.list();
       setNotifications(data || []);
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      logger.error('Failed to fetch notifications:', error);
     } finally {
       setLoading(false);
     }
@@ -116,7 +117,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       );
       await api.enhancedNotifications.markAsRead(id);
     } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      logger.error('Failed to mark notification as read:', error);
       // Fallback
       fetchNotifications();
     }
@@ -128,7 +129,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       await api.enhancedNotifications.markAllAsRead();
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      logger.error('Failed to mark all as read:', error);
       // Fallback
       fetchNotifications();
     }

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { api } from '@/lib/api';
 import { CategoryRequest } from '@/types/api';
+import { logger } from '@/lib/logger';
 
 interface CategoryRequestModalProps {
     isOpen: boolean;
@@ -54,7 +55,7 @@ export function CategoryRequestModal({
                 setPendingRequest(null);
             }
         } catch (err) {
-            console.error('Failed to check pending request', err);
+            logger.error('Failed to check pending request', err);
             setPendingRequest(null);
         }
     };
@@ -73,7 +74,7 @@ export function CategoryRequestModal({
             onSuccess();
             onClose();
         } catch (err) {
-            console.error('Failed to submit request', err);
+            logger.error('Failed to submit request', err);
             setError('Failed to submit request. Please try again.');
         } finally {
             setLoading(false);
@@ -97,7 +98,7 @@ export function CategoryRequestModal({
             setSelectedCategories(currentCategories);
             onSuccess();
         } catch (err) {
-            console.error('Failed to cancel request', err);
+            logger.error('Failed to cancel request', err);
             setError('Failed to cancel request. It may have already been processed.');
         } finally {
             setIsCancelling(false);

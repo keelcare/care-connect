@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 export default function RecurringBookingsPage() {
   const { user } = useAuth();
@@ -39,7 +40,7 @@ export default function RecurringBookingsPage() {
       const data = await api.recurringRequests.getParentRequests();
       setRequests(data);
     } catch (error) {
-      console.error('Failed to fetch recurring requests:', error);
+      logger.error('Failed to fetch recurring requests:', error);
       addToast({ message: 'Failed to load recurring plans', type: 'error' });
     } finally {
       setLoading(false);

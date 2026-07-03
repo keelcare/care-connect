@@ -15,6 +15,7 @@ import {
   BadgeTone,
   EmptyState,
 } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 const STATUS_TONE: Record<CategoryRequestStatus, BadgeTone> = {
   pending: 'warning',
@@ -44,7 +45,7 @@ export default function AdminCategoryRequestsPage() {
       const data = await api.admin.getCategoryRequests(statusFilter);
       setRequests(data);
     } catch (error) {
-      console.error('Failed to fetch requests:', error);
+      logger.error('Failed to fetch requests:', error);
     } finally {
       setLoading(false);
     }

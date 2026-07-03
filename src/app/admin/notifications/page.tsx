@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Bell, Send, Mail, MessageSquare, Smartphone } from 'lucide-react';
 import { AdminPageHeader, SectionCard } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 export default function AdminNotificationsPage() {
   const { user } = useAuth();
@@ -65,7 +66,7 @@ export default function AdminNotificationsPage() {
         content: '',
       });
     } catch (err) {
-      console.error('Failed to send notification:', err);
+      logger.error('Failed to send notification:', err);
       setError(
         err instanceof Error ? err.message : 'Failed to send notification'
       );

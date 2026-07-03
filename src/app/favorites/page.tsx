@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { Favorite } from '@/types/api';
 import { ProfileCard } from '@/components/features/ProfileCard';
 import ParentLayout from '@/components/layout/ParentLayout';
+import { logger } from '@/lib/logger';
 
 export default function FavoritesPage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function FavoritesPage() {
       // Ensure data is an array
       setFavorites(Array.isArray(data) ? data : []);
     } catch (err: any) {
-      console.error('Failed to fetch favorites:', err);
+      logger.error('Failed to fetch favorites:', err);
       // Show more specific error message
       const errorMessage = err?.message || 'Failed to load favorites';
       setError(errorMessage);

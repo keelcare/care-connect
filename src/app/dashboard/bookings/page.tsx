@@ -16,6 +16,7 @@ import {
   Calendar, ChevronDown, Filter, Receipt, Star,
   Play, RefreshCw,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 
@@ -220,7 +221,7 @@ export default function BookingsPage() {
       );
       setBookings(enriched.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()));
     } catch (err) {
-      console.error('Failed to fetch bookings', err);
+      logger.error('Failed to fetch bookings', err);
     } finally {
       setLoading(false);
     }

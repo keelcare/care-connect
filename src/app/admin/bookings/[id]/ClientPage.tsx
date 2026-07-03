@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { AdminPageHeader } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 // Extended booking type to handle Prisma relation names from backend
 interface AdminBooking extends Booking {
@@ -78,7 +79,7 @@ export default function AdminBookingDetailsPage() {
           const parentDetails = await api.users.get(data.parent_id);
           enrichedBooking.parent = parentDetails;
         } catch (err) {
-          console.error(`Failed to fetch parent details:`, err);
+          logger.error(`Failed to fetch parent details:`, err);
         }
       }
 
@@ -95,13 +96,13 @@ export default function AdminBookingDetailsPage() {
           const nannyDetails = await api.users.get(data.nanny_id);
           enrichedBooking.nanny = nannyDetails;
         } catch (err) {
-          console.error(`Failed to fetch nanny details:`, err);
+          logger.error(`Failed to fetch nanny details:`, err);
         }
       }
 
       setBooking(enrichedBooking);
     } catch (err) {
-      console.error('Failed to fetch booking:', err);
+      logger.error('Failed to fetch booking:', err);
       setError(err instanceof Error ? err.message : 'Failed to load booking');
     } finally {
       setLoading(false);
@@ -148,7 +149,7 @@ export default function AdminBookingDetailsPage() {
       const updated = await api.bookings.complete(booking.id);
       setBooking(updated);
     } catch (err) {
-      console.error('Failed to complete booking:', err);
+      logger.error('Failed to complete booking:', err);
       alert(err instanceof Error ? err.message : 'Failed to complete booking');
     } finally {
       setActionLoading(false);
@@ -169,7 +170,7 @@ export default function AdminBookingDetailsPage() {
       });
       setBooking(updated);
     } catch (err) {
-      console.error('Failed to cancel booking:', err);
+      logger.error('Failed to cancel booking:', err);
       alert(err instanceof Error ? err.message : 'Failed to cancel booking');
     } finally {
       setActionLoading(false);

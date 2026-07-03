@@ -23,6 +23,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 export default function RecurringBookingDetailsPage() {
   const params = useParams();
@@ -52,7 +53,7 @@ export default function RecurringBookingDetailsPage() {
       const data = await api.recurringRequests.get(id);
       setPlan(data);
     } catch (error) {
-      console.error('Failed to fetch plan:', error);
+      logger.error('Failed to fetch plan:', error);
       addToast({ message: 'Failed to load plan details', type: 'error' });
       router.push('/recurring-bookings');
     } finally {
@@ -78,7 +79,7 @@ export default function RecurringBookingDetailsPage() {
       setHasMore(pageNumber < totalPages);
       setPage(pageNumber);
     } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+      logger.error('Failed to fetch bookings:', error);
       addToast({ message: 'Failed to load bookings', type: 'error' });
     } finally {
       setLoadingBookings(false);

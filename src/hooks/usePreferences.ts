@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 
 interface UserPreferences {
   location?: {
@@ -23,7 +24,7 @@ function readPreferences(): UserPreferences {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? (JSON.parse(stored) as UserPreferences) : {};
   } catch (error) {
-    console.error('Failed to load preferences:', error);
+    logger.error('Failed to load preferences:', error);
     return {};
   }
 }
@@ -61,7 +62,7 @@ export function usePreferences() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newPreferences));
       window.dispatchEvent(new Event(PREFERENCES_EVENT));
     } catch (error) {
-      console.error('Failed to save preferences:', error);
+      logger.error('Failed to save preferences:', error);
     }
   };
 
@@ -71,7 +72,7 @@ export function usePreferences() {
       localStorage.removeItem(STORAGE_KEY);
       window.dispatchEvent(new Event(PREFERENCES_EVENT));
     } catch (error) {
-      console.error('Failed to clear preferences:', error);
+      logger.error('Failed to clear preferences:', error);
     }
   };
 

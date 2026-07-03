@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/Input';
 import { API_URL } from '@/lib/api';
+import { logger } from '@/lib/logger';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -29,7 +30,7 @@ export default function LoginPage() {
       const response = await api.auth.login(formData);
       await login(response);
     } catch (error: any) {
-      console.error('Login failed:', error);
+      logger.error('Login failed:', error);
       
       let errorMessage = error?.message || 'Login failed. Please check your credentials.';
       // Catch NestJS Throttler/Rate Limit messages

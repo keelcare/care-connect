@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { X, Calendar as CalendarIcon, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HorizDial } from '@/components/booking/HorizDial';
+import { logger } from '@/lib/logger';
 
 interface RescheduleModalProps {
     isOpen: boolean;
@@ -119,7 +120,7 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
                 const idx = durationOptions.findIndex(d => d.value === absDiffHours);
                 setDurationIdx(idx !== -1 ? idx : 1);
             } catch (e) {
-                console.error("Error setting initial reschedule modal state:", e);
+                logger.error("Error setting initial reschedule modal state:", e);
                 // Hard reset to defaults on error
                 const now = new Date();
                 setCurrentYear(now.getFullYear());

@@ -22,6 +22,7 @@ import {
   EmptyState as UIEmptyState,
   SectionCard,
 } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 type PageTab = 'disputes' | 'appeals';
 
@@ -61,7 +62,7 @@ function DisputesTab() {
       setSelectedDispute(null);
       setResolution('');
     } catch (err) {
-      console.error('Failed to resolve dispute:', err);
+      logger.error('Failed to resolve dispute:', err);
     } finally {
       setResolving(false);
     }
@@ -199,7 +200,7 @@ function AppealsTab() {
       setSelected(null);
       setAdminNotes('');
     } catch (err) {
-      console.error('Failed to update ticket:', err);
+      logger.error('Failed to update ticket:', err);
     } finally {
       setUpdating(false);
     }

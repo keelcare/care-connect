@@ -15,6 +15,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/logger';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 
@@ -103,7 +104,7 @@ export default function EarningsPage() {
       const data = await api.payments.getNannyEarningsAnalytics(p);
       setAnalytics(data);
     } catch (err) {
-      console.error('Failed to load earnings analytics', err);
+      logger.error('Failed to load earnings analytics', err);
     } finally {
       setLoading(false);
     }

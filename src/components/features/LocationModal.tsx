@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/components/ui/ToastProvider';
+import { logger } from '@/lib/logger';
 
 interface LocationModalProps {
   isOpen: boolean;
@@ -56,7 +57,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               setAddress(addressText);
             }
           } catch (err) {
-            console.warn('Reverse geocoding failed:', err);
+            logger.warn('Reverse geocoding failed:', err);
           }
           setAddress(addressText);
 
@@ -85,7 +86,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
           await refreshUser();
           onClose();
         } catch (error: unknown) {
-          console.error('Error updating location:', error);
+          logger.error('Error updating location:', error);
           const message =
             error instanceof Error
               ? error.message
@@ -146,7 +147,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
         addToast({ message: 'Could not find this location', type: 'error' });
       }
     } catch (error) {
-      console.error('Error geocoding address:', error);
+      logger.error('Error geocoding address:', error);
       addToast({ message: 'Failed to update location', type: 'error' });
     } finally {
       setLoading(false);

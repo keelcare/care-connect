@@ -27,6 +27,7 @@ import { LocationModal } from '@/components/features/LocationModal';
 import { usePreferences } from '@/hooks/usePreferences';
 import { Navbar } from '@/components/layout/Navbar';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { logger } from '@/lib/logger';
 
 export default function DashboardLayout({
   children,
@@ -75,7 +76,7 @@ export default function DashboardLayout({
       await logout();
       router.push('/');
     } catch (error) {
-      console.error('Logout failed', error);
+      logger.error('Logout failed', error);
     }
   };
 

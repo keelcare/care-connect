@@ -33,6 +33,7 @@ import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import { usePayment } from '@/hooks/usePayment';
+import { logger } from '@/lib/logger';
 
 /* ─── Status helpers ──────────────────────────────────────────────── */
 
@@ -131,7 +132,7 @@ export default function BookingDetailsPage() {
                 setPaidBookingIds(newPaid);
                 localStorage.setItem('paidBookingIds', JSON.stringify(newPaid));
             },
-            onError: (err) => console.error('Payment failed', err),
+            onError: (err) => logger.error('Payment failed', err),
         });
     };
 
@@ -596,7 +597,7 @@ export default function BookingDetailsPage() {
                                                 localStorage.setItem('paidBookingIds', JSON.stringify(np));
                                                 fetchData();
                                             },
-                                            onError: (err) => console.error(err),
+                                            onError: (err) => logger.error(err),
                                         })}
                                         disabled={paymentLoading}
                                         className="w-full h-10 rounded-xl border-2 border-primary-900 text-primary-900 bg-white hover:bg-primary-50 font-bold text-sm"

@@ -23,6 +23,7 @@ import {
   EmptyState,
   AdminSearch,
 } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 type Tab = 'nannies' | 'parents';
 
@@ -160,7 +161,7 @@ export default function AdminUsersPage() {
       setUsers(usersResponse.data || []);
       setAllBookings(bookingsResponse.data || []);
     } catch (err) {
-      console.error('Failed to fetch users:', err);
+      logger.error('Failed to fetch users:', err);
       setError(err instanceof Error ? err.message : 'Failed to load users');
     } finally {
       setLoading(false);

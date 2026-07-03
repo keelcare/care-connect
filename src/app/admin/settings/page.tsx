@@ -18,6 +18,7 @@ import { SystemSetting } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { AdminPageHeader, SectionCard } from '@/components/admin/ui';
+import { logger } from '@/lib/logger';
 
 interface SettingConfig {
   key: string;
@@ -132,7 +133,7 @@ export default function AdminSettingsPage() {
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError('Failed to update setting');
-      console.error(err);
+      logger.error(err);
     } finally {
       setSaving(null);
     }

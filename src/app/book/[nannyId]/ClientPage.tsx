@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import { useAuth } from '@/context/AuthContext';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/logger';
 
 /*
 export default function DirectBookingPage() {
@@ -42,7 +43,7 @@ export default function DirectBookingPage() {
         const data = await api.users.get(id);
         setNanny(data);
       } catch (error) {
-        console.error('Failed to fetch nanny:', error);
+        logger.error('Failed to fetch nanny:', error);
         addToast({ message: 'Failed to load nanny details', type: 'error' });
       } finally {
         setLoading(false);
@@ -99,7 +100,7 @@ export default function DirectBookingPage() {
       });
       router.push('/bookings');
     } catch (error: any) {
-      console.error('Booking failed:', error);
+      logger.error('Booking failed:', error);
       addToast({
         message: error.message || 'Failed to create booking',
         type: 'error',

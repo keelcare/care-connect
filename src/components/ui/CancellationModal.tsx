@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X, Clock, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/Modal';
+import { logger } from '@/lib/logger';
 
 interface CancellationModalProps {
   isOpen: boolean;
@@ -70,7 +71,7 @@ export const CancellationModal: React.FC<CancellationModalProps> = ({
       setSelectedReason('');
       setCustomReason('');
     } catch (error) {
-      console.error('Cancellation failed:', error);
+      logger.error('Cancellation failed:', error);
     } finally {
       setIsSubmitting(false);
     }

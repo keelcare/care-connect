@@ -10,6 +10,7 @@ import {
   CreditCard, Clock, CheckCircle2, ChevronDown, ChevronUp,
   Info, Shield, AlertCircle, X, Wallet, CalendarDays,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 
@@ -274,14 +275,14 @@ export default function PaymentsPage() {
   const fetchPlans = async () => {
     setLoading(true);
     try { setPlans((await api.payments.getPlans()) ?? []); }
-    catch (err) { console.error(err); }
+    catch (err) { logger.error(err); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { fetchPlans(); }, []);
 
   const onPayNow = (bookingId: string, amount: number) => {
-    handlePayment({ amount, bookingId, onSuccess: fetchPlans, onError: console.error });
+    handlePayment({ amount, bookingId, onSuccess: fetchPlans, onError: logger.error });
   };
 
   return (

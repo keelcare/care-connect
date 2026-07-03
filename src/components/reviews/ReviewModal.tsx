@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Spinner } from '@/components/ui/Spinner';
 import { useToast } from '@/components/ui/ToastProvider';
+import { logger } from '@/lib/logger';
 
 interface ReviewModalProps {
   bookingId: string;
@@ -42,7 +43,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         );
       }
     } catch (error) {
-      console.error('Failed to check eligibility:', error);
+      logger.error('Failed to check eligibility:', error);
       setEligibilityError('Failed to check review eligibility.');
       setCanReview(false);
     } finally {
@@ -77,7 +78,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      logger.error('Failed to submit review:', error);
       addToast({
         type: 'error',
         message:

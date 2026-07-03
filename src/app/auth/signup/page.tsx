@@ -27,6 +27,7 @@ type Role = 'family' | 'caregiver';
 
 import { Suspense } from 'react';
 import { Spinner } from '@/components/ui/Spinner';
+import { logger } from '@/lib/logger';
 
 function SignupContent() {
   const searchParams = useSearchParams();
@@ -141,7 +142,7 @@ function SignupContent() {
       // Auto login or redirect to login
       window.location.href = '/auth/login';
     } catch (error: any) {
-      console.error('Signup failed:', error);
+      logger.error('Signup failed:', error);
       let errorMessage = error?.message || 'Signup failed. Please try again.';
       if (errorMessage.toLowerCase().includes('too many requests') || errorMessage.toLowerCase().includes('throttler')) {
         errorMessage = 'Too many signup attempts. Please try again in 5 minutes.';

@@ -26,6 +26,7 @@ import { LocationModal } from '@/components/features/LocationModal';
 import { LocationSelector } from './Navbar/LocationSelector';
 import { NotificationButton } from './Navbar/NotificationButton';
 import { useNotificationContext } from '@/context/NotificationContext';
+import { logger } from '@/lib/logger';
 
 
 const NAV_ITEMS_PARENT = [
@@ -68,7 +69,7 @@ export const Navbar: React.FC = () => {
       addToast({ message: 'Logged out successfully', type: 'success' });
       router.push('/');
     } catch (error) {
-      console.error('Logout failed', error);
+      logger.error('Logout failed', error);
       addToast({ message: 'Failed to log out', type: 'error' });
     }
   };
