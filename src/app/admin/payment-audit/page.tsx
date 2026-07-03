@@ -10,6 +10,8 @@ import {
   PaymentAuditSummary,
 } from '@/types/api';
 import { Spinner } from '@/components/ui/Spinner';
+import { Button } from '@/components/ui/button';
+import { AdminPageHeader } from '@/components/admin/ui';
 import {
   AlertTriangle,
   CreditCard,
@@ -320,29 +322,20 @@ export default function AdminPaymentAuditPage() {
   const canNext = pagination.page < pagination.totalPages;
 
   return (
-    <div className="w-full space-y-6 lg:space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-primary-900 font-display leading-tight flex items-center gap-2">
-            <CreditCard size={22} className="text-accent" />
-            Payment Audit
-          </h1>
-          <p className="text-neutral-400 mt-1 text-xs sm:text-sm">
-            Inspect payment state transitions, failures, and duplicate attempts.
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto">
+      <AdminPageHeader
+        eyebrow="Finance"
+        title="Payment Audit"
+        subtitle="Inspect payment state transitions, failures, and duplicate attempts."
+        icon={CreditCard}
+        actions={
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing || loading} className="rounded-xl gap-2">
+            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} /> Refresh
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing || loading}
-          className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors px-3 py-1.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 disabled:opacity-60"
-        >
-          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
-          Refresh
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-neutral-500">Failed (Last 7 Days)</p>

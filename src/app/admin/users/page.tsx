@@ -1,47 +1,33 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { User, Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { CheckCircle, XCircle, Users, Baby, Heart, ShieldAlert } from 'lucide-react';
+import {
+  CheckCircle,
+  Users as UsersIcon,
+  Baby,
+  Heart,
+  ShieldAlert,
+  Search,
+} from 'lucide-react';
 import NannyProfileModal from '@/components/admin/NannyProfileModal';
 import ParentProfileModal from '@/components/admin/ParentProfileModal';
+import {
+  AdminPageHeader,
+  StatCard,
+  SectionCard,
+  StatusBadge,
+  EmptyState,
+  AdminSearch,
+} from '@/components/admin/ui';
 
 type Tab = 'nannies' | 'parents';
 
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  color,
-}: {
-  label: string;
-  value: number;
-  icon: React.ElementType;
-  color: string;
-}) {
-  return (
-    <div
-      className="flex items-center gap-4 bg-white rounded-2xl border border-neutral-100 shadow-soft px-6 py-5"
-    >
-      <div
-        className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}
-      >
-        <Icon size={20} />
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-neutral-900 leading-none">{value}</p>
-        <p className="text-xs font-medium text-neutral-500 mt-1">{label}</p>
-      </div>
-    </div>
-  );
-}
-
-function UserTable({
-  users,
+function UserRow({
+  u,
   actionLoading,
   onBan,
   onUnban,
@@ -49,7 +35,7 @@ function UserTable({
   role,
   onNameClick,
 }: {
-  users: User[];
+  u: User;
   actionLoading: string | null;
   onBan: (id: string) => void;
   onUnban: (id: string) => void;
@@ -58,142 +44,104 @@ function UserTable({
   onNameClick?: (id: string) => void;
 }) {
   const accentClass =
-    role === 'nannies'
-      ? 'bg-violet-50 text-violet-700'
-      : 'bg-emerald-50 text-emerald-700';
-
-  if (users.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
-        <Users size={40} className="mb-3 opacity-40" />
-        <p className="text-sm font-medium">No {role} found</p>
-      </div>
-    );
-  }
+    role === 'nannies' ? 'bg-violet-50 text-violet-700' : 'bg-emerald-50 text-emerald-700';
+  const name =
+    u.profiles?.first_name && u.profiles?.last_name
+      ? `${u.profiles.first_name} ${u.profiles.last_name}`
+      : 'N/A';
 
   return (
-    <div className="divide-y divide-neutral-50">
-      {users.map((u) => {
-        const name =
-          u.profiles?.first_name && u.profiles?.last_name
-            ? `${u.profiles.first_name} ${u.profiles.last_name}`
-            : 'N/A';
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-6 py-4 hover:bg-neutral-50/60 transition-colors">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div
+          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${accentClass}`}
+        >
+          {u.profiles?.first_name?.[0]?.toUpperCase() ?? '?'}
+        </div>
+        <div className="min-w-0">
+          {onNameClick ? (
+            <button
+              onClick={() => onNameClick(u.id)}
+              className="font-semibold text-neutral-900 hover:text-primary-600 hover:underline underline-offset-2 transition-colors text-left truncate block max-w-full"
+            >
+              {name}
+            </button>
+          ) : (
+            <span className="font-semibold text-neutral-900 truncate block">{name}</span>
+          )}
+          <span className="text-xs text-neutral-400 truncate block">{u.email}</span>
+        </div>
+      </div>
 
-        return (
-          <div
-            key={u.id}
-            className="flex flex-wrap items-center gap-x-4 gap-y-3 px-6 py-4 hover:bg-neutral-50/60 transition-colors"
-          >
-            {/* Avatar + Name + Email */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${accentClass}`}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {u.is_active !== false ? (
+          <StatusBadge tone="success" dot>Active</StatusBadge>
+        ) : (
+          <StatusBadge tone="danger">Banned</StatusBadge>
+        )}
+        {u.is_verified ? (
+          <StatusBadge tone="success"><CheckCircle size={11} /> Verified</StatusBadge>
+        ) : (
+          <StatusBadge tone="neutral">Unverified</StatusBadge>
+        )}
+        <span className="text-xs text-neutral-400 hidden md:block">
+          {new Date(u.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </span>
+      </div>
+
+      <div className="flex-shrink-0">
+        {actionLoading === u.id ? (
+          <Spinner />
+        ) : (
+          <div className="flex items-center gap-2">
+            {!u.is_verified && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onVerify(u.id)}
+                className="rounded-lg text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
               >
-                {u.profiles?.first_name?.[0]?.toUpperCase() ?? '?'}
-              </div>
-              <div className="min-w-0">
-                {onNameClick ? (
-                  <button
-                    onClick={() => onNameClick(u.id)}
-                    className="font-medium text-neutral-900 hover:text-violet-600 hover:underline underline-offset-2 transition-colors text-left truncate block max-w-full"
-                  >
-                    {name}
-                  </button>
-                ) : (
-                  <span className="font-medium text-neutral-900 truncate block">{name}</span>
-                )}
-                <span className="text-xs text-neutral-400 truncate block">{u.email}</span>
-              </div>
-            </div>
-
-            {/* Badges */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {u.is_active !== false ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Active
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600">
-                  <ShieldAlert size={11} />
-                  Banned
-                </span>
-              )}
-
-              {u.is_verified ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700">
-                  <CheckCircle size={12} />
-                  Verified
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-400">
-                  <XCircle size={12} />
-                  Unverified
-                </span>
-              )}
-
-              <span className="text-xs text-neutral-400 hidden sm:block">
-                {new Date(u.created_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </span>
-            </div>
-
-            {/* Actions */}
-            <div className="flex-shrink-0">
-              {actionLoading === u.id ? (
-                <Spinner />
-              ) : (
-                <div className="flex items-center gap-2">
-                  {!u.is_verified && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onVerify(u.id)}
-                      className="rounded-lg text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
-                    >
-                      Verify
-                    </Button>
-                  )}
-                  {u.is_active !== false ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onBan(u.id)}
-                      className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                    >
-                      Ban
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onUnban(u.id)}
-                      className="rounded-lg text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300"
-                    >
-                      Unban
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
+                Verify
+              </Button>
+            )}
+            {u.is_active !== false ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onBan(u.id)}
+                className="rounded-lg text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+              >
+                Ban
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUnban(u.id)}
+                className="rounded-lg text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300"
+              >
+                Unban
+              </Button>
+            )}
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }
 
 export default function AdminUsersPage() {
-  const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('nannies');
+  const [search, setSearch] = useState('');
   const [selectedNannyId, setSelectedNannyId] = useState<string | null>(null);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
 
@@ -225,7 +173,6 @@ export default function AdminUsersPage() {
       const updated = await api.admin.verifyUser(userId);
       setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, profiles: u.profiles } : u)));
     } catch (err) {
-      console.error('Failed to verify user:', err);
       alert(err instanceof Error ? err.message : 'Failed to verify user');
     } finally {
       setActionLoading(null);
@@ -240,7 +187,6 @@ export default function AdminUsersPage() {
       const updated = await api.admin.banUser(userId, reason || undefined);
       setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, is_active: false, profiles: u.profiles } : u)));
     } catch (err) {
-      console.error('Failed to ban user:', err);
       alert(err instanceof Error ? err.message : 'Failed to ban user');
     } finally {
       setActionLoading(null);
@@ -254,7 +200,6 @@ export default function AdminUsersPage() {
       const updated = await api.admin.unbanUser(userId);
       setUsers(users.map((u) => (u.id === userId ? { ...u, ...updated, is_active: true, profiles: u.profiles } : u)));
     } catch (err) {
-      console.error('Failed to unban user:', err);
       alert(err instanceof Error ? err.message : 'Failed to unban user');
     } finally {
       setActionLoading(null);
@@ -264,6 +209,16 @@ export default function AdminUsersPage() {
   const nannies = useMemo(() => users.filter((u) => u.role === 'nanny'), [users]);
   const parents = useMemo(() => users.filter((u) => u.role === 'parent'), [users]);
   const bannedCount = useMemo(() => users.filter((u) => u.is_active === false).length, [users]);
+
+  const visible = useMemo(() => {
+    const base = activeTab === 'nannies' ? nannies : parents;
+    const q = search.trim().toLowerCase();
+    if (!q) return base;
+    return base.filter((u) => {
+      const name = `${u.profiles?.first_name ?? ''} ${u.profiles?.last_name ?? ''}`.toLowerCase();
+      return name.includes(q) || u.email.toLowerCase().includes(q);
+    });
+  }, [activeTab, nannies, parents, search]);
 
   if (loading) {
     return (
@@ -288,8 +243,7 @@ export default function AdminUsersPage() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Nanny Profile Modal */}
+    <div className="max-w-6xl mx-auto">
       {selectedNannyId && (
         <NannyProfileModal
           nannyId={selectedNannyId}
@@ -297,8 +251,6 @@ export default function AdminUsersPage() {
           onClose={() => setSelectedNannyId(null)}
         />
       )}
-
-      {/* Parent Profile Modal */}
       {selectedParentId && (
         <ParentProfileModal
           parentId={selectedParentId}
@@ -306,70 +258,82 @@ export default function AdminUsersPage() {
           onClose={() => setSelectedParentId(null)}
         />
       )}
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-primary-900 font-display">User Management</h1>
-        <p className="text-neutral-500 mt-1 text-sm">
-          Manage nannies and parents on the platform.
-        </p>
+
+      <AdminPageHeader
+        eyebrow="Community"
+        title="User Management"
+        subtitle="Manage caregivers and parents across the platform."
+        icon={UsersIcon}
+      />
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <StatCard label="Total Users" value={users.length} icon={UsersIcon} tone="navy" />
+        <StatCard label="Nannies" value={nannies.length} icon={Baby} tone="violet" />
+        <StatCard label="Parents" value={parents.length} icon={Heart} tone="emerald" />
+        <StatCard label="Banned" value={bannedCount} icon={ShieldAlert} tone="rose" />
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatCard label="Total Users" value={users.length} icon={Users} color="bg-neutral-100 text-neutral-600" />
-        <StatCard label="Nannies" value={nannies.length} icon={Baby} color="bg-violet-100 text-violet-600" />
-        <StatCard label="Parents" value={parents.length} icon={Heart} color="bg-emerald-100 text-emerald-600" />
-        <StatCard label="Banned" value={bannedCount} icon={ShieldAlert} color="bg-red-100 text-red-500" />
-      </div>
-
-      {/* Tab Container */}
-      <div className="bg-white rounded-[28px] border border-neutral-100 shadow-soft overflow-hidden">
-        {/* Tabs */}
-        <div className="flex border-b border-neutral-100 px-6 pt-5 gap-1">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  relative pb-4 px-4 text-sm font-semibold transition-colors focus:outline-none
-                  ${isActive ? 'text-primary-700' : 'text-neutral-400 hover:text-neutral-600'}
-                `}
-              >
-                {tab.label}
-                <span
-                  className={`
-                    ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold
-                    ${isActive
-                      ? tab.id === 'nannies'
-                        ? 'bg-violet-100 text-violet-700'
-                        : 'bg-emerald-100 text-emerald-700'
-                      : 'bg-neutral-100 text-neutral-400'
-                    }
-                  `}
+      <SectionCard bodyClassName="p-0">
+        {/* Tabs + search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 px-6 pt-5">
+          <div className="flex gap-1">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative pb-4 px-4 text-sm font-semibold transition-colors focus:outline-none ${
+                    isActive ? 'text-primary-700' : 'text-neutral-400 hover:text-neutral-600'
+                  }`}
                 >
-                  {tab.count}
-                </span>
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-full" />
-                )}
-              </button>
-            );
-          })}
+                  {tab.label}
+                  <span
+                    className={`ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                      isActive
+                        ? tab.id === 'nannies'
+                          ? 'bg-violet-100 text-violet-700'
+                          : 'bg-emerald-100 text-emerald-700'
+                        : 'bg-neutral-100 text-neutral-400'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <AdminSearch
+            value={search}
+            onChange={setSearch}
+            icon={Search}
+            placeholder="Search by name or email…"
+            className="sm:w-72 pb-4 sm:pb-0"
+          />
         </div>
 
-        {/* Table */}
-        <UserTable
-          users={activeTab === 'nannies' ? nannies : parents}
-          actionLoading={actionLoading}
-          onBan={handleBanUser}
-          onUnban={handleUnbanUser}
-          onVerify={handleVerifyUser}
-          role={activeTab}
-          onNameClick={activeTab === 'nannies' ? setSelectedNannyId : setSelectedParentId}
-        />
-      </div>
+        {visible.length === 0 ? (
+          <EmptyState icon={UsersIcon} title={`No ${activeTab} found`} description={search ? 'Try a different search.' : undefined} />
+        ) : (
+          <div className="divide-y divide-neutral-50">
+            {visible.map((u) => (
+              <UserRow
+                key={u.id}
+                u={u}
+                actionLoading={actionLoading}
+                onBan={handleBanUser}
+                onUnban={handleUnbanUser}
+                onVerify={handleVerifyUser}
+                role={activeTab}
+                onNameClick={activeTab === 'nannies' ? setSelectedNannyId : setSelectedParentId}
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
     </div>
   );
 }

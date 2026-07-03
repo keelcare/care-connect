@@ -16,8 +16,10 @@ import {
   User as UserIcon,
   CheckCircle,
   XCircle,
+  ArrowLeft,
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
+import { AdminPageHeader } from '@/components/admin/ui';
 
 // Extended booking type to handle Prisma relation names from backend
 interface AdminBooking extends Booking {
@@ -233,28 +235,19 @@ export default function AdminBookingDetailsPage() {
   const nannyInfo = getNannyInfo(booking);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin')}
-          className="rounded-xl"
-        >
-          ← Back to Dashboard
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin/bookings')}
-          className="rounded-xl"
-        >
-          ← Back to Bookings
-        </Button>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
-          Booking Details (Admin)
-        </h1>
-      </div>
+    <div className="max-w-6xl mx-auto">
+      <button
+        onClick={() => router.push('/admin/bookings')}
+        className="flex items-center gap-2 text-neutral-500 hover:text-primary-600 transition-colors mb-4 text-sm font-medium"
+      >
+        <ArrowLeft size={16} /> Back to Bookings
+      </button>
+
+      <AdminPageHeader
+        eyebrow={`Booking #${booking.id.slice(0, 8)}`}
+        title="Booking Details"
+        icon={Calendar}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">

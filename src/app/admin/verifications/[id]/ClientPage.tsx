@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { api, API_URL } from '@/lib/api';
 import { User } from '@/types/api';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, FileText, ExternalLink, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileText, ExternalLink, Loader2, ShieldCheck } from 'lucide-react';
+import { AdminPageHeader } from '@/components/admin/ui';
 
 type DocPreview = { url: string; isPdf: boolean };
 
@@ -131,21 +132,20 @@ export default function VerificationDetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div>
-        <button
-          onClick={() => router.push('/admin/verifications')}
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-primary-900 transition-colors mb-3"
-        >
-          <ArrowLeft size={16} />
-          Back to List
-        </button>
-        <h1 className="text-3xl font-bold text-primary-900 font-display">
-          Verification Request
-        </h1>
-        <p className="text-neutral-500 mt-1 text-sm">Review documents for {user.email}</p>
-      </div>
+    <div className="max-w-4xl mx-auto">
+      <button
+        onClick={() => router.push('/admin/verifications')}
+        className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-primary-900 transition-colors mb-4"
+      >
+        <ArrowLeft size={16} /> Back to List
+      </button>
+
+      <AdminPageHeader
+        eyebrow="Trust & Safety"
+        title="Verification Request"
+        subtitle={`Review identity documents for ${user.email}`}
+        icon={ShieldCheck}
+      />
 
       {/* User details */}
       <div className="bg-white shadow-soft rounded-[24px] overflow-hidden border border-neutral-100">

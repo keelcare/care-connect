@@ -8,10 +8,11 @@ import { AdminManualRequest } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Search, Filter, Calendar, MapPin, User, Clock, ChevronRight } from 'lucide-react';
+import { Search, Calendar, MapPin, User, Clock, ChevronRight, RefreshCw, UserCog } from 'lucide-react';
 import { NannyAssignmentModal } from '@/components/admin/NannyAssignmentModal';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { AdminPageHeader, SectionCard, EmptyState, AdminSearch } from '@/components/admin/ui';
 
 export default function ManualAssignmentPage() {
     const { user } = useAuth();
@@ -124,53 +125,30 @@ export default function ManualAssignmentPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 p-4 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <button
-                        onClick={() => router.push('/admin')}
-                        className="flex items-center gap-2 text-neutral-500 hover:text-primary-600 transition-colors mb-2 text-sm font-medium"
-                    >
-                        <ArrowLeft size={16} />
-                        Back to Dashboard
-                    </button>
-                    <h1 className="text-3xl font-bold text-primary-900 font-display">
-                        Manual Assignment
-                    </h1>
-                    <p className="text-neutral-500 mt-1">
-                        Manage Shadow Teacher and Special Needs assignments
-                    </p>
-                </div>
+        <div className="max-w-6xl mx-auto">
+            <AdminPageHeader
+                eyebrow="Operations"
+                title="Manual Assignment"
+                subtitle="Assign caregivers to Shadow Teacher and Special Needs requests."
+                icon={UserCog}
+                actions={
+                    <Button variant="outline" size="sm" onClick={fetchPendingRequests} className="rounded-xl gap-2">
+                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
+                    </Button>
+                }
+            />
 
-                <div className="bg-white p-2 rounded-2xl border border-neutral-100 shadow-soft flex items-center gap-3 w-full md:w-auto max-w-md">
-                    <div className="pl-3 text-neutral-400">
-                        <Search size={20} />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Search by ID or location..."
-                        className="bg-transparent border-none outline-none text-neutral-700 py-2 w-full"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+            <div className="mb-6">
+                <AdminSearch
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    icon={Search}
+                    placeholder="Search by ID, location, or category…"
+                    className="max-w-md"
+                />
             </div>
 
             <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-neutral-900">
-                        Pending Requests ({filteredRequests.length})
-                    </h2>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={fetchPendingRequests}
-                        className="text-primary-600"
-                    >
-                        Refresh List
-                    </Button>
-                </div>
-
                 {filteredRequests.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
                         {filteredRequests.map((request) => (
@@ -255,15 +233,13 @@ export default function ManualAssignmentPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-[32px] border border-neutral-100 p-20 text-center shadow-soft">
-                        <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-300">
-                            <Clock size={40} />
-                        </div>
-                        <h3 className="text-xl font-bold text-neutral-900">No pending assignments</h3>
-                        <p className="text-neutral-500 mt-2 max-w-sm mx-auto">
-                            All Shadow Teacher and Special Needs requests have been handled. New requests will appear here.
-                        </p>
-                    </div>
+                    <SectionCard bodyClassName="p-0">
+                        <EmptyState
+                            icon={Clock}
+                            title="No pending assignments"
+                            description="All Shadow Teacher and Special Needs requests have been handled. New requests will appear here."
+                        />
+                    </SectionCard>
                 )}
             </div>
 

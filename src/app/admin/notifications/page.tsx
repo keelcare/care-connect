@@ -7,9 +7,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Bell, Send, Mail, MessageSquare, Smartphone } from 'lucide-react';
-
-
-
+import { AdminPageHeader, SectionCard } from '@/components/admin/ui';
 
 export default function AdminNotificationsPage() {
   const { user } = useAuth();
@@ -77,36 +75,15 @@ export default function AdminNotificationsPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin')}
-          className="rounded-xl"
-        >
-          ← Back to Dashboard
-        </Button>
-        <h1 className="text-3xl font-bold text-neutral-900 font-display">
-          Send Notifications
-        </h1>
-      </div>
+    <div className="max-w-3xl mx-auto">
+      <AdminPageHeader
+        eyebrow="System"
+        title="Send Notifications"
+        subtitle="Send alerts to individual users or broadcast to all parents or nannies."
+        icon={Bell}
+      />
 
-      <div className="bg-white rounded-[32px] border border-neutral-100 shadow-soft p-8">
-        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-100">
-          <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-900">
-            <Bell size={24} />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-neutral-900">
-              Manual Notification
-            </h2>
-            <p className="text-neutral-500">
-              Send alerts to users for testing or announcements
-            </p>
-          </div>
-        </div>
-
+      <SectionCard title="Compose notification" icon={Send} bodyClassName="p-8">
         {success && (
           <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-xl border border-green-100 flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -132,7 +109,7 @@ export default function AdminNotificationsPage() {
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
-                  className="w-full p-3 pl-10 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all appearance-none"
+                  className="w-full p-3 pl-10 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-400 transition-all appearance-none"
                 >
                   <option value="email">Email</option>
                   <option value="push">Push Notification</option>
@@ -199,7 +176,7 @@ export default function AdminNotificationsPage() {
                   onChange={handleChange}
                   placeholder="user@example.com"
                   required={formData.target === 'user'}
-                  className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
+                  className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-400 transition-all"
                 />
               </div>
             )}
@@ -216,7 +193,7 @@ export default function AdminNotificationsPage() {
               onChange={handleChange}
               placeholder="Notification Subject"
               required={formData.type === 'email'}
-              className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all"
+              className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-400 transition-all"
             />
           </div>
 
@@ -231,7 +208,7 @@ export default function AdminNotificationsPage() {
               placeholder="Type your message here..."
               required
               rows={6}
-              className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-200 focus:border-stone-400 transition-all resize-none"
+              className="w-full p-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-400 transition-all resize-none"
             />
           </div>
 
@@ -246,7 +223,7 @@ export default function AdminNotificationsPage() {
             </Button>
           </div>
         </form>
-      </div>
+      </SectionCard>
     </div>
   );
 }

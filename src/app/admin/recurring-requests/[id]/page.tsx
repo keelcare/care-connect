@@ -7,10 +7,17 @@ import { api } from '@/lib/api';
 import { RecurringServiceRequest, Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Calendar, User, Clock, ChevronRight } from 'lucide-react';
+import { ArrowLeft, User } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { NannyAssignmentModal } from '@/components/admin/NannyAssignmentModal';
+import { AdminPageHeader, SectionCard, StatusBadge, BadgeTone } from '@/components/admin/ui';
+
+const STATUS_TONE: Record<string, BadgeTone> = {
+  CONFIRMED: 'success',
+  IN_PROGRESS: 'info',
+  COMPLETED: 'neutral',
+  CANCELLED: 'danger',
+};
 
 export default function RecurringRequestDetailPage({ params }: { params: { id: string } }) {
     const { user } = useAuth();
@@ -71,16 +78,6 @@ export default function RecurringRequestDetailPage({ params }: { params: { id: s
         }
     };
 
-    const getStatusClass = (status: string) => {
-        switch (status.toUpperCase()) {
-            case 'CONFIRMED': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-            case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700 border-blue-200';
-            case 'COMPLETED': return 'bg-gray-100 text-gray-700 border-gray-200';
-            case 'CANCELLED': return 'bg-red-100 text-red-700 border-red-200';
-            default: return 'bg-amber-100 text-amber-700 border-amber-200';
-        }
-    };
-
     // Construct mock AdminManualRequest to pass to the NannyAssignmentModal
     // The NannyAssignmentModal will use the booking.id for assignments.
     const mockRequestForAssignment = selectedBooking ? {
@@ -101,91 +98,73 @@ export default function RecurringRequestDetailPage({ params }: { params: { id: s
     } : null;
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 p-4 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <button
-                        onClick={() => router.push('/admin/recurring-requests')}
-                        className="flex items-center gap-2 text-neutral-500 hover:text-primary-600 transition-colors mb-2 text-sm font-medium"
-                    >
-                        <ArrowLeft size={16} />
-                        Back to Recurring Requests
-                    </button>
-                    <h1 className="text-3xl font-bold text-primary-900 font-display">
-                        Monthly Plan Details
-                    </h1>
-                    <p className="text-[11px] text-neutral-400 mt-1 font-mono uppercase tracking-tighter">
-                        ID: #{request.id}
-                    </p>
-                </div>
-            </div>
+        <div className="max-w-6xl mx-auto">
+            <button
+                onClick={() => router.push('/admin/recurring-requests')}
+                className="flex items-center gap-2 text-neutral-500 hover:text-primary-600 transition-colors mb-4 text-sm font-medium"
+            >
+                <ArrowLeft size={16} /> Back to Recurring Requests
+            </button>
 
-            <div className="bg-white rounded-3xl border border-neutral-100 shadow-soft p-6 lg:p-8">
+            <AdminPageHeader
+                eyebrow={`Plan #${request.id.slice(0, 8)}`}
+                title="Monthly Plan Details"
+                subtitle="Review the schedule and assign caregivers to each generated booking."
+            />
+
+            <SectionCard bodyClassName="p-6 lg:p-8" className="mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-2">
-                        <p className="text-xs font-bold tracking-wider text-neutral-400 uppercase">Recurrence</p>
-                        <div className="text-neutral-900 font-medium capitalize text-lg">
-                            {request.recurrence_type.replace('_', ' ')}
-                        </div>
-                        <div className="text-neutral-500 text-sm">
-                            Starts: {formatDate(request.start_date)}
-                        </div>
+                        <p className="text-[11px] font-bold tracking-widest text-neutral-400 uppercase">Recurrence</p>
+                        <div className="text-neutral-900 font-semibold capitalize text-lg">{request.recurrence_type.replace('_', ' ')}</div>
+                        <div className="text-neutral-500 text-sm">Starts {formatDate(request.start_date)}</div>
                     </div>
-
                     <div className="space-y-2">
-                        <p className="text-xs font-bold tracking-wider text-neutral-400 uppercase">Schedule</p>
-                        <div className="text-neutral-900 font-medium text-lg">
-                            {request.start_time}
-                        </div>
-                        <div className="text-neutral-500 text-sm">
-                            {request.duration_hours} hours per session
-                        </div>
+                        <p className="text-[11px] font-bold tracking-widest text-neutral-400 uppercase">Schedule</p>
+                        <div className="text-neutral-900 font-semibold text-lg">{request.start_time}</div>
+                        <div className="text-neutral-500 text-sm">{request.duration_hours} hours per session</div>
                     </div>
-
                     <div className="space-y-2">
-                        <p className="text-xs font-bold tracking-wider text-neutral-400 uppercase">Parent Details</p>
-                        <div className="text-neutral-900 font-medium text-lg">
-                            {request.parent?.email || 'N/A'}
-                        </div>
-                        <div className="text-neutral-500 text-sm">
-                            {request.num_children} {request.num_children === 1 ? 'Child' : 'Children'}
-                        </div>
+                        <p className="text-[11px] font-bold tracking-widest text-neutral-400 uppercase">Parent</p>
+                        <div className="text-neutral-900 font-semibold text-lg truncate">{request.parent?.email || 'N/A'}</div>
+                        <div className="text-neutral-500 text-sm">{request.num_children} {request.num_children === 1 ? 'Child' : 'Children'}</div>
                     </div>
                 </div>
-            </div>
+            </SectionCard>
 
             <div className="space-y-4">
-                <h2 className="text-xl font-bold text-neutral-900">
+                <h2 className="font-display text-xl font-bold text-primary-900">
                     Generated Bookings ({request.bookings?.length || 0})
                 </h2>
 
                 <div className="grid grid-cols-1 gap-4">
                     {request.bookings?.map((booking) => (
-                        <div key={booking.id} className="bg-white rounded-2xl border border-neutral-100 p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                        <div key={booking.id} className="bg-white rounded-[24px] border border-neutral-100 p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between shadow-soft hover:shadow-md transition-shadow">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                                <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold font-display">
                                     {new Date(booking.start_time).getDate()}
                                 </div>
                                 <div>
                                     <div className="font-bold text-neutral-900 text-lg">
                                         {booking.start_time_formatted || formatDate(booking.start_time)}
                                     </div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Badge className={`${getStatusClass(booking.status)}`}>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                        <StatusBadge tone={STATUS_TONE[booking.status?.toUpperCase()] ?? 'warning'}>
                                             {booking.status}
-                                        </Badge>
+                                        </StatusBadge>
                                         {booking.nanny && (
                                             <span className="text-sm text-neutral-600 flex items-center gap-1">
-                                                <User size={14} /> Assigned to: {booking.nanny.profiles?.first_name || booking.nanny.email}
+                                                <User size={14} /> {booking.nanny.profiles?.first_name || booking.nanny.email}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
-                            
-                            <Button 
+
+                            <Button
                                 variant={booking.status === 'CONFIRMED' ? 'outline' : 'default'}
                                 onClick={() => handleAssignClick(booking)}
+                                className="rounded-xl"
                             >
                                 {booking.status === 'CONFIRMED' ? 'Reassign Nanny' : 'Assign Nanny'}
                             </Button>

@@ -38,10 +38,8 @@ export function NannyAssignmentModal({
     const fetchNannies = async () => {
         if (!request) return;
         setLoading(true);
-        console.log(`[ManualAssignment] Fetching nannies for request: ${request.id}`);
         try {
             const data = await api.admin.manualAssignment.getAvailableNannies(request.id);
-            console.log(`[ManualAssignment] Received ${data.length} nannies:`, data);
             // Sort by match score descending
             setNannies(data.sort((a, b) => b.match_details.total_score - a.match_details.total_score));
         } catch (error) {

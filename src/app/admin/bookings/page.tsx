@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
@@ -8,29 +8,41 @@ import { Booking } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
-import styles from './page.module.css';
+import { Calendar, Search, PlayCircle, CheckCircle2, XCircle, CircleDot } from 'lucide-react';
+import {
+  AdminPageHeader,
+  StatCard,
+  SectionCard,
+  StatusBadge,
+  BadgeTone,
+  EmptyState,
+  AdminTable,
+  THead,
+  TH,
+  TR,
+  TD,
+  AdminSearch,
+} from '@/components/admin/ui';
 
-// Extended booking type to handle Prisma relation names from backend
 interface AdminBooking extends Omit<Booking, 'users_bookings_nanny_idTousers' | 'users_bookings_parent_idTousers'> {
-  // Prisma relation names from backend
   jobs?: { title?: string; description?: string };
-  users_bookings_nanny_idTousers?: {
-    id: string;
-    email: string;
-    profiles?: {
-      first_name?: string | null;
-      last_name?: string | null;
-    }
-  };
-  users_bookings_parent_idTousers?: {
-    id: string;
-    email: string;
-    profiles?: {
-      first_name?: string | null;
-      last_name?: string | null;
-    }
-  };
+  users_bookings_nanny_idTousers?: { id: string; email: string; profiles?: { first_name?: string | null; last_name?: string | null } };
+  users_bookings_parent_idTousers?: { id: string; email: string; profiles?: { first_name?: string | null; last_name?: string | null } };
 }
+
+const STATUS_TONE: Record<string, BadgeTone> = {
+  CONFIRMED: 'info',
+  ACCEPTED: 'info',
+  ASSIGNED: 'info',
+  IN_PROGRESS: 'warning',
+  COMPLETED: 'success',
+  CANCELLED: 'danger',
+  PENDING: 'neutral',
+  REQUESTED: 'neutral',
+};
+
+const FILTERS = ['ALL', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const;
+type Filter = (typeof FILTERS)[number];
 
 export default function AdminBookingsPage() {
   const { user } = useAuth();
@@ -38,6 +50,8 @@ export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<Filter>('ALL');
   const { subscribe } = useSSE();
 
   useEffect(() => {
@@ -45,19 +59,11 @@ export default function AdminBookingsPage() {
       router.push('/dashboard');
       return;
     }
-
-    if (user) {
-      fetchBookings();
-    }
+    if (user) fetchBookings();
   }, [user]);
 
   useEffect(() => {
-    // Admin SSE real-time refresh
-    const handleRefresh = () => {
-      console.log('Admin Bookings Page - SSE Refresh Triggered');
-      fetchBookings();
-    };
-
+    const handleRefresh = () => fetchBookings();
     const unsubscribers = [
       subscribe(SSE_EVENT_TYPES.BOOKING_CREATED, handleRefresh),
       subscribe(SSE_EVENT_TYPES.BOOKING_UPDATED, handleRefresh),
@@ -67,7 +73,6 @@ export default function AdminBookingsPage() {
       subscribe(SSE_EVENT_TYPES.BOOKING_RESCHEDULED, handleRefresh),
       subscribe(SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, handleRefresh),
     ];
-
     return () => unsubscribers.forEach((unsub) => unsub());
   }, [subscribe]);
 
@@ -77,151 +82,72 @@ export default function AdminBookingsPage() {
       setError(null);
       const response = await api.admin.getBookings(1, 1000);
       const data = response.data || [];
-
-      // Enrich bookings with parent/nanny details if not already populated
-      const enrichedBookings = await Promise.all(
+      const enriched = await Promise.all(
         data.map(async (booking: AdminBooking) => {
-          let enrichedBooking = { ...booking };
-
-          // Fetch parent details if missing
-          const parentFromPrisma = booking.users_bookings_parent_idTousers;
-          const parentFromBooking = booking.parent;
-
-          if (
-            !parentFromPrisma?.profiles?.first_name &&
-            !parentFromBooking?.profiles?.first_name &&
-            booking.parent_id
-          ) {
-            try {
-              const parentDetails = await api.users.get(booking.parent_id);
-              enrichedBooking.parent = parentDetails;
-            } catch (err) {
-              console.error(
-                `Failed to fetch parent details for booking ${booking.id}:`,
-                err
-              );
-            }
+          const eb = { ...booking };
+          if (!booking.users_bookings_parent_idTousers?.profiles?.first_name && !booking.parent?.profiles?.first_name && booking.parent_id) {
+            try { eb.parent = await api.users.get(booking.parent_id); } catch {}
           }
-
-          // Fetch nanny details if missing
-          const nannyFromPrisma = booking.users_bookings_nanny_idTousers;
-          const nannyFromBooking = booking.nanny;
-
-          if (
-            !nannyFromPrisma?.profiles?.first_name &&
-            !nannyFromBooking?.profiles?.first_name &&
-            booking.nanny_id
-          ) {
-            try {
-              const nannyDetails = await api.users.get(booking.nanny_id);
-              enrichedBooking.nanny = nannyDetails;
-            } catch (err) {
-              console.error(
-                `Failed to fetch nanny details for booking ${booking.id}:`,
-                err
-              );
-            }
+          if (!booking.users_bookings_nanny_idTousers?.profiles?.first_name && !booking.nanny?.profiles?.first_name && booking.nanny_id) {
+            try { eb.nanny = await api.users.get(booking.nanny_id); } catch {}
           }
-
-          return enrichedBooking;
+          return eb;
         })
       );
-
-      setBookings(enrichedBookings);
+      setBookings(enriched);
     } catch (err) {
-      console.error('Failed to fetch bookings:', err);
       setError(err instanceof Error ? err.message : 'Failed to load bookings');
     } finally {
       setLoading(false);
     }
   };
 
-  // Helper function to get job title from various sources
-  const getJobTitle = (booking: AdminBooking): string => {
-    // Try Prisma relation name first
-    if (booking.jobs?.title) {
-      return booking.jobs.title;
-    }
-    // Try standard job relation
-    if (booking.job?.title) {
-      return booking.job.title;
-    }
-    // Fallback based on how booking was created
-    return 'Direct Booking';
+  const jobTitle = (b: AdminBooking) => b.jobs?.title || b.job?.title || 'Direct Booking';
+  const partyName = (
+    prisma?: { email: string; profiles?: { first_name?: string | null; last_name?: string | null } },
+    standard?: Booking['parent'],
+  ) => {
+    const p = prisma?.profiles?.first_name ? prisma : undefined;
+    if (p?.profiles?.first_name && p?.profiles?.last_name) return `${p.profiles.first_name} ${p.profiles.last_name}`;
+    if (prisma?.email) return prisma.email;
+    if (standard?.profiles?.first_name && standard?.profiles?.last_name) return `${standard.profiles.first_name} ${standard.profiles.last_name}`;
+    return standard?.email || 'N/A';
   };
+  const parentName = (b: AdminBooking) => partyName(b.users_bookings_parent_idTousers, b.parent);
+  const nannyName = (b: AdminBooking) => partyName(b.users_bookings_nanny_idTousers, b.nanny);
 
-  // Helper function to get parent name
-  const getParentName = (booking: AdminBooking): string => {
-    // Try Prisma relation name first
-    const prismaParent = booking.users_bookings_parent_idTousers;
-    if (
-      prismaParent?.profiles?.first_name &&
-      prismaParent?.profiles?.last_name
-    ) {
-      return `${prismaParent.profiles.first_name} ${prismaParent.profiles.last_name}`;
+  const counts = useMemo(() => {
+    const c = { total: bookings.length, active: 0, progress: 0, completed: 0, cancelled: 0 };
+    for (const b of bookings) {
+      const s = (b.status || '').toUpperCase();
+      if (s === 'IN_PROGRESS') c.progress++;
+      else if (s === 'COMPLETED') c.completed++;
+      else if (s === 'CANCELLED') c.cancelled++;
+      else if (['CONFIRMED', 'ACCEPTED', 'ASSIGNED'].includes(s)) c.active++;
     }
-    if (prismaParent?.email) {
-      return prismaParent.email;
-    }
+    return c;
+  }, [bookings]);
 
-    // Try standard parent relation
-    const parent = booking.parent;
-    if (parent?.profiles?.first_name && parent?.profiles?.last_name) {
-      return `${parent.profiles.first_name} ${parent.profiles.last_name}`;
-    }
-    if (parent?.email) {
-      return parent.email;
-    }
-
-    return 'N/A';
-  };
-
-  // Helper function to get nanny name
-  const getNannyName = (booking: AdminBooking): string => {
-    // Try Prisma relation name first
-    const prismaNanny = booking.users_bookings_nanny_idTousers;
-    if (prismaNanny?.profiles?.first_name && prismaNanny?.profiles?.last_name) {
-      return `${prismaNanny.profiles.first_name} ${prismaNanny.profiles.last_name}`;
-    }
-    if (prismaNanny?.email) {
-      return prismaNanny.email;
-    }
-
-    // Try standard nanny relation
-    const nanny = booking.nanny;
-    if (nanny?.profiles?.first_name && nanny?.profiles?.last_name) {
-      return `${nanny.profiles.first_name} ${nanny.profiles.last_name}`;
-    }
-    if (nanny?.email) {
-      return nanny.email;
-    }
-
-    return 'N/A';
-  };
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'bg-emerald-100 text-emerald-700';
-      case 'IN_PROGRESS':
-        return 'bg-neutral-100 text-neutral-700';
-      case 'COMPLETED':
-        return 'bg-emerald-100 text-emerald-700';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-700';
-      default:
-        return 'bg-neutral-100 text-neutral-700';
-    }
-  };
+  const visible = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return bookings.filter((b) => {
+      const s = (b.status || '').toUpperCase();
+      const matchesFilter =
+        filter === 'ALL' ||
+        (filter === 'CONFIRMED' ? ['CONFIRMED', 'ACCEPTED', 'ASSIGNED'].includes(s) : s === filter);
+      if (!matchesFilter) return false;
+      if (!q) return true;
+      return (
+        jobTitle(b).toLowerCase().includes(q) ||
+        parentName(b).toLowerCase().includes(q) ||
+        nannyName(b).toLowerCase().includes(q)
+      );
+    });
+  }, [bookings, search, filter]);
 
   if (loading) {
-    return (
-      <div className="h-[calc(100vh-120px)] flex items-center justify-center">
-        <Spinner />
-      </div>
-    );
+    return <div className="h-[calc(100vh-120px)] flex items-center justify-center"><Spinner /></div>;
   }
-
   if (error) {
     return (
       <div className="h-[calc(100vh-120px)] flex flex-col items-center justify-center text-center p-8">
@@ -232,87 +158,82 @@ export default function AdminBookingsPage() {
   }
 
   return (
-    <div className="w-full space-y-8">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin')}
-          className="rounded-xl"
-        >
-          ← Back to Dashboard
-        </Button>
-        <h1 className="text-3xl font-bold text-primary-900 font-display">
-          Booking Management
-        </h1>
+    <div className="max-w-6xl mx-auto">
+      <AdminPageHeader
+        eyebrow="Operations"
+        title="Booking Management"
+        subtitle="Monitor every booking on the platform in real time."
+        icon={Calendar}
+      />
+
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <StatCard label="Total" value={counts.total} icon={Calendar} tone="navy" />
+        <StatCard label="Active" value={counts.active} icon={CircleDot} tone="sky" />
+        <StatCard label="In Progress" value={counts.progress} icon={PlayCircle} tone="amber" />
+        <StatCard label="Completed" value={counts.completed} icon={CheckCircle2} tone="emerald" />
+        <StatCard label="Cancelled" value={counts.cancelled} icon={XCircle} tone="rose" />
       </div>
 
-      <div className="w-full overflow-x-auto">
-        <table className="w-full whitespace-nowrap">
-          <thead className="border-b border-neutral-200">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Job Title
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Parent
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Nanny
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Start Time
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-100">
-            {bookings.map((booking) => (
-              <tr
-                key={booking.id}
-                className="hover:bg-neutral-50/50 transition-colors"
+      <SectionCard bodyClassName="p-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-4 border-b border-neutral-100">
+          <div className="flex flex-wrap gap-1.5">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                  filter === f ? 'bg-primary-900 text-white' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+                }`}
               >
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">
-                  {getJobTitle(booking)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                  {getParentName(booking)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-neutral-600">
-                  {getNannyName(booking)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-neutral-500">
-                  {booking.start_time_formatted || new Date(booking.start_time).toLocaleString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusClass(booking.status)}`}
-                  >
-                    {booking.status.toLowerCase().replace('_', ' ')}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      router.push(`/admin/bookings/${booking.id}`)
-                    }
-                    className="rounded-lg hover:bg-neutral-50"
-                  >
-                    View Details
-                  </Button>
-                </td>
-              </tr>
+                {f === 'ALL' ? 'All' : f.toLowerCase().replace('_', ' ')}
+              </button>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+          <AdminSearch value={search} onChange={setSearch} icon={Search} placeholder="Search job, parent, nanny…" className="sm:w-72" />
+        </div>
+
+        {visible.length === 0 ? (
+          <EmptyState icon={Calendar} title="No bookings found" description={search || filter !== 'ALL' ? 'Try adjusting your filters.' : undefined} />
+        ) : (
+          <AdminTable>
+            <THead>
+              <TH>Job</TH>
+              <TH>Parent</TH>
+              <TH>Nanny</TH>
+              <TH>Start time</TH>
+              <TH>Status</TH>
+              <TH className="text-right">Action</TH>
+            </THead>
+            <tbody>
+              {visible.map((b) => (
+                <TR key={b.id} onClick={() => router.push(`/admin/bookings/${b.id}`)}>
+                  <TD className="font-semibold text-neutral-900">{jobTitle(b)}</TD>
+                  <TD className="text-neutral-600">{parentName(b)}</TD>
+                  <TD className="text-neutral-600">{nannyName(b)}</TD>
+                  <TD className="text-neutral-500 whitespace-nowrap">
+                    {b.start_time_formatted || new Date(b.start_time).toLocaleString()}
+                  </TD>
+                  <TD>
+                    <StatusBadge tone={STATUS_TONE[(b.status || '').toUpperCase()] ?? 'neutral'} dot>
+                      {b.status.toLowerCase().replace('_', ' ')}
+                    </StatusBadge>
+                  </TD>
+                  <TD className="text-right">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => { e.stopPropagation(); router.push(`/admin/bookings/${b.id}`); }}
+                      className="rounded-lg hover:bg-neutral-50"
+                    >
+                      View
+                    </Button>
+                  </TD>
+                </TR>
+              ))}
+            </tbody>
+          </AdminTable>
+        )}
+      </SectionCard>
     </div>
   );
 }

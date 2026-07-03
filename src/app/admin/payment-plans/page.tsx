@@ -15,6 +15,8 @@ import {
   ChevronRight,
   User,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AdminPageHeader, StatCard } from '@/components/admin/ui';
 
 export default function AdminPaymentPlansPage() {
   const [plans, setPlans] = useState<PaymentPlan[]>([]);
@@ -83,94 +85,25 @@ export default function AdminPaymentPlansPage() {
   };
 
   return (
-    <div className="w-full space-y-6 lg:space-y-8 p-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-primary-900 font-display leading-tight flex items-center gap-2">
-            <Wallet size={22} className="text-accent" />
-            Payment Plans Management
-          </h1>
-          <p className="text-neutral-400 mt-1 text-xs sm:text-sm">
-            Monitor subscriptions, track installment progress, and view collective revenue metrics.
-          </p>
-        </div>
-
-        <button
-          onClick={() => fetchData(true)}
-          disabled={refreshing || loading}
-          className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors px-3 py-1.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 disabled:opacity-60"
-        >
-          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
-          Refresh
-        </button>
-      </div>
+    <div className="max-w-6xl mx-auto">
+      <AdminPageHeader
+        eyebrow="Finance"
+        title="Payment Plans"
+        subtitle="Monitor subscriptions, installment progress, and collective revenue."
+        icon={Wallet}
+        actions={
+          <Button variant="outline" size="sm" onClick={() => fetchData(true)} disabled={refreshing || loading} className="rounded-xl gap-2">
+            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} /> Refresh
+          </Button>
+        }
+      />
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-neutral-500">Collected Revenue</p>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-              <TrendingUp size={16} className="text-emerald-500" />
-            </div>
-          </div>
-          {loading ? (
-            <div className="h-8 w-24 bg-neutral-100 animate-pulse rounded" />
-          ) : (
-            <p className="text-2xl font-bold tabular-nums text-emerald-600">
-              {formatCurrency(stats?.totalRevenue || 0)}
-            </p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-neutral-500">Total Plans</p>
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
-              <CreditCard size={16} className="text-indigo-500" />
-            </div>
-          </div>
-          {loading ? (
-            <div className="h-8 w-16 bg-neutral-100 animate-pulse rounded" />
-          ) : (
-            <p className="text-2xl font-bold tabular-nums text-indigo-700">
-              {stats?.totalPlans || 0}
-            </p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-neutral-500">Active Plans</p>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
-              <Clock size={16} className="text-amber-500" />
-            </div>
-          </div>
-          {loading ? (
-            <div className="h-8 w-16 bg-neutral-100 animate-pulse rounded" />
-          ) : (
-            <p className="text-2xl font-bold tabular-nums text-amber-600">
-              {stats?.activePlans || 0}
-            </p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-neutral-500">Completed</p>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-              <CheckCircle2 size={16} className="text-blue-500" />
-            </div>
-          </div>
-          {loading ? (
-            <div className="h-8 w-16 bg-neutral-100 animate-pulse rounded" />
-          ) : (
-            <p className="text-2xl font-bold tabular-nums text-blue-600">
-              {stats?.completedPlans || 0}
-            </p>
-          )}
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Collected Revenue" value={loading ? '—' : formatCurrency(stats?.totalRevenue || 0)} icon={TrendingUp} tone="emerald" />
+        <StatCard label="Total Plans" value={loading ? '—' : stats?.totalPlans || 0} icon={CreditCard} tone="violet" />
+        <StatCard label="Active Plans" value={loading ? '—' : stats?.activePlans || 0} icon={Clock} tone="amber" />
+        <StatCard label="Completed" value={loading ? '—' : stats?.completedPlans || 0} icon={CheckCircle2} tone="sky" />
       </div>
 
       {/* Filters */}
