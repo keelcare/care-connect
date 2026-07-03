@@ -2,20 +2,22 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { GreetingHero } from '@/components/dashboard/GreetingHero';
-import { api } from '@/lib/api';
 import { SessionCard } from '@/components/dashboard/SessionCard';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { ActivityPanel } from '@/components/dashboard/ActivityPanel';
 import { UpcomingSchedule } from '@/components/dashboard/UpcomingSchedule';
+import { NextBookingCard } from '@/components/dashboard/NextBookingCard';
+import { NextBookingDrawer } from '@/components/dashboard/NextBookingDrawer';
 import { ServiceSelectionModal } from '@/components/dashboard/ServiceSelectionModal';
 import { UserPlus, Bell } from 'lucide-react';
+import { Booking, Notification } from '@/types/api';
 import { useAuth } from '@/context/AuthContext';
 import { AnimatePresence } from 'framer-motion';
 
 export interface ReturningUserDashboardProps {
-    activeSession: any;
-    upcomingBookings: any[];
-    notifications: any[];
+    activeSession: Booking | null;
+    upcomingBookings: Booking[];
+    notifications: Notification[];
 }
 
 export function ReturningUserDashboard({ activeSession, upcomingBookings, notifications }: ReturningUserDashboardProps) {
@@ -23,23 +25,12 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
     const { user } = useAuth();
     const [isServiceModalOpen, setIsServiceModalOpen] = React.useState(false);
 
-    // Map active session data
-    const currentSession = activeSession ? {
-        booking: activeSession,
-        caregiverName: activeSession.nanny?.profiles?.first_name
-            ? `${activeSession.nanny.profiles.first_name} ${activeSession.nanny.profiles.last_name || ''}`
-            : 'Caregiver',
-        caregiverRole: 'Nanny', // Defaulting for now
-        caregiverImage: activeSession.nanny?.profiles?.profile_image_url || undefined,
-        startTime: activeSession.start_time,
-        endTime: activeSession.end_time || 'Unknown',
-        duration: '4h', // Calculate this properly in SessionCard or here
-        status: 'active' as const,
-        isOnline: true
-    } : null;
+    // Soonest upcoming booking (already sorted by start_time ascending)
+    const nextBooking = upcomingBookings[0] ?? null;
+    const hasDrawer = Boolean(activeSession || nextBooking);
 
     return (
-        <div className="min-h-dvh pb-10">
+        <div className={`min-h-dvh ${hasDrawer ? 'pb-28 lg:pb-10' : 'pb-10'}`}>
             <GreetingHero
                 userName={user?.profiles?.first_name || ''}
             />
@@ -47,12 +38,20 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Main Content Column */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Current Session */}
-                    <section>
+                    {/* Current Session — desktop only; mobile uses the bottom drawer */}
+                    <section className="hidden lg:block">
                         <div className="flex items-center justify-between mb-3 px-1">
                             <h2 className="text-lg font-heading font-semibold text-dashboard-text-primary">Current Session</h2>
                         </div>
                         <SessionCard session={activeSession} />
+                    </section>
+
+                    {/* Up Next — desktop only; mobile uses the bottom drawer */}
+                    <section className="hidden lg:block">
+                        <div className="flex items-center justify-between mb-3 px-1">
+                            <h2 className="text-lg font-heading font-semibold text-dashboard-text-primary">Up Next</h2>
+                        </div>
+                        <NextBookingCard booking={nextBooking} />
                     </section>
 
                     {/* Quick Actions */}
@@ -89,6 +88,9 @@ export function ReturningUserDashboard({ activeSession, upcomingBookings, notifi
 
                 </div>
             </div>
+
+            {/* Mobile bottom drawer for the live/next session (Zepto-style) */}
+            <NextBookingDrawer activeSession={activeSession} nextBooking={nextBooking} />
 
             <AnimatePresence>
                 {isServiceModalOpen && (

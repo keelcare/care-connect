@@ -10,6 +10,8 @@ import { Booking } from '@/types/api';
 import { NannyDashboardSummary } from '@/types/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { NannyVerificationBanner } from '@/components/onboarding/NannyVerificationBanner';
+import { NannyNextBookingCard } from '@/components/dashboard/nanny/NannyNextBookingCard';
+import { NextBookingDrawer } from '@/components/dashboard/NextBookingDrawer';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -159,9 +161,15 @@ export default function DashboardPage() {
   const todaySchedule = summary?.todaySchedule ?? [];
   const upcomingToday = todaySchedule.filter((s) => s.status !== 'COMPLETED');
 
+  // Soonest upcoming confirmed booking (excluding the live one)
+  const nextBooking = bookings
+    .filter((b) => b.status === 'CONFIRMED' && b.id !== currentSession?.id && new Date(b.start_time).getTime() > Date.now())
+    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())[0] ?? null;
+  const hasDrawer = Boolean(currentSession || nextBooking);
+
   return (
     <ProtectedRoute allowedRoles={['nanny']}>
-      <div className="space-y-6">
+      <div className={`space-y-6 ${hasDrawer ? 'pb-24 lg:pb-0' : ''}`}>
         {user && user.identity_verification_status !== 'verified' && (
           <NannyVerificationBanner
             status={user.identity_verification_status ?? null}
@@ -283,6 +291,12 @@ export default function DashboardPage() {
 
           {/* Left: today's schedule ── */}
           <div className="lg:col-span-2 space-y-4">
+            {/* Up Next — desktop only; mobile uses the bottom drawer */}
+            <div className="hidden lg:block space-y-4">
+              <h2 className="text-base font-bold text-primary-900">Up Next</h2>
+              <NannyNextBookingCard booking={nextBooking} />
+            </div>
+
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-primary-900">Today's Schedule</h2>
               <Link href="/dashboard/bookings" className="text-xs font-semibold text-primary-600 hover:text-primary-800 flex items-center gap-1">
@@ -421,9 +435,9 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* Current session highlight if IN_PROGRESS */}
+            {/* Current session highlight if IN_PROGRESS — desktop only; mobile uses the bottom drawer */}
             {currentSession && (
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+              <div className="hidden lg:block bg-amber-50 border border-amber-100 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                   <p className="text-xs font-black text-amber-700 uppercase tracking-widest">Session Active</p>
@@ -453,6 +467,9 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Mobile bottom drawer for the live/next session (Zepto-style) */}
+        <NextBookingDrawer activeSession={currentSession ?? null} nextBooking={nextBooking} userRole="nanny" />
       </div>
     </ProtectedRoute>
   );
