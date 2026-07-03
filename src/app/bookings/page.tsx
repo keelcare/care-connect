@@ -14,9 +14,10 @@ import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { BookingSeriesCard } from '@/components/bookings/BookingSeriesCard';
+import { BookingActionsMenu } from '@/components/bookings/BookingActionsMenu';
 import {
   Plus, Calendar, Clock, MapPin, MessageSquare,
-  CheckCircle2, ChevronRight, Star, AlertCircle,
+  CheckCircle2, Star, AlertCircle,
   Repeat, Users, CreditCard, RefreshCw,
 } from 'lucide-react';
 
@@ -228,13 +229,7 @@ function BookingCard({
               </Button>
             )}
 
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/bookings/${booking.id}`)}
-              className="h-8 w-8 rounded-xl border-slate-200 p-0 flex items-center justify-center"
-            >
-              <ChevronRight size={14} className="text-slate-400" />
-            </Button>
+            <BookingActionsMenu booking={booking} role="parent" />
           </div>
         </div>
       </div>

@@ -13,6 +13,8 @@ import {
   LifeBuoy, ChevronRight, Mail, Phone, ShieldAlert, X,
   ChevronDown, Headphones, FileText,
 } from 'lucide-react';
+import { Modal } from '@/components/ui/Modal';
+import { TicketConversation } from '@/components/support/TicketConversation';
 
 /* ── status + priority meta ──────────────────────────────────────── */
 
@@ -79,7 +81,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 /* ── ticket card ─────────────────────────────────────────────────── */
 
-function TicketCard({ ticket }: { ticket: SupportTicket }) {
+function TicketCard({ ticket, onOpen }: { ticket: SupportTicket; onOpen: () => void }) {
   const status = STATUS_META[ticket.status] ?? STATUS_META['open'];
   const priority = PRIORITY_META[ticket.priority] ?? PRIORITY_META['medium'];
 
@@ -143,8 +145,39 @@ function TicketCard({ ticket }: { ticket: SupportTicket }) {
             </p>
           </div>
         )}
+
+        {/* Conversation entry */}
+        <button
+          onClick={onOpen}
+          className="mt-4 w-full flex items-center justify-center gap-2 text-xs font-semibold text-primary-700 border border-primary-100 hover:bg-primary-50 rounded-xl py-2.5 transition-colors"
+        >
+          <MessageSquare size={13} /> View conversation
+        </button>
       </div>
     </div>
+  );
+}
+
+/* ── conversation modal ──────────────────────────────────────────── */
+
+function TicketConversationModal({
+  ticket,
+  onClose,
+}: {
+  ticket: SupportTicket | null;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      isOpen={!!ticket}
+      onClose={onClose}
+      title={ticket ? `${ticket.ticket_number} · ${ticket.subject}` : 'Conversation'}
+      maxWidth="lg"
+    >
+      {ticket && (
+        <TicketConversation ticketId={ticket.id} viewerIsAdmin={false} className="h-[55vh]" />
+      )}
+    </Modal>
   );
 }
 
@@ -398,6 +431,7 @@ export default function SupportPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(null);
   const isBanned = user?.is_active === false;
 
   const fetchTickets = async () => {
@@ -410,6 +444,16 @@ export default function SupportPage() {
   };
 
   useEffect(() => { if (user) fetchTickets(); }, [user]);
+
+  // Deep-link: /support?ticket=<id> opens the conversation once tickets load.
+  useEffect(() => {
+    if (typeof window === 'undefined' || tickets.length === 0) return;
+    const target = new URLSearchParams(window.location.search).get('ticket');
+    if (target) {
+      const found = tickets.find(t => t.id === target);
+      if (found) setActiveTicket(found);
+    }
+  }, [tickets]);
 
   const handleContestBan = async (msg: string) => {
     await api.support.createTicket({
@@ -501,7 +545,7 @@ export default function SupportPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filtered.map(ticket => <TicketCard key={ticket.id} ticket={ticket} />)}
+                {filtered.map(ticket => <TicketCard key={ticket.id} ticket={ticket} onOpen={() => setActiveTicket(ticket)} />)}
               </div>
             )}
           </div>
@@ -584,6 +628,11 @@ export default function SupportPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={fetchTickets}
+      />
+
+      <TicketConversationModal
+        ticket={activeTicket}
+        onClose={() => setActiveTicket(null)}
       />
     </ParentLayout>
   );

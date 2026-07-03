@@ -32,11 +32,7 @@ interface NannyProfileModalProps {
 
 interface AdminBooking extends Booking {
   jobs?: { title?: string };
-  users_bookings_parent_idTousers?: {
-    id: string;
-    email: string;
-    profiles?: { first_name?: string | null; last_name?: string | null };
-  };
+  // users_bookings_parent_idTousers is inherited from Booking (typed as User).
 }
 
 function InfoRow({

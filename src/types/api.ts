@@ -429,6 +429,7 @@ export interface Booking {
   parent?: User;
   nanny?: User;
   users_bookings_nanny_idTousers?: User;
+  users_bookings_parent_idTousers?: User;
   recurring_request_id?: string | null;
   request_id?: string | null;
   // Enriched fields from backend getBookingById
@@ -818,10 +819,28 @@ export type SupportCategory = 'payment' | 'booking' | 'technical' | 'grievance' 
 export type SupportPriority = 'low' | 'medium' | 'high' | 'critical';
 export type SupportStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 
+export interface SupportTicketMessage {
+  id: string;
+  ticket_id: string;
+  sender_id: string | null;
+  is_admin: boolean;
+  content: string;
+  created_at: string;
+  sender?: {
+    email?: string;
+    profiles?: {
+      first_name: string | null;
+      last_name: string | null;
+      profile_image_url?: string | null;
+    } | null;
+  } | null;
+}
+
 export interface SupportTicket {
   id: string;
   ticket_number: string;
   user_id: string;
+  booking_id?: string | null;
   role: 'parent' | 'nanny';
   subject: string;
   description: string;
@@ -843,6 +862,10 @@ export interface SupportTicket {
       phone: string | null;
     } | null;
   };
+
+  // Included on the admin detail endpoint
+  bookings?: Booking | null;
+  support_ticket_messages?: SupportTicketMessage[];
 }
 
 export interface CreateTicketDto {
@@ -850,6 +873,11 @@ export interface CreateTicketDto {
   description: string;
   category: SupportCategory | string;
   priority?: SupportPriority;
+  bookingId?: string;
+}
+
+export interface CreateTicketMessageDto {
+  content: string;
 }
 
 export interface UpdateTicketDto {

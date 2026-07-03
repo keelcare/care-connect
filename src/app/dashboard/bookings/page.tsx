@@ -9,6 +9,7 @@ import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { Button } from '@/components/ui/button';
+import { BookingActionsMenu } from '@/components/bookings/BookingActionsMenu';
 import { toast } from 'sonner';
 import {
   Clock, MapPin, Users, MessageSquare, CheckCircle2,
@@ -183,6 +184,7 @@ function BookingCard({
               Details
             </Button>
           )}
+          <BookingActionsMenu booking={booking} role="nanny" />
         </div>
       </div>
     </div>

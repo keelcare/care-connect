@@ -26,6 +26,9 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import { TicketConversation } from '@/components/support/TicketConversation';
+import { Briefcase } from 'lucide-react';
+import { User as UserType } from '@/types/api';
 
 /* ─── helpers ───────────────────────────────────────────────── */
 
@@ -76,6 +79,33 @@ function fullName(ticket: SupportTicket) {
     return 'Unknown User';
 }
 
+function userName(u?: UserType | null) {
+    const p = u?.profiles;
+    if (p?.first_name) return `${p.first_name} ${p.last_name ?? ''}`.trim();
+    return u?.email?.split('@')[0] ?? 'Unknown';
+}
+
+function PartyRow({ label, user, onView }: { label: string; user?: UserType | null; onView: () => void }) {
+    return (
+        <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center text-sm font-bold text-primary-900 shrink-0">
+                {userName(user).charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-neutral-400 uppercase">{label}</p>
+                <p className="text-sm font-semibold text-neutral-800 truncate">{userName(user)}</p>
+                <p className="text-xs text-neutral-500 truncate">{user?.email ?? '—'}</p>
+                <p className="text-xs text-neutral-500">{user?.profiles?.phone ?? 'No phone'}</p>
+            </div>
+            {user?.id && (
+                <button onClick={onView} className="text-[11px] font-medium text-neutral-500 hover:text-accent shrink-0">
+                    View
+                </button>
+            )}
+        </div>
+    );
+}
+
 /* ─── component ─────────────────────────────────────────────── */
 
 export default function TicketDetail() {
@@ -95,9 +125,7 @@ export default function TicketDetail() {
     const fetchTicket = async () => {
         try {
             setLoading(true);
-            const data = await api.support.admin.listAll();
-            const found = data.find(t => t.id === id);
-            if (!found) throw new Error('not found');
+            const found = await api.support.admin.get(id);
             setTicket(found);
             setAdminNotes(found.admin_notes ?? '');
             setPriority(found.priority);
@@ -204,6 +232,17 @@ export default function TicketDetail() {
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* Conversation with the requester */}
+                    <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                Conversation with {fullName(ticket)}
+                            </p>
+                            <span className="text-[10px] text-neutral-400">Visible to the requester</span>
+                        </div>
+                        <TicketConversation ticketId={ticket.id} viewerIsAdmin className="h-72" />
                     </div>
 
                     {/* Status quick-actions */}
@@ -334,6 +373,42 @@ export default function TicketDetail() {
                             <ExternalLink size={12} /> View Profile
                         </button>
                     </div>
+
+                    {/* Linked booking + both parties */}
+                    {ticket.booking_id && (
+                        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Linked Booking</p>
+                                <button
+                                    onClick={() => router.push(`/admin/bookings/${ticket.booking_id}`)}
+                                    className="text-[11px] font-medium text-neutral-500 hover:text-accent inline-flex items-center gap-1"
+                                >
+                                    <Briefcase size={11} /> Open
+                                </button>
+                            </div>
+
+                            {ticket.bookings && (
+                                <div className="text-xs text-neutral-500 space-y-1">
+                                    {ticket.bookings.job?.title && <p className="font-semibold text-neutral-700">{ticket.bookings.job.title}</p>}
+                                    {ticket.bookings.start_time && <p>{format(new Date(ticket.bookings.start_time), 'PPp')}</p>}
+                                    {ticket.bookings.status && <p className="uppercase tracking-wide text-[10px] font-bold text-neutral-400">{ticket.bookings.status}</p>}
+                                </div>
+                            )}
+
+                            <div className="space-y-4 pt-1 border-t border-neutral-50">
+                                <PartyRow
+                                    label="Parent"
+                                    user={ticket.bookings?.users_bookings_parent_idTousers ?? ticket.bookings?.parent}
+                                    onView={() => router.push(`/admin/users/${ticket.bookings?.users_bookings_parent_idTousers?.id ?? ticket.bookings?.parent?.id}`)}
+                                />
+                                <PartyRow
+                                    label="Nanny"
+                                    user={ticket.bookings?.users_bookings_nanny_idTousers ?? ticket.bookings?.nanny}
+                                    onView={() => router.push(`/admin/users/${ticket.bookings?.users_bookings_nanny_idTousers?.id ?? ticket.bookings?.nanny?.id}`)}
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* Ticket metadata */}
                     <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 space-y-3">

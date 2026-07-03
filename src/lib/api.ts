@@ -49,7 +49,9 @@ import {
   AdminManualRequest,
   AdminManualNanny,
   SupportTicket,
+  SupportTicketMessage,
   CreateTicketDto,
+  CreateTicketMessageDto,
   UpdateTicketDto,
   PaymentAuditQuery,
   PaymentAuditListResponse,
@@ -820,9 +822,19 @@ export const api = {
       }),
     getUserTickets: () => fetchApi<SupportTicket[]>('/support/tickets'),
     getTicket: (id: string) => fetchApi<SupportTicket>(`/support/tickets/${id}`),
+    // Per-ticket conversation (raiser ↔ admin)
+    getTicketMessages: (id: string) =>
+      fetchApi<SupportTicketMessage[]>(`/support/tickets/${id}/messages`),
+    sendTicketMessage: (id: string, body: CreateTicketMessageDto) =>
+      fetchApi<SupportTicketMessage>(`/support/tickets/${id}/messages`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
     // Admin Support Endpoints
     admin: {
       listAll: () => fetchApi<SupportTicket[]>('/support/admin/tickets'),
+      get: (id: string) =>
+        fetchApi<SupportTicket>(`/support/admin/tickets/${id}`),
       update: (id: string, body: UpdateTicketDto) =>
         fetchApi<SupportTicket>(`/support/admin/tickets/${id}`, {
           method: 'PATCH',
