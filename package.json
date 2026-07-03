@@ -26,7 +26,6 @@
     "@capacitor/android": "^8.1.0",
     "@capacitor/app": "^8.0.1",
     "@capacitor/browser": "^8.0.1",
-    "@capacitor/cli": "^7.5.0",
     "@capacitor/core": "^8.1.0",
     "@capacitor/ios": "^8.1.0",
     "@capacitor/push-notifications": "^8.0.1",
@@ -74,6 +73,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.4.1",
     "@next/bundle-analyzer": "^16.2.10",
     "@playwright/test": "^1.57.0",
     "@types/js-cookie": "^3.0.6",

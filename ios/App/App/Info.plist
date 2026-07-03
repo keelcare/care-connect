@@ -28,7 +28,7 @@
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -64,5 +64,17 @@
 	<array>
 		<string>location</string>
 	</array>
+	<!--
+	  Allows the app to reach HTTP servers on the local network (e.g. a NestJS
+	  backend running on your Mac at http://192.168.x.x:4000 during device testing).
+	  NSAllowsLocalNetworking only relaxes App Transport Security for the private
+	  IP ranges (10/8, 172.16/12, 192.168/16) and .local hosts — public HTTPS is
+	  still enforced, so this is safe to ship.
+	-->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
