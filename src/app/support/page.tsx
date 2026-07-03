@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { SupportTicket, SupportCategory, SupportPriority } from '@/types/api';
@@ -445,15 +445,26 @@ export default function SupportPage() {
 
   useEffect(() => { if (user) fetchTickets(); }, [user]);
 
-  // Deep-link: /support?ticket=<id> opens the conversation once tickets load.
+  // Deep-link: /support?ticket=<id> opens the conversation ONCE after tickets
+  // load. Guarded by a ref so it never re-opens on later re-renders/refetches.
+  const deepLinkHandled = useRef(false);
   useEffect(() => {
-    if (typeof window === 'undefined' || tickets.length === 0) return;
+    if (deepLinkHandled.current || typeof window === 'undefined' || tickets.length === 0) return;
+    deepLinkHandled.current = true;
     const target = new URLSearchParams(window.location.search).get('ticket');
     if (target) {
       const found = tickets.find(t => t.id === target);
       if (found) setActiveTicket(found);
     }
   }, [tickets]);
+
+  // Closing the conversation clears the ?ticket param so a refresh won't reopen it.
+  const closeConversation = () => {
+    setActiveTicket(null);
+    if (typeof window !== 'undefined' && window.location.search.includes('ticket=')) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  };
 
   const handleContestBan = async (msg: string) => {
     await api.support.createTicket({
@@ -632,7 +643,7 @@ export default function SupportPage() {
 
       <TicketConversationModal
         ticket={activeTicket}
-        onClose={() => setActiveTicket(null)}
+        onClose={closeConversation}
       />
     </ParentLayout>
   );
