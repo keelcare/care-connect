@@ -74,6 +74,10 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const baseUrl = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 // All API requests go through /v1 — matches backend setGlobalPrefix('v1')
 export const API_URL = `${baseUrl}/v1`;
+// Server origin WITHOUT the /v1 prefix. WebSocket gateways are not affected by
+// setGlobalPrefix, and socket.io treats a trailing path (e.g. `/v1`) as a
+// namespace — so the socket must connect to the bare origin, not API_URL.
+export const API_ORIGIN = baseUrl;
 
 // Token refresh callback - will be set by AuthContext
 let tokenRefresher: (() => Promise<boolean>) | null = null;

@@ -57,7 +57,7 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-import { API_URL } from '@/lib/api';
+import { API_ORIGIN } from '@/lib/api';
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -76,9 +76,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     logger.log('Initializing socket connection');
-    const newSocket = io(API_URL, {
+    // Connect to the bare origin (NOT API_URL, whose `/v1` prefix would be
+    // interpreted as a socket.io namespace and never connect). Allow polling as
+    // a fallback for networks/proxies that block the websocket upgrade.
+    const newSocket = io(API_ORIGIN, {
       withCredentials: true,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
@@ -87,6 +90,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     newSocket.on('connect', () => {
       logger.log('Socket connected');
       setConnected(true);
+    });
+
+    newSocket.on('connect_error', (err) => {
+      logger.error('Socket connect_error:', err.message);
+      setConnected(false);
     });
 
     newSocket.on('disconnect', (reason) => {
