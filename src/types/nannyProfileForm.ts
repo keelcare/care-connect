@@ -27,6 +27,7 @@ export interface NannyProfileFormState {
   placementFeeAgreement: boolean | null;
   policeVerificationConsent: boolean | null;
   declarationConfirmed: boolean;
+  pendingDocuments: Record<string, { file: File; idNumber: string }>;
 }
 
 export function buildInitialFormState(user: User | null): NannyProfileFormState {
@@ -38,7 +39,7 @@ export function buildInitialFormState(user: User | null): NannyProfileFormState 
     lastName: user?.profiles?.last_name || '',
     age: d?.age != null ? String(d.age) : '',
     gender: d?.gender || '',
-    phone: user?.profiles?.phone || '',
+    phone: user?.profiles?.phone?.startsWith('+91 ') ? user.profiles.phone : '+91 ' + (user?.profiles?.phone || '').replace(/\D/g, ''),
     address: currentAddress,
     profileImageUrl: user?.profiles?.profile_image_url || '',
     permanentAddress,
@@ -62,6 +63,7 @@ export function buildInitialFormState(user: User | null): NannyProfileFormState 
     placementFeeAgreement: d?.placement_fee_agreement ?? null,
     policeVerificationConsent: d?.police_verification_consent ?? null,
     declarationConfirmed: d?.declaration_confirmed ?? false,
+    pendingDocuments: {},
   };
 }
 

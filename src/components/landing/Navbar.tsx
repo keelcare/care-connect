@@ -156,7 +156,7 @@ export const Navbar = () => {
                 </Link>
                 <Link href="/auth/signup">
                   <button
-                    className="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-lg"
+                    className="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-lg cursor-pointer"
                     style={{
                       background: scrolled ? 'var(--color-primary)' : 'rgba(255,255,255,0.2)',
                       color: 'white',
@@ -247,7 +247,7 @@ export const Navbar = () => {
                   Log In
                 </Link>
                 <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-                  <button className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold">
+                  <button className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold cursor-pointer">
                     Sign Up
                   </button>
                 </Link>

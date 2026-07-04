@@ -120,8 +120,18 @@ function NannyOnboardingContent() {
   };
 
   const handleNext = async () => {
+    if (step === 0 && form.phone.slice(4).replace(/\D/g, '').length !== 10) {
+      addToast({ message: 'Phone number must be exactly 10 digits.', type: 'error' });
+      return;
+    }
     setSaving(true);
     try {
+      if (step === 0) {
+        const { isAvailable } = await api.users.checkPhone(form.phone);
+        if (!isAvailable) {
+          throw new Error('This phone number is already registered to another account.');
+        }
+      }
       await persistProgress();
       setStep((s) => Math.min(s + 1, STEPS.length - 1));
       await refreshUser();
@@ -139,11 +149,45 @@ function NannyOnboardingContent() {
   };
 
   const handleFinish = async () => {
+    const pendingDocs = Object.keys(form.pendingDocuments || {});
+    const uploadedTypes = new Set((user?.identity_documents || []).map((d: any) => d.type));
+    const allDocTypes = new Set([...Array.from(uploadedTypes), ...pendingDocs]);
+    
+    const missingDocs = ['AADHAR', 'PAN', 'RESUME'].filter((t) => !allDocTypes.has(t));
+    if (missingDocs.length > 0) {
+      addToast({ message: `Missing required documents: ${missingDocs.join(', ')}`, type: 'error' });
+      return;
+    }
+
+    for (const type of pendingDocs) {
+      if ((type === 'PAN' || type === 'AADHAR') && !form.pendingDocuments[type].idNumber.trim()) {
+        addToast({ message: `Please provide ID number for ${type}`, type: 'error' });
+        return;
+      }
+    }
+
+    if (!form.trainingAgreement || !form.placementFeeAgreement || !form.policeVerificationConsent || !form.declarationConfirmed) {
+      addToast({ message: 'All consents and the declaration must be confirmed before submitting', type: 'error' });
+      return;
+    }
+
     setSaving(true);
     try {
+      // Upload pending documents sequentially to avoid hitting rate limits or overwhelming the server
+      for (const [type, doc] of Object.entries(form.pendingDocuments || {})) {
+        const formData = new FormData();
+        formData.append('idType', type);
+        if (doc.idNumber) formData.append('idNumber', doc.idNumber);
+        formData.append('file', doc.file);
+        await api.verification.upload(formData);
+      }
+
       await persistProgress();
       await api.nannyOnboarding.complete();
       await refreshUser();
+      
+      update({ pendingDocuments: {} });
+      
       addToast({ message: 'Onboarding submitted for review!', type: 'success' });
       router.push('/dashboard');
     } catch (err: any) {
@@ -313,7 +357,8 @@ function NannyOnboardingContent() {
             {step === 5 && (
               <DocumentsSection
                 documents={user?.identity_documents || []}
-                onUploaded={refreshUser}
+                form={form}
+                update={update}
               />
             )}
           </div>
@@ -338,8 +383,10 @@ function NannyOnboardingContent() {
               </Button>
             ) : (
               <Button type="button" onClick={handleFinish} isLoading={saving} className="px-8">
-                Submit for review
-                <Check size={16} />
+                {saving 
+                  ? Object.keys(form.pendingDocuments || {}).length > 0 ? 'Uploading documents...' : 'Submitting...' 
+                  : 'Submit for review'}
+                {!saving && <Check size={16} />}
               </Button>
             )}
           </div>

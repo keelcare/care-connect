@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
 import { IdentityDocument } from '@/types/api';
+import { NannyProfileFormState } from '@/types/nannyProfileForm';
 
 type DocType = 'RESUME' | 'PAN' | 'AADHAR';
 
@@ -43,103 +44,115 @@ const DOC_CONFIG: Record<
 
 interface Props {
   documents: IdentityDocument[];
-  onUploaded: () => void | Promise<void>;
+  form: NannyProfileFormState;
+  update: (patch: Partial<NannyProfileFormState>) => void;
 }
 
 function DocumentUploadRow({
   type,
   existing,
-  onUploaded,
+  form,
+  update,
 }: {
   type: DocType;
   existing?: IdentityDocument;
-  onUploaded: () => void | Promise<void>;
+  form: NannyProfileFormState;
+  update: (patch: Partial<NannyProfileFormState>) => void;
 }) {
   const config = DOC_CONFIG[type];
-  const [idNumber, setIdNumber] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const pendingDoc = form.pendingDocuments?.[type];
   const [error, setError] = useState<string | null>(null);
-  const [justUploaded, setJustUploaded] = useState(false);
+
+  const handleIdChange = (val: string) => {
+    update({
+      pendingDocuments: {
+        ...form.pendingDocuments,
+        [type]: { file: pendingDoc?.file as File, idNumber: val },
+      },
+    });
+  };
 
   const handleFileChange = (f: File | null) => {
-    setFile(f);
-    setJustUploaded(false);
     setError(null);
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setError('Please choose a file');
+    if (!f) {
+      const newPending = { ...form.pendingDocuments };
+      delete newPending[type];
+      update({ pendingDocuments: newPending });
       return;
     }
-    if (config.requiresIdNumber && !idNumber.trim()) {
-      setError(`Please enter your ${config.idLabel}`);
+
+    if (f.size > 5 * 1024 * 1024) {
+      setError('File size must be less than 5MB');
       return;
     }
-    setLoading(true);
-    setError(null);
-    setJustUploaded(false);
-    try {
-      const formData = new FormData();
-      formData.append('idType', type);
-      if (config.requiresIdNumber) formData.append('idNumber', idNumber);
-      formData.append('file', file);
-      await api.verification.upload(formData);
-      setUploadedFileName(file.name);
-      setJustUploaded(true);
-      setFile(null);
-      setIdNumber('');
-      await onUploaded();
-    } catch (err: any) {
-      setJustUploaded(false);
-      setError(err.message || 'Upload failed');
-    } finally {
-      setLoading(false);
+
+    const acceptedTypes = config.accept.split(',').map(t => t.trim());
+    const fileExt = '.' + f.name.split('.').pop()?.toLowerCase();
+    const isImage = f.type.startsWith('image/');
+    
+    const isValidType = acceptedTypes.some(t => {
+      if (t === 'image/*') return isImage;
+      return t === fileExt || t === f.type;
+    });
+
+    if (!isValidType) {
+      setError(`Invalid file type. Accepted: ${config.accept}`);
+      return;
     }
+
+    update({
+      pendingDocuments: {
+        ...form.pendingDocuments,
+        [type]: { file: f, idNumber: pendingDoc?.idNumber || '' },
+      },
+    });
   };
 
-  const isUploaded = justUploaded || !!existing;
+  const isUploaded = !!existing;
+  const isPending = !!pendingDoc?.file;
   const Icon = config.icon;
 
   return (
     <div
       className={cn(
         'rounded-2xl border p-5 transition-colors',
-        isUploaded ? 'border-[#6AAE8A]/40 bg-[#6AAE8A]/5' : 'border-neutral-200 bg-white'
+        isUploaded || isPending ? 'border-[#6AAE8A]/40 bg-[#6AAE8A]/5' : 'border-neutral-200 bg-white'
       )}
     >
       <div className="flex items-start gap-3">
         <div
           className={cn(
             'shrink-0 w-10 h-10 rounded-xl flex items-center justify-center',
-            isUploaded ? 'bg-[#6AAE8A]/15 text-[#4a8568]' : 'bg-primary-50 text-primary-700'
+            isUploaded || isPending ? 'bg-[#6AAE8A]/15 text-[#4a8568]' : 'bg-primary-50 text-primary-700'
           )}
         >
-          {isUploaded ? <CheckCircle2 size={18} /> : <Icon size={18} />}
+          {isUploaded || isPending ? <CheckCircle2 size={18} /> : <Icon size={18} />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-semibold text-primary-900">
               {config.title} <span className="text-error-500">*</span>
             </p>
-            {isUploaded && (
+            {isUploaded ? (
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#4a8568] shrink-0">
                 <CheckCircle2 size={12} /> Uploaded
               </span>
-            )}
+            ) : isPending ? (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 shrink-0">
+                <CheckCircle2 size={12} /> Ready to submit
+              </span>
+            ) : null}
           </div>
           <p className="text-xs text-neutral-400 mt-0.5">{config.description}</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-3">
-        {config.requiresIdNumber && (
+        {config.requiresIdNumber && (!isUploaded || isPending) && (
           <Input
             placeholder={config.idLabel}
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
+            value={pendingDoc?.idNumber || ''}
+            onChange={(e) => handleIdChange(e.target.value)}
             className="rounded-xl"
           />
         )}
@@ -148,10 +161,8 @@ function DocumentUploadRow({
           <label className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-neutral-300 bg-neutral-50/60 cursor-pointer hover:bg-neutral-100 hover:border-neutral-400 text-sm text-neutral-600 transition-colors min-w-0">
             <UploadCloud size={16} className="shrink-0" />
             <span className="truncate">
-              {file
-                ? file.name
-                : justUploaded && uploadedFileName
-                ? uploadedFileName
+              {pendingDoc?.file
+                ? pendingDoc.file.name
                 : existing
                 ? 'Replace file'
                 : `Choose file · ${config.hint}`}
@@ -163,19 +174,6 @@ function DocumentUploadRow({
               onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
             />
           </label>
-          <button
-            type="button"
-            onClick={handleUpload}
-            disabled={loading || !file}
-            className="px-5 py-2.5 rounded-xl bg-primary-900 text-white text-sm font-semibold disabled:opacity-40 flex items-center gap-2 shrink-0 transition-all hover:bg-primary-800"
-          >
-            {loading ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : justUploaded ? (
-              <CheckCircle2 size={14} className="text-[#6AAE8A]" />
-            ) : null}
-            {loading ? 'Uploading' : justUploaded ? 'Done' : 'Upload'}
-          </button>
         </div>
         {error && <p className="text-xs text-error-600">{error}</p>}
       </div>
@@ -183,14 +181,14 @@ function DocumentUploadRow({
   );
 }
 
-export function DocumentsSection({ documents, onUploaded }: Props) {
+export function DocumentsSection({ documents, form, update }: Props) {
   const byType = (type: DocType) => documents.find((d) => d.type === type);
 
   return (
     <div className="space-y-4">
-      <DocumentUploadRow type="RESUME" existing={byType('RESUME')} onUploaded={onUploaded} />
-      <DocumentUploadRow type="PAN" existing={byType('PAN')} onUploaded={onUploaded} />
-      <DocumentUploadRow type="AADHAR" existing={byType('AADHAR')} onUploaded={onUploaded} />
+      <DocumentUploadRow type="RESUME" existing={byType('RESUME')} form={form} update={update} />
+      <DocumentUploadRow type="PAN" existing={byType('PAN')} form={form} update={update} />
+      <DocumentUploadRow type="AADHAR" existing={byType('AADHAR')} form={form} update={update} />
     </div>
   );
 }

@@ -107,6 +107,16 @@ export default function SettingsPage() {
       setSaving(true);
       setMessage(null);
 
+      // Upload pending documents sequentially
+      for (const [type, doc] of Object.entries(form.pendingDocuments || {})) {
+        const formData = new FormData();
+        formData.append('idType', type);
+        if (doc.idNumber) formData.append('idNumber', doc.idNumber);
+        formData.append('file', doc.file);
+        await api.verification.upload(formData);
+      }
+      update({ pendingDocuments: {} });
+
       await api.users.update(user.id, {
         ...toUpdateUserDto(form),
         bio,
@@ -294,7 +304,8 @@ export default function SettingsPage() {
               </h2>
               <DocumentsSection
                 documents={user?.identity_documents || []}
-                onUploaded={refreshUser}
+                form={form}
+                update={update}
               />
             </div>
 

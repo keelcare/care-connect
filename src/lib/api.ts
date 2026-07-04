@@ -256,10 +256,14 @@ export const api = {
   auth: {
     // Login now returns AuthResponse (user + tokens)
     login: (body: LoginDto) =>
-      fetchApi<AuthResponse>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(body),
-      }),
+      fetchApi<AuthResponse>(
+        '/auth/login',
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+        },
+        true // skipRefresh = true to prevent refresh loop on invalid credentials
+      ),
     signup: (body: SignupDto & { role: string }) =>
       fetchApi<User>('/auth/signup', {
         method: 'POST',
@@ -299,6 +303,7 @@ export const api = {
     deleteMe: () => fetchApi<void>('/users/me', { method: 'DELETE' }),
     exportMyData: () => fetchApi<Record<string, unknown>>('/users/me/export'),
     get: (id: string) => fetchApi<User>(`/users/${id}`),
+    checkPhone: (phone: string) => fetchApi<{ isAvailable: boolean }>(`/users/check-phone/${encodeURIComponent(phone)}`),
     nannies: () => fetchApi<User[]>('/users/nannies'),
     update: (id: string, body: UpdateUserDto) =>
       fetchApi<User>(`/users/${id}`, {
@@ -316,6 +321,9 @@ export const api = {
       return fetch(`${API_URL}/users/me/avatar`, {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: formData,
       }).then(async (res) => {
         if (!res.ok) {
@@ -679,6 +687,7 @@ export const api = {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({ message }),
       });
@@ -698,6 +707,9 @@ export const api = {
       return fetch(`${API_URL}/verification/upload`, {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         // Content-Type intentionally omitted — browser sets it with multipart boundary
         body: formData,
       }).then(async (res) => {

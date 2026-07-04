@@ -57,8 +57,7 @@ export function PersonalInfoSection({ form, update, email, onAvatarUploaded }: P
               src={form.profileImageUrl || undefined}
               alt="Profile"
               fallback={form.firstName?.[0]?.toUpperCase() || 'K'}
-              size="lg"
-              className="w-20 h-20"
+              size="xl"
             />
             <span className="absolute inset-0 rounded-full bg-primary-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               {uploading ? (
@@ -118,7 +117,19 @@ export function PersonalInfoSection({ form, update, email, onAvatarUploaded }: P
           label="Contact number"
           required
           value={form.phone}
-          onChange={(e) => update({ phone: e.target.value })}
+          onChange={(e) => {
+            let val = e.target.value;
+            if (!val.startsWith('+91 ')) {
+              val = '+91 ' + val.replace(/^\+?9?1?\s*/, '');
+            }
+            const rest = val.slice(4).replace(/\D/g, '').slice(0, 10);
+            update({ phone: '+91 ' + rest });
+          }}
+          error={
+            form.phone && form.phone.length > 4 && form.phone.slice(4).replace(/\D/g, '').length < 10
+              ? 'Phone number must be 10 digits'
+              : undefined
+          }
           className="rounded-xl"
         />
       </div>
