@@ -45,17 +45,18 @@ npm run cap:run:ios  # or cap:run:android
 
 ## 🏗️ Build & Sync Process
 
-When you make changes to the code and want to reflect them in the native IDEs (Xcode/Android Studio), follow these steps:
+When you make changes to the code and want to reflect them in the native IDEs (Xcode/Android Studio), use one of two commands. Both load `.env.mobile` and set `BUILD_TARGET=capacitor` automatically:
 
-1. **Build the Web Project**:
-   ```bash
-   npm run build
-   ```
-2. **Sync with Native Platforms**:
-   This copies your web assets and updates dependencies in the native projects.
-   ```bash
-   npm run cap:sync
-   ```
+- **After web/code changes** — rebuild the static export **and** sync native:
+  ```bash
+  npm run build:mobile
+  ```
+- **After native/config-only changes** (e.g. editing `.env.mobile`, plist, or gradle) — sync without the slow web rebuild:
+  ```bash
+  npm run sync:mobile
+  ```
+
+> Don't use plain `npm run build` for mobile — it omits `BUILD_TARGET=capacitor`, so it won't produce the static `out/` bundle Capacitor needs.
 
 ---
 

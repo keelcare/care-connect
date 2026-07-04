@@ -124,9 +124,9 @@ const SERVICE_META: Record<
     category: 'ST',
     storageKey: 'careconnect_shadowteacher_form_v2',
     requiredSkills: ['shadow_teacher', 'special_education'],
-    showChildSelector: false,
-    showStudentCount: true,
-    showRecurrence: false,
+    showChildSelector: true,
+    showStudentCount: false,
+    showRecurrence: true,
     infoCategory: 'Shadow Teacher',
     emoji: '🎓',
   },
@@ -137,7 +137,7 @@ const SERVICE_META: Record<
     requiredSkills: ['special_needs_care', 'compassionate_care'],
     showChildSelector: true,
     showStudentCount: false,
-    showRecurrence: false,
+    showRecurrence: true,
     infoCategory: 'Special Needs',
     emoji: '💝',
   },
@@ -527,8 +527,6 @@ export default function BookingConfigurator({
                   .map((id) => children.find((c) => c.id === id)?.first_name)
                   .filter(Boolean)
                   .join(', ')}`
-              : serviceType === 'SHADOW_TEACHER'
-              ? `${numStudents} student${Number(numStudents) > 1 ? 's' : ''}`
               : 'Select profiles below'}
           </p>
         </div>
@@ -1036,7 +1034,7 @@ export default function BookingConfigurator({
      RENDER
   ══════════════════════════════════════════ */
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full min-h-0 bg-white">
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-[hsl(var(--border))] shrink-0 bg-white">
         <div className="flex items-center gap-2.5">
@@ -1069,8 +1067,10 @@ export default function BookingConfigurator({
         </AnimatePresence>
 
         {/* LEFT: form */}
-        <div className={`flex-1 overscroll-contain ${summaryExpanded ? 'overflow-hidden lg:overflow-y-auto' : 'overflow-y-auto'}`}>
-          {FormBody()}
+        <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+          <div className={`flex-1 min-h-0 overscroll-contain ${summaryExpanded ? 'overflow-hidden lg:overflow-y-auto' : 'overflow-y-auto'}`}>
+            {FormBody()}
+          </div>
         </div>
 
         {/* RIGHT: sticky summary (desktop only) */}

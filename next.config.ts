@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const isCapacitor = process.env.BUILD_TARGET === 'capacitor';
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['192.168.1.17', '172.20.10.10', 'anjaneys-macbook-air.local'],
+  allowedDevOrigins: ['192.168.0.122', '172.20.10.10', 'anjaneys-macbook-air.local'],
   /* config options here */
   reactCompiler: true,
   ...(isCapacitor && { output: 'export' }),

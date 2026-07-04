@@ -2,6 +2,11 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Pass --sync-only to skip the Next.js build and just run `cap sync` with the
+// mobile env injected (fast path when only native config changed). Without it,
+// this script does a full web build + sync.
+const syncOnly = process.argv.includes('--sync-only');
+
 // 1. Load the mobile env file
 const envPath = path.join(__dirname, '../.env.mobile');
 const envContent = fs.readFileSync(envPath, 'utf8');
@@ -30,7 +35,9 @@ if (envVars.NEXT_PUBLIC_API_URL) {
     console.log(`📍 API Target: ${envVars.NEXT_PUBLIC_API_URL}`);
 }
 
-if (envVars.CAP_FRONTEND_URL) {
+if (syncOnly) {
+    console.log(`⏭️  --sync-only: skipping Next.js build, syncing native config with the mobile env.`);
+} else if (envVars.CAP_FRONTEND_URL) {
     console.log(`🌍 Remote Frontend URL detected: ${envVars.CAP_FRONTEND_URL}`);
     console.log(`⏭️  Skipping Next.js local bundle build. The mobile app will load this URL directly!`);
 } else {

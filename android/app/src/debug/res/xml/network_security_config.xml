@@ -22,7 +22,9 @@
              Home Wi-Fi (192.168.x.x) and iPhone Personal Hotspot (172.20.10.x)
              use different subnets, so both are listed. Run `ipconfig getifaddr en0`
              to find your current IP and update the matching line. -->
-        <domain includeSubdomains="false">192.168.1.17</domain>
+        <domain includeSubdomains="false">192.168.0.122</domain>
         <domain includeSubdomains="false">172.20.10.10</domain>
+        <!-- Bonjour hostname alternative — survives DHCP IP changes -->
+        <domain includeSubdomains="true">anjaneys-macbook-air.local</domain>
     </domain-config>
 </network-security-config>
