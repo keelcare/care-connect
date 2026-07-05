@@ -399,6 +399,10 @@ export const api = {
       fetchApi<NearbySearchResponse<NearbyJob>>(
         `/location/jobs/nearby?lat=${lat}&lng=${lng}&radius=${radius}`
       ),
+    getLive: (bookingId: string) =>
+      fetchApi<import('@/types/api').LiveLocation>(
+        `/location/booking/${bookingId}/live`
+      ),
   },
   requests: {
     create: (body: CreateServiceRequestDto) =>

@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Booking, Review } from '@/types/api';
+import { useLiveSession } from '@/hooks/useLiveSession';
+import { LiveTrackingCard } from '@/components/location/LiveTrackingCard';
 import {
   ChevronLeft,
   Calendar,
@@ -106,6 +108,9 @@ export default function NannyBookingDetailPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+
+  const isInProgress = (booking?.status ?? '').toUpperCase() === 'IN_PROGRESS';
+  const liveSession = useLiveSession(bookingId, { publish: true, enabled: isInProgress });
 
   const fetchData = React.useCallback(async () => {
     if (!bookingId) return;
@@ -245,6 +250,11 @@ export default function NannyBookingDetailPage() {
 
         {/* ═══ LEFT ═══ */}
         <div className="space-y-5">
+
+          {/* Live location sharing (active sessions) */}
+          {isInProgress && (
+            <LiveTrackingCard session={liveSession} role="nanny" />
+          )}
 
           {/* Session Details card */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">

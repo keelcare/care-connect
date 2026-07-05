@@ -1095,3 +1095,30 @@ export interface DemandForecast {
   sampleSize: number;
   windowDays: number;
 }
+
+export interface LiveCoordinate {
+  lat: number;
+  lng: number;
+  timestamp?: string;
+}
+
+export interface LiveLocation {
+  status: string;
+  careLocation: { lat: number; lng: number } | null;
+  geofenceRadius: number;
+  latest: LiveCoordinate | null;
+  distance: number | null; // metres from care location
+  inside: boolean | null;
+  trail: LiveCoordinate[];
+}
+
+/** Payload broadcast on the `/location` socket `location:updated` event. */
+export interface LiveLocationUpdate {
+  bookingId: string;
+  lat: number;
+  lng: number;
+  distance: number | null;
+  radius: number;
+  inside: boolean | null;
+  timestamp: string;
+}

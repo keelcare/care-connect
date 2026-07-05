@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Booking, ServiceRequest, User } from '@/types/api';
+import { useLiveSession } from '@/hooks/useLiveSession';
+import { LiveTrackingCard } from '@/components/location/LiveTrackingCard';
 import {
     ChevronLeft,
     Calendar,
@@ -86,6 +88,9 @@ export default function BookingDetailsPage() {
 
     const { handlePayment, handleRetryPayment, loading: paymentLoading } = usePayment();
     const [paidBookingIds, setPaidBookingIds] = useState<string[]>([]);
+
+    const isInProgress = (booking?.status ?? '').toUpperCase() === 'IN_PROGRESS';
+    const liveSession = useLiveSession(bookingId, { publish: false, enabled: isInProgress });
 
     useEffect(() => {
         const saved = localStorage.getItem('paidBookingIds');
@@ -281,6 +286,15 @@ export default function BookingDetailsPage() {
 
                     {/* ═══════════ LEFT COLUMN ═══════════ */}
                     <div className="space-y-5 sm:space-y-6">
+
+                        {/* Live location tracking (active sessions) */}
+                        {isInProgress && (
+                            <LiveTrackingCard
+                                session={liveSession}
+                                role="parent"
+                                avatarUrl={nanny?.profiles?.profile_image_url}
+                            />
+                        )}
 
                         {/* Service Details card */}
                         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
