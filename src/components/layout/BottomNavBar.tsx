@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Calendar, Sparkles, User, HelpCircle, CreditCard } from 'lucide-react';
+import { Home, Calendar, Sparkles, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -12,8 +12,6 @@ const NAV_ITEMS = [
     { href: '/parent-dashboard', label: 'Home', icon: Home },
     { href: '/bookings', label: 'Bookings', icon: Calendar },
     { href: '/book-service', label: 'Book', icon: Sparkles },
-    { href: '/parent-dashboard/family', label: 'Family', icon: User },
-    { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
     { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
@@ -29,7 +27,7 @@ export default function BottomNavBar() {
         return pathname?.startsWith(href);
     };
 
-    const PROTECTED_ROUTES = ['/bookings', '/book-service', '/parent-dashboard/family', '/parent-dashboard/payments'];
+    const PROTECTED_ROUTES = ['/bookings', '/book-service'];
 
     const handleNavClick = (e: React.MouseEvent, href: string) => {
         if (!user && PROTECTED_ROUTES.some(route => href.startsWith(route))) {

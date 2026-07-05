@@ -28,7 +28,6 @@ import {
   UpdateRecurringBookingDto,
   AvailabilityBlock,
   CreateAvailabilityBlockDto,
-  Favorite,
   EnhancedReview,
   CreateEnhancedReviewDto,
   UpdateReviewDto,
@@ -609,15 +608,6 @@ export const api = {
       fetchApi<void>(`/availability/${id}`, { method: 'DELETE' }),
     forecast: () =>
       fetchApi<import('@/types/api').DemandForecast>('/availability/demand-forecast'),
-  },
-  favorites: {
-    list: () => fetchApi<Favorite[]>('/favorites'),
-    add: (nannyId: string) =>
-      fetchApi<Favorite>(`/favorites/${nannyId}`, { method: 'POST' }),
-    remove: (nannyId: string) =>
-      fetchApi<void>(`/favorites/${nannyId}`, { method: 'DELETE' }),
-    check: (nannyId: string) =>
-      fetchApi<{ isFavorite: boolean }>(`/favorites/${nannyId}/check`),
   },
   enhancedReviews: {
     create: (body: CreateEnhancedReviewDto) =>

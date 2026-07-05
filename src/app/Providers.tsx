@@ -98,7 +98,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const hideFooter =
     hideHeader ||
     pathname?.startsWith('/browse') ||
-    pathname?.startsWith('/search') ||
     pathname?.startsWith('/book-service') ||
     pathname?.startsWith('/bookings') ||
     pathname?.startsWith('/messages') ||
@@ -107,7 +106,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/notifications') ||
     pathname?.startsWith('/recurring-bookings') ||
     pathname?.startsWith('/book-recurring') ||
-    pathname?.startsWith('/favorites') ||
     pathname?.startsWith('/welcome-mobile');
 
   return (

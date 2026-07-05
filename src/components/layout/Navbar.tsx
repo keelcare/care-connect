@@ -33,8 +33,6 @@ const NAV_ITEMS_PARENT = [
   { href: '/parent-dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/bookings', label: 'My Bookings', icon: Calendar },
   { href: '/book-service', label: 'Book a Service', icon: Sparkles },
-  { href: '/parent-dashboard/family', label: 'My Family', icon: User },
-  { href: '/parent-dashboard/payments', label: 'Payments', icon: CreditCard },
   { href: '/support', label: 'Support', icon: HelpCircle },
 ];
 
@@ -128,9 +126,6 @@ export const Navbar: React.FC = () => {
               <Link href="/how-it-works" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
                 How it Works
               </Link>
-              <Link href="/search" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
-                Find Care
-              </Link>
             </div>
           )}
 
@@ -219,6 +214,29 @@ export const Navbar: React.FC = () => {
                             </p>
                           </div>
 
+                          {user.role !== 'nanny' && (
+                            <>
+                              <Link
+                                href="/parent-dashboard/family"
+                                onClick={() => setIsProfileOpen(false)}
+                                className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
+                                role="menuitem"
+                              >
+                                <User size={18} />
+                                <span>My Family</span>
+                              </Link>
+                              <Link
+                                href="/parent-dashboard/payments"
+                                onClick={() => setIsProfileOpen(false)}
+                                className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
+                                role="menuitem"
+                              >
+                                <CreditCard size={18} />
+                                <span>Payments</span>
+                              </Link>
+                            </>
+                          )}
+
                           <Link
                             href={user.role === 'nanny' ? '/dashboard/settings' : '/settings'}
                             className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-primary-900 transition-colors focus:bg-neutral-50 focus:outline-none"
@@ -290,9 +308,6 @@ export const Navbar: React.FC = () => {
                     </Link>
                     <Link href="/how-it-works" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
                       How it Works
-                    </Link>
-                    <Link href="/search" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
-                      Find Care
                     </Link>
                     <div className="h-px bg-neutral-100 my-2" />
                     <Link href="/auth/login" className="text-lg font-bold text-primary-900" onClick={() => setIsMenuOpen(false)}>

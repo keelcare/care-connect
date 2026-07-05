@@ -606,6 +606,18 @@ export default function BookingDetailsPage() {
                                     </Button>
                                 )}
 
+                                {/* Reschedule */}
+                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'REQUESTED'].includes(currentStatus) && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setIsRescheduleModalOpen(true)}
+                                        className="w-full h-10 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-sm gap-2"
+                                    >
+                                        <Calendar size={15} />
+                                        Reschedule
+                                    </Button>
+                                )}
+
                                 {/* Cancel Booking */}
                                 {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'REQUESTED'].includes(currentStatus) && (
                                     <Button
@@ -618,30 +630,6 @@ export default function BookingDetailsPage() {
                                 )}
                             </div>
                         </div>
-
-                        {/* Quick actions for active bookings */}
-                        {['CONFIRMED', 'IN_PROGRESS', 'ACCEPTED'].includes(currentStatus) && (
-                            <div className="space-y-2">
-                                <Button
-                                    onClick={() => router.push(`/messages/${bookingId}`)}
-                                    className="w-full h-11 rounded-xl bg-primary-900 text-white hover:bg-primary-800 font-bold text-sm gap-2 shadow-md shadow-primary-900/20"
-                                >
-                                    <MessageSquare size={16} />
-                                    Open Secure Chat
-                                </Button>
-
-                                {['PENDING', 'ASSIGNED', 'ACCEPTED', 'CONFIRMED', 'REQUESTED'].includes(currentStatus) && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setIsRescheduleModalOpen(true)}
-                                        className="w-full h-11 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-sm gap-2"
-                                    >
-                                        <Calendar size={16} />
-                                        Reschedule
-                                    </Button>
-                                )}
-                            </div>
-                        )}
 
                         {/* Completed: leave review */}
                         {currentStatus === 'COMPLETED' && (

@@ -598,17 +598,6 @@ export interface CreateAvailabilityBlockDto {
   reason?: string;
 }
 
-// Favorites Types
-export interface Favorite {
-  id: string;
-  parent_id: string;
-  nanny_id: string;
-  created_at: string;
-  nanny?: User;
-  // Backend returns nanny data under this key
-  users_favorite_nannies_nanny_idTousers?: User;
-}
-
 // Enhanced Review Types (with 5 rating categories)
 export interface EnhancedReview {
   id: string;
