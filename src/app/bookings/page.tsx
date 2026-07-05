@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/Spinner';
 import ParentLayout from '@/components/layout/ParentLayout';
 import { usePayment } from '@/hooks/usePayment';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
 import { CancellationModal } from '@/components/ui/CancellationModal';
 import { RescheduleModal } from '@/components/bookings/RescheduleModal';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { BookingSeriesCard } from '@/components/bookings/BookingSeriesCard';
+import { BookingListSkeleton } from '@/components/bookings/BookingCardSkeleton';
 import { BookingActionsMenu } from '@/components/bookings/BookingActionsMenu';
 import {
   Plus, Calendar, Clock, MapPin, MessageSquare,
@@ -370,6 +372,10 @@ export default function ParentBookingsPage() {
     else if (user === null) router.push('/auth/login');
   }, [user, fetchData, router]);
 
+  // A single booking mutation often fans out into several SSE events; debounce
+  // so a burst collapses into one refetch instead of hammering the API.
+  const debouncedRefetch = useDebouncedCallback(fetchData, 400);
+
   useEffect(() => {
     const events = [
       SSE_EVENT_TYPES.BOOKING_CREATED, SSE_EVENT_TYPES.BOOKING_UPDATED,
@@ -378,9 +384,9 @@ export default function ParentBookingsPage() {
       SSE_EVENT_TYPES.ASSIGNMENT_ACCEPTED, SSE_EVENT_TYPES.REQUEST_CREATED,
       SSE_EVENT_TYPES.REQUEST_MATCHED, SSE_EVENT_TYPES.REQUEST_CANCELLED,
     ];
-    const unsubs = events.map(e => subscribe(e, fetchData));
+    const unsubs = events.map(e => subscribe(e, debouncedRefetch));
     return () => unsubs.forEach(u => u());
-  }, [subscribe, fetchData]);
+  }, [subscribe, debouncedRefetch]);
 
   /* cancellation handlers */
   const confirmCancelBooking = async (reason: string) => {
@@ -517,11 +523,7 @@ export default function ParentBookingsPage() {
 
         {/* ── Content ── */}
         {loading ? (
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-36 bg-white rounded-2xl border border-slate-100 animate-pulse" />
-            ))}
-          </div>
+          <BookingListSkeleton count={3} />
         ) : error ? (
           <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center">
             <AlertCircle size={24} className="text-red-400 mx-auto mb-3" />

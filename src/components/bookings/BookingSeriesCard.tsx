@@ -1,17 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { RecurringServiceRequest } from '@/types/api';
-import { Button } from '@/components/ui/button';
-import {
-  CalendarDays,
-  Clock,
-  Repeat,
-  CheckCircle2,
-  XCircle,
-  Activity,
-  ArrowRight
-} from 'lucide-react';
+import { Repeat, ChevronRight, User } from 'lucide-react';
 
 interface BookingSeriesCardProps {
   series: RecurringServiceRequest;
@@ -20,139 +12,142 @@ interface BookingSeriesCardProps {
   isCancelling: boolean;
 }
 
+const CATEGORY_LABEL: Record<string, string> = {
+  CC: 'Child Care',
+  ST: 'Shadow Teacher',
+  SN: 'Special Needs',
+  EC: 'Elder Care',
+};
+
+const STATUS_STYLE: Record<string, { dot: string; text: string; bg: string; label: string }> = {
+  active: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', label: 'Active' },
+  paused: { dot: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', label: 'Paused' },
+  completed: { dot: 'bg-slate-400', text: 'text-slate-600', bg: 'bg-slate-100', label: 'Completed' },
+  cancelled: { dot: 'bg-red-400', text: 'text-red-600', bg: 'bg-red-50', label: 'Cancelled' },
+};
+
 export function BookingSeriesCard({
   series,
   onManage,
   onCancel,
-  isCancelling
+  isCancelling,
 }: BookingSeriesCardProps) {
-  const formatDate = (dateString?: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+  const label = CATEGORY_LABEL[series.category] ?? series.category ?? 'Care';
+
+  const status = STATUS_STYLE[series.status?.toLowerCase()] ?? {
+    dot: 'bg-blue-400',
+    text: 'text-blue-700',
+    bg: 'bg-blue-50',
+    label: series.status,
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return (
-          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider border border-emerald-200 flex items-center gap-1">
-            <CheckCircle2 size={12} />
-            ACTIVE
-          </span>
-        );
-      case 'paused':
-      case 'cancelled':
-        return (
-          <span className="px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 text-[10px] font-bold uppercase tracking-wider border border-stone-300 flex items-center gap-1">
-            <XCircle size={12} />
-            {status.toUpperCase()}
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-200 flex items-center gap-1">
-            <Activity size={12} />
-            {status.toUpperCase()}
-          </span>
-        );
+  // recurrence_pattern: JSON { days } / { dates } (new API) or legacy string.
+  const recurrenceSummary = (() => {
+    const p = series.recurrence_pattern as { days?: string[]; dates?: number[] } | null;
+    if (p && typeof p === 'object') {
+      if (Array.isArray(p.days) && p.days.length)
+        return p.days.length === 7 ? 'Every day' : p.days.map((d) => d.slice(0, 3)).join(' · ');
+      if (Array.isArray(p.dates) && p.dates.length) return `Monthly on ${p.dates.join(', ')}`;
     }
-  };
+    return series.recurrence_type ?? 'Recurring';
+  })();
 
-  // recurrence_pattern can be a JSON object { days: string[] } from the new API
-  // or a legacy string like "WEEKLY_MON_TUE" from the old API.
-  const getRecurrenceSummary = () => {
-    const pattern = series.recurrence_pattern;
-    if (!pattern) return series.recurrence_type ?? 'Recurring';
+  const nannyName = series.nanny?.profiles
+    ? [series.nanny.profiles.first_name, series.nanny.profiles.last_name].filter(Boolean).join(' ')
+    : null;
+  const avatar = series.nanny?.profiles?.profile_image_url ?? null;
+  const sessions = series.total_bookings ?? 0;
+  const rate = series.hourly_rate != null ? Number(series.hourly_rate) : null;
+  const total = series.estimated_total != null ? Number(series.estimated_total) : null;
 
-    // New API shape: { days: ["Mon", "Tue"] } or { dates: [1, 5, 10] }
-    if (typeof pattern === 'object') {
-      const p = pattern as any;
-      if (Array.isArray(p.days) && p.days.length > 0) {
-        return p.days.join(', ');
-      }
-      if (Array.isArray(p.dates) && p.dates.length > 0) {
-        return `Dates: ${p.dates.join(', ')}`;
-      }
-      return series.recurrence_type ?? 'Recurring';
-    }
-
-    // Legacy string shape
-    try {
-      const { formatRecurrencePattern } = require('@/components/scheduling/DaySelector');
-      return formatRecurrencePattern(pattern as string);
-    } catch {
-      return String(pattern);
-    }
-  };
-
-  const recurrenceSummary = getRecurrenceSummary();
+  const formatDate = (d?: string | null) =>
+    d
+      ? new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+      : '';
 
   return (
     <div
       onClick={onManage}
-      className="bg-white p-6 rounded-2xl border border-primary-100 shadow-sm flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-all duration-300 cursor-pointer group hover:-translate-y-0.5"
+      className="group cursor-pointer rounded-[24px] border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div className="flex items-center gap-6 flex-1">
-        <div className="flex-shrink-0 w-20 h-20 bg-primary-50 rounded-2xl flex flex-col items-center justify-center text-primary-700 shadow-inner group-hover:bg-primary-100 transition-colors">
-          <Repeat size={28} strokeWidth={2.5} />
+      {/* Header: caregiver identity */}
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-50">
+          {avatar ? (
+            <Image src={avatar} alt={nannyName ?? 'Caregiver'} width={56} height={56} className="h-full w-full object-cover" />
+          ) : (
+            <User size={22} className="text-primary-400" />
+          )}
         </div>
-
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-1.5">
-            <h3 className="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors font-heading">
-              {series.category} Series
-            </h3>
-            {getStatusBadge(series.status)}
-          </div>
-
-          <p className="text-stone-600 text-sm font-medium mb-1.5">
-            <span className="text-primary-700 font-semibold">{series.plan_type.replace('_', ' ')}</span> • {recurrenceSummary}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-lg font-bold text-primary-900 font-heading">
+            {nannyName ?? 'Finding your caregiver'}
+          </h3>
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500">
+            <Repeat size={13} className="text-slate-400" />
+            {label} · {recurrenceSummary}
           </p>
-
-          <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-stone-500 font-medium">
-            <span className="flex items-center gap-1">
-              <CalendarDays size={14} className="text-stone-400" />
-              Starts {formatDate(series.start_date)} {series.end_date ? `– ${formatDate(series.end_date)}` : '• Ongoing'}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock size={14} className="text-stone-400" />
-              {series.start_time_formatted} ({series.duration_hours} hr)
-            </span>
-          </div>
         </div>
+        <span className={`hidden items-center gap-1.5 rounded-full px-3 py-1 sm:inline-flex ${status.bg}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${status.dot}`} />
+          <span className={`text-[11px] font-bold uppercase tracking-wider ${status.text}`}>{status.label}</span>
+        </span>
+        <ChevronRight size={20} className="hidden flex-shrink-0 text-slate-300 transition-colors group-hover:text-primary-500 md:block" />
       </div>
 
-      <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-4 md:pt-0">
-        {series.status.toLowerCase() !== 'cancelled' && (
-          <Button
-            variant="outline"
-            size="sm"
+      {/* Divider */}
+      <div className="my-5 h-px bg-slate-100" />
+
+      {/* Facts: sessions · time · price */}
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-[15px] font-semibold text-primary-900">
+            {sessions} session{sessions === 1 ? '' : 's'}
+          </p>
+          <p className="mt-0.5 text-xs text-slate-400">
+            {series.start_time_formatted ?? ''}
+            {series.duration_hours ? ` · ${Number(series.duration_hours)} hr each` : ''}
+            {series.next_upcoming_date ? ` · Next ${formatDate(series.next_upcoming_date)}` : ''}
+          </p>
+        </div>
+        {rate != null && (
+          <div className="text-right">
+            <p className="text-[15px] font-semibold text-primary-900">
+              {total != null && total > 0 ? `₹${total.toLocaleString('en-IN')}` : `₹${rate}/hr`}
+            </p>
+            <p className="mt-0.5 text-xs text-slate-400">
+              {total != null && total > 0 ? `₹${rate}/hr flat` : 'flat rate'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="mt-5 flex items-center justify-end gap-2">
+        {series.status?.toLowerCase() !== 'cancelled' && (
+          <button
+            type="button"
             disabled={isCancelling}
             onClick={(e) => {
               e.stopPropagation();
               onCancel();
             }}
-            className="rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+            className="rounded-xl border border-red-100 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:border-red-200 hover:bg-red-50 disabled:opacity-50"
           >
-            Cancel Series
-          </Button>
+            Cancel series
+          </button>
         )}
-
-        <Button
-          size="sm"
+        <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onManage();
           }}
-          className="rounded-xl bg-stone-100 hover:bg-primary-50 text-stone-700 hover:text-primary-700 shadow-none border border-stone-200 hover:border-primary-200 transition-colors"
+          className="flex items-center gap-1.5 rounded-xl bg-primary-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
         >
           Manage
-          <ArrowRight size={16} className="ml-1.5" />
-        </Button>
+          <ChevronRight size={15} />
+        </button>
       </div>
     </div>
   );

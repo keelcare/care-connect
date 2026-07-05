@@ -764,6 +764,19 @@ export interface RecurringServiceRequest {
   bookings?: Booking[];
   parent?: User;
   _count?: { bookings: number };
+  /** Assigned caregiver, enriched from the series' child bookings. */
+  nanny?: {
+    id: string;
+    profiles?: {
+      first_name: string | null;
+      last_name: string | null;
+      profile_image_url: string | null;
+    } | null;
+  } | null;
+  /** Current base hourly rate for the series' category. */
+  hourly_rate?: number | null;
+  /** hourly_rate × duration_hours × total_bookings. */
+  estimated_total?: number | null;
 }
 
 export interface AdminManualRequest {

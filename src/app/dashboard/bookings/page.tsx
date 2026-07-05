@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { Booking } from '@/types/api';
 import { useRouter } from 'next/navigation';
 import { useSSE, SSE_EVENT_TYPES } from '@/context/SSEProvider';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ReviewModal } from '@/components/reviews/ReviewModal';
 import { Button } from '@/components/ui/button';
@@ -229,15 +230,18 @@ export default function BookingsPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Debounce so a burst of related SSE events triggers a single refetch.
+  const debouncedRefetch = useDebouncedCallback(fetchData, 400);
+
   useEffect(() => {
     const events = [
       SSE_EVENT_TYPES.BOOKING_CREATED, SSE_EVENT_TYPES.BOOKING_UPDATED,
       SSE_EVENT_TYPES.BOOKING_STARTED, SSE_EVENT_TYPES.BOOKING_COMPLETED,
       SSE_EVENT_TYPES.BOOKING_CANCELLED,
     ];
-    const unsubs = events.map((e) => subscribe(e, fetchData));
+    const unsubs = events.map((e) => subscribe(e, debouncedRefetch));
     return () => unsubs.forEach((u) => u());
-  }, [subscribe, fetchData]);
+  }, [subscribe, debouncedRefetch]);
 
   const handleCheckIn = async (booking: Booking) => {
     if (!('geolocation' in navigator)) { toast.error('Geolocation not supported'); return; }
@@ -321,9 +325,23 @@ export default function BookingsPage() {
 
         {/* ── Content ── */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-64 bg-white rounded-2xl border border-slate-100 animate-pulse" />
+              <div key={i} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm" aria-hidden="true">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 animate-pulse rounded-full bg-slate-200/70" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-2/3 animate-pulse rounded-lg bg-slate-200/70" />
+                    <div className="h-3 w-1/2 animate-pulse rounded-lg bg-slate-200/60" />
+                  </div>
+                </div>
+                <div className="my-4 h-px bg-slate-100" />
+                <div className="space-y-2">
+                  <div className="h-3 w-3/4 animate-pulse rounded-lg bg-slate-200/60" />
+                  <div className="h-3 w-1/2 animate-pulse rounded-lg bg-slate-200/60" />
+                </div>
+                <div className="mt-4 h-9 w-full animate-pulse rounded-xl bg-slate-200/50" />
+              </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
