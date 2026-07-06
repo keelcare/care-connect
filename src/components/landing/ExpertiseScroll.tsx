@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cn } from '@/lib/utils';
-import { BookOpen, Baby, HeartPulse, HandHeart, ArrowDown, LucideIcon } from 'lucide-react';
+import { BookOpen, Baby, HeartPulse, ArrowDown, LucideIcon } from 'lucide-react';
 
 export const ExpertiseScroll = () => {
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ export const ExpertiseScroll = () => {
   }[] = [
     {
       id: 0,
-      title: 'Four ways we care',
+      title: 'Three ways we care',
       description: 'Keep scrolling to meet each one — then explore the details below.',
     },
     {
@@ -52,13 +52,6 @@ export const ExpertiseScroll = () => {
       serviceId: 'special-needs',
       Icon: HeartPulse,
     },
-    {
-      id: 4,
-      title: 'Elder Care',
-      description: 'Someone dependable for your parents, when you can’t be there.',
-      serviceId: 'elder-care',
-      Icon: HandHeart,
-    }
   ];
 
   // Scrolls to the showcase and activates the matching service tab

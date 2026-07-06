@@ -8,6 +8,7 @@ import { SafetyPromise } from './SafetyPromise';
 import { ServicesShowcase } from './ServicesShowcase';
 import { FAQSection } from './FAQSection';
 import { HowItWorksSection } from './HowItWorksSection';
+import { AboutUs } from './AboutUs';
 import { Footer } from './Footer';
 import { WaitlistModal } from './WaitlistModal';
 
@@ -22,6 +23,7 @@ export const LandingPage = () => {
         <SafetyPromise />
         <HowItWorksSection />
         <FAQSection />
+        <AboutUs />
         <ThatsUs />
         {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' && <WaitlistModal />}
       </main>

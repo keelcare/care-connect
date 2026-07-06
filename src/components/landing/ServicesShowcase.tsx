@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import {
   Baby,
   BookOpen,
   HeartPulse,
-  HandHeart,
   Check,
   ArrowRight,
   LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+/* ═══════════════════════════════════════════════════════════
+   TYPES & DATA
+   ═══════════════════════════════════════════════════════════ */
 
 type Service = {
   id: string;
@@ -23,7 +26,8 @@ type Service = {
   duties: string[];
   idealFor: string[];
   facts: { label: string; value: string }[];
-  gradient: string;
+  tint: string;
+  iconBg: string;
 };
 
 const services: Service[] = [
@@ -31,124 +35,254 @@ const services: Service[] = [
     id: 'child-care',
     label: 'Child Care',
     Icon: Baby,
-    tagline: 'Trusted nannies & sitters, for every age and schedule.',
+    tagline: 'A nanny your kids run to — and you never worry about.',
     description:
-      'A nanny is far more than a babysitter. Keel nannies handle your child’s daily routine end-to-end — feeding, nap schedules, play, homework help, and school pickups — while keeping you in the loop. Whether you need full-time, part-time, or occasional evenings, every nanny is verified before they ever step into your home.',
+      "A nanny is far more than a babysitter. Keel nannies handle your child's daily routine end-to-end — feeding, nap schedules, play, homework help, and school pickups — while keeping you in the loop.",
     duties: [
       'Daily routines: meals, naps, hygiene, and age-appropriate play',
       'School runs, homework supervision, and activity drop-offs',
       'Developmental engagement — reading, games, and outdoor time',
       'Regular updates so you always know how the day went',
     ],
-    idealFor: [
-      'Working parents',
-      'Newborns to teens',
-      'Full-time or part-time',
-      'Date nights & backup care',
-    ],
+    idealFor: ['Working parents', 'Newborns to teens', 'Full-time or part-time', 'Date nights & backup care'],
     facts: [
       { label: 'Engagement', value: 'Hourly, daily, or live-out full-time' },
       { label: 'Vetting', value: 'ID, background & reference checked' },
       { label: 'Payment', value: 'Only after care is delivered' },
     ],
-    gradient:
-      'linear-gradient(135deg, hsl(200, 70%, 92%) 0%, hsl(210, 75%, 88%) 60%, hsl(195, 65%, 90%) 100%)',
+    tint: 'hsl(200, 60%, 96%)',
+    iconBg: 'hsl(200, 65%, 90%)',
   },
   {
     id: 'shadow-teacher',
     label: 'Shadow Teacher',
     Icon: BookOpen,
-    tagline: 'One-on-one classroom support so your child never falls behind.',
+    tagline: 'A steady hand beside your child in the classroom, every single day.',
     description:
-      'A shadow teacher accompanies your child to school and works alongside their classroom teacher, providing the individual attention mainstream classrooms can’t always give. They help your child stay focused, understand lessons, manage transitions, and build the confidence to participate — academically and socially.',
+      "A shadow teacher accompanies your child to school, providing the individual attention mainstream classrooms can't always give. They help your child stay focused, understand lessons, and build confidence.",
     duties: [
-      'In-classroom support tailored to your child’s learning style',
+      "In-classroom support tailored to your child's learning style",
       'Bridging communication between teachers, therapists, and parents',
       'Helping with focus, transitions, and classroom routines',
       'Building social skills and independence, step by step',
     ],
-    idealFor: [
-      'Learning differences',
-      'ADHD & autism spectrum',
-      'School integration',
-      'Exam & study support',
-    ],
+    idealFor: ['Learning differences', 'ADHD & autism spectrum', 'School integration', 'Exam & study support'],
     facts: [
       { label: 'Engagement', value: 'School hours, term-long placements' },
       { label: 'Vetting', value: 'Education background verified' },
       { label: 'Approach', value: 'Works with your school & therapists' },
     ],
-    gradient:
-      'linear-gradient(135deg, hsl(45, 80%, 92%) 0%, hsl(38, 70%, 88%) 60%, hsl(30, 60%, 90%) 100%)',
+    tint: 'hsl(38, 55%, 96%)',
+    iconBg: 'hsl(38, 60%, 89%)',
   },
   {
     id: 'special-needs',
     label: 'Special Needs',
     Icon: HeartPulse,
-    tagline: 'Specialised caregivers trained for unique requirements.',
+    tagline: "Trained care that follows your family's plan, not a generic one.",
     description:
-      'Special needs care requires more than kindness — it requires training. Keel connects you with caregivers experienced in supporting children and adults with developmental, physical, or behavioural needs, following the routines and therapy plans your family has built.',
+      'Special needs care requires more than kindness — it requires training. Keel connects you with caregivers experienced in supporting children and adults with developmental, physical, or behavioural needs.',
     duties: [
       'Following therapy and behavioural plans set by your specialists',
       'Assistance with mobility, feeding, and daily living activities',
       'Sensory-aware engagement and structured routines',
       'Calm, trained response to behavioural episodes',
     ],
-    idealFor: [
-      'Developmental delays',
-      'Physical disabilities',
-      'Behavioural support',
-      'Respite for family caregivers',
-    ],
+    idealFor: ['Developmental delays', 'Physical disabilities', 'Behavioural support', 'Respite for family caregivers'],
     facts: [
       { label: 'Engagement', value: 'Flexible — hourly to full-time' },
       { label: 'Vetting', value: 'Experience & references confirmed' },
       { label: 'Approach', value: 'Aligned with your care plan' },
     ],
-    gradient:
-      'linear-gradient(135deg, hsl(350, 60%, 94%) 0%, hsl(15, 65%, 90%) 60%, hsl(30, 55%, 92%) 100%)',
-  },
-  {
-    id: 'elder-care',
-    label: 'Elder Care',
-    Icon: HandHeart,
-    tagline: 'Compassionate companionship and support for ageing parents.',
-    description:
-      'Elder care on Keel means a trusted companion for your parents or grandparents — someone who helps with daily activities, medication reminders, and mobility, while offering the conversation and company that matter just as much. Ideal when you can’t be there every day but want someone dependable who is.',
-    duties: [
-      'Companionship, conversation, and daily engagement',
-      'Medication reminders and appointment accompaniment',
-      'Mobility assistance and fall-risk awareness at home',
-      'Meal support, light errands, and family updates',
-    ],
-    idealFor: [
-      'Ageing parents living alone',
-      'Post-surgery recovery',
-      'Daily check-ins',
-      'Families living apart',
-    ],
-    facts: [
-      { label: 'Engagement', value: 'Daily visits to full-day care' },
-      { label: 'Vetting', value: 'ID, background & reference checked' },
-      { label: 'Approach', value: 'Non-medical companion care' },
-    ],
-    gradient:
-      'linear-gradient(135deg, hsl(150, 40%, 92%) 0%, hsl(170, 45%, 89%) 60%, hsl(190, 50%, 91%) 100%)',
+    tint: 'hsl(350, 40%, 96%)',
+    iconBg: 'hsl(350, 45%, 91%)',
   },
 ];
 
 const isWaitlist = process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true';
 
-export const ServicesShowcase = () => {
-  const [activeId, setActiveId] = useState(services[0].id);
-  const active = services.find((s) => s.id === activeId)!;
+/* ═══════════════════════════════════════════════════════════
+   Z-ROW — one service in Z-pattern layout
+   even index  → identity LEFT,  detail RIGHT
+   odd index   → identity RIGHT, detail LEFT
+   ═══════════════════════════════════════════════════════════ */
 
-  // Allow other sections (e.g. the ExpertiseScroll wheel) to activate a service tab
-  useEffect(() => {
+const ServiceRow = ({ service, index }: { service: Service; index: number }) => {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(rowRef, { once: true, margin: '-100px' });
+  const isReversed = index % 2 !== 0; // odd rows flip
+
+  /* Identity panel — label + large tagline + icon */
+  const IdentityPanel = (
+    <motion.div
+      initial={{ opacity: 0, x: isReversed ? 40 : -40 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+      className="flex flex-col justify-between rounded-[28px] p-8 md:p-12 relative overflow-hidden min-h-[340px] md:min-h-[420px]"
+      style={{ backgroundColor: service.tint }}
+    >
+      {/* Soft blob accents */}
+      <div
+        className="absolute -top-16 -right-16 h-56 w-56 rounded-full blur-[70px] opacity-50 pointer-events-none"
+        style={{ backgroundColor: service.iconBg }}
+      />
+      <div
+        className="absolute bottom-0 left-8 h-32 w-32 rounded-full blur-[50px] opacity-25 pointer-events-none"
+        style={{ backgroundColor: service.iconBg }}
+      />
+
+      {/* Icon */}
+      <div className="relative z-10">
+        <div
+          className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm"
+          style={{ backgroundColor: service.iconBg }}
+        >
+          <service.Icon size={30} className="text-primary-900" strokeWidth={1.5} />
+        </div>
+
+        {/* Service label */}
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-primary-900/40">
+          {service.label}
+        </p>
+
+        {/* Large serif tagline */}
+        <h3 className="font-display text-2xl md:text-3xl lg:text-[2rem] font-medium leading-[1.25] tracking-tight text-primary-900 max-w-xs">
+          {service.tagline}
+        </h3>
+      </div>
+
+      {/* "Ideal for" tags — anchored to bottom */}
+      <div className="relative z-10 mt-8 flex flex-wrap gap-2">
+        {service.idealFor.map((tag) => (
+          <span
+            key={tag}
+            className="rounded-full border border-primary-900/10 bg-white/60 backdrop-blur-sm px-3.5 py-1.5 text-[11px] font-semibold text-primary-900/70"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  /* Detail panel — description, duties, facts, CTA */
+  const DetailPanel = (
+    <motion.div
+      initial={{ opacity: 0, x: isReversed ? -40 : 40 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+      className="flex flex-col justify-between rounded-[28px] bg-white p-8 md:p-12 min-h-[340px] md:min-h-[420px]"
+      style={{ boxShadow: '0 4px 28px rgba(30, 58, 95, 0.07), 0 1px 4px rgba(30, 58, 95, 0.04)' }}
+    >
+      <div>
+        {/* Description */}
+        <p className="mb-7 text-[15px] leading-relaxed text-stone-500">
+          {service.description}
+        </p>
+
+        {/* Duties */}
+        <ul className="mb-7 flex flex-col gap-3">
+          {service.duties.map((duty, i) => (
+            <motion.li
+              key={duty}
+              initial={{ opacity: 0, x: 10 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{
+                delay: 0.3 + i * 0.07,
+                duration: 0.4,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="flex items-start gap-3"
+            >
+              <span
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: service.iconBg }}
+              >
+                <Check size={11} className="text-primary-900/70" strokeWidth={3} />
+              </span>
+              <span className="text-sm leading-relaxed text-primary-900/70">{duty}</span>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Quick facts */}
+        <div className="mb-7 flex flex-col divide-y divide-stone-100">
+          {service.facts.map((fact) => (
+            <div key={fact.label} className="flex items-baseline justify-between gap-4 py-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400 shrink-0">
+                {fact.label}
+              </span>
+              <span className="text-sm font-semibold text-primary-900/80 text-right">
+                {fact.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="mt-auto">
+        {isWaitlist ? (
+          <a href="#waitlist" className="inline-block">
+            <button className="group/btn flex items-center gap-2 rounded-full bg-primary-900 px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-primary-800 shadow-md shadow-primary-900/15 cursor-pointer">
+              Join the waitlist
+              <ArrowRight size={15} className="transition-transform group-hover/btn:translate-x-1" />
+            </button>
+          </a>
+        ) : (
+          <Link href="/auth/signup">
+            <button className="group/btn flex items-center gap-2 rounded-full bg-primary-900 px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-primary-800 shadow-md shadow-primary-900/15 cursor-pointer">
+              Find {service.label.toLowerCase()} near you
+              <ArrowRight size={15} className="transition-transform group-hover/btn:translate-x-1" />
+            </button>
+          </Link>
+        )}
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div
+      ref={rowRef}
+      id={`service-card-${service.id}`}
+      className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
+    >
+      {isReversed ? (
+        <>
+          {DetailPanel}
+          {IdentityPanel}
+        </>
+      ) : (
+        <>
+          {IdentityPanel}
+          {DetailPanel}
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN SECTION
+   ═══════════════════════════════════════════════════════════ */
+
+export const ServicesShowcase = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const headerY = useTransform(scrollYProgress, [0, 0.25], ['28px', '0px']);
+
+  // Allow ExpertiseScroll wheel to scroll to a matching card
+  React.useEffect(() => {
     const handleSelect = (e: Event) => {
       const serviceId = (e as CustomEvent<string>).detail;
-      if (services.some((s) => s.id === serviceId)) {
-        setActiveId(serviceId);
+      const el = document.getElementById(`service-card-${serviceId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     };
     window.addEventListener('keel:select-service', handleSelect);
@@ -158,180 +292,54 @@ export const ServicesShowcase = () => {
   return (
     <section
       id="services"
-      className="relative py-24 md:py-32 px-4 md:px-8 overflow-hidden"
+      ref={sectionRef}
+      className="relative py-24 md:py-36 px-4 md:px-8 overflow-hidden"
       style={{
         background:
           'linear-gradient(160deg, hsl(38, 60%, 97%) 0%, hsl(30, 50%, 95%) 50%, hsl(45, 55%, 96%) 100%)',
       }}
     >
-      <div className="max-w-6xl mx-auto">
+      {/* Ambient blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full blur-[160px] opacity-[0.05]"
+          style={{ background: 'hsl(200, 70%, 70%)' }}
+        />
+        <div
+          className="absolute bottom-0 -left-32 h-[500px] w-[500px] rounded-full blur-[140px] opacity-[0.04]"
+          style={{ background: 'hsl(38, 80%, 70%)' }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
+
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
+          style={{ y: headerY }}
+          className="mb-20 md:mb-28 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-primary-900 leading-[1.05] tracking-tight max-w-xl">
-            Know exactly what{' '}
-            <span className="italic text-sky-700/80">you’re getting.</span>
-          </h2>
+          <div>
+            <span className="mb-4 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-700/70">
+              <span className="inline-block h-px w-5 bg-sky-600/50" />
+              Our Services
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-primary-900 leading-[1.05] tracking-tight max-w-xl">
+              Know exactly what{' '}
+              <span className="italic text-sky-700/80">you're getting.</span>
+            </h2>
+          </div>
           <p className="text-base text-stone-500 leading-relaxed max-w-xs md:text-right">
-            Every type of care, explained. Pick a service to see what it
-            includes, who it’s for, and how it works.
+            Every type of care, explained honestly. Pick the one that fits — we'll handle the rest.
           </p>
         </motion.div>
 
-        {/* Service selector */}
-        <div
-          role="tablist"
-          aria-label="Care services"
-          className="flex flex-wrap gap-2 md:gap-3 mb-8 md:mb-12"
-        >
-          {services.map((service) => {
-            const isActive = service.id === activeId;
-            return (
-              <button
-                key={service.id}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`service-panel-${service.id}`}
-                onClick={() => setActiveId(service.id)}
-                className={cn(
-                  'relative flex items-center gap-2 px-5 py-3 rounded-full text-sm md:text-base font-semibold transition-colors duration-300',
-                  isActive
-                    ? 'text-white'
-                    : 'text-primary-900/60 hover:text-primary-900 bg-white/60 border border-stone-200/80'
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="service-tab-pill"
-                    className="absolute inset-0 rounded-full bg-primary-900 shadow-lg shadow-primary-900/20"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
-                  />
-                )}
-                <service.Icon size={17} strokeWidth={2} className="relative z-10" />
-                <span className="relative z-10">{service.label}</span>
-              </button>
-            );
-          })}
+        {/* Z-pattern service rows */}
+        <div className="flex flex-col gap-6 md:gap-8">
+          {services.map((service, i) => (
+            <ServiceRow key={service.id} service={service} index={i} />
+          ))}
         </div>
 
-        {/* Detail panel */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active.id}
-            id={`service-panel-${active.id}`}
-            role="tabpanel"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="grid lg:grid-cols-[1.1fr_1fr] rounded-3xl overflow-hidden bg-white shadow-premium border border-stone-200/60"
-          >
-            {/* Left: narrative */}
-            <div className="p-8 md:p-12 flex flex-col">
-              <p className="text-xs font-bold uppercase tracking-widest text-sky-700/70 mb-3">
-                What it entails
-              </p>
-              <h3 className="text-2xl md:text-3xl font-display font-medium text-primary-900 leading-snug mb-4">
-                {active.tagline}
-              </h3>
-              <p className="text-sm md:text-base text-stone-500 leading-relaxed mb-8">
-                {active.description}
-              </p>
-
-              <ul className="flex flex-col gap-3 mb-8">
-                {active.duties.map((duty, i) => (
-                  <motion.li
-                    key={duty}
-                    initial={{ opacity: 0, x: 12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-                    className="flex items-start gap-3"
-                  >
-                    <span className="mt-0.5 w-5 h-5 rounded-full bg-primary-900 flex items-center justify-center shrink-0">
-                      <Check size={12} className="text-white" strokeWidth={3} />
-                    </span>
-                    <span className="text-sm md:text-base text-primary-900/80 leading-relaxed">
-                      {duty}
-                    </span>
-                  </motion.li>
-                ))}
-              </ul>
-
-              <div className="mt-auto">
-                {isWaitlist ? (
-                  <a href="#waitlist" className="inline-block">
-                    <button className="group flex items-center gap-2 bg-primary-900 text-white px-8 py-4 rounded-full font-semibold text-sm md:text-base hover:bg-primary-800 transition-all shadow-lg shadow-primary-900/20">
-                      Join the waitlist for {active.label.toLowerCase()}
-                      <ArrowRight
-                        size={17}
-                        className="transition-transform group-hover:translate-x-1"
-                      />
-                    </button>
-                  </a>
-                ) : (
-                  <Link href="/auth/signup" className="inline-block">
-                    <button className="group flex items-center gap-2 bg-primary-900 text-white px-8 py-4 rounded-full font-semibold text-sm md:text-base hover:bg-primary-800 transition-all shadow-lg shadow-primary-900/20">
-                      Find {active.label.toLowerCase()} near you
-                      <ArrowRight
-                        size={17}
-                        className="transition-transform group-hover:translate-x-1"
-                      />
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            {/* Right: at-a-glance card */}
-            <div
-              className="relative p-8 md:p-12 flex flex-col justify-between min-h-[320px]"
-              style={{ background: active.gradient }}
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(255,255,255,0.7)_0%,transparent_60%)] pointer-events-none" />
-
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/70 backdrop-blur flex items-center justify-center shadow-md mb-8">
-                  <active.Icon size={26} className="text-primary-900" strokeWidth={1.7} />
-                </div>
-
-                <p className="text-xs font-bold uppercase tracking-widest text-primary-900/50 mb-3">
-                  Ideal for
-                </p>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {active.idealFor.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur text-xs md:text-sm font-semibold text-primary-900 border border-white/60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative z-10 flex flex-col divide-y divide-primary-900/10">
-                {active.facts.map((fact) => (
-                  <div
-                    key={fact.label}
-                    className="flex items-baseline justify-between gap-4 py-3"
-                  >
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary-900/50 shrink-0">
-                      {fact.label}
-                    </span>
-                    <span className="text-sm font-semibold text-primary-900 text-right">
-                      {fact.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
       </div>
     </section>
   );
