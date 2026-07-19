@@ -96,7 +96,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/about"
+                  href="/welcome#about"
                   className="text-stone-600 hover:text-stone-900 transition-colors"
                 >
                   About Us

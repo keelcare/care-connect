@@ -18,10 +18,10 @@ const WARM_BG =
    COPY — three blocks in exact order
    ═══════════════════════════════════════════════════════════ */
 const BLOCK_1_TEXT =
-  "Inclusive education in India has grown tremendously over the past decade, with shadow teachers becoming an essential part of supporting children with diverse learning and developmental needs. While the demand has increased rapidly - especially after COVID-19 - finding trained, reliable shadow educators remains a challenge for many families and schools.";
+  "Finding care you can truly trust is one of the hardest things a family does. Whether it's a shadow teacher in the classroom or trained support for a child with special needs, the demand across India has grown rapidly - yet reliable, thoroughly vetted caregivers remain genuinely hard to find.";
 
 const BLOCK_2_TEXT =
-  "At KEELcare, we bridge that gap by providing qualified shadow teachers matched to each child's unique needs, diagnosis, and learning profile. With a child-first approach and placements available within 24 hours whenever possible, we are committed to making quality educational support accessible, timely, and personalised.";
+  "At Keel, we bridge that gap. We connect families with qualified, background-checked shadow teachers and special-needs professionals - each matched to your child's unique needs, diagnosis, and learning profile. With a child-first approach and rigorous verification, we're committed to making quality care accessible, timely, and personalised.";
 
 const BLOCK_3_TEXT =
   "Because every child deserves the right support to learn, grow, and thrive.";
@@ -290,7 +290,7 @@ export const AboutUs = () => {
           {/* Section label */}
           <span className="mb-8 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-700/70">
             <span className="inline-block h-px w-5 bg-sky-600/50" />
-            About KEELcare
+            About Keel
           </span>
 
           {/* Block 1 text — large serif editorial treatment */}

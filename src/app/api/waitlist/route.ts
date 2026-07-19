@@ -117,10 +117,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, phone, city, careType, childDetails } = body;
 
-    // Basic backend validation
-    if (!name || !email || !phone || !city) {
+    // Basic backend validation — email is optional (phone is the primary contact).
+    if (!name || !phone || !city) {
       return NextResponse.json(
-        { error: 'Name, email, phone, and city are required' },
+        { error: 'Name, phone, and city are required' },
         { status: 400 },
       );
     }
@@ -148,7 +148,7 @@ export async function POST(req: Request) {
     await appendRow(
       spreadsheetId,
       'Sheet1!A:G',
-      [new Date().toISOString(), name, email, phone, city, careType || '', childDetails || ''],
+      [new Date().toISOString(), name, email || '', phone, city, careType || '', childDetails || ''],
       accessToken,
     );
 

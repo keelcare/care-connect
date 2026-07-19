@@ -78,7 +78,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/admin') ||
     pathname === '/' ||
     pathname?.startsWith('/welcome') ||
-    pathname?.startsWith('/about') ||
     pathname?.startsWith('/how-it-works') ||
     pathname?.startsWith('/parent-dashboard') ||
     pathname?.startsWith('/nanny/onboarding') ||

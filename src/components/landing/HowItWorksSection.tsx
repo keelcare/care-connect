@@ -16,7 +16,7 @@ const steps = [
     number: "02",
     icon: HeartHandshake,
     title: "Choose the type of care",
-    description: "Browse from child care, shadow teachers, special needs support, and more — all in one place.",
+    description: "Browse shadow teachers and special-needs support — matched to your child's needs, all in one place.",
   },
   {
     number: "03",
@@ -132,7 +132,7 @@ export const HowItWorksSection = () => {
 
               {/* Split-text subtext — word by word */}
               <p className="text-base md:text-lg text-primary-900/60 leading-relaxed mb-10 max-w-md flex flex-wrap gap-x-[0.3em]">
-                {"From your first search to your first booking — Keel guides you every step of the way.".split(" ").map((word, i) => (
+                {"Here's how Keel will work the moment we launch — from your first search to your first booking.".split(" ").map((word, i) => (
                   <span key={i} className="overflow-hidden inline-block">
                     <motion.span
                       className="inline-block"

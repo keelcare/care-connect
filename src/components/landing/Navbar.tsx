@@ -12,7 +12,7 @@ const scrollTo = (id: string) => {
   if (el) {
     el.scrollIntoView({ behavior: 'smooth' });
   } else {
-    // Section lives on the landing page — navigate there (e.g. from /about)
+    // Section lives on the landing page — navigate there from another route
     window.location.href = `/welcome#${id}`;
   }
 };
@@ -106,8 +106,8 @@ export const Navbar = () => {
               />
             </button>
           ))}
-          <Link
-            href="/about"
+          <button
+            onClick={() => scrollTo('about')}
             className="text-sm font-bold font-body transition-all duration-300 relative group py-1"
             style={{ color: scrolled ? 'var(--color-primary)' : 'white' }}
           >
@@ -115,7 +115,7 @@ export const Navbar = () => {
               "transition-opacity duration-300",
               scrolled ? "opacity-70 group-hover:opacity-100" : "opacity-85 group-hover:opacity-100"
             )}>
-              Our Story
+              About
             </span>
             <span
               className={cn(
@@ -123,7 +123,7 @@ export const Navbar = () => {
                 scrolled ? "bg-primary" : "bg-white"
               )}
             />
-          </Link>
+          </button>
         </div>
 
         {/* Auth Buttons */}
@@ -219,21 +219,20 @@ export const Navbar = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               FAQ
             </button>
-            <Link
-              href="/about"
+            <button
               className="text-lg font-bold font-body text-primary-900 text-left hover:translate-x-2 transition-transform duration-300 flex items-center gap-2 group"
-              onClick={() => setIsOpen(false)}
+              onClick={() => { scrollTo('about'); setIsOpen(false); }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-              Our Story
-            </Link>
+              About
+            </button>
             <div className="h-px bg-primary/10 my-1" />
             {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
                <a href="#waitlist" onClick={() => setIsOpen(false)}>
-                 <button 
+                 <button
                   className="w-full bg-primary text-white px-8 py-4 rounded-full font-semibold"
                 >
-                  Find Care
+                  Join Waitlist
                 </button>
               </a>
             ) : (

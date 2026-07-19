@@ -79,8 +79,8 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Content Overlay - Optically Centered (slightly higher than geometric center) */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-8 pb-20 sm:px-12 lg:px-16">
+      {/* Content Overlay - centered, nudged down for breathing room below the fixed navbar */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-8 pt-24 pb-16 sm:px-12 sm:pt-28 lg:px-16">
         <div className="w-full max-w-4xl text-center">
           {/* Heading with Typing Effect */}
           <h1
@@ -94,23 +94,39 @@ export default function HeroSection() {
             Where Big Needs Meet <span className="font-serif italic font-medium">Gentle</span> Care
           </h1>
 
-          {/* Subheading */}
+          {/* Subheading — carries the concrete value prop the poetic H1 leaves out */}
+          <p
+            className="mx-auto mb-9 max-w-2xl font-body text-lg font-medium leading-relaxed text-white/90 drop-shadow-md transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] sm:text-xl md:text-2xl md:leading-relaxed"
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transform: isLoaded ? 'translateY(0)' : 'translateY(50px)',
+              transitionDelay: '350ms',
+            }}
+          >
+            Vetted shadow teachers and special needs caregivers for families. Background checked and matched to your child.
+          </p>
 
           <div
             className="transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={{
               opacity: isLoaded ? 1 : 0,
               transform: isLoaded ? 'translateY(0)' : 'translateY(50px)',
-              transitionDelay: '400ms',
+              transitionDelay: '500ms',
             }}
           >
             {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
-              <a href="#waitlist">
-                <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">
-                  <span className="relative z-10">Find care for my family</span>
-                  <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </button>
-              </a>
+              <>
+                <a href="#waitlist">
+                  <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">
+                    <span className="relative z-10">Join the waitlist</span>
+                    <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  </button>
+                </a>
+                {/* Pre-launch framing + soft social proof — no fabricated numbers */}
+                <p className="mt-5 text-sm font-medium text-white/75 drop-shadow">
+                  Launching soon · Families are already signing up
+                </p>
+              </>
             ) : (
               <a href="/auth/login">
                 <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">

@@ -83,7 +83,7 @@ export const ThatsUs = () => {
               {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
                 <a href="#waitlist">
                   <button className="w-full sm:w-auto bg-primary-900 text-white px-10 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-primary-800 hover:scale-105 transition-all shadow-lg shadow-primary-900/20">
-                    Find care for my family
+                    Join the waitlist
                   </button>
                 </a>
               ) : (

@@ -12,9 +12,9 @@ const faqs = [
       'Every caregiver on Keel completes a three-step verification before their profile goes live: a government-issued photo ID check, a comprehensive background and registry scan, and direct reference calls with past employers. Verification is refreshed regularly — not just once at signup.',
   },
   {
-    question: 'What is the difference between a nanny and a babysitter?',
+    question: 'Who are Keel’s caregivers?',
     answer:
-      'A babysitter provides occasional, short-term supervision. A nanny is a consistent care professional who manages your child’s full routine — meals, naps, school runs, homework, and development — often on a fixed weekly schedule. Keel supports both, from one-off evenings to full-time placements.',
+      'Every Keel caregiver is a trained professional in either classroom shadow support or special-needs care — not a generic babysitter. We verify their experience, education, and references before they are ever matched with your family.',
   },
   {
     question: 'What does a shadow teacher actually do at school?',
@@ -22,9 +22,9 @@ const faqs = [
       'A shadow teacher sits alongside your child in their regular classroom and provides one-on-one support: keeping them focused, breaking down lessons, helping with transitions between activities, and encouraging social participation. They coordinate with the classroom teacher and share regular progress updates with you.',
   },
   {
-    question: 'Does elder care include medical services?',
+    question: 'What happens after I join the waitlist?',
     answer:
-      'Keel elder care is non-medical companion care: daily activities, medication reminders, mobility support, appointment accompaniment, and companionship. Caregivers do not administer medical treatment, but they work comfortably alongside your family’s doctors and nurses.',
+      'You’ll be first in line for early access. We’re onboarding and verifying caregivers city by city, and we’ll reach out by phone the moment Keel opens in your area — no spam, and no upfront commitment to join.',
   },
   {
     question: 'When and how do I pay?',

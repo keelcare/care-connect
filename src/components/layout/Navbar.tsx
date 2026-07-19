@@ -120,7 +120,7 @@ export const Navbar: React.FC = () => {
           {/* Center Navigation - Landing Page (Only if not in dashboard flow) */}
           {!user && pathname === '/' && (
             <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-              <Link href="/about" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
+              <Link href="/welcome#about" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
                 About
               </Link>
               <Link href="/how-it-works" className="text-sm font-bold font-body text-primary-900/70 hover:text-primary-900 transition-colors">
@@ -303,7 +303,7 @@ export const Navbar: React.FC = () => {
               <div className="flex flex-col gap-4">
                 {!user && (
                   <>
-                    <Link href="/about" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/welcome#about" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>
                       About
                     </Link>
                     <Link href="/how-it-works" className="text-lg font-bold font-body text-primary-900" onClick={() => setIsMenuOpen(false)}>

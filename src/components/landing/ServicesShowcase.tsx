@@ -4,7 +4,6 @@ import React, { useRef } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import {
-  Baby,
   BookOpen,
   HeartPulse,
   Check,
@@ -31,28 +30,6 @@ type Service = {
 };
 
 const services: Service[] = [
-  {
-    id: 'child-care',
-    label: 'Child Care',
-    Icon: Baby,
-    tagline: 'A nanny your kids run to — and you never worry about.',
-    description:
-      "A nanny is far more than a babysitter. Keel nannies handle your child's daily routine end-to-end — feeding, nap schedules, play, homework help, and school pickups — while keeping you in the loop.",
-    duties: [
-      'Daily routines: meals, naps, hygiene, and age-appropriate play',
-      'School runs, homework supervision, and activity drop-offs',
-      'Developmental engagement — reading, games, and outdoor time',
-      'Regular updates so you always know how the day went',
-    ],
-    idealFor: ['Working parents', 'Newborns to teens', 'Full-time or part-time', 'Date nights & backup care'],
-    facts: [
-      { label: 'Engagement', value: 'Hourly, daily, or live-out full-time' },
-      { label: 'Vetting', value: 'ID, background & reference checked' },
-      { label: 'Payment', value: 'Only after care is delivered' },
-    ],
-    tint: 'hsl(200, 60%, 96%)',
-    iconBg: 'hsl(200, 65%, 90%)',
-  },
   {
     id: 'shadow-teacher',
     label: 'Shadow Teacher',

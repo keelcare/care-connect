@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/anjaney/**)",
+      "Bash(xargs -I{} du -sh {})",
+      "Bash(awk '{print \"Free now: \"$4}')",
+      "Bash(awk '{print \"Final free: \"$4\"  \\(\"$5\" used\\)\"}')",
+      "Bash(tmutil listlocalsnapshots *)",
+      "Bash(ls -lhS /private/var/folders/qb/fxdt6y356h585s3qjtvks2rc0000gn/X/ 2>/dev/null | head -15)",
+      "Read(//private/var/folders/qb/fxdt6y356h585s3qjtvks2rc0000gn/X/**)",
+      "Bash(du -sh /private/var/folders/qb/fxdt6y356h585s3qjtvks2rc0000gn/X/com.google.Chrome.code_sign_clone/* 2>/dev/null | sort -rh | head; echo \"---\"; ls -la /private/var/folders/qb/fxdt6y356h585s3qjtvks2rc0000gn/X/com.google.Chrome.code_sign_clone/ 2>/dev/null)",
+      "Read(//private/var/folders/qb/fxdt6y356h585s3qjtvks2rc0000gn/X/com.google.Chrome.code_sign_clone/**)",
+      "Bash(rm -rf code_sign_clone.As3bTb code_sign_clone.eF1bSN code_sign_clone.lxpUjh code_sign_clone.v1hnB8)",
+      "Bash(echo \"=== sibling dirs of CareConnect ===\" && ls -d /Applications/Vscode/*/ 2>/dev/null; echo \"\"; echo \"=== search for keel-mobile ===\" && find /Applications/Vscode -maxdepth 2 -iname \"*keel*mobile*\" -type d 2>/dev/null; find ~ -maxdepth 4 -iname \"*keel-mobile*\" -type d 2>/dev/null | head; echo \"\"; echo \"=== our legal pages ===\" && ls -la /Applications/Vscode/CareConnect/src/app/privacy /Applications/Vscode/CareConnect/src/app/terms /Applications/Vscode/CareConnect/src/app/cookies 2>/dev/null)"
+    ],
+    "additionalDirectories": [
+      "/Users/anjaney/Library/Developer/Xcode/DerivedData"
+    ]
+  }
+}
