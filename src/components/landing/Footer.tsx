@@ -1,9 +1,22 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import { Instagram } from 'lucide-react';
 import Link from 'next/link';
 
 export const Footer = () => {
+  // Match the navbar's behaviour: if the target section is on the current page,
+  // smooth-scroll to it without touching the URL; otherwise let the Link
+  // navigate to /welcome#id (the legal pages), where HashScrollHandler lands it.
+  const handleSectionScroll = (e: React.MouseEvent, id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-primary-900 px-6 pt-20 pb-10">
       <div className="max-w-6xl mx-auto">
@@ -22,7 +35,7 @@ export const Footer = () => {
             <p className="text-sm text-white/50 leading-relaxed max-w-xs">
               Connecting families with trusted, verified care professionals across India.
             </p>
-            <Link href="/welcome#about" className="text-sm text-white/60 hover:text-white transition-colors font-medium w-fit">
+            <Link href="/welcome#about" onClick={(e) => handleSectionScroll(e, 'about')} className="text-sm text-white/60 hover:text-white transition-colors font-medium w-fit">
               About Keel →
             </Link>
             <a
@@ -42,8 +55,8 @@ export const Footer = () => {
           <div className="flex flex-col gap-5">
             <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest">Services</h4>
             <ul className="flex flex-col gap-3">
-              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</a></li>
-              <li><a href="#services" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</a></li>
+              <li><Link href="/welcome#service-card-shadow-teacher" onClick={(e) => handleSectionScroll(e, 'service-card-shadow-teacher')} className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</Link></li>
+              <li><Link href="/welcome#service-card-special-needs" onClick={(e) => handleSectionScroll(e, 'service-card-special-needs')} className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</Link></li>
             </ul>
           </div>
 
