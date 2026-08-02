@@ -13,7 +13,7 @@ const checks = [
   {
     number: "02",
     title: "Background Checked",
-    desc: "We run comprehensive criminal record and registry scans — updated regularly, not just once.",
+    desc: "We run comprehensive criminal record and registry scans, updated regularly, not just once.",
   },
   {
     number: "03",

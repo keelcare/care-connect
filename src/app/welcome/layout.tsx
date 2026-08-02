@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
-  title: 'Join the Waitlist | Keel — Trusted Caregivers, Launching Soon',
+  title: 'Keel | Trusted Shadow Teachers & Caregivers',
   description:
-    'Keel connects families with vetted, background-checked shadow teachers and special-needs caregivers in Delhi. Join the waitlist for early access — launching soon.',
+    'Keel connects families with vetted, background-checked shadow teachers, special-needs caregivers, and developmental nannies. Get in touch to find the right fit for your family.',
   openGraph: {
-    title: 'Join the Waitlist | Keel — Trusted Caregivers, Launching Soon',
+    title: 'Keel | Trusted Shadow Teachers & Caregivers',
     description:
-      'Be first when Keel launches in Delhi. Join the waitlist for vetted shadow teachers and special-needs caregivers.',
+      'Vetted shadow teachers, special-needs caregivers, and developmental nannies matched to your child. Get in touch with Keel.',
     type: 'website',
   },
 };

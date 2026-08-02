@@ -92,7 +92,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/welcome-mobile') ||
     pathname?.startsWith('/privacy') ||
     pathname?.startsWith('/terms') ||
-    pathname?.startsWith('/cookies');
+    pathname?.startsWith('/cookies') ||
+    pathname?.startsWith('/contact') ||
+    pathname?.startsWith('/support');
 
   const hideFooter =
     hideHeader ||

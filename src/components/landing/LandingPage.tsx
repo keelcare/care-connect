@@ -1,13 +1,11 @@
 import React from 'react';
 import { Navbar } from './Navbar';
 import HeroSection from './HeroSection';
-import { ExpertiseScroll } from './ExpertiseScroll';
-
+import { RolesSection } from './RolesSection';
 import { ThatsUs } from './ThatsUs';
 import { SafetyPromise } from './SafetyPromise';
-import { ServicesShowcase } from './ServicesShowcase';
 import { FAQSection } from './FAQSection';
-import { HowItWorksSection } from './HowItWorksSection';
+// import { HowItWorksSection } from './HowItWorksSection';
 import { AboutUs } from './AboutUs';
 import { Footer } from './Footer';
 import { WaitlistModal } from './WaitlistModal';
@@ -20,10 +18,9 @@ export const LandingPage = () => {
       <Navbar />
       <main>
         <HeroSection />
-        <ExpertiseScroll />
-        <ServicesShowcase />
+        <RolesSection />
         <SafetyPromise />
-        <HowItWorksSection />
+        {/* <HowItWorksSection /> */}
         <FAQSection />
         <AboutUs />
         <ThatsUs />

@@ -57,6 +57,7 @@ export const Footer = () => {
             <ul className="flex flex-col gap-3">
               <li><Link href="/welcome#service-card-shadow-teacher" onClick={(e) => handleSectionScroll(e, 'service-card-shadow-teacher')} className="text-sm text-white/60 hover:text-white transition-colors font-medium">Shadow Teacher</Link></li>
               <li><Link href="/welcome#service-card-special-needs" onClick={(e) => handleSectionScroll(e, 'service-card-special-needs')} className="text-sm text-white/60 hover:text-white transition-colors font-medium">Special Needs</Link></li>
+              <li><Link href="/welcome#service-card-child-care" onClick={(e) => handleSectionScroll(e, 'service-card-child-care')} className="text-sm text-white/60 hover:text-white transition-colors font-medium">Child Care</Link></li>
             </ul>
           </div>
 

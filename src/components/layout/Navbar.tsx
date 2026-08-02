@@ -94,7 +94,20 @@ export const Navbar: React.FC = () => {
   };
 
   // Don't show header on auth pages if they are handled by layout logic
-  if (pathname?.startsWith('/auth')) return null;
+  if (
+    pathname?.startsWith('/auth') ||
+    pathname === '/' ||
+    pathname?.startsWith('/welcome') ||
+    pathname?.startsWith('/how-it-works') ||
+    pathname?.startsWith('/privacy') ||
+    pathname?.startsWith('/terms') ||
+    pathname?.startsWith('/cookies') ||
+    pathname?.startsWith('/contact') ||
+    pathname?.startsWith('/support') ||
+    pathname?.startsWith('/services')
+  ) {
+    return null;
+  }
 
   return (
     <>

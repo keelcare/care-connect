@@ -9,27 +9,17 @@ const faqs = [
   {
     question: 'How are caregivers verified?',
     answer:
-      'Every caregiver on Keel completes a three-step verification before their profile goes live: a government-issued photo ID check, a comprehensive background and registry scan, and direct reference calls with past employers. Verification is refreshed regularly — not just once at signup.',
+      'Every caregiver on Keel completes a three-step verification before their profile goes live: a government-issued photo ID check, a comprehensive background and registry scan, and direct reference calls with past employers. Verification is refreshed regularly, not just once at signup.',
   },
   {
-    question: 'Who are Keel’s caregivers?',
+    question: 'What is the difference between a nanny and a babysitter?',
     answer:
-      'Every Keel caregiver is a trained professional in either classroom shadow support or special-needs care — not a generic babysitter. We verify their experience, education, and references before they are ever matched with your family.',
+      'A babysitter provides occasional, short-term supervision. A nanny is a consistent care professional who manages your child’s full routine (meals, naps, school runs, homework, and development), often on a fixed weekly schedule. Keel supports both, from one-off evenings to full-time placements.',
   },
   {
     question: 'What does a shadow teacher actually do at school?',
     answer:
       'A shadow teacher sits alongside your child in their regular classroom and provides one-on-one support: keeping them focused, breaking down lessons, helping with transitions between activities, and encouraging social participation. They coordinate with the classroom teacher and share regular progress updates with you.',
-  },
-  {
-    question: 'What happens after I join the waitlist?',
-    answer:
-      'You’ll be first in line for early access. We’re onboarding and verifying caregivers city by city, and we’ll reach out by phone the moment Keel opens in your area — no spam, and no upfront commitment to join.',
-  },
-  {
-    question: 'When and how do I pay?',
-    answer:
-      'You never pay upfront. You’re only charged after care has been delivered, through the platform — safe, transparent, and with a full record of every booking.',
   },
   {
     question: 'Can I meet a caregiver before booking?',
@@ -114,7 +104,7 @@ export const FAQSection = () => {
           </h2>
           <p className="text-base text-stone-500 leading-relaxed max-w-sm">
             Everything families usually ask before their first booking. Still
-            unsure about something? Reach out — we read every message.
+            unsure about something? Reach out, we read every message.
           </p>
         </motion.div>
 

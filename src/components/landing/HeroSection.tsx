@@ -49,7 +49,7 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-primary-900/60" />
         {/* Subtle gradient overlay for extra contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
-        {/* Bottom fade to match ExpertiseScroll bg */}
+        {/* Bottom fade into next section */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary-900 to-transparent" />
       </div>
 
@@ -114,27 +114,12 @@ export default function HeroSection() {
               transitionDelay: '500ms',
             }}
           >
-            {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' ? (
-              <>
-                <a href="#waitlist">
-                  <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">
-                    <span className="relative z-10">Join the waitlist</span>
-                    <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  </button>
-                </a>
-                {/* Pre-launch framing + soft social proof — no fabricated numbers */}
-                <p className="mt-5 text-sm font-medium text-white/75 drop-shadow">
-                  Launching soon · Families are already signing up
-                </p>
-              </>
-            ) : (
-              <a href="/auth/login">
-                <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">
-                  <span className="relative z-10">Find Care</span>
-                  <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </button>
-              </a>
-            )}
+            <a href="/contact">
+              <button className="group relative rounded-full bg-white px-10 py-5 text-lg font-bold text-primary-900 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95 cursor-pointer">
+                <span className="relative z-10">Get in touch</span>
+                <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </button>
+            </a>
           </div>
         </div>
       </div>

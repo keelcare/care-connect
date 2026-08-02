@@ -3,16 +3,15 @@
 import { useEffect } from 'react';
 
 /**
- * The landing page contains a GSAP-pinned section (ExpertiseScroll) that injects
- * a large pin spacer into the layout *after* hydration. When you arrive at a deep
- * anchor like /welcome#about, the browser's native hash scroll fires before that
- * spacer exists, so it lands too high (in the expertise region) instead of on the
- * real target.
+ * Deep links like /welcome#about or /welcome#service-card-* can land short
+ * of the real target: the browser's native hash scroll often fires before
+ * images/fonts/layout settle, and the roles section uses sticky stacked cards
+ * that change the scroll height as you move.
  *
- * This re-scrolls to the hash target a few times while the layout settles, so
- * anchors below the pinned section (#about, #service-card-*, #services, …) land
- * on the right element. It no-ops for hashes with no matching element (e.g.
- * #waitlist, which opens the modal instead).
+ * This re-scrolls to the hash target a few times while the layout settles so
+ * anchors (#about, #services, #service-card-*, #faq, …) land on the right
+ * element. It no-ops for hashes with no matching element (e.g. #waitlist,
+ * which opens the modal instead).
  */
 export function HashScrollHandler() {
   useEffect(() => {
@@ -26,7 +25,7 @@ export function HashScrollHandler() {
       if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
     };
 
-    // Re-scroll as the pin spacers expand the layout over the first ~1.2s.
+    // Re-scroll while sticky cards / media finish laying out over the first ~1.2s.
     const timers = [0, 150, 400, 800, 1200].map((t) => window.setTimeout(scrollToTarget, t));
 
     return () => {
