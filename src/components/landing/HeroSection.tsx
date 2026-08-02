@@ -53,12 +53,13 @@ export default function HeroSection() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary-900 to-transparent" />
       </div>
 
-      {/* Circular Text - positioned on the bottom right side, overlaid on video */}
+      {/* Circular Text — desktop only; on mobile it collides with the CTA */}
       <div
-        className="absolute right-8 bottom-8 z-20 transition-transform duration-[1600ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:right-12 md:bottom-12"
+        className="pointer-events-none absolute right-12 bottom-12 z-[1] hidden transition-transform duration-[1600ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:block"
         style={{
           transform: `translateY(-${imageTranslateY}px)`,
         }}
+        aria-hidden="true"
       >
         <div
           className="transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
