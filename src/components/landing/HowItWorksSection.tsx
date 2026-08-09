@@ -16,7 +16,7 @@ const steps = [
     number: "02",
     icon: HeartHandshake,
     title: "Choose the type of care",
-    description: "Browse from child care, shadow teachers, special needs support, and more, all in one place.",
+    description: "Browse shadow teachers and special needs trainers, matched to your child's needs, all in one place.",
   },
   {
     number: "03",

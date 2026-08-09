@@ -44,7 +44,7 @@ export default function ContactPage() {
                 <span className="italic text-sky-700">thrive.</span>
               </h1>
               <p className="mt-4 text-base sm:text-lg text-stone-600 leading-relaxed font-body">
-                Have questions about our shadow teachers, special needs care, or developmental nannies? Connect directly with our dedicated team.
+                Have questions about our shadow teachers or special needs trainers? Connect directly with our dedicated team.
               </p>
             </motion.div>
           </div>

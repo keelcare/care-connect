@@ -21,7 +21,7 @@ const BLOCK_1_TEXT =
   "Finding care you can truly trust is one of the hardest things a family does. Whether it's a shadow teacher in the classroom or trained support for a child with special needs, the demand across India has grown rapidly - yet reliable, thoroughly vetted caregivers remain genuinely hard to find.";
 
 const BLOCK_2_TEXT =
-  "At Keel, we bridge that gap. We connect families with qualified, background-checked shadow teachers and special-needs professionals - each matched to your child's unique needs, diagnosis, and learning profile. With a child-first approach and rigorous verification, we're committed to making quality care accessible, timely, and personalised.";
+  "At Keel, we bridge that gap. We connect families with qualified, background-checked shadow teachers and special needs trainers - each matched to your child's unique needs, diagnosis, and learning profile. With a child-first approach and rigorous verification, we're committed to making quality care accessible, timely, and personalised.";
 
 const BLOCK_3_TEXT =
   "Because every child deserves the right support to learn, grow, and thrive.";

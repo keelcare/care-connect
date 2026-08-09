@@ -104,7 +104,7 @@ export default function HeroSection() {
               transitionDelay: '350ms',
             }}
           >
-            Vetted shadow teachers and special needs caregivers for families. Background checked and matched to your child.
+            Vetted shadow teachers and special needs trainers for families. Background checked and matched to your child.
           </p>
 
           <div

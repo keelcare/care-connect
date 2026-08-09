@@ -7,24 +7,54 @@ import { cn } from '@/lib/utils';
 
 const faqs = [
   {
-    question: 'How are caregivers verified?',
+    question: 'What is a Shadow Teacher, and how are they different from a regular nanny?',
     answer:
-      'Every caregiver on Keel completes a three-step verification before their profile goes live: a government-issued photo ID check, a comprehensive background and registry scan, and direct reference calls with past employers. Verification is refreshed regularly, not just once at signup.',
+      'A Shadow Teacher is a trained professional who accompanies a child, usually in a school or learning environment, to support their academic, social, and behavioral needs one-on-one. Unlike a nanny who handles general care, a Shadow Teacher focuses on helping your child keep pace in class, follow instructions, manage transitions, and build independence over time, often working closely with the school\'s teachers and counselors.',
   },
   {
-    question: 'What is the difference between a nanny and a babysitter?',
+    question: 'What is a Special Needs Trainer, and what do they help with?',
     answer:
-      'A babysitter provides occasional, short-term supervision. A nanny is a consistent care professional who manages your child’s full routine (meals, naps, school runs, homework, and development), often on a fixed weekly schedule. Keel supports both, from one-off evenings to full-time placements.',
+      'A Special Needs Trainer works with children who need more targeted developmental support, such as sensory regulation, speech and communication, motor skills, or behavioral therapy goals. They typically follow a plan (often set by a therapist or doctor) and focus on skill-building at home or in dedicated sessions, rather than classroom support.',
   },
   {
-    question: 'What does a shadow teacher actually do at school?',
+    question: 'How do I know whether my child needs a Shadow Teacher or a Special Needs Trainer?',
     answer:
-      'A shadow teacher sits alongside your child in their regular classroom and provides one-on-one support: keeping them focused, breaking down lessons, helping with transitions between activities, and encouraging social participation. They coordinate with the classroom teacher and share regular progress updates with you.',
+      'It depends on the setting and goal. If your child needs support inside the classroom to keep up academically and socially, a Shadow Teacher is the right fit. If the focus is on therapeutic or developmental goals, like speech, motor skills, or behavior, outside a school setting, a Special Needs Trainer is better suited. Not sure which one fits? Reach out and we\'ll help you figure it out based on your child\'s needs.',
+  },
+  {
+    question: 'Are Keel\'s Shadow Teachers and Special Needs Trainers background-verified?',
+    answer:
+      'Yes. Every caregiver on Keel goes through background checks and a vetting process before they\'re listed on the platform, so you can book with confidence.',
   },
   {
     question: 'Can I meet a caregiver before booking?',
     answer:
-      'Yes. Once you match with a caregiver you can chat directly on the platform, review their verified profile and references, and arrange an introduction before confirming anything.',
+      'Absolutely, we want you to feel completely comfortable before committing. You can request a free home visit, where the caregiver comes to meet your family and child in person at no cost. Prefer something quicker? You can also do a video call introduction first, and decide from there whether you\'d like to take it further.',
+  },
+  {
+    question: 'What qualifications do Keel\'s caregivers have?',
+    answer:
+      'Our Shadow Teachers and Special Needs Trainers come with relevant training, certifications, and hands-on experience depending on their specialization, ranging from special education backgrounds to therapy-support certifications. All caregivers are also trained by Keel\'s CEO, Mannat Mitra, to ensure a consistent standard of care across the platform. Each profile lists their specific experience so you can match them to your child\'s needs.',
+  },
+  {
+    question: 'Can a Shadow Teacher or Trainer work with children with specific conditions (like autism, ADHD, or learning disabilities)?',
+    answer:
+      'Yes. Many of our caregivers specialize in working with children with autism spectrum disorder, ADHD, sensory processing differences, learning disabilities, and other developmental needs. You can filter or ask us to match you with someone experienced in your child\'s specific requirement.',
+  },
+  {
+    question: 'How does the matching process work?',
+    answer:
+      'Tell us about your child: their age, needs, school setting (if relevant), and what kind of support you\'re looking for. We\'ll shortlist caregivers who fit, and you can review profiles, chat, do a video call, or arrange a free home visit before making your decision.',
+  },
+  {
+    question: 'What if the caregiver isn\'t the right fit for my child?',
+    answer:
+      'That\'s completely okay, it happens. If it\'s not clicking, let us know and we\'ll help you find a better match. Your child\'s comfort and progress matter more than any single booking.',
+  },
+  {
+    question: 'Do Shadow Teachers coordinate with my child\'s school?',
+    answer:
+      'Yes, where needed. Shadow Teachers often liaise with class teachers and school staff to stay aligned on your child\'s academic plan and classroom behavior goals, so support at school and at home stays consistent.',
   },
 ];
 

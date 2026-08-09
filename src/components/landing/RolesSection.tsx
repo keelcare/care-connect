@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import {
-  Baby,
   BookOpen,
   HeartPulse,
   Check,
@@ -38,7 +37,7 @@ type Role = {
   };
 };
 
-/** Display order: Shadow Teacher → Special Needs → Child Care */
+/** Display order: Shadow Teacher → Special Needs Trainer */
 const roles: Role[] = [
   {
     id: 'shadow-teacher',
@@ -71,16 +70,17 @@ const roles: Role[] = [
   },
   {
     id: 'special-needs',
-    label: 'Special Needs Care',
+    label: 'Special Needs Trainer',
     Icon: HeartPulse,
     tagline: "Trained care that follows your family's plan, not a generic one.",
     shortDescription:
       'Structured support for children with developmental or learning differences, matched to your child\'s unique needs and care plan, at home or in school.',
     duties: [
-      'Structured learning strategies',
-      'Social-emotional skill building',
-      'Daily routine consistency',
-      'Aligned with your therapists',
+      'ADL & daily living skills (brushing, eating, spoon/pen use, fine motor practice)',
+      'Worksheet designing for learning support',
+      'Play therapy practice',
+      'Dance therapy practice',
+      'OT (occupational therapy) practice',
     ],
     idealFor: ['Developmental delays', 'Physical disabilities', 'Behavioural support', 'Respite for caregivers'],
     facts: [
@@ -93,31 +93,6 @@ const roles: Role[] = [
     tint: 'hsl(350, 40%, 96%)',
     iconBg: 'hsl(350, 45%, 91%)',
     accentColor: '#E11D48',
-  },
-  {
-    id: 'child-care',
-    label: 'Child Care & Nannies',
-    Icon: Baby,
-    tagline: 'A nanny your kids run to, and you never worry about.',
-    shortDescription:
-      'Reliable home-based care rooted in child development: safety, routines, and learning-based play that goes far beyond babysitting.',
-    duties: [
-      'Safety, meals & rest routines',
-      'Learning-based play',
-      'Communication skill building',
-      'Child development trained',
-    ],
-    idealFor: ['Working parents', 'Newborns to teens', 'Full-time or part-time', 'Date nights & backup care'],
-    facts: [
-      { label: 'Engagement', value: 'Hourly, daily, or full-time' },
-      { label: 'Vetting', value: 'ID, background & reference checked' },
-      { label: 'Payment', value: 'Only after care is delivered' },
-    ],
-    image: '/child_care.png',
-    imageAlt: 'Nanny playing with a young child at home',
-    tint: 'hsl(200, 60%, 96%)',
-    iconBg: 'hsl(200, 65%, 90%)',
-    accentColor: '#0284C7',
   },
 ];
 
@@ -305,7 +280,7 @@ export const RolesSection = () => {
               <span className="italic text-sky-700">your child&apos;s exact needs.</span>
             </h2>
             <p className="mt-4 text-base sm:text-lg text-stone-600 leading-relaxed font-body max-w-2xl mx-auto">
-              From dedicated in-school shadow teachers to trained special needs educators and loving developmental nannies, find the right fit for your family.
+              From dedicated in-school shadow teachers to trained special needs trainers, find the right fit for your family.
             </p>
           </motion.div>
         </div>
