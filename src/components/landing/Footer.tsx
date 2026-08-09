@@ -28,7 +28,7 @@ export const Footer = () => {
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden shadow-md shrink-0 relative">
-                <Image src="/logo.jpeg" alt="Keel Logo" fill className="object-cover" />
+                <Image src="/logo.jpeg" alt="Keel Logo" fill sizes="40px" className="object-cover" />
               </div>
               <span className="text-2xl font-bold text-white tracking-tight">Keel</span>
             </Link>
@@ -66,7 +66,6 @@ export const Footer = () => {
             <ul className="flex flex-col gap-3">
               <li><Link href="/privacy" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Terms of Service</Link></li>
-              <li><Link href="/cookies" className="text-sm text-white/60 hover:text-white transition-colors font-medium">Cookie Policy</Link></li>
             </ul>
           </div>
 

@@ -45,7 +45,7 @@ const roles: Role[] = [
     Icon: BookOpen,
     tagline: 'A steady hand beside your child in the classroom, every single day.',
     shortDescription:
-      'One-on-one in-school support that keeps your child engaged, on-track, and confident, from educators trained in ADHD, autism, and learning differences.',
+      'Dedicated school support that keeps your child engaged, on track, and confident, from educators trained in ADHD, autism, and learning differences.',
     duties: [
       'Stay focused during lessons',
       'Classroom routines & transitions',

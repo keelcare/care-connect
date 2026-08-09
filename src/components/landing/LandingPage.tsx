@@ -8,12 +8,11 @@ import { FAQSection } from './FAQSection';
 // import { HowItWorksSection } from './HowItWorksSection';
 import { AboutUs } from './AboutUs';
 import { Footer } from './Footer';
-import { WaitlistModal } from './WaitlistModal';
 import { HashScrollHandler } from './HashScrollHandler';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-dvh bg-background selection:bg-primary selection:text-white font-sans">
+    <div className="relative min-h-dvh bg-background selection:bg-primary selection:text-white font-sans">
       <HashScrollHandler />
       <Navbar />
       <main>
@@ -24,7 +23,6 @@ export const LandingPage = () => {
         <FAQSection />
         <AboutUs />
         <ThatsUs />
-        {process.env.NEXT_PUBLIC_WAITLIST_MODE === 'true' && <WaitlistModal />}
       </main>
       <Footer />
     </div>

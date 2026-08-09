@@ -23,7 +23,7 @@ export const LEGAL = {
     email: 'keelcarecon@gmail.com',
   },
   privacyEmail: 'privacy@keel.app',
-  supportEmail: 'support@keel.app',
+  supportEmail: 'keelcarecon@gmail.com',
 
   /**
    * Canonical hosted copies. App Store Connect and the Play Console both

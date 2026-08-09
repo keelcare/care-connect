@@ -9,14 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/admin/',
-          '/dashboard/',
-          '/parent-dashboard/',
-          '/api/',
-          '/auth/callback',
-          '/auth/reset-password',
-        ],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

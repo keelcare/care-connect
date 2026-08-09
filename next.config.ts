@@ -1,12 +1,8 @@
 import type { NextConfig } from 'next';
 
-const isCapacitor = process.env.BUILD_TARGET === 'capacitor';
-
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['192.168.0.122', '172.20.10.10', 'anjaneys-macbook-air.local'],
-  /* config options here */
   reactCompiler: true,
-  ...(isCapacitor && { output: 'export' }),
   images: {
     remotePatterns: [
       {
@@ -21,27 +17,8 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: '*.googleusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'ui-avatars.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/public/**',
-      },
     ],
     contentDispositionType: 'attachment',
-    unoptimized: isCapacitor, // Only disable optimization for Capacitor static export
   },
   async headers() {
     return [
@@ -71,34 +48,13 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value:
-              'camera=(), microphone=(), geolocation=(self), interest-cohort=()',
+              'camera=(), microphone=(), geolocation=(), interest-cohort=()',
           },
         ],
       },
     ];
-
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://localhost:4000'}/:path*`,
-      },
-    ];
   },
 };
-
-import { withSentryConfig } from "@sentry/nextjs";
-
-const exportConfig = process.env.SENTRY_AUTH_TOKEN ? withSentryConfig(nextConfig, {
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options
-
-  // Suppresses source map uploading logs during bundling
-  silent: true,
-  org: "keel-care", // You may need to update this to your Sentry organization slug
-  project: "frontend",
-}) : nextConfig;
 
 import bundleAnalyzer from '@next/bundle-analyzer';
 
@@ -107,4 +63,4 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
-export default withBundleAnalyzer(exportConfig);
+export default withBundleAnalyzer(nextConfig);

@@ -65,11 +65,6 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  // Pinch-zoom is disabled only in the native (Capacitor) shell; the web build
-  // keeps it enabled to satisfy WCAG 1.4.4 (Resize Text).
-  ...(process.env.BUILD_TARGET === 'capacitor'
-    ? { maximumScale: 1, userScalable: false }
-    : {}),
 };
 
 export default function RootLayout({

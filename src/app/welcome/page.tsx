@@ -1,39 +1,5 @@
-'use client';
-
-import { LandingPage } from '@/components/landing/LandingPage';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import { redirect } from 'next/navigation';
 
 export default function WelcomePage() {
-    const { user, loading } = useAuth();
-    const router = useRouter();
-
-    // Redirect logged-in users
-    React.useEffect(() => {
-        if (!loading && user) {
-            if (user.role === 'parent') {
-                router.push('/parent-dashboard');
-            } else if (user.role === 'nanny') {
-                router.push('/dashboard');
-            } else if (user.role === 'admin') {
-                router.push('/admin');
-            }
-        }
-    }, [user, loading, router]);
-
-    if (loading) {
-        return (
-            <div className="min-h-dvh flex items-center justify-center bg-stone-50">
-                <div className="w-8 h-8 border-4 border-stone-900 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
-
-    // Don't render if redirecting
-    if (user) return null;
-
-    return (
-        <LandingPage />
-    );
+  redirect('/');
 }

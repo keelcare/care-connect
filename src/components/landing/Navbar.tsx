@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 /** Pages with a light background from the top — always use dark nav text */
-const LIGHT_BG_PREFIXES = ['/contact', '/privacy', '/terms', '/cookies'];
+const LIGHT_BG_PREFIXES = ['/contact', '/privacy', '/terms'];
 
 const scrollTo = (id: string) => {
   const el = document.getElementById(id);
@@ -68,6 +68,7 @@ export const Navbar = () => {
               src="/logo.jpeg" 
               alt="Keel Logo" 
               fill
+              sizes="40px"
               className="object-cover" 
             />
           </div>
