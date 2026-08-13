@@ -37,7 +37,7 @@ export const SafetyPromise = () => {
   return (
     <section
       ref={containerRef}
-      className="relative py-32 px-6 overflow-hidden"
+      className="relative pt-8 pb-16 md:py-32 px-6 overflow-hidden"
       style={{ background: warmBg }}
     >
       {/* Subtle background texture */}
@@ -49,7 +49,7 @@ export const SafetyPromise = () => {
         {/* Header */}
         <motion.div
           style={{ y }}
-          className="mb-20"
+          className="mb-12 md:mb-20"
         >
           
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">

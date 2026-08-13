@@ -244,7 +244,7 @@ export const RolesSection = () => {
   return (
     <section
       id="services"
-      className="relative py-20 md:py-28 px-4 md:px-8 overflow-hidden scroll-mt-24"
+      className="relative pt-16 pb-0 md:py-28 px-4 md:px-8 overflow-hidden scroll-mt-24"
       style={{
         background:
           'linear-gradient(160deg, hsl(38, 60%, 97%) 0%, hsl(30, 50%, 95%) 50%, hsl(45, 55%, 96%) 100%)',
